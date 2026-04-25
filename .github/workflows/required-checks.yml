@@ -1,0 +1,121 @@
+name: Required Checks
+
+on:
+  pull_request:
+    branches: ["main"]
+  push:
+    branches: ["main"]
+
+concurrency:
+  group: required-checks-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  required-tests:
+    name: required-tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: services/forum-engine
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          tools: composer
+          coverage: none
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Run code style check
+        run: ./vendor/bin/pint --test
+
+      - name: Run test suite
+        run: php artisan test
+
+  required-build:
+    name: required-build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate compose files
+        run: |
+          docker compose -f scripts/docker/infra.compose.yml config >/dev/null
+          docker compose -f services/forum-engine/docker-compose.yml config >/dev/null
+
+      - name: Build forum-engine image
+        run: |
+          docker compose \
+            -p mifolyo-ci \
+            -f services/forum-engine/docker-compose.yml \
+            --project-directory services/forum-engine \
+            build forum-engine
+
+  required-smoke:
+    name: required-smoke
+    runs-on: ubuntu-latest
+    env:
+      MIFOLYO_PROJECT_NAME: mifolyo-ci
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Start full stack
+        run: bash scripts/fullstack.sh up
+
+      - name: Verify health endpoints
+        run: |
+          for _ in {1..60}; do
+            code="$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/api/health/live || true)"
+            if [ "${code}" = "200" ]; then
+              break
+            fi
+            sleep 2
+          done
+
+          if [ "${code}" != "200" ]; then
+            echo "Live health endpoint failed with status: ${code}"
+            bash scripts/fullstack.sh logs
+            exit 1
+          fi
+
+          ready_code="$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/api/health/ready || true)"
+          if [ "${ready_code}" != "200" ]; then
+            echo "Ready health endpoint failed with status: ${ready_code}"
+            bash scripts/fullstack.sh logs
+            exit 1
+          fi
+
+      - name: Verify auth flow contract
+        run: |
+          register_code="$(curl -s -o /tmp/register.json -w "%{http_code}" \
+            -H "Content-Type: application/json" \
+            -d '{"name":"CI User","email":"ci-user@example.com","password":"password123","password_confirmation":"password123"}' \
+            http://localhost:8000/api/auth/register || true)"
+
+          if [ "${register_code}" != "201" ]; then
+            echo "Register endpoint failed with status: ${register_code}"
+            cat /tmp/register.json
+            bash scripts/fullstack.sh logs
+            exit 1
+          fi
+
+          token="$(python3 -c 'import json; print(json.load(open("/tmp/register.json"))["data"]["token"])')"
+          me_code="$(curl -s -o /tmp/me.json -w "%{http_code}" -H "Authorization: Bearer ${token}" http://localhost:8000/api/auth/me || true)"
+
+          if [ "${me_code}" != "200" ]; then
+            echo "Auth me endpoint failed with status: ${me_code}"
+            cat /tmp/me.json
+            bash scripts/fullstack.sh logs
+            exit 1
+          fi
+
+      - name: Stop full stack
+        if: always()
+        run: bash scripts/fullstack.sh down

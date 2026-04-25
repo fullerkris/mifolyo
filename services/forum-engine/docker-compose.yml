@@ -1,0 +1,36 @@
+services:
+  forum-engine:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: >
+      sh -c "composer install --no-interaction --prefer-dist
+      && until php artisan migrate --force; do sleep 3; done
+      && php artisan serve --host=0.0.0.0 --port=8000"
+    environment:
+      APP_NAME: MiFolyo Forum
+      APP_ENV: local
+      APP_DEBUG: "true"
+      APP_URL: http://localhost:8000
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: mifolyo_forum
+      DB_USERNAME: mifolyo
+      DB_PASSWORD: mifolyo
+      CACHE_STORE: database
+      QUEUE_CONNECTION: database
+      SESSION_DRIVER: database
+      REDIS_CLIENT: phpredis
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      SEARCH_API_BASE_URL: ${SEARCH_API_BASE_URL:-http://host.docker.internal:8080}
+      SEARCH_API_TIMEOUT_SECONDS: ${SEARCH_API_TIMEOUT_SECONDS:-3}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/var/www
+      - forum_engine_vendor:/var/www/vendor
+
+volumes:
+  forum_engine_vendor:

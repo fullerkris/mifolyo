@@ -14,6 +14,7 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     libxml2-dev \
     libpng-dev \
+    libpq-dev \
     nodejs \
     npm
 
@@ -21,7 +22,7 @@ RUN apt-get update && apt-get install -y \
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install php extensions
-RUN docker-php-ext-install mbstring xml
+RUN docker-php-ext-install mbstring xml pdo_pgsql
 
 # Install MongoDB extension
 # RUN pecl install mongodb && docker-php-ext-enable mongodb
@@ -30,9 +31,6 @@ RUN pecl install mongodb-1.21.0 && docker-php-ext-enable mongodb
 
 # install composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# Install Redis extension
-RUN composer require predis/predis
 
 # Create user
 RUN useradd -u $uid -ms /bin/bash -g www-data $user

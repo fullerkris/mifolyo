@@ -13,6 +13,7 @@ REDIS_PORT=<your_redis_port> (default: 6379)
 REDIS_PASSWORD=<your_redis_password> (default: empty)
 REDIS_DB=<your_redis_db> (default: 0)
 STARTING_URL=<your_starting_url> (default: https://en.wikipedia.org/wiki/Kamen_Rider)
+USER_AGENT=<crawler_user_agent> (default: MiFolyoBot/1.0)
 ```
 
 To run the spider using Docker, follow these steps:
@@ -70,6 +71,11 @@ If you prefer to run the spider without Docker, you can do so by building and ru
    Start the spider with optional flags for concurrency and batch size:
    ```bash
    ./spider -max-concurrency=10 -max-pages=100
+   ```
+
+   For a bounded development crawl, exit after one batch:
+   ```bash
+   ./spider -max-concurrency=2 -max-pages=10 -once
    ```
 
 6. **Stopping the spider**:  

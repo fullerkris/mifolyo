@@ -22,18 +22,30 @@ The recommended way to run the Query Engine is with Docker. This ensures all dep
    Follow the instructions for your OS on the [Docker website](https://docs.docker.com/get-docker/).
 
 2. **Configure Environment Variables**:  
-   Create a `.env` file in the `services/query-engine` directory with the following content (adjust as needed):
+   Create a `.env` file in the `services/query-engine` directory using `.env.example` as the starting point. The local Docker setup uses PostgreSQL for MiFolyo application data and MongoDB for Moogle index/search data:
    ```env
+   APP_NAME=MiFolyo
    APP_KEY=base64:your_app_key_here
    APP_ENV=local
    APP_DEBUG=true
    APP_URL=http://localhost
 
-   MONGODB_URI=mongodb://<mongo_user>:<mongo_password>@<mongo_host>:<mongo_port>/<mongo_db>?authSource=admin
-   MONGODB_DATABASE=<mongo_db>
-   REDIS_HOST=<your_redis_host>
-   REDIS_PASSWORD=<your_redis_password>
-   REDIS_PORT=<your_redis_port>
+   DB_CONNECTION=pgsql
+   DB_HOST=postgres
+   DB_PORT=5432
+   DB_DATABASE=mifolyo
+   DB_USERNAME=mifolyo
+   DB_PASSWORD=mifolyo
+
+   MONGODB_URI=mongodb://mongo:27017
+   MONGODB_DATABASE=mifolyo_index
+
+   CACHE_STORE=redis
+   QUEUE_CONNECTION=redis
+   REDIS_CLIENT=predis
+   REDIS_HOST=redis
+   REDIS_PASSWORD=null
+   REDIS_PORT=6379
    ```
 
 3. **Build and Run**:  

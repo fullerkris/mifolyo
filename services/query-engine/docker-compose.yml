@@ -8,9 +8,26 @@ services:
             - /var/www/vendor
             - /var/www/node_modules
         environment:
+            - APP_NAME=MiFolyo
             - APP_ENV=local
+            - APP_KEY=base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
             - APP_DEBUG=true
+            - DB_CONNECTION=pgsql
+            - DB_HOST=postgres
+            - DB_PORT=5432
+            - DB_DATABASE=mifolyo
+            - DB_USERNAME=mifolyo
+            - DB_PASSWORD=mifolyo
+            - MONGODB_URI=mongodb://mongo:27017
+            - MONGODB_DATABASE=mifolyo_index
+            - CACHE_STORE=redis
+            - QUEUE_CONNECTION=redis
+            - REDIS_CLIENT=predis
             - REDIS_HOST=redis
+        depends_on:
+            - postgres
+            - mongo
+            - redis
         networks:
             - app
 
@@ -38,10 +55,34 @@ services:
         networks:
             - app
 
+    mongo:
+        image: mongo:8
+        ports:
+            - "27017:27017"
+        volumes:
+            - mongo_data:/data/db
+        networks:
+            - app
+
+    postgres:
+        image: postgres:16
+        ports:
+            - "5432:5432"
+        environment:
+            - POSTGRES_DB=mifolyo
+            - POSTGRES_USER=mifolyo
+            - POSTGRES_PASSWORD=mifolyo
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        networks:
+            - app
+
 volumes:
     caddy_data:
     caddy_config:
     redis_data:
+    mongo_data:
+    postgres_data:
 
 networks:
     app:

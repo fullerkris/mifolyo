@@ -50,7 +50,7 @@ func (crawcfg *CrawlerConfig) Crawl(db *database.Database) {
 		log.Printf("Crawling from %v (%v)...\n", normalizedCurrentURL, rawCurrentURL)
 
 		// Fetch HTML, Status Code, and Content-Type
-		html, statusCode, contentType, err := getPageData(rawCurrentURL)
+		html, statusCode, contentType, err := getPageData(rawCurrentURL, crawcfg.UserAgent)
 		if err != nil {
 			// Skip if we couldn't fetch the data
 			log.Printf("Error fetching %v data: %v\n", rawCurrentURL, err)

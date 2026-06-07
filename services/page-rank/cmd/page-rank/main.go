@@ -26,7 +26,10 @@ func main() {
 
 	fmt.Println("Page Rank Service!")
 
-	mongoURI := fmt.Sprintf("mongodb://%s:%s@%s:27017/", mongoUsername, mongoPassword, mongoHost)
+	mongoURI := fmt.Sprintf("mongodb://%s:27017/", mongoHost)
+	if mongoUsername != "" {
+		mongoURI = fmt.Sprintf("mongodb://%s:%s@%s:27017/", mongoUsername, mongoPassword, mongoHost)
+	}
 
 	client, err := mongo.Connect(options.Client().ApplyURI(mongoURI))
 	if err != nil {

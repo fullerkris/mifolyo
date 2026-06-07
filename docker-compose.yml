@@ -1,0 +1,176 @@
+x-moogle-env: &moogle-env
+  REDIS_HOST: redis
+  REDIS_PORT: 6379
+  REDIS_PASSWORD: ""
+  REDIS_DB: 0
+  MONGO_HOST: mongo
+  MONGO_PORT: 27017
+  MONGO_DB: mifolyo_index
+  MONGO_USERNAME: ""
+  MONGO_PASSWORD: ""
+  USER_AGENT: MiFolyoBot/1.0
+
+services:
+  laravel:
+    build: ./services/query-engine
+    image: mifolyo-query-engine
+    working_dir: /var/www
+    volumes:
+      - ./services/query-engine/public:/var/www/public
+      - query_engine_vendor:/var/www/vendor
+      - query_engine_node_modules:/var/www/node_modules
+    environment:
+      APP_NAME: MiFolyo
+      APP_ENV: local
+      APP_KEY: base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+      APP_DEBUG: true
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: mifolyo
+      DB_USERNAME: mifolyo
+      DB_PASSWORD: mifolyo
+      MONGODB_URI: mongodb://mongo:27017
+      MONGODB_DATABASE: mifolyo_index
+      CACHE_STORE: redis
+      QUEUE_CONNECTION: redis
+      REDIS_CLIENT: predis
+      REDIS_HOST: redis
+    depends_on:
+      - postgres
+      - mongo
+      - redis
+    networks:
+      - app
+
+  caddy:
+    image: caddy:2
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./services/query-engine/Caddyfile:/etc/caddy/Caddyfile
+      - ./services/query-engine/public:/srv
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - laravel
+    networks:
+      - app
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - app
+
+  mongo:
+    image: mongo:8
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - app
+
+  postgres:
+    image: postgres:16
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: mifolyo
+      POSTGRES_USER: mifolyo
+      POSTGRES_PASSWORD: mifolyo
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app
+
+  spider:
+    build: ./services/spider
+    image: mifolyo-spider
+    profiles: ["pipeline"]
+    command: ["./spider", "--max-concurrency", "2", "--max-pages", "10", "--once"]
+    environment:
+      <<: *moogle-env
+      STARTING_URL: https://developer.mozilla.org/en-US/docs/Web/HTML
+    depends_on:
+      - redis
+    networks:
+      - app
+
+  indexer:
+    build: ./services/indexer
+    image: mifolyo-indexer
+    profiles: ["pipeline"]
+    environment:
+      <<: *moogle-env
+    depends_on:
+      - redis
+      - mongo
+    networks:
+      - app
+
+  image-indexer:
+    build: ./services/image-indexer
+    image: mifolyo-image-indexer
+    profiles: ["pipeline"]
+    environment:
+      <<: *moogle-env
+    depends_on:
+      - redis
+      - mongo
+    networks:
+      - app
+
+  backlinks-processor:
+    build: ./services/backlinks-processor
+    image: mifolyo-backlinks-processor
+    profiles: ["pipeline"]
+    environment:
+      <<: *moogle-env
+    depends_on:
+      - redis
+      - mongo
+    networks:
+      - app
+
+  tfidf:
+    build: ./services/tfidf
+    image: mifolyo-tfidf
+    profiles: ["batch"]
+    environment:
+      <<: *moogle-env
+      OPERATIONS_THRESHOLD: 1000
+      NUM_THREADS: 2
+    depends_on:
+      - mongo
+    networks:
+      - app
+
+  page-rank:
+    build: ./services/page-rank
+    image: mifolyo-page-rank
+    profiles: ["batch"]
+    environment:
+      <<: *moogle-env
+    depends_on:
+      - mongo
+    networks:
+      - app
+
+volumes:
+  caddy_data:
+  caddy_config:
+  redis_data:
+  mongo_data:
+  postgres_data:
+  query_engine_vendor:
+  query_engine_node_modules:
+
+networks:
+  app:
+    driver: bridge

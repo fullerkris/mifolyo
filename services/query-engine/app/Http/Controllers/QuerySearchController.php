@@ -296,13 +296,19 @@ class QuerySearchController extends Controller
 
         // Populate the metadata for each URL in the paginated results
         $urls = array_map(fn($result) => $result['_id'], $paginatedResults);
-        // TODO: Add page rank
+
         // Fetch page rank of the urls
         $pageRank = DB::connection('mongodb')->table('pagerank')
             ->whereIn('_id', $urls)
             ->get();
 
-        error_log('Page rank: ' . json_encode($pageRank));
+        $pageRankByUrl = [];
+        foreach ($pageRank as $rank) {
+            $url = $rank->id ?? $rank->_id ?? null;
+            if ($url) {
+                $pageRankByUrl[$url] = (float) ($rank->rank ?? 0);
+            }
+        }
 
         $metadata = DB::connection('mongodb')->table('metadata')
             ->whereIn('_id', $urls)
@@ -322,7 +328,7 @@ class QuerySearchController extends Controller
             $result['summary_text'] = $resultMetadata->summary_text ?? '';
             $result['title'] = $resultMetadata->title ?? '';
 
-            $result['pagerank'] = $pageRankByUrl[$result['_id']] ?? 0; // Default to 0 if no pagerank found
+            $result['pagerank'] = $pageRankByUrl[$result['_id']] ?? 0;
 
             // Calculate combined score
             $tfidfWeight = $result['cumWeight'];

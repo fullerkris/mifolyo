@@ -26,6 +26,7 @@ func main() {
 	// Parse flags
 	maxConcurrency := flag.Int("max-concurrency", 10, "Maximum number of concurrent workers")
 	maxPages := flag.Int("max-pages", 100, "Maximum number of pages per batch")
+	once := flag.Bool("once", false, "Exit after one crawl batch")
 	flag.Parse()
 
 	// Retrieve environment variables
@@ -34,6 +35,7 @@ func main() {
 	redisPassword := getEnv("REDIS_PASSWORD", "")
 	redisDB := getEnv("REDIS_DB", "0")
 	startingURL := getEnv("STARTING_URL", "https://en.wikipedia.org/wiki/Kamen_Rider")
+	userAgent := getEnv("USER_AGENT", utils.DefaultUserAgent)
 
 	// Connect to Redis
 	db := &database.Database{}
@@ -62,6 +64,7 @@ func main() {
 		Images:         make(map[string][]*pages.Image),
 		MaxPages:       *maxPages,
 		MaxConcurrency: *maxConcurrency,
+		UserAgent:      userAgent,
 	}
 
 	// Infinite loop to crawl the web in batches
@@ -110,5 +113,10 @@ func main() {
 		crawler.Outlinks = make(map[string]*pages.PageNode)
 		crawler.Backlinks = make(map[string]*pages.PageNode)
 		crawler.Images = make(map[string][]*pages.Image)
+
+		if *once {
+			log.Printf("One crawl batch completed. Exiting...\n")
+			return
+		}
 	}
 }

@@ -18,7 +18,11 @@ OUTLINKS_COLLECTIONS = 'outlinks'
 class MongoClient:
     def __init__(self, host='localhost', port=27017, password="", db="test", username=""):
         try:
-            self.client = pymongo.MongoClient(f'mongodb://{username}:{password}@{host}:{port}/{db}?authSource=admin')
+            mongo_uri = f'mongodb://{host}:{port}/{db}'
+            if username:
+                mongo_uri = f'mongodb://{username}:{password}@{host}:{port}/{db}?authSource=admin'
+
+            self.client = pymongo.MongoClient(mongo_uri)
             self.db = self.client[db]
             self.client.admin.command("ping")
             logger.info('Successfully connected to mongo!')

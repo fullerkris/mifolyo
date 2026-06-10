@@ -46,7 +46,7 @@ return [
         'api' => [
             'driver' => 'token',
             'provider' => 'users',
-            'hash' => false,
+            'hash' => true,
         ],
     ],
 
@@ -119,5 +119,7 @@ return [
     */
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
+
+    'api_token_ttl_minutes' => (int) env('API_TOKEN_TTL_MINUTES', 43200),
 
 ];

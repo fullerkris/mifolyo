@@ -26,10 +26,13 @@ class UserFactory extends Factory
     {
         return [
             'name' => fake()->name(),
+            'username' => fake()->unique()->regexify('[a-z][a-z0-9_]{11}'),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
+            'level' => 1,
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'standing' => 'healthy',
         ];
     }
 

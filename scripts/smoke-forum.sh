@@ -72,7 +72,7 @@ wait_for_health "/api/health/ready" "200"
 timestamp="$(date +%s)"
 register_payload="${tmp_dir}/register.json"
 cat >"${register_payload}" <<JSON
-{"name":"Smoke User","email":"smoke-${timestamp}@example.com","password":"password123","password_confirmation":"password123"}
+{"name":"Smoke User","username":"smoke_${timestamp}","email":"smoke-${timestamp}@example.com","password":"password123","password_confirmation":"password123"}
 JSON
 
 register_output="${tmp_dir}/register.out.json"

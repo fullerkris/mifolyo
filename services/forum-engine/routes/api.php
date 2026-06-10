@@ -26,13 +26,14 @@ Route::middleware('throttle:auth')->group(function () {
     Route::post('/auth/login', [AuthController::class, 'login']);
 });
 
-Route::middleware(['auth:api', 'throttle:api-read'])->group(function () {
+Route::middleware(['auth:api', 'auth.token.fresh', 'throttle:api-read'])->group(function () {
     Route::get('/auth/me', [AuthController::class, 'me']);
+    Route::post('/auth/refresh', [AuthController::class, 'refresh']);
     Route::get('/mod/queue', [ModerationController::class, 'queue']);
     Route::get('/mod/actions', [ModerationController::class, 'actions']);
 });
 
-Route::middleware(['auth:api', 'throttle:api-write'])->group(function () {
+Route::middleware(['auth:api', 'auth.token.fresh', 'throttle:api-write'])->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::post('/communities', [CommunityController::class, 'store']);
     Route::post('/communities/{community:slug}/join', [CommunityController::class, 'join']);
@@ -42,6 +43,6 @@ Route::middleware(['auth:api', 'throttle:api-write'])->group(function () {
     Route::post('/reports', [ReportController::class, 'store']);
 });
 
-Route::middleware(['auth:api', 'throttle:mod-actions'])->group(function () {
+Route::middleware(['auth:api', 'auth.token.fresh', 'throttle:mod-actions'])->group(function () {
     Route::post('/mod/actions', [ModerationController::class, 'action']);
 });

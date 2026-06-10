@@ -18,19 +18,12 @@ class AuthController extends Controller
 
         $user = User::create([
             'name' => $validated['name'],
+            'username' => $validated['username'],
             'email' => $validated['email'],
             'password' => $validated['password'],
         ]);
 
-        $token = $this->issueToken($user);
-
-        return response()->json([
-            'data' => [
-                'user' => $user,
-                'token' => $token,
-                'token_type' => 'Bearer',
-            ],
-        ], 201);
+        return response()->json($this->authenticatedPayload($user), 201);
     }
 
     public function login(AuthLoginRequest $request): JsonResponse
@@ -45,15 +38,7 @@ class AuthController extends Controller
             ], 422);
         }
 
-        $token = $this->issueToken($user);
-
-        return response()->json([
-            'data' => [
-                'user' => $user,
-                'token' => $token,
-                'token_type' => 'Bearer',
-            ],
-        ]);
+        return response()->json($this->authenticatedPayload($user));
     }
 
     public function me(Request $request): JsonResponse
@@ -65,8 +50,10 @@ class AuthController extends Controller
 
     public function logout(Request $request): JsonResponse
     {
-        $request->user()->forceFill([
+        $request->user('api')->forceFill([
             'api_token' => null,
+            'api_token_expires_at' => null,
+            'api_token_last_used_at' => null,
         ])->save();
 
         return response()->json([
@@ -74,12 +61,34 @@ class AuthController extends Controller
         ]);
     }
 
+    public function refresh(Request $request): JsonResponse
+    {
+        return response()->json($this->authenticatedPayload($request->user('api')));
+    }
+
+    private function authenticatedPayload(User $user): array
+    {
+        $token = $this->issueToken($user);
+
+        return [
+            'data' => [
+                'user' => $user->fresh(),
+                'token' => $token,
+                'token_type' => 'Bearer',
+                'expires_at' => $user->api_token_expires_at?->toJSON(),
+            ],
+        ];
+    }
+
     private function issueToken(User $user): string
     {
         $token = Str::random(60);
+        $expiresAt = now()->addMinutes(config('auth.api_token_ttl_minutes'));
 
         $user->forceFill([
-            'api_token' => $token,
+            'api_token' => hash('sha256', $token),
+            'api_token_expires_at' => $expiresAt,
+            'api_token_last_used_at' => null,
         ])->save();
 
         return $token;

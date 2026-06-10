@@ -15,6 +15,12 @@ Route::get('/dictionary', [QuerySearchController::class, 'get_dictionary'])->nam
 Route::get('/search_force', [QuerySearchController::class, 'search'])->name('search_force');
 Route::get('/search_images_force', [QuerySearchController::class, 'search_images'])->name('search_images_force');
 Route::get('/stats', [QuerySearchController::class, 'stats'])->name('stats');
+Route::get('/health/live', fn() => response()->json(['status' => 'up']));
+Route::get('/health/ready', function () {
+    DB::connection('mongodb')->table('metadata')->limit(1)->get();
+
+    return response()->json(['status' => 'ready']);
+});
 Route::get('/get_top_searches', [RedisController::class, 'get_top_searches'])->name('get.top.searches');
 Route::get('/get_search_suggestions', [RedisController::class, 'get_search_suggestions'])->name('get.search.suggestions');
 Route::get('/cringe', [RedisController::class, 'cringe'])->name('cringe');

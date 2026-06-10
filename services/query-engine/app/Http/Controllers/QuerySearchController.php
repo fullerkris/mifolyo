@@ -230,9 +230,21 @@ class QuerySearchController extends Controller
         $hasSuggestions = $request->input('hasSuggestions');
         $originalQuery = $request->input('q');
         $processedQuery = $request->input('processedQuery');
-        $query = $processedQuery;
+        $query = $processedQuery ?: $originalQuery;
         if (!$query) {
             $query = "";
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'query' => $query,
+                    'results' => [],
+                    'meta' => [
+                        'total' => 0,
+                        'page' => 0,
+                        'source' => 'query-engine',
+                    ],
+                ]);
+            }
+
             return view('search-results', [
                 'query' => $query,
                 'results' => [],
@@ -345,6 +357,19 @@ class QuerySearchController extends Controller
         usort($paginatedResults, function ($a, $b) {
             return $b['combinedScore'] <=> $a['combinedScore'];
         });
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'query' => $query,
+                'results' => $paginatedResults,
+                'meta' => [
+                    'total' => $totalResults,
+                    'page' => (int) $page,
+                    'per_page' => $perPage,
+                    'source' => 'query-engine',
+                ],
+            ]);
+        }
 
         // Get top 5 images if it's the first page
         $topImages = [];

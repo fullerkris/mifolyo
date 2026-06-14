@@ -132,7 +132,8 @@ class FeedEndpointsTest extends TestCase
         $token = Str::random(60);
 
         $user->forceFill([
-            'api_token' => $token,
+            'api_token' => hash('sha256', $token),
+            'api_token_expires_at' => now()->addHour(),
         ])->save();
 
         return [

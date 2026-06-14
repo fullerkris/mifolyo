@@ -22,6 +22,7 @@ class BaselineDataSeeder extends Seeder
             ['email' => 'admin@mifolyo.local'],
             [
                 'name' => 'MiFolyo Admin',
+                'username' => 'mifolyo_admin',
                 'password' => Hash::make('password123'),
                 'email_verified_at' => now(),
             ]
@@ -31,6 +32,7 @@ class BaselineDataSeeder extends Seeder
             ['email' => 'moderator@mifolyo.local'],
             [
                 'name' => 'MiFolyo Moderator',
+                'username' => 'mifolyo_mod',
                 'password' => Hash::make('password123'),
                 'email_verified_at' => now(),
             ]
@@ -40,10 +42,15 @@ class BaselineDataSeeder extends Seeder
             ['email' => 'member@mifolyo.local'],
             [
                 'name' => 'MiFolyo Member',
+                'username' => 'mifolyo_member',
                 'password' => Hash::make('password123'),
                 'email_verified_at' => now(),
             ]
         );
+
+        $admin->forceFill(['username' => $admin->username ?? 'mifolyo_admin'])->save();
+        $moderator->forceFill(['username' => $moderator->username ?? 'mifolyo_mod'])->save();
+        $member->forceFill(['username' => $member->username ?? 'mifolyo_member'])->save();
 
         $general = Community::query()->firstOrCreate(
             ['slug' => 'general'],

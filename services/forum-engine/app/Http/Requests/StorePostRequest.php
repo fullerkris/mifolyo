@@ -19,7 +19,7 @@ class StorePostRequest extends FormRequest
             'title' => ['required', 'string', 'max:300'],
             'content_type' => ['sometimes', Rule::in(['text', 'link'])],
             'body' => ['nullable', 'string', 'max:50000', 'required_if:content_type,text'],
-            'url' => ['nullable', 'url', 'max:2048', 'required_if:content_type,link'],
+            'url' => ['nullable', 'url:http,https', 'max:2048', 'required_if:content_type,link'],
             'is_nsfw' => ['sometimes', 'boolean'],
         ];
     }

@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'forum' => [
+        'base_url' => env('FORUM_API_BASE_URL', 'http://localhost:8000'),
+        'timeout_seconds' => (float) env('FORUM_API_TIMEOUT_SECONDS', 3),
+        'default_community_slug' => env('FORUM_DEFAULT_COMMUNITY_SLUG', 'general'),
+    ],
+
 ];

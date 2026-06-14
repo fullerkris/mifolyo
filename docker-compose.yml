@@ -32,6 +32,8 @@ services:
       DB_PASSWORD: mifolyo
       MONGODB_URI: mongodb://mongo:27017
       MONGODB_DATABASE: mifolyo_index
+      FORUM_API_BASE_URL: http://host.docker.internal:8000
+      FORUM_DEFAULT_COMMUNITY_SLUG: general
       CACHE_STORE: redis
       QUEUE_CONNECTION: redis
       REDIS_CLIENT: predis

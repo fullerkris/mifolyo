@@ -6,6 +6,7 @@ use App\Models\Community;
 use App\Models\CommunityMembership;
 use App\Models\Post;
 use App\Models\User;
+use App\Support\SourceUrlNormalizer;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Tests\TestCase;
@@ -70,6 +71,40 @@ class PostEndpointsTest extends TestCase
             ->assertJsonPath('data.community.slug', 'general');
     }
 
+    public function test_link_post_stores_normalized_source_url_fields(): void
+    {
+        $user = User::factory()->create();
+        $community = Community::query()->create([
+            'owner_user_id' => $user->id,
+            'name' => 'Research',
+            'slug' => 'research',
+            'is_private' => false,
+        ]);
+
+        $url = 'https://Example.com:443/articles/source-quality?ref=search#methodology';
+        $source = SourceUrlNormalizer::normalize($url);
+
+        $response = $this->postJson('/api/posts', [
+            'community_slug' => $community->slug,
+            'title' => 'Strong citation trail',
+            'content_type' => 'link',
+            'url' => $url,
+            'body' => 'Useful source for checking the methodology.',
+        ], $this->headersForUser($user));
+
+        $response
+            ->assertCreated()
+            ->assertJsonPath('data.url', $url)
+            ->assertJsonPath('data.source_url', 'https://example.com/articles/source-quality?ref=search')
+            ->assertJsonPath('data.source_domain', 'example.com')
+            ->assertJsonPath('data.source_path', '/articles/source-quality?ref=search');
+
+        $this->assertDatabaseHas('posts', array_merge([
+            'community_id' => $community->id,
+            'slug' => 'strong-citation-trail',
+        ], $source));
+    }
+
     public function test_non_member_cannot_post_to_private_community(): void
     {
         $owner = User::factory()->create();
@@ -103,7 +138,8 @@ class PostEndpointsTest extends TestCase
         $token = Str::random(60);
 
         $user->forceFill([
-            'api_token' => $token,
+            'api_token' => hash('sha256', $token),
+            'api_token_expires_at' => now()->addHour(),
         ])->save();
 
         return [

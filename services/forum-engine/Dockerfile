@@ -5,6 +5,17 @@ WORKDIR /app
 COPY composer.json composer.lock ./
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts
 
+FROM node:22-bookworm-slim AS assets
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci --ignore-scripts
+
+COPY postcss.config.js tailwind.config.js vite.config.js ./
+COPY resources ./resources
+RUN npm run build
+
 FROM php:8.4-cli-bookworm
 
 RUN apt-get update \
@@ -18,6 +29,10 @@ WORKDIR /var/www
 
 COPY . ./
 COPY --from=composer /app/vendor ./vendor
+COPY --from=assets /app/public/build ./public/build
+
+RUN mkdir -p storage/framework/views storage/framework/cache/data storage/framework/sessions bootstrap/cache \
+    && chmod -R ug+rwX storage bootstrap/cache
 
 EXPOSE 8000
 

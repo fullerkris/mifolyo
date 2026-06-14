@@ -7,13 +7,24 @@ use Tests\TestCase;
 
 class ExampleTest extends TestCase
 {
-    /**
-     * A basic test example.
-     */
-    public function test_the_application_returns_a_successful_response(): void
+    public function test_live_health_endpoint_returns_json(): void
     {
-        $response = $this->get('/');
+        $response = $this->getJson('/api/health/live');
 
-        $response->assertStatus(200);
+        $response
+            ->assertOk()
+            ->assertJson(['status' => 'up']);
+    }
+
+    public function test_search_returns_json_for_empty_query(): void
+    {
+        $response = $this->getJson('/api/search');
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('query', '')
+            ->assertJsonPath('results', [])
+            ->assertJsonPath('meta.total', 0)
+            ->assertJsonPath('meta.source', 'query-engine');
     }
 }

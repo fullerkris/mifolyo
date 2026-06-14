@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePostRequest;
 use App\Models\Community;
 use App\Models\Post;
+use App\Support\SourceUrlNormalizer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -37,11 +38,14 @@ class PostController extends Controller
         }
 
         $contentType = $validated['content_type'] ?? 'text';
+        $sourceUrlFields = isset($validated['url'])
+            ? SourceUrlNormalizer::normalize($validated['url'])
+            : [];
 
-        $post = DB::transaction(function () use ($validated, $community, $user, $contentType) {
+        $post = DB::transaction(function () use ($validated, $community, $user, $contentType, $sourceUrlFields) {
             $slug = $this->generateUniqueSlug($community->id, $validated['title']);
 
-            $post = Post::query()->create([
+            $post = Post::query()->create(array_merge([
                 'community_id' => $community->id,
                 'author_user_id' => $user->id,
                 'title' => $validated['title'],
@@ -51,7 +55,7 @@ class PostController extends Controller
                 'content_type' => $contentType,
                 'is_nsfw' => $validated['is_nsfw'] ?? false,
                 'published_at' => now(),
-            ]);
+            ], $sourceUrlFields));
 
             Community::query()->whereKey($community->id)->update([
                 'post_count' => DB::raw('post_count + 1'),

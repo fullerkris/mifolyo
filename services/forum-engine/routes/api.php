@@ -8,6 +8,7 @@ use App\Http\Controllers\HealthController;
 use App\Http\Controllers\ModerationController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ThreadController;
 use App\Http\Controllers\VoteController;
 use Illuminate\Support\Facades\Route;
 
@@ -17,6 +18,7 @@ Route::middleware('throttle:api-read')->group(function () {
     Route::get('/feeds/home', [FeedController::class, 'home']);
     Route::get('/feeds/community/{community:slug}', [FeedController::class, 'community']);
     Route::get('/communities', [CommunityController::class, 'index']);
+    Route::get('/threads/by-url', [ThreadController::class, 'byUrl']);
     Route::get('/posts/{post}/comments', [CommentController::class, 'index']);
     Route::get('/posts/{post}', [PostController::class, 'show']);
 });
@@ -37,6 +39,7 @@ Route::middleware(['auth:api', 'auth.token.fresh', 'throttle:api-write'])->group
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::post('/communities', [CommunityController::class, 'store']);
     Route::post('/communities/{community:slug}/join', [CommunityController::class, 'join']);
+    Route::post('/threads', [ThreadController::class, 'store']);
     Route::post('/posts', [PostController::class, 'store']);
     Route::post('/posts/{post}/comments', [CommentController::class, 'store']);
     Route::post('/votes', [VoteController::class, 'store']);

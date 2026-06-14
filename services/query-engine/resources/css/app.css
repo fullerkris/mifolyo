@@ -174,6 +174,10 @@ footer a {
     @apply text-sm;
 }
 
+.result-actions {
+    @apply flex flex-wrap gap-3 items-center mt-2;
+}
+
 /* BUTTON CONFIG */
 .button-container {
     @apply flex gap-x-4;
@@ -235,6 +239,172 @@ footer a {
     /* Moves shadow inside */
     transform: translate(2px, 2px);
     /* Moves the button down */
+}
+
+.btn-discuss {
+    background-color: var(--url);
+    border-left: solid white 0.2rem;
+    border-top: solid white 0.2rem;
+    border-right: solid #78915d 0.2rem;
+    border-bottom: solid #78915d 0.2rem;
+    box-shadow: 0 0 0 0.2rem black;
+    color: var(--bg);
+    @apply text-sm font-bold drop-shadow-lg px-3 py-1;
+}
+
+.btn-discuss:hover {
+    cursor: pointer;
+    background-color: #a9d66e;
+}
+
+.thread-panel-backdrop {
+    background-color: rgb(0 0 0 / 45%);
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+}
+
+.thread-panel {
+    background-color: var(--bg);
+    border-left: solid var(--button) 0.2rem;
+    box-shadow: -0.4rem 0 0 black;
+    color: var(--text);
+    height: 100vh;
+    max-width: 32rem;
+    overflow-y: auto;
+    padding: 1rem;
+    position: fixed;
+    right: 0;
+    top: 0;
+    transform: translateX(110%);
+    transition: transform 160ms ease-out;
+    width: 36vw;
+    z-index: 9999;
+}
+
+.thread-panel.open {
+    transform: translateX(0);
+}
+
+.thread-panel-header {
+    border-bottom: solid var(--button) 0.1rem;
+    @apply flex justify-between gap-4 pb-3 mb-4;
+}
+
+.thread-panel-kicker {
+    color: var(--url);
+    @apply text-xs uppercase tracking-wide font-bold;
+}
+
+.thread-panel h2 {
+    color: var(--title);
+    @apply text-xl font-bold;
+}
+
+.thread-panel-source {
+    color: var(--orange);
+    overflow-wrap: anywhere;
+    @apply text-sm mt-1;
+}
+
+.thread-panel-close {
+    color: var(--accent-2);
+    @apply text-3xl leading-none px-2;
+}
+
+.thread-panel-close:hover {
+    color: var(--accent);
+    cursor: pointer;
+}
+
+.thread-panel-status {
+    background-color: var(--bg-2);
+    border: solid var(--another) 0.1rem;
+    @apply p-3 mb-4 text-sm;
+}
+
+.thread-panel-status span {
+    color: var(--url);
+}
+
+.thread-panel-list {
+    @apply flex flex-col gap-3;
+}
+
+.thread-panel-thread {
+    background-color: var(--bg-2);
+    border-top: solid var(--buton-down) 0.2rem;
+    border-left: solid var(--buton-down) 0.2rem;
+    border-bottom: solid black 0.2rem;
+    border-right: solid black 0.2rem;
+    @apply p-3;
+}
+
+.thread-panel-thread h3 {
+    color: var(--title);
+    @apply text-base font-bold;
+}
+
+.thread-panel-thread-meta {
+    color: var(--text);
+    @apply text-xs mt-2;
+}
+
+.thread-panel-thread-source {
+    color: var(--url);
+    overflow-wrap: anywhere;
+    @apply text-xs mt-2;
+}
+
+.thread-create-form {
+    background-color: var(--bg-2);
+    border-top: solid var(--button) 0.2rem;
+    border-left: solid var(--button) 0.2rem;
+    border-bottom: solid black 0.2rem;
+    border-right: solid black 0.2rem;
+    @apply mt-4 p-3 flex flex-col gap-2;
+}
+
+.thread-create-form h3 {
+    color: var(--title);
+    @apply text-lg font-bold;
+}
+
+.thread-create-help {
+    color: var(--text);
+    @apply text-xs mb-1;
+}
+
+.thread-create-form label {
+    color: var(--url);
+    @apply text-xs font-bold uppercase tracking-wide;
+}
+
+.thread-create-form label span {
+    color: var(--button);
+    @apply normal-case tracking-normal;
+}
+
+.thread-create-form input,
+.thread-create-form textarea {
+    background-color: var(--text);
+    border: solid black 0.15rem;
+    color: var(--bg);
+    @apply p-2 text-sm w-full;
+}
+
+.thread-create-form textarea {
+    resize: vertical;
+}
+
+.thread-create-form button {
+    @apply mt-2 self-start;
+}
+
+.thread-create-message {
+    color: var(--orange);
+    min-height: 1.25rem;
+    @apply text-sm;
 }
 
 #search-bar {

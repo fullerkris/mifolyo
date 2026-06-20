@@ -2,8 +2,8 @@
 
 MiFolyo is a community-first search and discussion platform. This repository currently contains two major foundations:
 
-- A Moogle-derived search engine stack for crawling, indexing, ranking, and querying web pages.
-- A Laravel forum/community service scaffold for posts, comments, voting, reports, moderation, and search integration.
+- Built off of IonelPopJara's Moogle search engine stack for crawling, indexing, ranking, and querying web pages.
+- A Laravel based forum/community service scaffold for posts, comments, voting, reports, moderation, and search integration.
 
 ## Search Engine Foundation
 

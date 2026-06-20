@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RDF xmlns:r="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:d="http://purl.org/dc/elements/1.1/">
+  <ExternalPage r:about="http://www.example.com/research/?utm_source=newsletter&id=42#section">
+    <d:Title>Example Research</d:Title>
+    <d:Description>A useful reference page.</d:Description>
+    <topic>Top/Reference/Knowledge_Management</topic>
+  </ExternalPage>
+  <ExternalPage r:about="https://shop.example.com/">
+    <d:Title>Shop Example</d:Title>
+    <d:Description>Commercial listing.</d:Description>
+    <topic>Top/Shopping/Books</topic>
+  </ExternalPage>
+  <ExternalPage r:about="not-a-url">
+    <d:Title>Invalid URL</d:Title>
+    <d:Description>Invalid URL record.</d:Description>
+    <topic>Top/Science/Biology</topic>
+  </ExternalPage>
+</RDF>

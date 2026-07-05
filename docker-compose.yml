@@ -164,6 +164,33 @@ services:
     networks:
       - app
 
+  dmoz-importer:
+    build: ./services/dmoz-importer
+    image: mifolyo-dmoz-importer
+    profiles: ["batch"]
+    environment:
+      <<: *moogle-env
+    volumes:
+      - ./data:/data
+    depends_on:
+      - mongo
+    networks:
+      - app
+
+  seed-importer:
+    build: ./services/seed-importer
+    image: mifolyo-seed-importer
+    profiles: ["batch"]
+    environment:
+      <<: *moogle-env
+    volumes:
+      - ./seeds:/seeds:ro
+      - ./data:/data
+    depends_on:
+      - mongo
+    networks:
+      - app
+
 volumes:
   caddy_data:
   caddy_config:

@@ -1,0 +1,41 @@
+{
+  "kind": "Listing",
+  "data": {
+    "children": [
+      {
+        "kind": "t3",
+        "data": {
+          "title": "Useful technical reference",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API?utm_source=reddit",
+          "url_overridden_by_dest": "https://developer.mozilla.org/en-US/docs/Web/API?utm_source=reddit",
+          "score": 142,
+          "subreddit": "programming",
+          "permalink": "/r/programming/comments/abc123/useful_technical_reference/",
+          "is_self": false
+        }
+      },
+      {
+        "kind": "t3",
+        "data": {
+          "title": "Self post should be skipped",
+          "url": "https://old.reddit.com/r/programming/comments/self/self_post/",
+          "score": 200,
+          "subreddit": "programming",
+          "permalink": "/r/programming/comments/self/self_post/",
+          "is_self": true
+        }
+      },
+      {
+        "kind": "t3",
+        "data": {
+          "title": "Low score post should be skipped",
+          "url": "https://example.com/low-score",
+          "score": 3,
+          "subreddit": "programming",
+          "permalink": "/r/programming/comments/low/low_score/",
+          "is_self": false
+        }
+      }
+    ]
+  }
+}

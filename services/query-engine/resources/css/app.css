@@ -597,6 +597,10 @@ footer a {
     grid-column: 1 / -1;
 }
 
+.result-actions {
+    @apply flex flex-wrap gap-3 items-center mt-2;
+}
+
 /* BUTTON CONFIG */
 .button-container {
     @apply flex gap-x-4;

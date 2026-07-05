@@ -1,0 +1,79 @@
+url,category,priority,source,notes
+https://www.wikipedia.org,Reference & Research,1,manual,General reference entry point
+https://archive.org,Reference & Research,1,manual,Digital archive and primary sources
+https://www.britannica.com,Reference & Research,1,manual,Edited general reference
+https://plato.stanford.edu,Reference & Research,1,manual,Academic philosophy encyclopedia
+https://www.wolframalpha.com,Reference & Research,2,manual,Computational reference
+https://www.worldcat.org,Reference & Research,2,manual,Library catalog reference
+https://www.gutenberg.org,Reference & Research,1,manual,Public domain books
+https://www.loc.gov,Reference & Research,1,manual,Library of Congress collections
+https://www.si.edu,Reference & Research,2,manual,Smithsonian research and collections
+https://www.archives.gov,Reference & Research,1,manual,US national archives
+https://ourworldindata.org,Reference & Research,1,manual,Data-driven public research
+https://data.gov,Reference & Research,2,manual,US open data catalog
+https://apnews.com,Journalism & Fact-checking,1,manual,Wire service reporting
+https://www.reuters.com,Journalism & Fact-checking,1,manual,Wire service reporting
+https://www.bbc.com/news,Journalism & Fact-checking,1,manual,International public-interest news
+https://www.propublica.org,Journalism & Fact-checking,1,manual,Investigative journalism
+https://www.poynter.org,Journalism & Fact-checking,1,manual,Journalism ethics and media literacy
+https://www.factcheck.org,Journalism & Fact-checking,1,manual,Political fact-checking
+https://www.snopes.com,Journalism & Fact-checking,1,manual,Claim verification
+https://www.politifact.com,Journalism & Fact-checking,1,manual,Political fact-checking
+https://www.icij.org,Journalism & Fact-checking,2,manual,Investigative journalism consortium
+https://www.cjr.org,Journalism & Fact-checking,2,manual,Journalism criticism and analysis
+https://www.npr.org,Journalism & Fact-checking,2,manual,Public radio journalism
+https://developer.mozilla.org,Technology,1,manual,Web platform reference
+https://web.dev,Technology,1,manual,Modern web development guidance
+https://devdocs.io,Technology,1,manual,Developer documentation index
+https://stackoverflow.com,Technology,2,manual,Programming Q and A
+https://www.freecodecamp.org/news,Technology,2,manual,Programming tutorials
+https://www.w3.org/TR,Technology,1,manual,Web standards specifications
+https://docs.python.org/3,Technology,1,manual,Python official documentation
+https://go.dev/doc,Technology,1,manual,Go official documentation
+https://doc.rust-lang.org/book,Technology,1,manual,Rust official book
+https://react.dev/learn,Technology,1,manual,React official learning docs
+https://laravel.com/docs,Technology,1,manual,Laravel official documentation
+https://www.postgresql.org/docs,Technology,1,manual,PostgreSQL official documentation
+https://www.mongodb.com/docs,Technology,1,manual,MongoDB official documentation
+https://pubmed.ncbi.nlm.nih.gov,Science & Learning,1,manual,Biomedical literature database
+https://www.nih.gov,Science & Learning,1,manual,US medical research institution
+https://www.nasa.gov,Science & Learning,1,manual,Space and science agency
+https://www.noaa.gov,Science & Learning,1,manual,Climate and weather science
+https://www.nature.com,Science & Learning,2,manual,Scientific journal publisher
+https://www.science.org,Science & Learning,2,manual,Scientific journal publisher
+https://www.pnas.org,Science & Learning,2,manual,Peer-reviewed science journal
+https://arxiv.org,Science & Learning,1,manual,Open research preprints
+https://www.quantamagazine.org,Science & Learning,1,manual,Science and math journalism
+https://www.khanacademy.org,Science & Learning,1,manual,Educational lessons
+https://ocw.mit.edu,Science & Learning,1,manual,Open university courseware
+https://www.nngroup.com,Creative & Design,1,manual,UX research and design guidance
+https://www.smashingmagazine.com,Creative & Design,1,manual,Design and frontend articles
+https://alistapart.com,Creative & Design,1,manual,Web design and standards writing
+https://css-tricks.com,Creative & Design,2,manual,CSS and frontend reference
+https://www.awwwards.com,Creative & Design,2,manual,Design inspiration gallery
+https://www.behance.net,Creative & Design,3,manual,Creative portfolio discovery
+https://dribbble.com,Creative & Design,3,manual,Design portfolio discovery
+https://fontsinuse.com,Creative & Design,1,manual,Typography examples
+https://fonts.google.com,Creative & Design,1,manual,Open font library
+https://m3.material.io,Creative & Design,1,manual,Design system guidance
+https://owl.purdue.edu,Writing,1,manual,Academic writing reference
+https://style.mla.org,Writing,1,manual,MLA style guidance
+https://www.chicagomanualofstyle.org,Writing,2,manual,Chicago style guidance
+https://www.grammarly.com/blog,Writing,2,manual,Writing guidance
+https://www.literarydevices.net,Writing,2,manual,Literary term reference
+https://writingcenter.unc.edu/tips-and-tools,Writing,1,manual,University writing resources
+https://www.dailywritingtips.com,Writing,3,manual,Writing tips archive
+https://www.dpreview.com,Photography,1,manual,Camera and photography reference
+https://petapixel.com,Photography,1,manual,Photography news and education
+https://photographylife.com,Photography,1,manual,Photography education
+https://fstoppers.com,Photography,2,manual,Photography tutorials and industry writing
+https://www.the-digital-picture.com,Photography,2,manual,Camera and lens reviews
+https://www.cambridgeincolour.com,Photography,1,manual,Photography technique tutorials
+https://old.reddit.com/r/AskHistorians,General,3,manual_reddit_discovery,Use for outbound URL discovery only
+https://old.reddit.com/r/AskScience,Science & Learning,3,manual_reddit_discovery,Use for outbound URL discovery only
+https://old.reddit.com/r/science,Science & Learning,3,manual_reddit_discovery,Use for outbound URL discovery only
+https://old.reddit.com/r/programming,Technology,3,manual_reddit_discovery,Use for outbound URL discovery only
+https://old.reddit.com/r/webdev,Technology,3,manual_reddit_discovery,Use for outbound URL discovery only
+https://old.reddit.com/r/photography,Photography,3,manual_reddit_discovery,Use for outbound URL discovery only
+https://old.reddit.com/r/Design,Creative & Design,3,manual_reddit_discovery,Use for outbound URL discovery only
+https://old.reddit.com/r/DataIsBeautiful,Reference & Research,3,manual_reddit_discovery,Use for outbound URL discovery only

@@ -8,8 +8,30 @@
     <title>Search Results for "{{ $originalQuery }}"</title>
 </head>
 
-<body>
-    <x-moogle-bar />
+<body class="mifolyo-results-body">
+    <header class="mifolyo-results-header">
+        <a href="/" class="mifolyo-app-icon" aria-label="MiFolyo home">
+            <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
+                <circle cx="12" cy="7" r="3"></circle>
+                <path d="M8 21V12a4 4 0 0 1 8 0v9"></path>
+            </svg>
+        </a>
+        <form class="mifolyo-results-search" action="/api/search" method="GET" role="search">
+            <label for="mifolyo-results-search-input" class="sr-only">Search</label>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="11" cy="11" r="7"></circle>
+                <path d="m16.5 16.5 4 4"></path>
+            </svg>
+            <input id="mifolyo-results-search-input" name="q" type="search" value="{{ $query }}" autocomplete="off">
+            <button type="submit">Search</button>
+        </form>
+        <nav class="mifolyo-results-nav" aria-label="Account actions">
+            <a href="#sign-in">Sign in</a>
+            <a href="#create-account" class="mifolyo-results-create">Create account</a>
+        </nav>
+    </header>
+
+    <main class="mifolyo-results-page">
     <div class="results-counter">
         @php
             $suggestion = '';
@@ -28,7 +50,7 @@
     </div>
 
     <div class="results-container">
-        <div class="pages-container col-span-2">
+        <section class="pages-container" aria-label="Search results">
             @if (count($results) > 0)
                 <ul>
                     @foreach ($results as $res)
@@ -37,12 +59,15 @@
                     @endforeach
                 </ul>
             @else
-                <p>No results found</p>
+                <div class="mifolyo-empty-results">
+                    <h2>No results found</h2>
+                    <p>Try a broader search, or start a community discussion once you have a source URL.</p>
+                </div>
             @endif
-        </div>
+        </section>
         @if ($page != null && $page == 1)
-            <div class="images-container flex flex-col items-center">
-                <h2 class="top-images-text"> {{ ucwords($query) }} </h2>
+            <aside class="images-container" aria-label="Related images">
+                <h2 class="top-images-text">Related images</h2>
                 @foreach ($topImages as $res)
                     <div class="my-2">
                         <x-image-container url="{{ $res->_id }}" alt="{{ $res->alt }}"
@@ -50,12 +75,13 @@
                             text="{{ $res->page_text }}" />
                     </div>
                 @endforeach
-            </div>
+            </aside>
         @endif
-        <div class="flex flex-col justify-center items-center">
+        <div class="mifolyo-results-pagination">
             <x-pagination-bar totalResults="{{ $total }}" />
         </div>
     </div>
+    </main>
 
     <div id="thread-panel-backdrop" class="thread-panel-backdrop hidden" data-thread-panel-close></div>
     <aside id="thread-panel" class="thread-panel" aria-hidden="true" aria-labelledby="thread-panel-title">
@@ -88,16 +114,7 @@
         </form>
     </aside>
 
-    <!-- Footer -->
-    <footer>
-        <p> <a href="https://github.com/IonelPopJara/search-engine">Support the project!</a></p>
-        <p>
-            <a href="https://x.com/ionelalexandr12">Twitter</a> -
-            <a href="https://www.youtube.com/multselmesco">YouTube</a> -
-            <a href="https://github.com/IonelPopJara">GitHub</a>
-        </p>
-        <p id="copyright">©2025</p>
-    </footer>
+    <footer class="mifolyo-results-footer">MiFolyo search is better with community context.</footer>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const threadsEndpoint = '/api/threads/by-url';
@@ -288,6 +305,11 @@
 
             document.querySelectorAll('[data-discuss-url]').forEach((button) => {
                 button.addEventListener('click', () => {
+                    if (window.matchMedia('(max-width: 768px)').matches && button.dataset.discussPage) {
+                        window.location.href = button.dataset.discussPage;
+                        return;
+                    }
+
                     loadThreads(button.dataset.discussUrl, button.dataset.discussTitle);
                 });
             });

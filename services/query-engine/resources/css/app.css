@@ -58,6 +58,294 @@ body {
     background-color: var(--bg-2);
 }
 
+.mifolyo-home-body {
+    background: #f7f2eb;
+    color: #1f1f1f;
+    min-height: 100vh;
+}
+
+.mifolyo-home {
+    min-height: 100vh;
+    overflow: hidden;
+    padding: 1.4rem 2.5rem 4rem;
+}
+
+.mifolyo-home-nav {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    gap: 1.5rem;
+}
+
+.mifolyo-home-nav a {
+    color: #1f1f1f;
+    font-size: 1rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.mifolyo-home-nav-left,
+.mifolyo-home-nav-actions {
+    align-items: center;
+    display: flex;
+    gap: 1.7rem;
+}
+
+.mifolyo-app-icon {
+    align-items: center;
+    border: 1.5px solid #f35300;
+    border-radius: 0.8rem;
+    display: inline-flex;
+    height: 2.9rem;
+    justify-content: center;
+    width: 2.9rem;
+}
+
+.mifolyo-app-icon svg,
+.mifolyo-theme-button svg,
+.mifolyo-search-card svg {
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 2;
+}
+
+.mifolyo-app-icon svg {
+    color: #f35300;
+    height: 1.55rem;
+    width: 1.55rem;
+}
+
+.mifolyo-theme-button {
+    color: #66625b;
+    cursor: pointer;
+}
+
+.mifolyo-theme-button svg {
+    height: 1.6rem;
+    width: 1.6rem;
+}
+
+.mifolyo-secondary-button,
+.mifolyo-primary-button {
+    border-radius: 0.75rem;
+    display: inline-flex;
+    padding: 0.78rem 1.45rem;
+}
+
+.mifolyo-secondary-button {
+    background: #fffefa;
+    border: 1px solid #d8d0c6;
+    box-shadow: 0 0.05rem 0.15rem rgb(0 0 0 / 5%);
+}
+
+.mifolyo-primary-button {
+    background: #f35300;
+    color: #ffffff !important;
+}
+
+.mifolyo-hero {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    padding-top: 5.2rem;
+    text-align: center;
+}
+
+.mifolyo-wordmark svg {
+    height: auto;
+    width: min(16rem, 70vw);
+}
+
+.mifolyo-mark-orange,
+.mifolyo-mark-blue {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 8;
+}
+
+.mifolyo-mark-orange {
+    stroke: #ed6a00;
+}
+
+.mifolyo-mark-blue {
+    stroke: #2f66d5;
+}
+
+.mifolyo-wordmark h1 {
+    color: #ed6a00;
+    font-size: clamp(2rem, 5vw, 2.8rem);
+    font-weight: 800;
+    letter-spacing: -0.05em;
+    line-height: 0.75;
+}
+
+.mifolyo-home-tagline {
+    font-size: clamp(1.2rem, 3vw, 1.45rem);
+    font-weight: 800;
+    margin-top: 2.1rem;
+}
+
+.mifolyo-home-tagline span {
+    color: #f35300;
+}
+
+.mifolyo-home-tagline strong {
+    color: #2f66f2;
+}
+
+.mifolyo-search-card {
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #ded5ca;
+    border-radius: 999rem;
+    box-shadow: 0 0.15rem 0.4rem rgb(0 0 0 / 8%);
+    display: flex;
+    gap: 1rem;
+    margin-top: 2.65rem;
+    max-width: 52rem;
+    padding: 0.35rem 0.4rem 0.35rem 1.7rem;
+    width: 100%;
+}
+
+.mifolyo-search-card .mifolyo-search-icon {
+    color: #6c6c6c;
+    flex: 0 0 auto;
+    height: 1.55rem;
+    width: 1.55rem;
+}
+
+.mifolyo-search-card input {
+    color: #2b2b2b;
+    flex: 1;
+    font-size: clamp(1.05rem, 3vw, 1.25rem);
+    min-width: 0;
+    outline: none;
+    padding: 1rem 0;
+}
+
+.mifolyo-search-card input::placeholder {
+    color: #2f2f2f;
+    opacity: 0.95;
+}
+
+.mifolyo-search-card button {
+    align-items: center;
+    background: #f35300;
+    border-radius: 999rem;
+    color: #ffffff;
+    display: inline-flex;
+    flex: 0 0 auto;
+    height: 3.6rem;
+    justify-content: center;
+    width: 3.6rem;
+}
+
+.mifolyo-search-card button svg {
+    height: 1.5rem;
+    width: 1.5rem;
+}
+
+.mifolyo-mode-switch {
+    background: #f9f7f3;
+    border: 1px solid #d9d2c9;
+    border-radius: 2rem;
+    box-shadow: 0 0.75rem 2rem rgb(0 0 0 / 12%);
+    margin-top: -0.15rem;
+    max-width: 20rem;
+    overflow: hidden;
+    width: 100%;
+}
+
+.mifolyo-mode-tabs,
+.mifolyo-mode-bottom {
+    align-items: center;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    padding: 0.38rem;
+}
+
+.mifolyo-mode-tabs span,
+.mifolyo-mode-tabs a,
+.mifolyo-mode-bottom span {
+    color: #6f6a63;
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.mifolyo-mode-tabs .active,
+.mifolyo-mode-bottom .active {
+    background: #f35300;
+    border-radius: 1.4rem;
+    color: #ffffff;
+    padding: 0.58rem 0.8rem;
+}
+
+.mifolyo-mode-bottom {
+    border-top: 1px solid #ded8cf;
+    grid-template-columns: 1fr 1fr;
+}
+
+.mifolyo-mode-bottom span:last-child {
+    color: #2f66f2;
+}
+
+.mifolyo-home-copy {
+    margin: 5rem auto 0;
+    max-width: 42rem;
+    text-align: center;
+}
+
+.mifolyo-home-copy h2 {
+    color: #f35300;
+    font-size: 1.5rem;
+    font-weight: 800;
+}
+
+.mifolyo-home-copy p {
+    color: #3d3833;
+    font-size: 1rem;
+    line-height: 1.7;
+    margin-top: 0.6rem;
+}
+
+@media (max-width: 760px) {
+    .mifolyo-home {
+        padding: 1rem 1rem 3rem;
+    }
+
+    .mifolyo-home-nav,
+    .mifolyo-home-nav-left,
+    .mifolyo-home-nav-actions {
+        gap: 0.8rem;
+    }
+
+    .mifolyo-home-nav {
+        align-items: flex-start;
+    }
+
+    .mifolyo-home-nav-left a:not(.mifolyo-app-icon),
+    .mifolyo-theme-button {
+        display: none;
+    }
+
+    .mifolyo-secondary-button,
+    .mifolyo-primary-button {
+        padding: 0.65rem 0.8rem;
+    }
+
+    .mifolyo-hero {
+        padding-top: 4rem;
+    }
+
+    .mifolyo-search-card {
+        padding-left: 1rem;
+    }
+}
+
 footer {
     background-color: var(--bg);
     @apply mt-auto py-4 text-center text-sm w-full;
@@ -76,23 +364,107 @@ footer a {
 }
 
 /* SEARCH RESULTS STYLES */
+.mifolyo-results-body {
+    background: #f7f2eb;
+    color: #1f1f1f;
+    min-height: 100vh;
+}
+
+.mifolyo-results-header {
+    align-items: center;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: auto minmax(12rem, 42rem) auto;
+    padding: 1.45rem 2.5rem 1rem;
+}
+
+.mifolyo-results-search {
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #ded5ca;
+    border-radius: 999rem;
+    box-shadow: 0 0.1rem 0.3rem rgb(0 0 0 / 7%);
+    display: flex;
+    gap: 0.8rem;
+    padding: 0.28rem 0.35rem 0.28rem 1.1rem;
+}
+
+.mifolyo-results-search svg {
+    color: #77716a;
+    fill: none;
+    height: 1.25rem;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 2;
+    width: 1.25rem;
+}
+
+.mifolyo-results-search input {
+    color: #2b2b2b;
+    flex: 1;
+    font-size: 1rem;
+    min-width: 0;
+    outline: none;
+    padding: 0.72rem 0;
+}
+
+.mifolyo-results-search button {
+    background: #f35300;
+    border-radius: 999rem;
+    color: #ffffff;
+    font-weight: 800;
+    padding: 0.72rem 1.25rem;
+}
+
+.mifolyo-results-nav {
+    align-items: center;
+    display: flex;
+    gap: 0.8rem;
+    justify-content: flex-end;
+}
+
+.mifolyo-results-nav a {
+    color: #1f1f1f;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.mifolyo-results-create {
+    background: #f35300;
+    border-radius: 0.75rem;
+    color: #ffffff !important;
+    padding: 0.72rem 1rem;
+}
+
+.mifolyo-results-page {
+    padding: 0 2.5rem 3rem;
+}
+
 #suggestion-link {
-    color: var(--title);
+    color: #2f66f2;
     @apply underline;
 }
 
 #suggestion {
-    color: var(--text);
+    color: #f35300;
     @apply font-bold;
 }
 
 .results-counter {
-    color: var(--accent-2);
-    @apply mx-10 my-3;
+    color: #4a433b;
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin: 1rem auto 1.25rem;
+    max-width: 72rem;
 }
 
 .results-container {
-    @apply flex justify-center grid grid-cols-3 px-50;
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: minmax(0, 1fr) minmax(16rem, 22rem);
+    margin: 0 auto;
+    max-width: 72rem;
 }
 
 .results-images-container {
@@ -101,17 +473,23 @@ footer a {
 }
 
 .pages-container {
-    @apply pr-5;
+    min-width: 0;
 }
 
 .images-container {
-    border-left: solid var(--button) 0.1rem;
-    @apply w-100 pl-5 h-full;
+    align-self: start;
+    background: #fffefa;
+    border: 1px solid #ded5ca;
+    border-radius: 1.4rem;
+    box-shadow: 0 0.15rem 0.45rem rgb(0 0 0 / 6%);
+    padding: 1rem;
 }
 
 .top-images-text {
-    color: var(--accent-2);
-    @apply text-3xl mb-5;
+    color: #f35300;
+    font-size: 1rem;
+    font-weight: 900;
+    margin-bottom: 0.8rem;
 }
 
 .image {
@@ -143,39 +521,80 @@ footer a {
 
 /* RESULT STYLES */
 .result-container {
-    background-color: var(--bg);
-    border-top: solid var(--buton-down) 0.2rem;
-    border-left: solid var(--buton-down) 0.2rem;
-    border-bottom: solid black 0.2rem;
-    border-right: solid black 0.2rem;
-    color: var(--text);
-    @apply mb-5 p-2;
+    background: #fffefa;
+    border: 1px solid #ded5ca;
+    border-radius: 1.35rem;
+    box-shadow: 0 0.15rem 0.45rem rgb(0 0 0 / 6%);
+    color: #28221d;
+    list-style: none;
+    margin-bottom: 1rem;
+    padding: 1.05rem;
 }
 
 .result-container:hover {
-    background-color: var(--bg-2);
+    border-color: #f0b28c;
+    box-shadow: 0 0.35rem 1rem rgb(243 83 0 / 10%);
+}
+
+.result-card-main {
+    display: block;
+    text-decoration: none;
 }
 
 .result-title {
-    color: var(--title);
-    @apply underline visited:text-purple-600 text-lg;
+    color: #1f1f1f;
+    font-size: 1.18rem;
+    font-weight: 900;
+    line-height: 1.25;
+    margin-top: 0.3rem;
 }
 
 .result-title:hover {
-    color: var(--blue);
+    color: #2f66f2;
 }
 
 .result-text {
-    @apply text-sm;
+    color: #4a433b;
+    font-size: 0.95rem;
+    line-height: 1.55;
+    margin-top: 0.55rem;
 }
 
 .result-url {
-    color: var(--url);
-    @apply text-sm;
+    color: #2f66f2;
+    font-size: 0.86rem;
+    font-weight: 800;
+    overflow-wrap: anywhere;
 }
 
 .result-actions {
-    @apply flex flex-wrap gap-3 items-center mt-2;
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    margin-top: 0.9rem;
+}
+
+.mifolyo-empty-results {
+    background: #fffefa;
+    border: 1px solid #ded5ca;
+    border-radius: 1.35rem;
+    padding: 1.5rem;
+}
+
+.mifolyo-empty-results h2 {
+    color: #f35300;
+    font-size: 1.4rem;
+    font-weight: 900;
+}
+
+.mifolyo-empty-results p {
+    color: #4a433b;
+    margin-top: 0.5rem;
+}
+
+.mifolyo-results-pagination {
+    grid-column: 1 / -1;
 }
 
 /* BUTTON CONFIG */
@@ -213,19 +632,19 @@ footer a {
 }
 
 .btn-connection {
-    background-color: var(--accent-2);
-    border-left: solid white 0.2rem;
-    border-top: solid white 0.2rem;
-    border-right: solid var(--accent) 0.2rem;
-    border-bottom: solid var(--accent) 0.2rem;
-    box-shadow: 0 0 0 0.2rem black;
-    color: var(--bg);
-    @apply text-sm font-bold drop-shadow-lg px-2;
+    background-color: #f1ede6;
+    border: 1px solid #d9d0c5;
+    border-radius: 999rem;
+    color: #2f66f2;
+    font-size: 0.9rem;
+    font-weight: 800;
+    padding: 0.48rem 0.85rem;
+    text-decoration: none;
 }
 
 .btn-connection:hover {
     cursor: pointer;
-    background-color: var(--accent);
+    background-color: #e7dfd3;
 }
 
 .btn-connection:active {
@@ -242,19 +661,43 @@ footer a {
 }
 
 .btn-discuss {
-    background-color: var(--url);
-    border-left: solid white 0.2rem;
-    border-top: solid white 0.2rem;
-    border-right: solid #78915d 0.2rem;
-    border-bottom: solid #78915d 0.2rem;
-    box-shadow: 0 0 0 0.2rem black;
-    color: var(--bg);
-    @apply text-sm font-bold drop-shadow-lg px-3 py-1;
+    background-color: #f35300;
+    border-radius: 999rem;
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: 900;
+    padding: 0.52rem 0.95rem;
 }
 
 .btn-discuss:hover {
     cursor: pointer;
-    background-color: #a9d66e;
+    background-color: #d94a00;
+}
+
+.mifolyo-results-footer {
+    color: #6d665e;
+    font-size: 0.9rem;
+    padding: 2rem;
+    text-align: center;
+}
+
+@media (max-width: 860px) {
+    .mifolyo-results-header {
+        grid-template-columns: auto 1fr;
+        padding: 1rem;
+    }
+
+    .mifolyo-results-nav {
+        display: none;
+    }
+
+    .mifolyo-results-page {
+        padding: 0 1rem 2rem;
+    }
+
+    .results-container {
+        grid-template-columns: 1fr;
+    }
 }
 
 .thread-panel-backdrop {
@@ -407,6 +850,54 @@ footer a {
     @apply text-sm;
 }
 
+.discussion-page {
+    color: var(--text);
+    min-height: 100vh;
+    @apply px-5 py-6 md:px-10;
+}
+
+.discussion-page-logo {
+    color: var(--accent-2);
+    text-shadow: 0.1rem 0.1rem 0 black;
+    @apply inline-block text-3xl font-bold mb-6;
+}
+
+.discussion-page-hero {
+    background-color: var(--bg);
+    border-top: solid var(--button) 0.2rem;
+    border-left: solid var(--button) 0.2rem;
+    border-bottom: solid black 0.2rem;
+    border-right: solid black 0.2rem;
+    @apply p-4 mb-6;
+}
+
+.discussion-page-hero h1 {
+    color: var(--title);
+    overflow-wrap: anywhere;
+    @apply text-2xl font-bold my-2;
+}
+
+.discussion-page-source {
+    color: var(--url);
+    overflow-wrap: anywhere;
+    @apply text-sm underline;
+}
+
+.discussion-page-grid {
+    @apply grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_24rem] gap-5;
+}
+
+.discussion-page-thread h2 {
+    color: var(--title);
+    @apply text-lg font-bold;
+}
+
+.discussion-page-thread-body {
+    color: var(--text);
+    white-space: pre-wrap;
+    @apply text-sm mt-3;
+}
+
 #search-bar {
     background-color: var(--text);
     color: var(--bg);
@@ -509,41 +1000,4 @@ footer a {
 .moogle-page.inactive p {
     text-decoration: underline;
     @apply text-blue-400;
-}
-
-/* I STOLE THIS FROM https://github.com/Kaweees/kaweees.github.io/commit/2f0a2b45b3c98f97f827d592e605d812f73c0ba3 */
-
-body::before {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    background: linear-gradient(rgba(20, 20, 20, 0) 66%, rgba(0, 0, 0, 0.15) 33%);
-    background-size: 100% 5px;
-    z-index: 9999;
-    pointer-events: none;
-    animation: scanlines-anim 1s linear infinite;
-}
-
-@keyframes scanlines-anim {
-
-    0% {
-
-
-        background-position: 0px 0px;
-
-
-    }
-
-    100% {
-        background-position: 0px 15px;
-    }
-}
-
-@media only screen and (orientation: portrait) {
-    body::before {
-        background-size: 100% 4px;
-    }
 }

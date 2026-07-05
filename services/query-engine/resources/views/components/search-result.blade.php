@@ -1,19 +1,17 @@
-<li class="result-container relative">
+<li class="result-container">
     @php
         $discussionUrl = Str::startsWith($url, ['http://', 'https://']) ? $url : 'https://' . $url;
+        $discussionPage = '/discussions?url=' . urlencode($discussionUrl) . '&title=' . urlencode($title);
     @endphp
-    <!-- Full clickable area -->
-    <div class="flex flex-col">
-        <a href="{{ $discussionUrl }}" class="mb-2">
-            <div class="flex justify-between items-start">
-                <h3 class="result-title">{{ $title }}</h3>
-            </div>
-            <p class="result-text mt-2">{{ Str::limit($text, 200) }}</p>
-            <p class="result-url text-sm text-gray-500 mt-1">{{ $url }}</p>
+    <div class="result-card-content">
+        <a href="{{ $discussionUrl }}" class="result-card-main">
+            <p class="result-url">{{ $url }}</p>
+            <h2 class="result-title">{{ $title }}</h2>
+            <p class="result-text">{{ Str::limit($text, 220) }}</p>
         </a>
         <div class="result-actions">
             <button type="button" class="btn-discuss" data-discuss-url="{{ $discussionUrl }}"
-                data-discuss-title="{{ $title }}">
+                data-discuss-title="{{ $title }}" data-discuss-page="{{ $discussionPage }}">
                 Discuss
             </button>
             <a href="/api/page-connections/?url={{ urlencode($url) }}" target="_blank" class="btn-connection"

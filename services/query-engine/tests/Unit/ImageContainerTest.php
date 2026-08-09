@@ -30,6 +30,8 @@ class ImageContainerTest extends TestCase
 
     public function test_random_article_link_preserves_absolute_url_and_supports_legacy_url(): void
     {
+        $this->withoutVite();
+
         foreach (['https://example.com/page', 'http://example.com/page', 'example.com/page'] as $url) {
             $html = view('cringe-results', [
                 'totalSearches' => 0,

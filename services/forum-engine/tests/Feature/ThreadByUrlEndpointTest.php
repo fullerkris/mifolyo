@@ -36,6 +36,8 @@ class ThreadByUrlEndpointTest extends TestCase
             ->assertJsonPath('data.title', 'Can we trust this methodology?')
             ->assertJsonPath('data.slug', 'can-we-trust-this-methodology')
             ->assertJsonPath('data.source_url', 'https://example.com/articles/source-quality?ref=search')
+            ->assertJsonPath('data.source_url_hash', $source['source_url_hash'])
+            ->assertJsonPath('data.source_url_canonicalization_version', 1)
             ->assertJsonPath('data.source_domain', 'example.com')
             ->assertJsonPath('data.source_path', '/articles/source-quality?ref=search')
             ->assertJsonPath('data.author.username', $author->username)
@@ -124,12 +126,20 @@ class ThreadByUrlEndpointTest extends TestCase
             'different-url-thread',
             SourceUrlNormalizer::normalize('https://example.com/other-page')
         );
+        $this->makePost($community, $author, 'legacy-version-thread', $source, [
+            'source_url_canonicalization_version' => null,
+        ]);
+        $this->makePost($community, $author, 'hash-collision-thread', $source, [
+            'source_url' => 'https://example.com/not-the-canonical-source',
+        ]);
 
         $response = $this->getJson('/api/threads/by-url?url='.urlencode('https://example.com/articles/source-quality?ref=search#different'));
 
         $response
             ->assertOk()
             ->assertJsonPath('meta.source_url', 'https://example.com/articles/source-quality?ref=search')
+            ->assertJsonPath('meta.source_url_hash', $source['source_url_hash'])
+            ->assertJsonPath('meta.source_url_canonicalization_version', 1)
             ->assertJsonPath('meta.source_domain', 'example.com')
             ->assertJsonPath('meta.source_path', '/articles/source-quality?ref=search')
             ->assertJsonPath('meta.total', 2)
@@ -186,6 +196,26 @@ class ThreadByUrlEndpointTest extends TestCase
             ->assertJsonValidationErrors(['url']);
     }
 
+    public function test_thread_endpoints_return_v1_validation_errors_instead_of_server_errors(): void
+    {
+        $author = User::factory()->create();
+        $community = $this->makeCommunity($author, isPrivate: false);
+
+        $this->postJson('/api/threads', [
+            'community_slug' => $community->slug,
+            'title' => 'Invalid source URL',
+            'source_url' => 'https://faß.de/',
+        ], $this->headersForUser($author))
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['source_url'])
+            ->assertJsonPath('errors.source_url.0', 'non_ascii_host_v1');
+
+        $this->getJson('/api/threads/by-url?url='.urlencode('https://example.com./'))
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['url'])
+            ->assertJsonPath('errors.url.0', 'invalid_host');
+    }
+
     private function makeCommunity(User $owner, bool $isPrivate): Community
     {
         return Community::query()->create([
@@ -197,7 +227,7 @@ class ThreadByUrlEndpointTest extends TestCase
     }
 
     /**
-     * @param array{source_url: string, source_url_hash: string, source_domain: string, source_path: string} $source
+     * @param  array{source_url: string, source_url_hash: string, source_domain: string, source_path: string, source_url_canonicalization_version: int}  $source
      */
     private function makePost(Community $community, User $author, string $slug, array $source, array $overrides = []): Post
     {

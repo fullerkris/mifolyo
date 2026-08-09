@@ -57,3 +57,73 @@ The recommended way to run the Query Engine is with Docker. This ensures all dep
 
 ### Without Docker
 The process of running the Query Engine without Docker is a bit more involved, as it requires setting up the environment manually. I will update this README with the necessary steps to run the Query Engine without Docker in the future. For now, please refer to the official Laravel documentation for setting up a Laravel application locally: [Laravel Installation](https://laravel.com/docs/installation).
+
+## Frontend Dependency Security
+
+The query image uses `npm ci` so `package-lock.json` is the deterministic input
+to every frontend build. Do not replace it with `npm install` in the Dockerfile
+or regenerate the lockfile without rerunning the audit and production build.
+The Docker context excludes `.env` and every `.env.*` file except
+`.env.example`; environment-specific credentials and endpoints must enter at
+runtime, never through an image layer.
+
+### Remediation baseline
+
+The 2026-08-09 remediation reduced the runtime-image npm audit from 10
+vulnerable packages (2 critical, 7 high, and 1 moderate) to zero. Direct
+dependency floors remain within their existing major versions, while the
+lockfile resolves the following patched graph:
+
+| Package | Resolved version | Security result |
+|---|---:|---|
+| `axios` | `1.19.0` | Replaces versions affected by SSRF, proxy/header leakage, prototype-pollution gadgets, and denial of service advisories |
+| `follow-redirects` | `1.16.0` | Fixes cross-domain authentication-header leakage |
+| `form-data` | `4.0.6` | Fixes weak multipart-boundary generation and CRLF injection |
+| `concurrently` | `9.2.4` | Removes the vulnerable Lodash dependency and selects patched `shell-quote` |
+| `shell-quote` | `1.9.0` | Fixes command injection and quadratic-complexity denial of service |
+| `vite` | `6.4.3` | Fixes development-server file-read and filesystem-deny bypass advisories |
+| `postcss` | `8.5.26` | Fixes source-map path traversal, arbitrary file reads, and CSS output XSS |
+| `rollup` | `4.62.4` | Fixes arbitrary file writes through path traversal |
+| `nanoid` | `3.3.18` | Fixes non-terminating custom generator cases |
+| `picomatch` | `2.3.2` and `4.0.5` | Fixes regular-expression denial of service and unsafe glob matching |
+
+This is a point-in-time baseline, not a permanent guarantee. The npm advisory
+database changes independently of the repository, so rerun the gate for every
+dependency update and immediately before image promotion.
+
+### Verification gate
+
+With Node.js available, validate the source dependency graph and production
+assets from this directory:
+
+```bash
+npm ci
+npm audit --audit-level=low
+npm run build
+```
+
+From the repository root, rebuild and audit the exact isolated-test image:
+
+```bash
+docker compose --project-name mifolyo-v1-baseline-test \
+  --file scripts/docker/v1-baseline.compose.yml \
+  build query-engine
+docker run --rm --entrypoint npm \
+  mifolyo-v1-baseline-test-query-engine:local \
+  audit --audit-level=low
+```
+
+Both audits must report `found 0 vulnerabilities`, the Vite production build
+must complete, and the rebuilt application must pass `/api/health/ready` before
+promotion. Do not use `npm audit fix --force`; review major-version changes
+separately and validate their application behavior.
+
+### Non-root asset handling
+
+The image builds frontend assets before switching to `query-engine-user`, then
+recursively assigns `public/` to `query-engine-user:www-data` and pre-creates
+`/assets` with the same ownership. In the isolated stack, `query-assets` runs as
+`1000:33` with no network and copies that output into the shared `query-public`
+volume. Caddy mounts the volume read-only. This ownership transition is
+required for repeatable startup from a fresh volume; do not solve asset
+permission failures by running the copier as root.

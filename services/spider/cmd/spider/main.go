@@ -25,7 +25,7 @@ func getEnv(key, fallback string) string {
 func main() {
 	// Parse flags
 	maxConcurrency := flag.Int("max-concurrency", 10, "Maximum number of concurrent workers")
-	maxPages := flag.Int("max-pages", 100, "Maximum number of pages per batch")
+	maxPages := flag.Int("max-pages", 100, "Maximum number of page attempts per batch")
 	once := flag.Bool("once", false, "Exit after one crawl batch")
 	flag.Parse()
 
@@ -34,20 +34,31 @@ func main() {
 	redisPort := getEnv("REDIS_PORT", "6379")
 	redisPassword := getEnv("REDIS_PASSWORD", "")
 	redisDB := getEnv("REDIS_DB", "0")
-	startingURL := getEnv("STARTING_URL", "https://en.wikipedia.org/wiki/Kamen_Rider")
+	startingURL := getEnv("STARTING_URL", "")
 	userAgent := getEnv("USER_AGENT", utils.DefaultUserAgent)
+	crawlQueueKey := getEnv("CRAWL_QUEUE_KEY", utils.CrawlQueueKeyV1)
+	crawlURLsKey := getEnv("CRAWL_URLS_KEY", utils.CrawlURLsKeyV1)
 
 	// Connect to Redis
-	db := &database.Database{}
+	db := &database.Database{
+		CrawlQueueKey: crawlQueueKey,
+		CrawlURLsKey:  crawlURLsKey,
+	}
 	err := db.ConnectToRedis(redisHost, redisPort, redisPassword, redisDB)
 	if err != nil {
 		log.Printf("Error: %v\n", err)
 		return
 	}
 
-	// Add an entry to the message queue with score 0 (high priority)
-	db.PushURL(startingURL, 0)
-	log.Printf("PUSH %v\n", startingURL)
+	// STARTING_URL is an explicit development override. Production/default
+	// startup consumes the versioned queue populated by the crawl feeder.
+	if startingURL != "" {
+		if err := db.PushURL(startingURL, 0); err != nil {
+			log.Printf("Could not enqueue STARTING_URL: %v\n", err)
+			return
+		}
+		log.Printf("PUSH %v\n", startingURL)
+	}
 
 	// Instantiate controllers
 	pageController := controllers.NewPageController(db)
@@ -113,6 +124,7 @@ func main() {
 		crawler.Outlinks = make(map[string]*pages.PageNode)
 		crawler.Backlinks = make(map[string]*pages.PageNode)
 		crawler.Images = make(map[string][]*pages.Image)
+		crawler.PageAttempts = 0
 
 		if *once {
 			log.Printf("One crawl batch completed. Exiting...\n")

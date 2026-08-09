@@ -57,7 +57,7 @@
 
             <!-- Random Article -->
             @if ($randomPage != null)
-                <a href="https://{{ $randomPage['url'] }}" target="_blank" rel="noopener noreferrer"
+                <a href="{{ Str::startsWith($randomPage['url'], ['http://', 'https://']) ? $randomPage['url'] : 'https://' . $randomPage['url'] }}" target="_blank" rel="noopener noreferrer"
                     class="w-3/5 p-4 rounded-xl shadow-lg border transition hover:shadow-xl hover:underline"
                     style="background-color: var(--bg-2); border-color: var(--url); text-decoration: none;">
                     <div>

@@ -16,7 +16,8 @@ type CrawlerConfig struct {
 	Outlinks       map[string]*pages.PageNode // Discovered outlinks
 	Backlinks      map[string]*pages.PageNode // Discovered backlinks
 	Images         map[string][]*pages.Image
-	MaxPages       int    // Max discovered pages
+	MaxPages       int    // Maximum page attempts in one batch
+	PageAttempts   int    // Page attempts reserved in the current batch
 	MaxConcurrency int    // Maximum concurrent workers in the pool
 	UserAgent      string // User agent sent with HTTP crawl requests
 }
@@ -28,26 +29,25 @@ func (crawcfg *CrawlerConfig) lenPages() int {
 	return len(crawcfg.Pages)
 }
 
-func (crawcfg *CrawlerConfig) maxPagesReached() bool {
+func (crawcfg *CrawlerConfig) reservePageAttempt() bool {
 	crawcfg.Mu.Lock()
 	defer crawcfg.Mu.Unlock()
 
-	if len(crawcfg.Pages) >= crawcfg.MaxPages {
-		// Can't add more pages because max pages has been reached
-		return true
+	if crawcfg.PageAttempts >= crawcfg.MaxPages {
+		return false
 	}
 
-	// Max pages has not been reached
-	return false
+	crawcfg.PageAttempts++
+	return true
 }
 
 func (crawcfg *CrawlerConfig) addPage(page *pages.Page) error {
 	crawcfg.Mu.Lock()
 	defer crawcfg.Mu.Unlock()
 
-	normalizedURL := page.NormalizedURL
+	canonicalURL := page.NormalizedURL
 
-	if _, visited := crawcfg.Pages[normalizedURL]; visited {
+	if _, visited := crawcfg.Pages[canonicalURL]; visited {
 		return fmt.Errorf("Page already visited")
 	}
 
@@ -56,54 +56,67 @@ func (crawcfg *CrawlerConfig) addPage(page *pages.Page) error {
 		return fmt.Errorf("Max pages reached")
 	}
 
-	crawcfg.Pages[normalizedURL] = page
+	crawcfg.Pages[canonicalURL] = page
 	return nil
 }
 
-func (crawcfg *CrawlerConfig) UpdateLinks(normalizedCurrentURL string, outgoingLinks []string) {
+func (crawcfg *CrawlerConfig) UpdateLinks(canonicalCurrentURL string, outgoingLinks []string) {
+	currentIdentity, err := utils.CanonicalizeURLV1(canonicalCurrentURL)
+	if err != nil {
+		return
+	}
+	canonicalCurrentURL = currentIdentity.CanonicalURL
+
 	crawcfg.Mu.Lock()
 	defer crawcfg.Mu.Unlock()
 
-	crawcfg.Outlinks[normalizedCurrentURL] = pages.CreatePageNode(normalizedCurrentURL)
+	crawcfg.Outlinks[canonicalCurrentURL] = pages.CreatePageNode(canonicalCurrentURL)
 	for _, link := range outgoingLinks {
-		if utils.IsValidURL(link) {
-			// normalize url
-			normalizedOutgoingURL, err := utils.NormalizeURL(link)
-			if err != nil {
-				continue
-			}
-
-			if normalizedOutgoingURL == normalizedCurrentURL {
-				continue
-			}
-
-			// If the entry does not exist
-			if _, exists := crawcfg.Backlinks[normalizedOutgoingURL]; !exists {
-				crawcfg.Backlinks[normalizedOutgoingURL] = pages.CreatePageNode(normalizedOutgoingURL)
-			}
-
-			crawcfg.Backlinks[normalizedOutgoingURL].AppendLink(normalizedCurrentURL)
-			crawcfg.Outlinks[normalizedCurrentURL].AppendLink(normalizedOutgoingURL)
+		outgoingIdentity, err := utils.CanonicalizeURLV1(link)
+		if err != nil {
+			continue
 		}
+		canonicalOutgoingURL := outgoingIdentity.CanonicalURL
+
+		if canonicalOutgoingURL == canonicalCurrentURL {
+			continue
+		}
+
+		if _, exists := crawcfg.Backlinks[canonicalOutgoingURL]; !exists {
+			crawcfg.Backlinks[canonicalOutgoingURL] = pages.CreatePageNode(canonicalOutgoingURL)
+		}
+
+		crawcfg.Backlinks[canonicalOutgoingURL].AppendLink(canonicalCurrentURL)
+		crawcfg.Outlinks[canonicalCurrentURL].AppendLink(canonicalOutgoingURL)
 	}
 }
 
-func (crawcfg *CrawlerConfig) AddImages(normalizedCurrentURL string, imagesMap map[string]map[string]string) {
+func (crawcfg *CrawlerConfig) AddImages(canonicalCurrentURL string, imagesMap map[string]map[string]string) {
+	currentIdentity, err := utils.CanonicalizeURLV1(canonicalCurrentURL)
+	if err != nil {
+		return
+	}
+	canonicalCurrentURL = currentIdentity.CanonicalURL
+
 	crawcfg.Mu.Lock()
 	defer crawcfg.Mu.Unlock()
 
 	for imgURL, imgAttrs := range imagesMap {
+		imageIdentity, err := utils.CanonicalizeURLV1(imgURL)
+		if err != nil {
+			continue
+		}
 		imgAlt := ""
 		if alt, exists := imgAttrs["alt"]; exists {
 			imgAlt = alt
 		}
 
 		image := &pages.Image{
-			NormalizedPageURL:   normalizedCurrentURL,
-			NormalizedSourceURL: imgURL,
+			NormalizedPageURL:   canonicalCurrentURL,
+			NormalizedSourceURL: imageIdentity.CanonicalURL,
 			Alt:                 imgAlt,
 		}
 
-		crawcfg.Images[normalizedCurrentURL] = append(crawcfg.Images[normalizedCurrentURL], image)
+		crawcfg.Images[canonicalCurrentURL] = append(crawcfg.Images[canonicalCurrentURL], image)
 	}
 }

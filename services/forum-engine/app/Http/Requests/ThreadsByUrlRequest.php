@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\SourceUrlV1;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -15,7 +16,7 @@ class ThreadsByUrlRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'url' => ['required', 'url:http,https', 'max:2048'],
+            'url' => ['bail', 'required', 'string', new SourceUrlV1],
             'sort' => ['sometimes', Rule::in(['top', 'new'])],
             'per_page' => ['sometimes', 'integer', 'min:1', 'max:100'],
         ];

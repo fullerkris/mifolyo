@@ -1,131 +1,97 @@
 package crawler
 
-import(
-    "strings"
-    "net/url"
-    "regexp"
+import (
+	"net/url"
+	"strings"
 
-    "golang.org/x/net/html"
+	"golang.org/x/net/html"
 
-    "github.com/IonelPopJara/search-engine/services/spider/internal/utils"
+	"github.com/IonelPopJara/search-engine/services/spider/internal/utils"
 )
 
 func getURLsFromHTML(htmlBody string, rawURL string) ([]string, map[string]map[string]string, error) {
-    baseURL, err := url.Parse(rawURL)
-    if err != nil {
-        // Couldn't parse baseURL
-        return nil, nil, err
-    }
+	baseIdentity, err := utils.CanonicalizeURLV1(rawURL)
+	if err != nil {
+		return nil, nil, err
+	}
+	baseURL, err := url.Parse(baseIdentity.CanonicalURL)
+	if err != nil {
+		return nil, nil, err
+	}
 
-    node, err := html.Parse(strings.NewReader(htmlBody))
-    if err != nil {
-        return nil, nil, err
-    }
+	node, err := html.Parse(strings.NewReader(htmlBody))
+	if err != nil {
+		return nil, nil, err
+	}
 
-    linksSet := make(map[string]struct{})
-    imagesMap := make(map[string]map[string]string)
+	linksSet := make(map[string]struct{})
+	imagesMap := make(map[string]map[string]string)
+	traverse(node, baseURL, linksSet, imagesMap)
 
-    traverse(node, baseURL, linksSet, imagesMap)
-
-    // Convert set to slice
-    links := make([]string, 0, len(linksSet))
-    for link := range linksSet {
-        links = append(links, link)
-    }
-
-    return links, imagesMap, nil
+	links := make([]string, 0, len(linksSet))
+	for link := range linksSet {
+		links = append(links, link)
+	}
+	return links, imagesMap, nil
 }
-
-var nonASCIIRegex = regexp.MustCompile(`[^\x20-\x7E]`)
 
 func traverse(node *html.Node, baseURL *url.URL, linksSet map[string]struct{}, imagesMap map[string]map[string]string) {
-    if node == nil {
-        return
-    }
+	if node == nil {
+		return
+	}
 
-    if node.Type == html.ElementNode && node.Data == "a" {
-        for _, attr := range node.Attr {
-            if attr.Key == "href" {
-                rawHref := attr.Val
+	if node.Type == html.ElementNode && node.Data == "a" {
+		for _, attr := range node.Attr {
+			if attr.Key != "href" || malformedHTMLURLAttribute(attr.Val) {
+				continue
+			}
+			if canonicalURL, ok := canonicalizeReference(baseURL, attr.Val); ok {
+				linksSet[canonicalURL] = struct{}{}
+			}
+		}
+	} else if node.Type == html.ElementNode && node.Data == "img" {
+		imageDetails := make(map[string]string)
+		for _, attr := range node.Attr {
+			switch attr.Key {
+			case "src":
+				if malformedHTMLURLAttribute(attr.Val) {
+					continue
+				}
+				if canonicalURL, ok := canonicalizeReference(baseURL, attr.Val); ok {
+					imageDetails["src"] = canonicalURL
+				}
+			case "alt":
+				imageDetails["alt"] = attr.Val
+			}
+		}
 
-                // Skip malformed URLS
-                if strings.ContainsAny(rawHref, " <>\"") {
-                    continue
-                }
+		if imageURL := imageDetails["src"]; imageURL != "" {
+			imagesMap[imageURL] = imageDetails
+		}
+	}
 
-                // Skip non-ASCII urls
-                if nonASCIIRegex.MatchString(rawHref) {
-                    continue
-                }
-
-                // Parse url and add to the list
-                u, err := url.Parse(attr.Val)
-                if err != nil {
-                    continue
-                }
-
-                var resolved string
-                if u.IsAbs() {
-                    resolved = u.String()
-                } else {
-                    resolved = baseURL.ResolveReference(u).String()
-
-                }
-
-                // Append to list
-                linksSet[resolved] = struct{}{}
-            }
-        }
-    } else if node.Type == html.ElementNode && node.Data == "img" {
-        imageDetails := make(map[string]string)
-        for _, attr := range node.Attr {
-            if attr.Key == "src" {
-                rawSrc := attr.Val
-
-                // Skip malformed URLS
-                if strings.ContainsAny(rawSrc, " <>\"") {
-                    continue
-                }
-
-                // Skip non-ASCII urls
-                if nonASCIIRegex.MatchString(rawSrc) {
-                    continue
-                }
-
-                // Parse url and add to the list
-                u, err := url.Parse(attr.Val)
-                if err != nil {
-                    continue
-                }
-
-                var resolved string
-                if u.IsAbs() {
-                    resolved = u.String()
-                } else {
-                    resolved = baseURL.ResolveReference(u).String()
-
-                }
-
-                resolved, err = utils.NormalizeURL(resolved)
-                if err != nil {
-                    // Could not normalize image URL
-                    continue
-                }
-
-                imageDetails["src"] = resolved
-            } else if attr.Key == "alt" {
-                imageDetails["alt"] = attr.Val
-            }
-        }
-
-        if len(imageDetails) > 0 {
-            imgURL := imageDetails["src"]
-            imagesMap[imgURL] = imageDetails
-        }
-    }
-
-    for c := node.FirstChild; c != nil; c = c.NextSibling {
-        traverse(c, baseURL, linksSet, imagesMap)
-    }
+	for child := node.FirstChild; child != nil; child = child.NextSibling {
+		traverse(child, baseURL, linksSet, imagesMap)
+	}
 }
 
+func malformedHTMLURLAttribute(value string) bool {
+	return strings.ContainsAny(value, " <>\"")
+}
+
+func canonicalizeReference(baseURL *url.URL, rawReference string) (string, bool) {
+	reference, err := url.Parse(rawReference)
+	if err != nil {
+		return "", false
+	}
+
+	resolved := reference
+	if !reference.IsAbs() {
+		resolved = baseURL.ResolveReference(reference)
+	}
+	identity, err := utils.CanonicalizeURLV1(resolved.String())
+	if err != nil {
+		return "", false
+	}
+	return identity.CanonicalURL, true
+}

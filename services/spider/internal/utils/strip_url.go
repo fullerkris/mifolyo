@@ -1,33 +1,8 @@
 package utils
 
-import (
-    "net/url"
-    "strings"
-    "fmt"
-)
-
-// This function removes queries and fragments
+// StripURL is retained for compatibility with older spider code. V1 removes
+// fragments, but query strings and trailing slashes are part of URL identity
+// and are therefore preserved. New code should use CanonicalizeURLV1.
 func StripURL(rawURL string) (string, error) {
-    u, err := url.Parse(rawURL)
-
-    if err != nil {
-        return "", fmt.Errorf("Could not parse raw URL [%w]", err) 
-    }
-
-    if u.Scheme == "" {
-        return "", fmt.Errorf("URL has no field 'Scheme'")
-    }
-
-    if u.Host == "" {
-        return "", fmt.Errorf("URL has no field 'Host'")
-    }
-
-    strippedURL := u.Scheme + "://" + u.Host
-
-    if u.Path != "" {
-        trimmedPath := strings.TrimSuffix(u.Path, "/")
-        strippedURL += trimmedPath
-    }
-
-    return strippedURL, nil
+	return NormalizeURL(rawURL)
 }

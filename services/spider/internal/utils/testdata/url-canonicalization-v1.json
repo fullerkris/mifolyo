@@ -1,0 +1,214 @@
+{
+  "version": 1,
+  "id_namespace": "mifolyo-url:v1\u0000",
+  "max_url_bytes": 2048,
+  "valid": [
+    {
+      "name": "scheme host and default port",
+      "input": "HTTPS://Example.COM:443",
+      "canonical_url": "https://example.com/",
+      "url_id": "c38d6638dfd6f0bf2ab2e8432d5303f377a1540aa1ee8207fc2742f7ff2104cd",
+      "crawl_eligible": true,
+      "crawl_rejection": null
+    },
+    {
+      "name": "www path query and fragment",
+      "input": "http://www.Example.com:80/a/?b=2&a=1#part",
+      "canonical_url": "http://www.example.com/a/?b=2&a=1",
+      "url_id": "6de5a3aacac776647d2ba310c98aa92ed35c4d38c2630ef64623e0b9a381056d",
+      "crawl_eligible": true,
+      "crawl_rejection": null
+    },
+    {
+      "name": "escaped path and plus query",
+      "input": "https://example.com/a%2fb?x=a+b",
+      "canonical_url": "https://example.com/a%2Fb?x=a+b",
+      "url_id": "229d208438dc4a0c998813db1ffdfbb85dae8eb2e7d7bb6ee8cc7279b9a772ca",
+      "crawl_eligible": true,
+      "crawl_rejection": null
+    },
+    {
+      "name": "unicode path",
+      "input": "https://example.com/straße",
+      "canonical_url": "https://example.com/stra%C3%9Fe",
+      "url_id": "2cdd66dc92f4d24123eae851cb4b04781828b5de2e02863d7a3facb944d7b46c",
+      "crawl_eligible": true,
+      "crawl_rejection": null
+    },
+    {
+      "name": "repeated and trailing slashes",
+      "input": "https://example.com/a//b/",
+      "canonical_url": "https://example.com/a//b/",
+      "url_id": "3d01985f7a8cd6b4631a71ab3193a56cf78b1219ab586762f116d5d1441297c2",
+      "crawl_eligible": true,
+      "crawl_rejection": null
+    },
+    {
+      "name": "non-default HTTPS port",
+      "input": "https://example.com:8443/path",
+      "canonical_url": "https://example.com:8443/path",
+      "url_id": "326883a0430eb26e5aedac394d512f6d25cab3b0f785b675f1c8b32a7403c632",
+      "crawl_eligible": false,
+      "crawl_rejection": "non_default_crawl_port"
+    },
+    {
+      "name": "non-default HTTP port",
+      "input": "http://example.com:8080",
+      "canonical_url": "http://example.com:8080/",
+      "url_id": "231c75f9a0b21b03b61715ae5fd61ae822d6a51010bde818e06766b65bead3d8",
+      "crawl_eligible": false,
+      "crawl_rejection": "non_default_crawl_port"
+    },
+    {
+      "name": "duplicate and blank query values",
+      "input": "https://example.com/path?x=1&x=&x=2",
+      "canonical_url": "https://example.com/path?x=1&x=&x=2",
+      "url_id": "5846c56ae2bba59f1f598271ef8302a97ea3358bca820c671d3b086b642668a6",
+      "crawl_eligible": true,
+      "crawl_rejection": null
+    },
+    {
+      "name": "percent escape case",
+      "input": "https://example.com/%7euser",
+      "canonical_url": "https://example.com/%7Euser",
+      "url_id": "6d984550666c256d617f68dfab21ecf976ae12cc981e5cda7f35db7ada2f848d",
+      "crawl_eligible": true,
+      "crawl_rejection": null
+    },
+    {
+      "name": "dot segments preserved",
+      "input": "https://example.com/a/../b",
+      "canonical_url": "https://example.com/a/../b",
+      "url_id": "c11dee8b06fe182e89b8651548a7c3fa85b93120679431d20c77a3e0d586c8e7",
+      "crawl_eligible": true,
+      "crawl_rejection": null
+    },
+    {
+      "name": "literal IP identity",
+      "input": "http://127.0.0.1/path",
+      "canonical_url": "http://127.0.0.1/path",
+      "url_id": "a740c26931f6aae8683b2189d46609bbb8d71b00b91e9b91846ede9ca6eb0eb8",
+      "crawl_eligible": false,
+      "crawl_rejection": "ip_literal_forbidden"
+    },
+    {
+      "name": "local hostname identity",
+      "input": "http://localhost/path",
+      "canonical_url": "http://localhost/path",
+      "url_id": "3cf71a3eb1b7d1f2fb38484472dc8fe9b8a183343af4cea3c0da63ca6a308bf9",
+      "crawl_eligible": false,
+      "crawl_rejection": "local_name_forbidden"
+    },
+    {
+      "name": "punycode hostname",
+      "input": "https://xn--fa-hia.de/",
+      "canonical_url": "https://xn--fa-hia.de/",
+      "url_id": "d7b0124022711ea7b30de9e6050b05829406b0788421161a748c698bd8b767aa",
+      "crawl_eligible": true,
+      "crawl_rejection": null
+    },
+    {
+      "name": "fragment removed",
+      "input": "https://example.com/path#section",
+      "canonical_url": "https://example.com/path",
+      "url_id": "77e565f8041948df0e04222e1fe50ce62b48e85994480d9fa88e7b1434733621",
+      "crawl_eligible": true,
+      "crawl_rejection": null
+    },
+    {
+      "name": "unicode query",
+      "input": "https://example.com/search?q=café",
+      "canonical_url": "https://example.com/search?q=caf%C3%A9",
+      "url_id": "c3bae039ea8f8e18fbec1edcabfab0e8800f1e06d67419753d48abe95067574a",
+      "crawl_eligible": true,
+      "crawl_rejection": null
+    }
+  ],
+  "invalid": [
+    {
+      "name": "leading whitespace",
+      "input": " https://example.com/",
+      "error": "whitespace_or_control"
+    },
+    {
+      "name": "unsupported scheme",
+      "input": "ftp://example.com/file",
+      "error": "scheme_not_allowed"
+    },
+    {
+      "name": "relative URL",
+      "input": "/relative/path",
+      "error": "absolute_url_required"
+    },
+    {
+      "name": "userinfo",
+      "input": "https://user:password@example.com/",
+      "error": "userinfo_forbidden"
+    },
+    {
+      "name": "zero port",
+      "input": "https://example.com:0/",
+      "error": "invalid_port"
+    },
+    {
+      "name": "out-of-range port",
+      "input": "https://example.com:65536/",
+      "error": "invalid_port"
+    },
+    {
+      "name": "named port",
+      "input": "https://example.com:https/",
+      "error": "invalid_port"
+    },
+    {
+      "name": "malformed escape",
+      "input": "https://example.com/%ZZ",
+      "error": "malformed_escape"
+    },
+    {
+      "name": "raw backslash",
+      "input": "https://example.com\\path",
+      "error": "backslash_forbidden"
+    },
+    {
+      "name": "raw Unicode hostname",
+      "input": "https://faß.de/",
+      "error": "non_ascii_host_v1"
+    },
+    {
+      "name": "invalid hostname label",
+      "input": "https://bad_host.example/",
+      "error": "invalid_host"
+    },
+    {
+      "name": "trailing hostname dot",
+      "input": "https://example.com./",
+      "error": "invalid_host"
+    },
+    {
+      "name": "context-invalid punycode hostname",
+      "input": "https://xn--ab-j1t.example/",
+      "error": "invalid_host"
+    },
+    {
+      "name": "Unicode C1 control",
+      "input": "https://example.com/\u0085path",
+      "error": "whitespace_or_control"
+    },
+    {
+      "name": "encoded null byte",
+      "input": "https://example.com/%00",
+      "error": "encoded_control"
+    },
+    {
+      "name": "encoded Unicode C1 control",
+      "input": "https://example.com/%C2%85",
+      "error": "encoded_control"
+    },
+    {
+      "name": "bidi-invalid punycode hostname",
+      "input": "https://xn--a-0hc.example/",
+      "error": "invalid_host"
+    }
+  ]
+}

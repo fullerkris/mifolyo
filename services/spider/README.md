@@ -2,6 +2,12 @@
 
 This is the main actor involved in web crawling. It is responsible for fetching web pages, extracting links, and storing the data in Redis. The spider uses a breadth-first search algorithm to discover new links and stores the crawled data in Redis for fast access. The spider is designed to be simple and efficient, with a focus on educational purposes rather than production-level performance.
 
+> [!WARNING]
+> **BLOCKED:** Do not run the spider until its HTTP transport implements and
+> tests DNS-pinned address authorization plus redirect revalidation. The setup
+> and run commands below are retained as post-hardening reference procedures;
+> reviewed URL syntax alone does not prevent SSRF.
+
 ## Setup
 
 ### Using Docker
@@ -12,8 +18,10 @@ REDIS_HOST=<your_redis_host>
 REDIS_PORT=<your_redis_port> (default: 6379)
 REDIS_PASSWORD=<your_redis_password> (default: empty)
 REDIS_DB=<your_redis_db> (default: 0)
-STARTING_URL=<your_starting_url> (default: https://en.wikipedia.org/wiki/Kamen_Rider)
+STARTING_URL=<your_starting_url> (optional; unset consumes only the feeder queue)
 USER_AGENT=<crawler_user_agent> (default: MiFolyoBot/1.0)
+CRAWL_QUEUE_KEY=<queue_key> (default: mifolyo:crawl:v1:queue)
+CRAWL_URLS_KEY=<url_lookup_key> (default: mifolyo:crawl:v1:urls)
 ```
 
 To run the spider using Docker, follow these steps:
@@ -78,6 +86,11 @@ If you prefer to run the spider without Docker, you can do so by building and ru
    ./spider -max-concurrency=2 -max-pages=10 -once
    ```
 
+   `-max-pages` is a hard per-batch attempt budget. A worker reserves a slot
+   before reading the queue, so concurrent workers cannot exceed the limit.
+   Empty, invalid, previously visited, or failed entries consume a slot; the
+   number of outbound requests can never exceed the configured budget.
+
 6. **Stopping the spider**:  
    Press `Ctrl + C` in the terminal to stop the process.
 
@@ -89,3 +102,16 @@ For development or debugging, you can also run the spider directly:
 ```bash
 go run
 ```
+
+## Queue lifecycle boundary
+
+The V1 Redis structures contain only pending URL IDs, canonical URL lookups,
+and scores. They do not contain authoritative `enabled` or `cancelled` state.
+The feeder admits enabled seeds; if a seed is disabled or cancelled after it is
+queued, the producer or operator must remove its URL ID from
+`mifolyo:crawl:v1:queue` before the spider pops it. The immutable URL lookup may
+remain in `mifolyo:crawl:v1:urls`.
+
+`PopURL` is currently destructive. In-flight cancellation, leases, attempts,
+retries, ACKs, and crash recovery belong to the future durable crawl-job
+contract and are intentionally not emulated by the V1 queue.

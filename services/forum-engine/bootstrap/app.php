@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Middleware\RequestContextMiddleware;
 use App\Http\Middleware\EnsureApiTokenIsFresh;
+use App\Http\Middleware\RequestContextMiddleware;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;

@@ -10,15 +10,19 @@ Use this for founder-selected domains and topic-specific communities. Manual see
 
 ## Curlie
 
-Primary site: `https://curlie.org`
+Primary site: [Curlie](https://curlie.org/)
 
-Data page: `https://curlie.org/docs/en/rdf.html`
+Official pages:
+- [Download Curlie Directory Data](https://curlie.org/docs/en/rdf.html)
+- [Directory download](https://curlie.org/directory-dl)
+- [Curlie Directory License and required attribution](https://curlie.org/docs/en/license.html)
 
 Notes:
 - Curlie is the practical successor to DMOZ.
-- Current downloadable data appears to be compressed TSV even where legacy pages mention RDF.
-- License/attribution must be verified before production use.
-- Importer should treat Curlie as its own source format rather than assuming exact DMOZ RDF compatibility.
+- The current official archive is tar/gzip-compressed, UTF-8 tab-separated data. The `*-c.tsv` files contain website entries and the `*-s.tsv` files contain categories; their IDs provide the join between entries and categories.
+- Curlie says it strives to publish a fresh database copy every month, so treat the cadence as approximately monthly rather than as a guaranteed schedule.
+- Directory categories and listed-site data are licensed under [CC BY 3.0 Unported](https://creativecommons.org/licenses/by/3.0/). Any use must include Curlie's required attribution from the official license page, including page-level HTML attribution for public-facing uses.
+- The existing `services/dmoz-importer` parses the historical DMOZ `content.rdf.u8` RDF dump and is incompatible with Curlie's current TSV archive. A Curlie importer must parse the documented TSV files and ID relationship instead of sending this data through the DMOZ parser.
 
 ## Hacker News
 

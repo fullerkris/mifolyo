@@ -9,7 +9,6 @@ jobs:
     permissions:
       contents: read
       packages: write
-      id-token: write
     strategy:
       matrix:
         service:
@@ -37,10 +36,15 @@ jobs:
       - name: Build Docker image
         working-directory: ./services/${{ matrix.service }}
         run: |
-          docker build -t ghcr.io/$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')/${{ matrix.service }}:latest .
+          repository="$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')"
+          image="ghcr.io/${repository}/${{ matrix.service }}:latest"
+          docker build -t "${image}" .
 
       - name: Push Docker image
-        run: docker push ghcr.io/$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')/${{ matrix.service }}:latest
+        run: |
+          repository="$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')"
+          image="ghcr.io/${repository}/${{ matrix.service }}:latest"
+          docker push "${image}"
 
       - name: Upload docker-compose artifact
         uses: actions/upload-artifact@v4

@@ -1,37 +1,13 @@
 package utils
 
-import (
-    "net/url"
-    "strings"
-    "fmt"
-)
-
+// NormalizeURL is retained for compatibility with older spider code. Unlike
+// the former lossy normalizer, it returns the V1 canonical absolute URL.
+// New code should use CanonicalizeURLV1 when it also needs the URL ID or crawl
+// admission decision.
 func NormalizeURL(rawURL string) (string, error) {
-    u, err := url.Parse(rawURL)
-
-    if err != nil {
-        return "", fmt.Errorf("Could not parse raw URL [%w]", err) 
-    }
-
-    if u.Scheme != "https" && u.Scheme != "http" {
-        return "", fmt.Errorf("URL has invalid field 'Scheme'")
-    }
-
-    if u.Host == "" {
-        return "", fmt.Errorf("URL has no field 'Host'")
-    }
-
-    host := u.Host
-    if strings.HasPrefix(host, "www.") {
-        host = host[4:]
-    }
-
-    normalizedURL := host
-
-    if u.Path != "" {
-        trimmedPath := strings.TrimSuffix(u.Path, "/")
-        normalizedURL += trimmedPath
-    }
-
-    return normalizedURL, nil
+	result, err := CanonicalizeURLV1(rawURL)
+	if err != nil {
+		return "", err
+	}
+	return result.CanonicalURL, nil
 }

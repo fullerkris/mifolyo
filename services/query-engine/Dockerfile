@@ -53,8 +53,12 @@ RUN mkdir -p storage/framework/cache/data && \
 RUN chown -R $user:www-data storage bootstrap/cache && \
     chmod -R ug+rwX storage bootstrap/cache
 
+# Seed a fresh shared asset volume with non-root ownership.
+RUN mkdir -p /assets && chown $user:www-data /assets
+
 # Install frontend dependencies and build assets
-RUN npm install && npm run build
+RUN npm ci && npm run build && \
+    chown -R $user:www-data public
 
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader

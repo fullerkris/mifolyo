@@ -48,8 +48,8 @@ services:
   caddy:
     image: caddy:2
     ports:
-      - "80:80"
-      - "443:443"
+      - "127.0.0.1:80:80"
+      - "127.0.0.1:443:443"
     volumes:
       - ./services/query-engine/Caddyfile:/etc/caddy/Caddyfile
       - ./services/query-engine/public:/srv
@@ -63,7 +63,7 @@ services:
   redis:
     image: redis:7
     ports:
-      - "6379:6379"
+      - "127.0.0.1:6379:6379"
     volumes:
       - redis_data:/data
     networks:
@@ -72,7 +72,7 @@ services:
   mongo:
     image: mongo:8
     ports:
-      - "27017:27017"
+      - "127.0.0.1:27017:27017"
     volumes:
       - mongo_data:/data/db
     networks:
@@ -81,7 +81,7 @@ services:
   postgres:
     image: postgres:16
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     environment:
       POSTGRES_DB: mifolyo
       POSTGRES_USER: mifolyo
@@ -98,7 +98,8 @@ services:
     command: ["./spider", "--max-concurrency", "2", "--max-pages", "10", "--once"]
     environment:
       <<: *moogle-env
-      STARTING_URL: https://developer.mozilla.org/en-US/docs/Web/HTML
+      CRAWL_QUEUE_KEY: mifolyo:crawl:v1:queue
+      CRAWL_URLS_KEY: mifolyo:crawl:v1:urls
     depends_on:
       - redis
     networks:
@@ -119,7 +120,7 @@ services:
   image-indexer:
     build: ./services/image-indexer
     image: mifolyo-image-indexer
-    profiles: ["pipeline"]
+    profiles: ["image-pipeline"]
     environment:
       <<: *moogle-env
     depends_on:
@@ -187,6 +188,7 @@ services:
       - ./seeds:/seeds:ro
       - ./data:/data
     depends_on:
+      - redis
       - mongo
     networks:
       - app

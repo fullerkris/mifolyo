@@ -14,7 +14,9 @@ const (
 	// FIXME: There is a weird "bug" where pages_queue starts appearing in redis even if it is not used in the code.
 	// No idea why :/ and I don't have time to investigate it now.
 	// Message Queues
-	SpiderQueueKey      = "spider_queue"
+	CrawlQueueKeyV1     = "mifolyo:crawl:v1:queue"
+	CrawlURLsKeyV1      = "mifolyo:crawl:v1:urls"
+	SpiderQueueKey      = CrawlQueueKeyV1 // Deprecated compatibility alias.
 	IndexerQueueKey     = "pages_queue"
 	SignalQueueKey      = "signal_queue"
 	ResumeCrawl         = "RESUME_CRAWL"

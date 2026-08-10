@@ -94,8 +94,10 @@ class PostEndpointsTest extends TestCase
 
         $response
             ->assertCreated()
-            ->assertJsonPath('data.url', $url)
+            ->assertJsonPath('data.url', 'https://example.com/articles/source-quality?ref=search')
             ->assertJsonPath('data.source_url', 'https://example.com/articles/source-quality?ref=search')
+            ->assertJsonPath('data.source_url_hash', $source['source_url_hash'])
+            ->assertJsonPath('data.source_url_canonicalization_version', 1)
             ->assertJsonPath('data.source_domain', 'example.com')
             ->assertJsonPath('data.source_path', '/articles/source-quality?ref=search');
 
@@ -103,6 +105,31 @@ class PostEndpointsTest extends TestCase
             'community_id' => $community->id,
             'slug' => 'strong-citation-trail',
         ], $source));
+    }
+
+    public function test_link_post_rejects_a_url_that_is_invalid_under_v1(): void
+    {
+        $user = User::factory()->create();
+        $community = Community::query()->create([
+            'owner_user_id' => $user->id,
+            'name' => 'Research',
+            'slug' => 'research',
+            'is_private' => false,
+        ]);
+
+        $this->postJson('/api/posts', [
+            'community_slug' => $community->slug,
+            'title' => 'Malformed source',
+            'content_type' => 'link',
+            'url' => 'https://example.com/%ZZ',
+        ], $this->headersForUser($user))
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['url'])
+            ->assertJsonPath('errors.url.0', 'malformed_escape');
+
+        $this->assertDatabaseMissing('posts', [
+            'title' => 'Malformed source',
+        ]);
     }
 
     public function test_non_member_cannot_post_to_private_community(): void

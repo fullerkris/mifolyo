@@ -4,8 +4,9 @@ node_modules
 vendor
 
 # Laravel specific
-# .env
-# .env.*     # ignore all environment files (optional, in case you pass them via Cloud Run env vars)
+.env
+.env.*
+!.env.example
 storage/*.key
 storage/logs
 storage/framework/sessions/*

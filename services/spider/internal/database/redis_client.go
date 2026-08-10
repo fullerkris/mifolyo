@@ -2,30 +2,47 @@ package database
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
+	"math"
 	"strconv"
+	"strings"
+	"time"
 
 	"github.com/redis/go-redis/v9"
 
 	"github.com/IonelPopJara/search-engine/services/spider/internal/utils"
 )
 
-// ------------------- REDIS SETUP -------------------
+var (
+	ErrRedisNotConfigured = errors.New("Redis client is not configured")
+	ErrInvalidQueueScore  = errors.New("crawl queue score must be finite")
+	ErrInvalidURLID       = errors.New("invalid V1 URL ID")
+	ErrURLIDCollision     = errors.New("V1 URL ID is already mapped to a different URL")
+	ErrInvalidQueueMember = errors.New("crawl queue member is not a string URL ID")
+	ErrOrphanURLLookup    = errors.New("crawl queue URL lookup is missing")
+	ErrInvalidQueueEntry  = errors.New("crawl queue URL lookup does not match its V1 identity")
+)
+
+// Database owns the Redis connection and V1 crawl-queue key configuration.
+// Empty key fields deliberately resolve to the versioned V1 defaults.
 type Database struct {
-	Client  *redis.Client
-	Context context.Context
+	Client        *redis.Client
+	Context       context.Context
+	CrawlQueueKey string
+	CrawlURLsKey  string
+	// CrawlPopTimeout defaults to utils.Timeout. A negative value selects a
+	// non-blocking ZPOPMIN, which is useful for bounded workers and tests.
+	CrawlPopTimeout time.Duration
 }
 
 func (db *Database) ConnectToRedis(redisHost, redisPort, redisPassword, redisDB string) error {
 	log.Println("Connecting to Redis...")
-	// log.Printf("\tRedis Host: '%s'\n", redisHost+":"+redisPort)
-	// log.Printf("\tRedis Password: '%s'\n", redisPassword)
-	// log.Printf("\tRedis DB: '%s'\n", redisDB)
 
 	dbIndex, err := strconv.Atoi(redisDB)
 	if err != nil {
-		return fmt.Errorf("Could not parse DB value: %v\n", err)
+		return fmt.Errorf("parse Redis DB value: %w", err)
 	}
 
 	db.Client = redis.NewClient(&redis.Options{
@@ -33,178 +50,219 @@ func (db *Database) ConnectToRedis(redisHost, redisPort, redisPassword, redisDB 
 		Password: redisPassword,
 		DB:       dbIndex,
 	})
-
 	db.Context = context.Background()
 
-	_, err = db.Client.Ping(db.Context).Result()
-	if err != nil {
-		return fmt.Errorf("Couldn't connect to shit [%v, %v]: %v", redisHost, redisPassword, err)
+	if _, err = db.Client.Ping(db.context()).Result(); err != nil {
+		return fmt.Errorf("connect to Redis at %s:%s: %w", redisHost, redisPort, err)
 	}
 
 	log.Println("Successfully connected to Redis!")
 	return nil
 }
 
-// ------------------- REDIS SETUP -------------------
-
-// ------------------- CRAWL LINKS -------------------
-func (db *Database) addURLLookup(rawURL, normalizedURL string) error {
-	// Check if it exists
-	urlKey := utils.NormalizedURLPrefix + ":" + normalizedURL
-
-	exists, err := db.Client.Exists(db.Context, urlKey).Result()
-	if err != nil {
-		return fmt.Errorf("Key not found: %w", err)
+func (db *Database) context() context.Context {
+	if db.Context != nil {
+		return db.Context
 	}
+	return context.Background()
+}
 
-	if exists > 0 {
-		return fmt.Errorf("Key exists")
+func (db *Database) queueKey() string {
+	if db.CrawlQueueKey != "" {
+		return db.CrawlQueueKey
 	}
+	return utils.CrawlQueueKeyV1
+}
 
-	// Add hash
-	err = db.Client.HSet(db.Context, urlKey, map[string]interface{}{
-		"raw_url": rawURL,
-		"visited": 0,
-	}).Err()
-
-	if err != nil {
-		return fmt.Errorf("Could not store data in Redis: %w", err)
+func (db *Database) urlsKey() string {
+	if db.CrawlURLsKey != "" {
+		return db.CrawlURLsKey
 	}
+	return utils.CrawlURLsKeyV1
+}
 
+func (db *Database) popTimeout() time.Duration {
+	if db.CrawlPopTimeout != 0 {
+		return db.CrawlPopTimeout
+	}
+	return utils.Timeout
+}
+
+func (db *Database) requireClient() error {
+	if db.Client == nil {
+		return ErrRedisNotConfigured
+	}
 	return nil
 }
 
+var pushURLV1Script = redis.NewScript(`
+local existing_url = redis.call('HGET', KEYS[2], ARGV[1])
+if existing_url and existing_url ~= ARGV[2] then
+  return redis.error_reply('URL_ID_COLLISION')
+end
+
+local existing_score = redis.call('ZSCORE', KEYS[1], ARGV[1])
+redis.call('HSET', KEYS[2], ARGV[1], ARGV[2])
+if (not existing_score) or tonumber(ARGV[3]) < tonumber(existing_score) then
+  redis.call('ZADD', KEYS[1], ARGV[3], ARGV[1])
+end
+return 1
+`)
+
+// PushURL applies V1 canonicalization and static admission before atomically
+// storing URL ID => canonical URL and queueing the ID at its best (lowest)
+// observed score.
 func (db *Database) PushURL(rawURL string, score float64) error {
-	// Remove fragments and queries from rawURL
-	rawURL, err := utils.StripURL(rawURL)
-	if err != nil {
-		return fmt.Errorf("Could not strip URL: %w", err)
+	if err := db.requireClient(); err != nil {
+		return err
+	}
+	if math.IsNaN(score) || math.IsInf(score, 0) {
+		return ErrInvalidQueueScore
 	}
 
-	// Normalize URL
-	normalizedURL, err := utils.NormalizeURL(rawURL)
+	identity, err := utils.CanonicalizeURLV1(rawURL)
 	if err != nil {
-		return fmt.Errorf("Could not normalize URL: %w", err)
+		return fmt.Errorf("canonicalize URL for crawl queue: %w", err)
+	}
+	if err := utils.RequireStaticCrawlEligibility(identity); err != nil {
+		return fmt.Errorf("URL %q is not statically crawl eligible: %w", identity.CanonicalURL, err)
 	}
 
-	// err = db.addURLLookup(rawURL, normalizedURL)
-	// if err != nil {
-	//     // If the url is already in the lookup, we don't add it
-	//     return fmt.Errorf("URL already in queue: %w", err)
-	// }
-
-	// Add the normalized url to a sorted set with 0 as score
-	err = db.Client.ZAdd(db.Context, utils.SpiderQueueKey, redis.Z{
-		Score:  score,
-		Member: normalizedURL,
-	}).Err()
-
+	keys := []string{db.queueKey(), db.urlsKey()}
+	err = pushURLV1Script.Run(
+		db.context(),
+		db.Client,
+		keys,
+		identity.URLID,
+		identity.CanonicalURL,
+		strconv.FormatFloat(score, 'g', -1, 64),
+	).Err()
 	if err != nil {
-		return fmt.Errorf("Could not add URL to queue: %w", err)
+		if strings.Contains(err.Error(), "URL_ID_COLLISION") {
+			return fmt.Errorf("%w: %s", ErrURLIDCollision, identity.URLID)
+		}
+		return fmt.Errorf("store URL in V1 crawl queue: %w", err)
 	}
-
-	fmt.Printf("Pushed %v (%v) to queue\n", rawURL, normalizedURL)
 
 	return nil
 }
 
-func (db *Database) ExistsInQueue(rawURL string) (float64, bool) {
-	// Normalize URL
-	normalizedURL, err := utils.NormalizeURL(rawURL)
-	if err != nil {
-		return 0.0, false
+// ExistsInQueue looks up a queue member by V1 URL ID. A missing member is not
+// an error; Redis failures remain distinguishable from absence.
+func (db *Database) ExistsInQueue(urlID string) (score float64, exists bool, err error) {
+	if err := db.requireClient(); err != nil {
+		return 0, false, err
+	}
+	if !utils.IsURLIDV1(urlID) {
+		return 0, false, fmt.Errorf("%w: %q", ErrInvalidURLID, urlID)
 	}
 
-	result, err := db.Client.ZScore(db.Context, utils.SpiderQueueKey, normalizedURL).Result()
-	if err != nil {
-		return 0.0, false
+	result, err := db.Client.ZScore(db.context(), db.queueKey(), urlID).Result()
+	if errors.Is(err, redis.Nil) {
+		return 0, false, nil
 	}
-
-	return result, true
+	if err != nil {
+		return 0, false, fmt.Errorf("look up URL ID in crawl queue: %w", err)
+	}
+	return result, true, nil
 }
 
-// ------------------- CRAWL LINKS -------------------
-
-// ------------------- VISIT PAGE -------------------
-func (db *Database) HasURLBeenVisited(normalizedURL string) (bool, error) {
-	// FIXME: This is a temporary fix
+// HasURLBeenVisited is intentionally process-local for now. Durable leases,
+// attempts, and retry state require a separate crawl-job contract.
+func (db *Database) HasURLBeenVisited(_ string) (bool, error) {
 	return false, nil
-	normalized_url_key := utils.NormalizedURLPrefix + ":" + normalizedURL
-	result, err := db.Client.HGet(db.Context, normalized_url_key, "visited").Result()
-
-	if err == redis.Nil {
-		return false, nil
-	} else if err != nil {
-		return false, fmt.Errorf("Could not fetch %v from Redis: %v\n", normalized_url_key, err)
-	}
-
-	visited, err := strconv.Atoi(result)
-	if err != nil {
-		return false, fmt.Errorf("Could not parse 'visited' value: %v", err)
-	}
-
-	if visited == 0 {
-		return false, nil
-	}
-
-	return true, nil
 }
 
-func (db *Database) VisitPage(normalizedURL string) error {
-	return nil // FIXME: This is a temporary fix
-	normalized_url_key := utils.NormalizedURLPrefix + ":" + normalizedURL
-	_, err := db.Client.HSet(db.Context, normalized_url_key, "visited", 1).Result()
-
-	if err != nil {
-		return fmt.Errorf("Could not update visit %v from Redis: %v\n", normalized_url_key, err)
-	}
-
+// VisitPage intentionally does not persist crawl-job state. See
+// HasURLBeenVisited for the lifecycle boundary.
+func (db *Database) VisitPage(_ string) error {
 	return nil
 }
 
-// ------------------- VISIT PAGE -------------------
-
-// ------------------- GET NEXT ENTRY -------------------
-func (db *Database) PopURL() (string, float64, string, error) {
-	// Get the next normalized URL from the priority queue
-	result, err := db.Client.BZPopMin(db.Context, utils.Timeout, utils.SpiderQueueKey).Result()
-	if err != nil {
-		return "", 0.0, "", fmt.Errorf("Could not pop URL from queue: %v\n", err)
+// PopURL returns the queue's URL ID, its exact canonical URL lookup, and score.
+// It never reconstructs a URL or forces a scheme. A popped orphan or corrupt
+// lookup is returned as an error so it cannot reach the HTTP client.
+//
+// V1 queue membership is only pending-work admission; it has no enabled or
+// cancelled state. A producer must ZREM a disabled/cancelled URL ID before it
+// is popped. Once popped, cancellation, leases, attempts, retries, and ACKs
+// require the explicitly separate durable crawl-job contract.
+func (db *Database) PopURL() (urlID string, canonicalURL string, score float64, err error) {
+	if err := db.requireClient(); err != nil {
+		return "", "", 0, err
 	}
 
-	// Format the proper Redis queue to fetch data
-	// normalized_url_key := fmt.Sprintf("%v:%v", utils.NormalizedURLPrefix, result.Z.Member)
+	var memberValue interface{}
+	results, popErr := db.Client.ZPopMin(db.context(), db.queueKey(), 1).Result()
+	if popErr != nil {
+		return "", "", 0, fmt.Errorf("pop URL from V1 crawl queue: %w", popErr)
+	}
+	if len(results) > 0 {
+		memberValue = results[0].Member
+		score = results[0].Score
+	} else if db.popTimeout() < 0 {
+		return "", "", 0, fmt.Errorf("pop URL from V1 crawl queue: %w", redis.Nil)
+	} else {
+		result, popErr := db.Client.BZPopMin(db.context(), db.popTimeout(), db.queueKey()).Result()
+		if popErr != nil {
+			return "", "", 0, fmt.Errorf("pop URL from V1 crawl queue: %w", popErr)
+		}
+		memberValue = result.Z.Member
+		score = result.Z.Score
+	}
 
-	// Fetch the raw url from Redis
-	// raw_url, err := db.Client.HGet(db.Context, normalized_url_key, "raw_url").Result()
-	// if err != nil {
-	// return "", 0.0, "", fmt.Errorf("Could not fetch raw URL from %v: %v\n", normalized_url_key, err)
-	// }
+	member, ok := memberValue.(string)
+	if !ok {
+		return "", "", score, ErrInvalidQueueMember
+	}
+	urlID = member
+	if !utils.IsURLIDV1(urlID) {
+		return urlID, "", score, fmt.Errorf("%w: %q", ErrInvalidURLID, urlID)
+	}
 
-	normalizedURL := result.Z.Member.(string)
-	raw_url := fmt.Sprintf("https://%v", normalizedURL)
+	canonicalURL, err = db.Client.HGet(db.context(), db.urlsKey(), urlID).Result()
+	if errors.Is(err, redis.Nil) {
+		return urlID, "", score, fmt.Errorf("%w: %s", ErrOrphanURLLookup, urlID)
+	}
+	if err != nil {
+		return urlID, "", score, fmt.Errorf("resolve canonical URL for ID %s: %w", urlID, err)
+	}
 
-	// Raw url is just the normalized url + https:// so we'll do it manually due to performance issues
+	identity, canonicalizationErr := utils.CanonicalizeURLV1(canonicalURL)
+	if canonicalizationErr != nil {
+		return urlID, "", score, fmt.Errorf("%w for %s: %w", ErrInvalidQueueEntry, urlID, canonicalizationErr)
+	}
+	if identity.CanonicalURL != canonicalURL || identity.URLID != urlID {
+		return urlID, "", score, fmt.Errorf("%w: %s", ErrInvalidQueueEntry, urlID)
+	}
+	if admissionErr := utils.RequireStaticCrawlEligibility(identity); admissionErr != nil {
+		return urlID, "", score, fmt.Errorf("%w for %s: %w", ErrInvalidQueueEntry, urlID, admissionErr)
+	}
 
-	return raw_url, result.Z.Score, normalizedURL, nil
+	return urlID, canonicalURL, score, nil
 }
 
 func (db *Database) PopSignalQueue() (string, error) {
-	result, err := db.Client.BRPop(db.Context, 0, utils.SignalQueueKey).Result()
-	if err != nil {
-		return "", fmt.Errorf("Could not pop from signal queue: %v\n", err)
+	if err := db.requireClient(); err != nil {
+		return "", err
 	}
-
+	result, err := db.Client.BRPop(db.context(), 0, utils.SignalQueueKey).Result()
+	if err != nil {
+		return "", fmt.Errorf("pop from signal queue: %w", err)
+	}
+	if len(result) != 2 {
+		return "", fmt.Errorf("signal queue returned %d values", len(result))
+	}
 	return result[1], nil
 }
 
 func (db *Database) GetIndexerQueueSize() (int64, error) {
-	size, err := db.Client.LLen(db.Context, utils.IndexerQueueKey).Result()
-	if err != nil {
-		return -1, fmt.Errorf("Could not get %v size: %v\n", utils.IndexerQueueKey, err)
+	if err := db.requireClient(); err != nil {
+		return -1, err
 	}
-
+	size, err := db.Client.LLen(db.context(), utils.IndexerQueueKey).Result()
+	if err != nil {
+		return -1, fmt.Errorf("get %s size: %w", utils.IndexerQueueKey, err)
+	}
 	return size, nil
 }
-
-// ------------------- GET NEXT ENTRY -------------------

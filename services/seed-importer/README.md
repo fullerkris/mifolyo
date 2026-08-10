@@ -1,61 +1,104 @@
 # Seed Importer
 
-Utilities for discovering crawl seeds from curated external sources.
+Python utilities for the V1 crawl seed catalog. URL identity follows the
+shared vectors in `contracts/url-canonicalization/v1.json`; MongoDB records
+follow `contracts/crawl-seed-v1.schema.json` with BSON dates.
 
-## Reddit JSON Discovery
+## Development baseline
 
-`reddit.py` reads Reddit discovery rows from `seeds/manual-seeds.csv`, converts each Reddit URL to `old.reddit.com`, appends `.json`, fetches the JSON payload, and stores outbound non-Reddit URLs in MongoDB as crawl seeds.
+Validate the deterministic baseline without connecting to MongoDB:
 
-Reddit pages are discovery sources only. They are not written as crawl targets by default.
+```bash
+docker compose run --rm seed-importer \
+  python crawl_seeds.py bootstrap --dry-run
+```
 
-Example:
+Create or tighten `mifolyo_index.crawl_seeds`, ensure its indexes, and merge
+the 70 direct `manual` CSV rows:
+
+```bash
+docker compose run --rm seed-importer python crawl_seeds.py bootstrap
+```
+
+Bootstrap performs a read-only compatibility preflight before `collMod` or
+index creation. A nonempty legacy/incompatible collection fails unchanged;
+automatic production migration is intentionally out of scope.
+
+The eight `manual_reddit_discovery` rows are deliberately excluded. Because
+the CSV has no source timestamp, baseline records use a fixed UTC epoch
+observation time so clean local rebuilds are reproducible.
+
+A rebuild creates and validates a complete temporary collection, then
+atomically renames it over **only** `mifolyo_index.crawl_seeds`. A dry-run is
+safe and reports the confirmation bound to the parsed host, database, and
+collection:
+
+```bash
+docker compose run --rm seed-importer \
+  python crawl_seeds.py rebuild --dry-run
+```
+
+Execution is limited to the documented local MongoDB hosts/database and
+requires the process environment variable to be set explicitly to either
+`MIFOLYO_ENV=development` or `MIFOLYO_ENV=test`; no CLI environment argument
+can authorize it. For the Compose `mongo` host:
+
+```bash
+docker compose run --rm -e MIFOLYO_ENV=development seed-importer \
+  python crawl_seeds.py rebuild \
+  --confirm-rebuild mongo:27017/mifolyo_index/crawl_seeds
+```
+
+`MIFOLYO_ENV=test` is reserved for isolated local test runs. It does not relax
+the local Mongo host/port/database allowlist or the exact
+host/database/collection confirmation. `production`, `staging`, and an unset
+or empty `MIFOLYO_ENV` are rejected before a staging collection is created.
+
+For a host-local MongoDB URI, use the exact token reported by dry-run, such as
+`localhost:27017/mifolyo_index/crawl_seeds`.
+
+## Reddit JSON discovery
+
+Reddit pages are discovery sources, not direct crawl targets. `reddit.py`
+unwraps `out.reddit.com` URLs and excludes Reddit-owned destinations before
+calling the shared V1 canonicalizer. Every observation is merged into
+`sources[]` by a stable source key; existing manual or Reddit provenance is
+not discarded.
 
 ```bash
 docker compose run --rm seed-importer python reddit.py --dry-run
-```
-
-Fetch each discovered post page as JSON too:
-
-```bash
-docker compose run --rm seed-importer python reddit.py --dry-run --crawl-post-pages --include-comment-urls
-```
-
-Write discovered outbound URLs to MongoDB collection `crawl_seeds`:
-
-```bash
 docker compose run --rm seed-importer python reddit.py --min-score 50
 ```
 
-Useful flags:
-- `--min-score 25` keeps low-signal posts out of the crawl queue.
-- `--delay 2.0` rate-limits Reddit requests.
-- `--crawl-post-pages` converts post permalinks to `.json` and fetches them.
-- `--include-comment-urls` extracts URLs from comment bodies in fetched post JSON.
-- `--dry-run` prints stats without writing to MongoDB.
+Useful options:
 
-## Crawl Seed Feeder
+- `--crawl-post-pages` fetches discovered post permalinks as JSON.
+- `--include-comment-urls` extracts links from comment bodies.
+- `--delay 2.0` rate-limits remote Reddit requests.
+- `--input-json /app/testdata/reddit-listing.json` performs an offline run.
 
-`feed.py` moves pending crawl seeds into Redis sorted set `spider_queue`, which is consumed by the existing Go spider.
+## Redis V1 feeder
 
-Feed MongoDB `crawl_seeds` records with `status=pending_crawl`:
+`feed.py` reads only enabled MongoDB seed records. In one transactional Redis
+pipeline per batch it writes:
+
+```text
+mifolyo:crawl:v1:queue  ZSET(url_id => priority - 1)
+mifolyo:crawl:v1:urls   HASH(url_id => canonical_url)
+```
+
+`ZADD LT` preserves the best (lowest) score across replays. The feeder does
+not read the CSV directly and never writes crawl status back to MongoDB.
 
 ```bash
+docker compose run --rm seed-importer python feed.py --dry-run --limit 1000
 docker compose run --rm seed-importer python feed.py --limit 1000
 ```
 
-Dry-run the manual CSV seed list without crawling Reddit discovery rows:
+## Tests
+
+Run the standard-library suite from the service directory:
 
 ```bash
-docker compose run --rm seed-importer python feed.py --source csv --dry-run
+python -m unittest discover -s tests -v
 ```
-
-Feed the manual CSV seed list into the spider queue:
-
-```bash
-docker compose run --rm seed-importer python feed.py --source csv --limit 100
-```
-
-Notes:
-- The spider uses lower Redis sorted-set scores first.
-- Manual priority `1` maps to Redis score `0`, priority `2` maps to score `1`, and so on.
-- CSV mode skips Reddit URLs by default because Reddit is discovery-only. Use `reddit.py` to extract outbound URLs first.

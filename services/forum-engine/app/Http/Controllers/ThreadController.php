@@ -7,11 +7,13 @@ use App\Http\Requests\ThreadsByUrlRequest;
 use App\Models\Community;
 use App\Models\Post;
 use App\Models\User;
+use App\Support\SourceUrlNormalizationException;
 use App\Support\SourceUrlNormalizer;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class ThreadController extends Controller
 {
@@ -27,7 +29,7 @@ class ThreadController extends Controller
             ], 403);
         }
 
-        $source = SourceUrlNormalizer::normalize($validated['source_url']);
+        $source = $this->normalizeSourceUrl($validated['source_url'], 'source_url');
 
         $thread = DB::transaction(function () use ($validated, $community, $user, $source): Post {
             $thread = Post::query()->create(array_merge([
@@ -60,14 +62,16 @@ class ThreadController extends Controller
     public function byUrl(ThreadsByUrlRequest $request): JsonResponse
     {
         $validated = $request->validated();
-        $source = SourceUrlNormalizer::normalize($validated['url']);
+        $source = $this->normalizeSourceUrl($validated['url'], 'url');
         $sort = $validated['sort'] ?? 'top';
         $perPage = (int) ($validated['per_page'] ?? 20);
         $user = $request->user('api');
 
         $query = Post::query()
             ->with(['author', 'community'])
+            ->where('source_url_canonicalization_version', SourceUrlNormalizer::CANONICALIZATION_VERSION)
             ->where('source_url_hash', $source['source_url_hash'])
+            ->where('source_url', $source['source_url'])
             ->where('is_removed', false)
             ->where(function (Builder $query) use ($user): void {
                 $query->whereHas('community', function (Builder $communityQuery): void {
@@ -99,6 +103,7 @@ class ThreadController extends Controller
             'meta' => [
                 'source_url' => $source['source_url'],
                 'source_url_hash' => $source['source_url_hash'],
+                'source_url_canonicalization_version' => $source['source_url_canonicalization_version'],
                 'source_domain' => $source['source_domain'],
                 'source_path' => $source['source_path'],
                 'sort' => $sort,
@@ -152,6 +157,8 @@ class ThreadController extends Controller
             'created_at' => $post->created_at?->toISOString(),
             'published_at' => $post->published_at?->toISOString(),
             'source_url' => $post->source_url,
+            'source_url_hash' => $post->source_url_hash,
+            'source_url_canonicalization_version' => $post->source_url_canonicalization_version,
             'source_domain' => $post->source_domain,
             'source_path' => $post->source_path,
             'author' => $post->author ? [
@@ -165,5 +172,21 @@ class ThreadController extends Controller
                 'slug' => $post->community->slug,
             ],
         ];
+    }
+
+    /**
+     * @return array{source_url: string, source_url_hash: string, source_domain: string, source_path: string, source_url_canonicalization_version: int}
+     *
+     * @throws ValidationException
+     */
+    private function normalizeSourceUrl(string $url, string $attribute): array
+    {
+        try {
+            return SourceUrlNormalizer::normalizeV1($url);
+        } catch (SourceUrlNormalizationException $exception) {
+            throw ValidationException::withMessages([
+                $attribute => $exception->reason,
+            ]);
+        }
     }
 }

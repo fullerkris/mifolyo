@@ -1,6 +1,7 @@
 package crawler
 
 import (
+	"errors"
 	"log"
 	"math"
 
@@ -17,61 +18,69 @@ func (crawcfg *CrawlerConfig) Crawl(db *database.Database) {
 	// BFS loop
 	for {
 		log.Printf("Crawling...\n")
-		// Check if we have reached the maximum number of pages
-		if crawcfg.maxPagesReached() {
-			log.Printf("Maximum number of pages reached\n")
+		// Reserve the batch budget before touching the queue. This makes
+		// --max-pages a hard upper bound even when workers fail or overlap.
+		if !crawcfg.reservePageAttempt() {
+			log.Printf("Maximum number of page attempts reached\n")
 			return
 		}
 
 		// Get the next URL from the queue
 		log.Printf("Waiting for message queue...\n")
-		rawCurrentURL, depthLevel, normalizedCurrentURL, err := db.PopURL()
+		currentURLID, canonicalCurrentURL, depthLevel, err := db.PopURL()
 		if err != nil {
+			if errors.Is(err, database.ErrOrphanURLLookup) ||
+				errors.Is(err, database.ErrInvalidQueueEntry) ||
+				errors.Is(err, database.ErrInvalidURLID) ||
+				errors.Is(err, database.ErrInvalidQueueMember) {
+				log.Printf("Discarded invalid queue entry %s: %v\n", currentURLID, err)
+				continue
+			}
 			log.Printf("No more URLs in the queue: %v\n", err)
 			return
 		}
 
-		log.Printf("Popped URL: %v | Depth Level: %v | Normalized URL: %v\n", rawCurrentURL, depthLevel, normalizedCurrentURL)
+		log.Printf("Popped URL ID: %v | Depth Level: %v | Canonical URL: %v\n", currentURLID, depthLevel, canonicalCurrentURL)
 
 		// time.Sleep(1 * time.Second)
 
 		// Check if the URL has been visited
-		visited, err := db.HasURLBeenVisited(normalizedCurrentURL)
+		visited, err := db.HasURLBeenVisited(canonicalCurrentURL)
 		if err != nil {
 			log.Printf("Error: [%v] - skipping...\n", err)
 			continue
 		}
 
 		if visited {
-			log.Printf("Skipping %v - already visited\n", normalizedCurrentURL)
+			log.Printf("Skipping %v - already visited\n", canonicalCurrentURL)
 			continue
 		}
 
-		log.Printf("Crawling from %v (%v)...\n", normalizedCurrentURL, rawCurrentURL)
+		log.Printf("Crawling %v...\n", canonicalCurrentURL)
 
 		// Fetch HTML, Status Code, and Content-Type
-		html, statusCode, contentType, err := getPageData(rawCurrentURL, crawcfg.UserAgent)
+		html, statusCode, contentType, err := getPageData(canonicalCurrentURL, crawcfg.UserAgent)
 		if err != nil {
 			// Skip if we couldn't fetch the data
-			log.Printf("Error fetching %v data: %v\n", rawCurrentURL, err)
+			log.Printf("Error fetching %v data: %v\n", canonicalCurrentURL, err)
 			continue
 		}
 
 		// Fetch the links of the current page
-		outgoingLinks, imagesMap, err := getURLsFromHTML(html, rawCurrentURL)
+		outgoingLinks, imagesMap, err := getURLsFromHTML(html, canonicalCurrentURL)
 		if err != nil {
 			log.Printf("Error getting links from HTML: %v\n", err)
 			continue
 		}
 
 		// Store images
-		crawcfg.AddImages(normalizedCurrentURL, imagesMap)
+		crawcfg.AddImages(canonicalCurrentURL, imagesMap)
 
 		// Create outlinks and update backlinks
-		crawcfg.UpdateLinks(normalizedCurrentURL, outgoingLinks)
+		crawcfg.UpdateLinks(canonicalCurrentURL, outgoingLinks)
 
 		// Create Page struct
-		pg := pages.CreatePage(normalizedCurrentURL, html, contentType, statusCode)
+		pg := pages.CreatePage(canonicalCurrentURL, html, contentType, statusCode)
 
 		// Add page visit
 		err = crawcfg.addPage(pg)
@@ -80,23 +89,26 @@ func (crawcfg *CrawlerConfig) Crawl(db *database.Database) {
 			continue
 		}
 
-		err = db.VisitPage(normalizedCurrentURL)
+		err = db.VisitPage(canonicalCurrentURL)
 		if err != nil {
 			log.Printf("\tError adding page visit: %v\n", err)
 			continue
 		}
 
-		log.Printf("Adding links from %v (%v)...\n", normalizedCurrentURL, rawCurrentURL)
+		log.Printf("Adding links from %v...\n", canonicalCurrentURL)
 		// Add links to url queue
-		for _, rawCurrentLink := range outgoingLinks {
-			// Check if the url is valid
-			if !utils.IsValidURL(rawCurrentLink) {
-				// If it's not valid, process the next link
+		for _, outgoingLink := range outgoingLinks {
+			identity, err := utils.CanonicalizeURLV1(outgoingLink)
+			if err != nil || !identity.CrawlEligible || identity.CanonicalURL == canonicalCurrentURL {
 				continue
 			}
 
 			// Check if the thing exists in the queue, and update weight
-			score, exists := db.ExistsInQueue(rawCurrentLink)
+			score, exists, err := db.ExistsInQueue(identity.URLID)
+			if err != nil {
+				log.Printf("Error checking queue for %s: %v\n", identity.CanonicalURL, err)
+				continue
+			}
 			if exists {
 				// NOTE: I decided to disable this for now.
 				// I'll see how it performs without it.
@@ -108,7 +120,9 @@ func (crawcfg *CrawlerConfig) Crawl(db *database.Database) {
 			score = math.Max(utils.MinScore, math.Min(score, utils.MaxScore))
 
 			// Update score based on depth
-			_ = db.PushURL(rawCurrentLink, score)
+			if err := db.PushURL(identity.CanonicalURL, score); err != nil {
+				log.Printf("Error queueing %s: %v\n", identity.CanonicalURL, err)
+			}
 		}
 	}
 }

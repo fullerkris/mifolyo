@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mifolyo.local/contracts/crawl-seed-v1.schema.json",
+  "title": "MiFolyo crawl seed v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "_id",
+    "schema_version",
+    "canonicalization_version",
+    "canonical_url",
+    "enabled",
+    "priority",
+    "categories",
+    "sources",
+    "discovered_at",
+    "updated_at"
+  ],
+  "properties": {
+    "_id": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "canonicalization_version": {
+      "const": 1
+    },
+    "canonical_url": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2048,
+      "pattern": "^https?://"
+    },
+    "enabled": {
+      "type": "boolean"
+    },
+    "priority": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 3
+    },
+    "categories": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "items": {
+        "$ref": "#/$defs/source"
+      }
+    },
+    "discovered_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "$defs": {
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key",
+        "type",
+        "source_ref",
+        "raw_url",
+        "category",
+        "priority",
+        "observed_at",
+        "metadata"
+      ],
+      "properties": {
+        "key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_ref": {
+          "type": "string"
+        },
+        "raw_url": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048,
+          "x-maxUtf8Bytes": 2048
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1
+        },
+        "priority": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "metadata": {
+          "type": "object"
+        }
+      }
+    }
+  }
+}

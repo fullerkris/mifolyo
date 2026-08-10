@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePostRequest;
 use App\Models\Community;
 use App\Models\Post;
+use App\Support\SourceUrlNormalizationException;
 use App\Support\SourceUrlNormalizer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class PostController extends Controller
 {
@@ -39,7 +41,7 @@ class PostController extends Controller
 
         $contentType = $validated['content_type'] ?? 'text';
         $sourceUrlFields = isset($validated['url'])
-            ? SourceUrlNormalizer::normalize($validated['url'])
+            ? $this->normalizeSourceUrl($validated['url'])
             : [];
 
         $post = DB::transaction(function () use ($validated, $community, $user, $contentType, $sourceUrlFields) {
@@ -51,7 +53,7 @@ class PostController extends Controller
                 'title' => $validated['title'],
                 'slug' => $slug,
                 'body' => $validated['body'] ?? null,
-                'url' => $validated['url'] ?? null,
+                'url' => $sourceUrlFields['source_url'] ?? null,
                 'content_type' => $contentType,
                 'is_nsfw' => $validated['is_nsfw'] ?? false,
                 'published_at' => now(),
@@ -89,5 +91,21 @@ class PostController extends Controller
         }
 
         return $candidate;
+    }
+
+    /**
+     * @return array{source_url: string, source_url_hash: string, source_domain: string, source_path: string, source_url_canonicalization_version: int}
+     *
+     * @throws ValidationException
+     */
+    private function normalizeSourceUrl(string $url): array
+    {
+        try {
+            return SourceUrlNormalizer::normalizeV1($url);
+        } catch (SourceUrlNormalizationException $exception) {
+            throw ValidationException::withMessages([
+                'url' => $exception->reason,
+            ]);
+        }
     }
 }

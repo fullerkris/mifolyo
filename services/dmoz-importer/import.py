@@ -72,6 +72,7 @@ TRACKING_KEYS = {
 TRACKING_PREFIXES = ("utm_", "mc_")
 UNRESERVED = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~"
 PERCENT_ENCODED = re.compile(r"%([0-9A-Fa-f]{2})")
+V1_CRAWL_SEED_COLLECTION = "crawl_seeds"
 
 
 @dataclass
@@ -318,12 +319,25 @@ def mongo_uri_from_env() -> str:
     return f"mongodb://{host}:{port}/{db}"
 
 
+def legacy_collection_name(value: str) -> str:
+    if value == V1_CRAWL_SEED_COLLECTION:
+        raise argparse.ArgumentTypeError(
+            "the legacy DMOZ adapter must not target the V1 crawl_seeds collection"
+        )
+    return value
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Import DMOZ RDF URLs into MongoDB seeds.")
     parser.add_argument("input", help="Path to uncompressed content.rdf.u8")
     parser.add_argument("--mongo-uri", default=mongo_uri_from_env(), help="MongoDB connection string")
     parser.add_argument("--mongo-db", default=os.getenv("MONGO_DB", "mifolyo_index"), help="MongoDB database name")
-    parser.add_argument("--collection", default="dmoz_seeds", help="Target MongoDB collection")
+    parser.add_argument(
+        "--collection",
+        default="dmoz_seeds",
+        type=legacy_collection_name,
+        help="Target legacy MongoDB collection (crawl_seeds is forbidden)",
+    )
     parser.add_argument("--batch-size", type=int, default=1000, help="MongoDB bulk write batch size")
     parser.add_argument("--progress-every", type=int, default=10000, help="Log progress every N records")
     parser.add_argument("--limit", type=int, default=0, help="Stop after N processed records, for testing")
@@ -336,6 +350,9 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
+    if args.collection == V1_CRAWL_SEED_COLLECTION:
+        logger.error("The legacy DMOZ adapter cannot target crawl_seeds")
+        return 1
     random.seed(args.random_seed)
 
     if not os.path.exists(args.input):

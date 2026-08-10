@@ -2,6 +2,12 @@
 
 The Image Indexer is a core service in the Moogle search engine pipeline. Its job is to process images found on crawled web pages from the Spider, extract relevant metadata, and store image data in MongoDB for fast retrieval by other services. The Image Indexer builds an inverted index for images, manages image metadata, and prepares data for image search and ranking.
 
+> [!WARNING]
+> **BLOCKED:** Do not run this service until external image retrieval implements
+> and tests DNS-pinned address authorization, redirect revalidation, private and
+> host address rejection, and response-size limits. The commands below are
+> retained only as post-hardening reference procedures.
+
 ## Setup
 
 ### Using Docker
@@ -26,7 +32,8 @@ The recommended way to run the Image Indexer is with Docker. This ensures all de
    ```
 
 3. **Build and Run**:  
-   In the `services/indexer` directory, run the following commands:
+   In the `services/image-indexer` directory, run the following commands after
+   the security block above is resolved:
    ```bash
    docker-compose build
    docker-compose up

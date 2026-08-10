@@ -21,6 +21,7 @@
 go.work
 go.work.sum
 main
+/services/spider/spider
 
 # Python
 venv/

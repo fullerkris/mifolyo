@@ -1,10 +1,14 @@
 name: Required Checks
 
 on:
+  workflow_dispatch:
   pull_request:
     branches: ["main"]
   push:
-    branches: ["main"]
+    branches: ["main", "crawl_seeds-and-url-rules-rebuild"]
+
+permissions:
+  contents: read
 
 concurrency:
   group: required-checks-${{ github.workflow }}-${{ github.ref }}
@@ -46,8 +50,44 @@ jobs:
 
       - name: Validate compose files
         run: |
+          docker compose -f docker-compose.yml config >/dev/null
+          docker compose \
+            --project-name mifolyo-v1-baseline-test \
+            --file scripts/docker/v1-baseline.compose.yml \
+            --profile tools --profile pipeline --profile image-pipeline \
+            config >/dev/null
           docker compose -f scripts/docker/infra.compose.yml config >/dev/null
           docker compose -f services/forum-engine/docker-compose.yml config >/dev/null
+
+      - name: Build and audit query-engine image
+        run: |
+          docker compose \
+            --project-name mifolyo-v1-baseline-test \
+            --file scripts/docker/v1-baseline.compose.yml \
+            build query-engine
+          docker run --rm --entrypoint npm \
+            mifolyo-v1-baseline-test-query-engine:local \
+            audit --audit-level=low
+          docker run --rm --user 0:0 --entrypoint /bin/sh \
+            mifolyo-v1-baseline-test-query-engine:local -ec \
+            'test -z "$(find /var/www -maxdepth 1 -name ".env*" ! -name ".env.example" -print -quit)" && test -z "$(find /var/www/public \( ! -user query-engine-user -o ! -group www-data \) -print -quit)"'
+
+      - name: Verify fresh query asset volume
+        run: |
+          volume="mifolyo-query-assets-ci-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          docker volume create "${volume}" >/dev/null
+          trap 'docker volume rm --force "${volume}" >/dev/null' EXIT
+          docker run --rm \
+            --user 1000:33 \
+            --network none \
+            --cap-drop ALL \
+            --security-opt no-new-privileges \
+            --read-only \
+            --tmpfs /tmp:rw,noexec,nosuid,size=64m \
+            --mount "type=volume,source=${volume},target=/assets" \
+            --entrypoint /bin/sh \
+            mifolyo-v1-baseline-test-query-engine:local -ec \
+            'cp -R /var/www/public/. /assets/ && test -f /assets/index.php && test -f /assets/build/manifest.json'
 
       - name: Build forum-engine image
         run: |
@@ -95,8 +135,9 @@ jobs:
       - name: Verify auth flow contract
         run: |
           register_code="$(curl -s -o /tmp/register.json -w "%{http_code}" \
+            -H "Accept: application/json" \
             -H "Content-Type: application/json" \
-            -d '{"name":"CI User","email":"ci-user@example.com","password":"password123","password_confirmation":"password123"}' \
+            -d '{"name":"CI User","username":"ci-user","email":"ci-user@example.com","password":"password123","password_confirmation":"password123"}' \
             http://localhost:8000/api/auth/register || true)"
 
           if [ "${register_code}" != "201" ]; then

@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
     'url',
     'source_url',
     'source_url_hash',
+    'source_url_canonicalization_version',
     'source_domain',
     'source_path',
     'content_type',
@@ -40,6 +41,7 @@ class Post extends Model
             'is_locked' => 'boolean',
             'is_removed' => 'boolean',
             'is_nsfw' => 'boolean',
+            'source_url_canonicalization_version' => 'integer',
             'published_at' => 'datetime',
         ];
     }

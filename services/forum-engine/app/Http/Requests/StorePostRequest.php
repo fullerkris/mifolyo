@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\SourceUrlV1;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -19,7 +20,7 @@ class StorePostRequest extends FormRequest
             'title' => ['required', 'string', 'max:300'],
             'content_type' => ['sometimes', Rule::in(['text', 'link'])],
             'body' => ['nullable', 'string', 'max:50000', 'required_if:content_type,text'],
-            'url' => ['nullable', 'url:http,https', 'max:2048', 'required_if:content_type,link'],
+            'url' => ['bail', 'required_if:content_type,link', 'nullable', 'string', new SourceUrlV1],
             'is_nsfw' => ['sometimes', 'boolean'],
         ];
     }

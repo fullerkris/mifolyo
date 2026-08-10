@@ -5,7 +5,12 @@ import (
 	"io"
 	"net/http"
 	"strings"
+	"time"
 )
+
+const maxPageBodyBytes int64 = 5 * 1024 * 1024
+
+var pageHTTPClient = &http.Client{Timeout: 15 * time.Second}
 
 // Return HTML, Status Code, Content-Type, and Error Code
 func getPageData(rawURL string, userAgent string) (string, int, string, error) {
@@ -18,7 +23,7 @@ func getPageData(rawURL string, userAgent string) (string, int, string, error) {
 		req.Header.Set("User-Agent", userAgent)
 	}
 
-	res, err := http.DefaultClient.Do(req)
+	res, err := pageHTTPClient.Do(req)
 
 	if err != nil {
 		return "", 0, "", fmt.Errorf("failed to fetch URL: %w", err)
@@ -34,11 +39,17 @@ func getPageData(rawURL string, userAgent string) (string, int, string, error) {
 	if !strings.HasPrefix(contentType, "text/html") {
 		return "", res.StatusCode, contentType, fmt.Errorf("invalid content type: %s", contentType)
 	}
+	if res.ContentLength > maxPageBodyBytes {
+		return "", res.StatusCode, contentType, fmt.Errorf("response body exceeds %d bytes", maxPageBodyBytes)
+	}
 
-	body, err := io.ReadAll(res.Body)
+	body, err := io.ReadAll(io.LimitReader(res.Body, maxPageBodyBytes+1))
 
 	if err != nil {
 		return "", res.StatusCode, "text/html", fmt.Errorf("failed to read response body: %w", err)
+	}
+	if int64(len(body)) > maxPageBodyBytes {
+		return "", res.StatusCode, contentType, fmt.Errorf("response body exceeds %d bytes", maxPageBodyBytes)
 	}
 
 	return string(body), res.StatusCode, "text/html", nil

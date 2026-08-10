@@ -1,0 +1,370 @@
+name: mifolyo-v1-baseline-test
+
+x-pipeline-environment: &pipeline-environment
+  REDIS_HOST: redis
+  REDIS_PORT: "6379"
+  REDIS_PASSWORD: ""
+  REDIS_DB: "0"
+  MONGO_HOST: mongo
+  MONGO_PORT: "27017"
+  MONGO_DB: mifolyo_index
+  MONGO_USERNAME: ""
+  MONGO_PASSWORD: ""
+  USER_AGENT: MiFolyoBot/1.0
+
+x-container-security: &container-security
+  security_opt:
+    - no-new-privileges:true
+
+x-restricted-runtime: &restricted-runtime
+  <<: *container-security
+  cap_drop:
+    - ALL
+  init: true
+  read_only: true
+  tmpfs:
+    - /tmp:rw,noexec,nosuid,size=64m
+
+x-query-image: &query-image
+  image: mifolyo-v1-baseline-test-query-engine:local
+
+services:
+  mongo:
+    image: mongo:8
+    restart: unless-stopped
+    <<: *container-security
+    healthcheck:
+      test:
+        - CMD
+        - mongosh
+        - --quiet
+        - --eval
+        - "quit(db.adminCommand({ ping: 1 }).ok ? 0 : 1)"
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+    volumes:
+      - mongo-data:/data/db
+      - mongo-config-data:/data/configdb
+    networks:
+      - data
+    cpus: "1.00"
+    mem_limit: 1g
+    pids_limit: 256
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    <<: *container-security
+    command:
+      - redis-server
+      - --appendonly
+      - "yes"
+      - --save
+      - "60"
+      - "1"
+      - --rename-command
+      - FLUSHDB
+      - ""
+      - --rename-command
+      - FLUSHALL
+      - ""
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 5s
+    volumes:
+      - redis-data:/data
+    networks:
+      - crawl
+      - data
+    cpus: "0.50"
+    mem_limit: 256m
+    pids_limit: 128
+
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    <<: *container-security
+    environment:
+      POSTGRES_DB: mifolyo
+      POSTGRES_USER: mifolyo
+      POSTGRES_PASSWORD: mifolyo-v1-test-only
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - data
+    cpus: "0.75"
+    mem_limit: 512m
+    pids_limit: 192
+
+  query-assets:
+    <<: [*query-image, *restricted-runtime]
+    restart: "no"
+    entrypoint: [/bin/sh, -ec]
+    command:
+      - |
+        find /assets -mindepth 1 -maxdepth 1 -exec rm -rf -- {} +
+        cp -R /var/www/public/. /assets/
+        test -f /assets/index.php
+        test -f /assets/build/manifest.json
+    user: "1000:33"
+    network_mode: none
+    volumes:
+      - query-public:/assets
+    cpus: "0.25"
+    mem_limit: 256m
+    pids_limit: 64
+
+  query-engine:
+    <<: [*query-image, *container-security]
+    build:
+      context: ../../services/query-engine
+    restart: unless-stopped
+    entrypoint: [/bin/sh, -ec]
+    command:
+      - php artisan migrate --force && exec php-fpm
+    cap_drop:
+      - ALL
+    environment:
+      APP_NAME: MiFolyo V1 Baseline Test
+      APP_ENV: local
+      APP_KEY: base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+      APP_DEBUG: "false"
+      APP_URL: http://127.0.0.1:${MIFOLYO_V1_TEST_HTTP_PORT:-18080}
+      LOG_CHANNEL: stderr
+      LOG_LEVEL: info
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_DATABASE: mifolyo
+      DB_USERNAME: mifolyo
+      DB_PASSWORD: mifolyo-v1-test-only
+      MONGODB_URI: mongodb://mongo:27017
+      MONGODB_DATABASE: mifolyo_index
+      SESSION_DRIVER: database
+      CACHE_STORE: redis
+      QUEUE_CONNECTION: sync
+      REDIS_CLIENT: predis
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      REDIS_PASSWORD: ""
+      REDIS_DB: "0"
+      REDIS_CACHE_DB: "1"
+      REDIS_PREFIX: mifolyo_v1_baseline_test_
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      query-assets:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          php -r '$$socket = @fsockopen("127.0.0.1", 9000);
+          exit($$socket ? 0 : 1);'
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 20s
+    volumes:
+      - query-public:/var/www/public:ro
+    networks:
+      data:
+      web:
+        aliases:
+          - laravel
+    cpus: "0.75"
+    mem_limit: 512m
+    pids_limit: 192
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    <<: *container-security
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    read_only: true
+    tmpfs:
+      - /config:rw,noexec,nosuid,size=16m
+      - /data:rw,noexec,nosuid,size=16m
+      - /tmp:rw,noexec,nosuid,size=16m
+    depends_on:
+      query-engine:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, wget, --quiet, --tries=1, --spider, http://127.0.0.1/up]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    ports:
+      - 127.0.0.1:${MIFOLYO_V1_TEST_HTTP_PORT:-18080}:80
+    volumes:
+      - ../../services/query-engine/Caddyfile:/etc/caddy/Caddyfile:ro
+      - query-public:/srv:ro
+    networks:
+      - web
+      - ingress
+    cpus: "0.25"
+    mem_limit: 128m
+    pids_limit: 64
+
+  seed-importer:
+    profiles: [tools]
+    build:
+      context: ../../services/seed-importer
+    command: [python, ./crawl_seeds.py, --help]
+    <<: *restricted-runtime
+    user: "65534:65534"
+    environment:
+      MONGO_HOST: mongo
+      MONGO_PORT: "27017"
+      MONGO_DB: mifolyo_index
+      MONGO_USERNAME: ""
+      MONGO_PASSWORD: ""
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      REDIS_PASSWORD: ""
+      REDIS_DB: "0"
+      USER_AGENT: MiFolyoBot/1.0
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONUNBUFFERED: "1"
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ../../seeds:/seeds:ro
+    networks:
+      - data
+    cpus: "0.50"
+    mem_limit: 384m
+    pids_limit: 128
+
+  spider:
+    profiles: [pipeline]
+    build:
+      context: ../../services/spider
+    command: [./spider, --once, --max-concurrency, "2", --max-pages, "10"]
+    <<: *restricted-runtime
+    user: "65534:65534"
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      REDIS_PASSWORD: ""
+      REDIS_DB: "0"
+      USER_AGENT: MiFolyoBot/1.0
+      CRAWL_QUEUE_KEY: mifolyo:crawl:v1:queue
+      CRAWL_URLS_KEY: mifolyo:crawl:v1:urls
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - crawl
+    cpus: "0.50"
+    mem_limit: 256m
+    pids_limit: 128
+
+  indexer:
+    profiles: [pipeline]
+    build:
+      context: ../../services/indexer
+    restart: on-failure:3
+    <<: *restricted-runtime
+    user: "65534:65534"
+    environment:
+      <<: *pipeline-environment
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONUNBUFFERED: "1"
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - data
+    cpus: "0.75"
+    mem_limit: 512m
+    pids_limit: 128
+
+  image-indexer:
+    profiles: [image-pipeline]
+    build:
+      context: ../../services/image-indexer
+    restart: on-failure:3
+    <<: *restricted-runtime
+    user: "65534:65534"
+    environment:
+      <<: *pipeline-environment
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONUNBUFFERED: "1"
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - data
+    cpus: "0.75"
+    mem_limit: 512m
+    pids_limit: 128
+
+  backlinks-processor:
+    profiles: [pipeline]
+    build:
+      context: ../../services/backlinks-processor
+    restart: on-failure:3
+    <<: *restricted-runtime
+    user: "65534:65534"
+    environment:
+      <<: *pipeline-environment
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONUNBUFFERED: "1"
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - data
+    cpus: "0.50"
+    mem_limit: 384m
+    pids_limit: 128
+
+volumes:
+  mongo-data:
+  mongo-config-data:
+  redis-data:
+  postgres-data:
+  query-public:
+
+networks:
+  crawl:
+    driver: bridge
+  data:
+    driver: bridge
+    internal: true
+  web:
+    driver: bridge
+    internal: true
+  ingress:
+    driver: bridge

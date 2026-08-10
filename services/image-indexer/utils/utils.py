@@ -35,7 +35,7 @@ from io import BytesIO
 
 def is_valid_image(url, min_width=100, min_height=100):
     try:
-        absUrl = "https://" + url
+        absUrl = url if url.startswith(("http://", "https://")) else "https://" + url
         response = requests.get(absUrl, timeout=5)
         response.raise_for_status()
         img = Image.open(BytesIO(response.content))

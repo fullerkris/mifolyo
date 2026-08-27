@@ -8,6 +8,7 @@ x-moogle-env: &moogle-env
   MONGO_DB: mifolyo_index
   MONGO_USERNAME: ""
   MONGO_PASSWORD: ""
+  ALLOW_INSECURE_DATASTORES: "true"
   USER_AGENT: MiFolyoBot/1.0
 
 services:
@@ -38,6 +39,7 @@ services:
       QUEUE_CONNECTION: redis
       REDIS_CLIENT: predis
       REDIS_HOST: redis
+      ALLOW_INSECURE_DATASTORES: "true"
     depends_on:
       - postgres
       - mongo
@@ -94,16 +96,49 @@ services:
   spider:
     build: ./services/spider
     image: mifolyo-spider
-    profiles: ["pipeline"]
-    command: ["./spider", "--max-concurrency", "2", "--max-pages", "10", "--once"]
+    profiles: ["crawl"]
+    command: ["./spider", "--validate-policy", "--validate-baseline-policy"]
     environment:
       <<: *moogle-env
       CRAWL_QUEUE_KEY: mifolyo:crawl:v1:queue
       CRAWL_URLS_KEY: mifolyo:crawl:v1:urls
+      CRAWL_DEPTHS_KEY: mifolyo:crawl:v1:depths
+      CRAWL_POLICY_FILE: /app/config/crawl-policy-v1.baseline.json
+      CRAWL_DENY_CIDRS: ${MIFOLYO_CRAWL_DENY_CIDRS:-}
+      RENDER_POLICY_FILE: /app/config/render-policy-v1.disabled.json
+      RENDER_SOCKET: /run/mifolyo-render/renderer.sock
     depends_on:
       - redis
+    volumes:
+      - render_socket:/run/mifolyo-render:ro
     networks:
       - app
+
+  render-worker:
+    build: ./services/render-worker
+    image: mifolyo-render-worker
+    profiles: ["render"]
+    init: true
+    user: "65534:65534"
+    network_mode: none
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+      - seccomp=./services/render-worker/seccomp_profile.json
+    cap_drop:
+      - ALL
+    environment:
+      RENDER_SOCKET: /run/mifolyo-render/renderer.sock
+      CHROMIUM_EXECUTABLE_PATH: /usr/bin/chromium
+      HOME: /tmp
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=256m
+      - /dev/shm:rw,nosuid,size=256m
+    volumes:
+      - render_socket:/run/mifolyo-render
+    cpus: "1.00"
+    mem_limit: 768m
+    pids_limit: 256
 
   indexer:
     build: ./services/indexer
@@ -201,6 +236,7 @@ volumes:
   postgres_data:
   query_engine_vendor:
   query_engine_node_modules:
+  render_socket:
 
 networks:
   app:

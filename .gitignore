@@ -17,6 +17,9 @@
 # env file
 .env
 
+# macOS metadata
+.DS_Store
+
 # Go
 go.work
 go.work.sum

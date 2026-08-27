@@ -10,6 +10,7 @@ x-pipeline-environment: &pipeline-environment
   MONGO_DB: mifolyo_index
   MONGO_USERNAME: ""
   MONGO_PASSWORD: ""
+  ALLOW_INSECURE_DATASTORES: "true"
   USER_AGENT: MiFolyoBot/1.0
 
 x-container-security: &container-security
@@ -163,6 +164,7 @@ services:
       REDIS_DB: "0"
       REDIS_CACHE_DB: "1"
       REDIS_PREFIX: mifolyo_v1_baseline_test_
+      ALLOW_INSECURE_DATASTORES: "true"
     depends_on:
       mongo:
         condition: service_healthy
@@ -261,10 +263,10 @@ services:
     pids_limit: 128
 
   spider:
-    profiles: [pipeline]
+    profiles: [crawl]
     build:
       context: ../../services/spider
-    command: [./spider, --once, --max-concurrency, "2", --max-pages, "10"]
+    command: [./spider, --validate-policy, --validate-baseline-policy]
     <<: *restricted-runtime
     user: "65534:65534"
     environment:
@@ -275,14 +277,50 @@ services:
       USER_AGENT: MiFolyoBot/1.0
       CRAWL_QUEUE_KEY: mifolyo:crawl:v1:queue
       CRAWL_URLS_KEY: mifolyo:crawl:v1:urls
+      CRAWL_DEPTHS_KEY: mifolyo:crawl:v1:depths
+      CRAWL_POLICY_FILE: /app/config/crawl-policy-v1.baseline.json
+      CRAWL_DENY_CIDRS: ${MIFOLYO_CRAWL_DENY_CIDRS:-}
+      RENDER_POLICY_FILE: /app/config/render-policy-v1.disabled.json
+      RENDER_SOCKET: /run/mifolyo-render/renderer.sock
     depends_on:
       redis:
         condition: service_healthy
     networks:
       - crawl
+    volumes:
+      - render-socket:/run/mifolyo-render:ro
     cpus: "0.50"
     mem_limit: 256m
     pids_limit: 128
+
+  render-worker:
+    profiles: [render]
+    build:
+      context: ../../services/render-worker
+    image: mifolyo-v1-baseline-test-render-worker:local
+    restart: "no"
+    <<: *container-security
+    user: "65534:65534"
+    init: true
+    network_mode: none
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+      - seccomp=../../services/render-worker/seccomp_profile.json
+    environment:
+      RENDER_SOCKET: /run/mifolyo-render/renderer.sock
+      CHROMIUM_EXECUTABLE_PATH: /usr/bin/chromium
+      HOME: /tmp
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=256m
+      - /dev/shm:rw,nosuid,size=256m
+    volumes:
+      - render-socket:/run/mifolyo-render
+    cpus: "1.00"
+    mem_limit: 768m
+    pids_limit: 256
 
   indexer:
     profiles: [pipeline]
@@ -350,12 +388,32 @@ services:
     mem_limit: 384m
     pids_limit: 128
 
+  page-rank:
+    profiles: [ranking]
+    build:
+      context: ../../services/page-rank
+    image: mifolyo-v1-baseline-test-page-rank:local
+    restart: "no"
+    <<: *restricted-runtime
+    user: "65534:65534"
+    environment:
+      <<: *pipeline-environment
+    depends_on:
+      mongo:
+        condition: service_healthy
+    networks:
+      - data
+    cpus: "0.50"
+    mem_limit: 256m
+    pids_limit: 128
+
 volumes:
   mongo-data:
   mongo-config-data:
   redis-data:
   postgres-data:
   query-public:
+  render-socket:
 
 networks:
   crawl:

@@ -23,10 +23,10 @@ jobs:
         working-directory: services/forum-engine
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Set up PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@b604ade2a87db23f8871b7182e69ec5e75effb45 # v2
         with:
           php-version: "8.4"
           tools: composer
@@ -34,6 +34,9 @@ jobs:
 
       - name: Install Composer dependencies
         run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Audit Composer lockfile including dev dependencies
+        run: composer audit --locked
 
       - name: Run code style check
         run: ./vendor/bin/pint --test
@@ -46,7 +49,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Validate compose files
         run: |
@@ -54,10 +57,80 @@ jobs:
           docker compose \
             --project-name mifolyo-v1-baseline-test \
             --file scripts/docker/v1-baseline.compose.yml \
-            --profile tools --profile pipeline --profile image-pipeline \
+            --profile tools --profile pipeline --profile ranking \
+            --profile crawl --profile image-pipeline --profile render \
             config >/dev/null
           docker compose -f scripts/docker/infra.compose.yml config >/dev/null
           docker compose -f services/forum-engine/docker-compose.yml config >/dev/null
+
+      - name: Validate immutable release Compose contract
+        run: |
+          bash scripts/validate-release-compose.sh --static v2026.08.26
+
+          for invalid_tag in '' latest main master v1.2 release-1 v1.2.3+build; do
+            if bash scripts/validate-release-compose.sh --static "${invalid_tag}" >/dev/null 2>&1; then
+              echo "Release validation accepted invalid tag: '${invalid_tag}'" >&2
+              exit 1
+            fi
+          done
+
+          digest_a="$(printf 'a%.0s' {1..64})"
+          digest_b="$(printf 'b%.0s' {1..64})"
+          digest_c="$(printf 'c%.0s' {1..64})"
+          digest_d="$(printf 'd%.0s' {1..64})"
+          export MIFOLYO_SPIDER_IMAGE="ghcr.io/fullerkris/mifolyo/spider@sha256:${digest_a}"
+          export MIFOLYO_INDEXER_IMAGE="ghcr.io/fullerkris/mifolyo/indexer@sha256:${digest_b}"
+          export MIFOLYO_IMAGE_INDEXER_IMAGE="ghcr.io/fullerkris/mifolyo/image-indexer@sha256:${digest_c}"
+          export MIFOLYO_PAGE_RANK_IMAGE="ghcr.io/fullerkris/mifolyo/page-rank@sha256:${digest_d}"
+          bash scripts/validate-release-compose.sh v2026.08.26
+
+          metadata_dir="${RUNNER_TEMP}/release-image-metadata"
+          mkdir -p "${metadata_dir}"
+          printf 'MIFOLYO_RELEASE_TAG=v2026.08.26\nMIFOLYO_SPIDER_IMAGE=%s\n' \
+            "${MIFOLYO_SPIDER_IMAGE}" > "${metadata_dir}/spider.env"
+          printf 'MIFOLYO_RELEASE_TAG=v2026.08.26\nMIFOLYO_INDEXER_IMAGE=%s\n' \
+            "${MIFOLYO_INDEXER_IMAGE}" > "${metadata_dir}/indexer.env"
+          printf 'MIFOLYO_RELEASE_TAG=v2026.08.26\nMIFOLYO_IMAGE_INDEXER_IMAGE=%s\n' \
+            "${MIFOLYO_IMAGE_INDEXER_IMAGE}" > "${metadata_dir}/image-indexer.env"
+          printf 'MIFOLYO_RELEASE_TAG=v2026.08.26\nMIFOLYO_PAGE_RANK_IMAGE=%s\n' \
+            "${MIFOLYO_PAGE_RANK_IMAGE}" > "${metadata_dir}/page-rank.env"
+          bash scripts/validate-release-compose.sh \
+            --env-file "${metadata_dir}/spider.env" \
+            --env-file "${metadata_dir}/indexer.env" \
+            --env-file "${metadata_dir}/image-indexer.env" \
+            --env-file "${metadata_dir}/page-rank.env" \
+            v2026.08.26
+
+          invalid_refs=(
+            "ghcr.io/fullerkris/mifolyo/spider:v2026.08.26"
+            "ghcr.io/fullerkris/mifolyo/spider:latest"
+            "ghcr.io/fullerkris/mifolyo/spider:main"
+            "ghcr.io/attacker/mifolyo/spider@sha256:${digest_a}"
+            "ghcr.io/fullerkris/mifolyo/indexer@sha256:${digest_a}"
+            "ghcr.io/fullerkris/mifolyo/spider@sha256:${digest_a%?}"
+            "ghcr.io/fullerkris/mifolyo/spider@sha256:${digest_a^^}"
+          )
+          for invalid_ref in "${invalid_refs[@]}"; do
+            if MIFOLYO_SPIDER_IMAGE="${invalid_ref}" \
+              bash scripts/validate-release-compose.sh v2026.08.26 >/dev/null 2>&1; then
+              echo "Release validation accepted invalid image: '${invalid_ref}'" >&2
+              exit 1
+            fi
+          done
+
+      - name: Build and smoke networkless renderer
+        run: |
+          docker build --tag mifolyo-render-worker:required services/render-worker
+          docker run --rm \
+            --network none \
+            --read-only \
+            --user 65534:65534 \
+            --cap-drop ALL \
+            --security-opt no-new-privileges:true \
+            --security-opt seccomp=services/render-worker/seccomp_profile.json \
+            --tmpfs /tmp:rw,noexec,nosuid,size=256m \
+            --tmpfs /dev/shm:rw,nosuid,size=256m \
+            mifolyo-render-worker:required node smoke.mjs
 
       - name: Build and audit query-engine image
         run: |
@@ -104,7 +177,7 @@ jobs:
       MIFOLYO_PROJECT_NAME: mifolyo-ci
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Start full stack
         run: bash scripts/fullstack.sh up

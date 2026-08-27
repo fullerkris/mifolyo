@@ -1,6 +1,10 @@
+name: Release Docker Images
+
 on:
   release:
     types: [published]
+
+permissions: {}
 
 jobs:
   build:
@@ -19,70 +23,127 @@ jobs:
             tfidf,
             page-rank,
             image-indexer,
+            render-worker,
           ]
       fail-fast: false
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Validate immutable release tag and deployment Compose files
+        env:
+          MIFOLYO_RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: bash scripts/validate-release-compose.sh --static "${MIFOLYO_RELEASE_TAG}"
 
       - name: Log into registry ghcr.io
-        uses: docker/login-action@v3
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build Docker image
+      - name: Build and push immutable Docker image
+        id: image
         working-directory: ./services/${{ matrix.service }}
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          SERVICE: ${{ matrix.service }}
         run: |
+          set -euo pipefail
           repository="$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')"
-          image="ghcr.io/${repository}/${{ matrix.service }}:latest"
-          docker build -t "${image}" .
-
-      - name: Push Docker image
-        run: |
-          repository="$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')"
-          image="ghcr.io/${repository}/${{ matrix.service }}:latest"
+          if [[ "${repository}" != "fullerkris/mifolyo" ]]; then
+            echo "Refusing to publish release images outside approved repository fullerkris/mifolyo: ${repository}" >&2
+            exit 1
+          fi
+          image="ghcr.io/${repository}/${SERVICE}:${RELEASE_TAG}"
+          docker build \
+            --label "org.opencontainers.image.revision=${GITHUB_SHA}" \
+            --label "org.opencontainers.image.version=${RELEASE_TAG}" \
+            --tag "${image}" .
           docker push "${image}"
 
+          digest="$(docker buildx imagetools inspect "${image}" --format '{{.Manifest.Digest}}')"
+          if [[ ! "${digest}" =~ ^sha256:[0-9a-f]{64}$ ]]; then
+            echo "Registry returned malformed digest for ${image}: ${digest}" >&2
+            exit 1
+          fi
+
+          reference="${image%:*}@${digest}"
+          if [[ ! "${reference}" =~ ^ghcr\.io/fullerkris/mifolyo/${SERVICE}@sha256:[0-9a-f]{64}$ ]]; then
+            echo "Generated an unapproved image reference: ${reference}" >&2
+            exit 1
+          fi
+
+          # Only the coordinated immutable-protocol services have approved
+          # deployment Compose definitions. Other images remain build-only.
+          if [[ "${SERVICE}" =~ ^(spider|indexer|page-rank|image-indexer)$ ]]; then
+            mkdir -p "${GITHUB_WORKSPACE}/image-metadata"
+            env_name="MIFOLYO_$(printf '%s' "${SERVICE}" | tr '[:lower:]-' '[:upper:]_')_IMAGE"
+            metadata="${GITHUB_WORKSPACE}/image-metadata/release-image.env"
+            printf '# Release tag is organizational metadata; Compose resolves IMAGE only.\nMIFOLYO_RELEASE_TAG=%s\n%s=%s\n' \
+              "${RELEASE_TAG}" "${env_name}" "${reference}" > "${metadata}"
+          fi
+          echo "image=${image}" >> "${GITHUB_OUTPUT}"
+          echo "digest=${digest}" >> "${GITHUB_OUTPUT}"
+          printf '### `%s`\n\n- Tag: `%s`\n- Digest: `%s`\n- Immutable reference: `%s@%s`\n' \
+            "${SERVICE}" "${RELEASE_TAG}" "${digest}" "${image%:*}" "${digest}" \
+            >> "${GITHUB_STEP_SUMMARY}"
+
+      - name: Preserve image digest metadata
+        if: contains(fromJSON('["spider", "indexer", "page-rank", "image-indexer"]'), matrix.service)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ${{ matrix.service }}-${{ github.event.release.tag_name }}-image-digest
+          path: ./image-metadata/release-image.env
+          if-no-files-found: error
+          retention-days: 90
+
       - name: Upload docker-compose artifact
-        uses: actions/upload-artifact@v4
+        # Services without an approved digest-only deployment definition remain
+        # build/push-only.
+        if: contains(fromJSON('["spider", "indexer", "page-rank", "image-indexer"]'), matrix.service)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: ${{ matrix.service }}-docker-compose
           path: ./services/${{ matrix.service }}/docker-compose.yml
+          if-no-files-found: error
+          retention-days: 1
 
   deploy:
     name: Copy docker-compose files to server
     runs-on: ubuntu-latest
     needs: build
+    permissions:
+      contents: read
     strategy:
       matrix:
         service:
           [
             spider,
             indexer,
-            backlinks-processor,
-            tfidf,
             page-rank,
             image-indexer,
           ]
       fail-fast: false
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Download ${{ matrix.service }} docker artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: ${{ matrix.service }}-docker-compose
           path: ./docker-compose-artifacts/
 
-      - name: Debug artifacts
-        run: ls -R ./docker-compose-artifacts/
+      - name: Download ${{ matrix.service }} image digest metadata
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: ${{ matrix.service }}-${{ github.event.release.tag_name }}-image-digest
+          path: ./image-metadata/
 
       - name: Create destination directory on server
-        uses: appleboy/ssh-action@v1.0.0
+        uses: appleboy/ssh-action@55dabf81b49d4120609345970c91507e2d734799 # v1.0.0
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
@@ -90,13 +151,13 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: mkdir -p ~/SearchEngine/${{ matrix.service }}
 
-      - name: Copy docker-compose file to server
-        uses: appleboy/scp-action@v0.1.7
+      - name: Copy docker-compose file and digest metadata to server
+        uses: appleboy/scp-action@917f8b81dfc1ccd331fef9e2d61bdc6c8be94634 # v0.1.7
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          source: "./docker-compose-artifacts/docker-compose.yml"
+          source: "./docker-compose-artifacts/docker-compose.yml,./image-metadata/release-image.env"
           target: "~/SearchEngine/${{ matrix.service }}/"
           strip_components: 1

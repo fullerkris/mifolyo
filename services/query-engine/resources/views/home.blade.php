@@ -51,33 +51,36 @@
                 <span>Search-first.</span> <strong>Community-powered.</strong>
             </p>
 
-            <form class="mifolyo-search-card" action="/api/search" method="GET" role="search">
-                <label for="mifolyo-home-search" class="sr-only">Search the web and community</label>
-                <svg class="mifolyo-search-icon" viewBox="0 0 24 24" aria-hidden="true">
-                    <circle cx="11" cy="11" r="7"></circle>
-                    <path d="m16.5 16.5 4 4"></path>
-                </svg>
-                <input id="mifolyo-home-search" name="q" type="search" placeholder="Search the web and community..." autocomplete="off">
-                <button type="submit" aria-label="Search">
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
+            <form class="mifolyo-search-form" action="{{ route('home.explore') }}" method="GET" role="search"
+                data-mode="search">
+                <input type="hidden" name="mode" value="search">
+                <div class="mifolyo-search-card">
+                    <label id="mifolyo-home-search-label" for="mifolyo-home-search" class="sr-only">
+                        Search the web
+                    </label>
+                    <svg class="mifolyo-search-icon" viewBox="0 0 24 24" aria-hidden="true">
                         <circle cx="11" cy="11" r="7"></circle>
                         <path d="m16.5 16.5 4 4"></path>
                     </svg>
-                </button>
-            </form>
+                    <input id="mifolyo-home-search" name="q" type="search" value="{{ old('q') }}"
+                        placeholder="Search indexed pages..." autocomplete="off" inputmode="search" enterkeyhint="search"
+                        aria-describedby="mifolyo-search-help{{ $errors->has('q') ? ' mifolyo-search-error' : '' }}"
+                        aria-invalid="{{ $errors->has('q') ? 'true' : 'false' }}" required>
+                    <button id="mifolyo-search-submit" type="submit" aria-label="Search the web">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <circle cx="11" cy="11" r="7"></circle>
+                            <path d="m16.5 16.5 4 4"></path>
+                        </svg>
+                    </button>
+                </div>
 
-            <div class="mifolyo-mode-switch" aria-label="Search mode preview">
-                <div class="mifolyo-mode-tabs">
-                    <span>MIFOLYO</span>
-                    <a href="/" class="active">Home</a>
-                    <a href="/api/search">Search</a>
-                    <a href="/discussions?url=https%3A%2F%2Fexample.com">Thread</a>
-                </div>
-                <div class="mifolyo-mode-bottom">
-                    <span class="active">Search</span>
-                    <span>Community</span>
-                </div>
-            </div>
+                <p id="mifolyo-search-help" class="mifolyo-search-help" aria-live="polite">
+                    Search indexed pages by keyword.
+                </p>
+                @error('q')
+                    <p id="mifolyo-search-error" class="mifolyo-search-error" role="alert">{{ $message }}</p>
+                @enderror
+            </form>
         </section>
 
         <section id="about" class="mifolyo-home-copy">

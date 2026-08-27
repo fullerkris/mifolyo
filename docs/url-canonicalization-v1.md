@@ -35,10 +35,16 @@ Source-specific transformations, such as unwrapping Reddit redirect URLs, happen
 Canonicalization defines identity; it does not authorize a network request. Static crawl admission additionally rejects:
 
 - Literal IPv4 and IPv6 addresses
-- Single-label and known local hostnames
+- Single-label, local, and reserved namespace hostnames such as `.onion`,
+  `.alt`, `.arpa`, `.test`, `.invalid`, and `.example`
 - Non-default crawl ports
 
-Before every connection and redirect, the crawler must separately resolve and reject private, loopback, link-local, reserved, and other non-global addresses. That DNS-pinned fetch authorization is a follow-up security control and is not replaced by canonicalization.
+Before every connection and redirect, the spider separately resolves and
+rejects private, loopback, link-local, reserved, and other non-global
+addresses, then dials only an approved numeric address and verifies the remote
+endpoint. Redirect targets are re-matched against crawl policy before DNS or
+network I/O. These fetch-time controls are implemented by `securefetch`; they
+remain separate from, and are not replaced by, canonicalization.
 
 ## Versioning
 

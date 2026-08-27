@@ -8,6 +8,16 @@ Tracked file: `seeds/manual-seeds.csv`
 
 Use this for founder-selected domains and topic-specific communities. Manual seeds should stay small enough to review by hand.
 
+Current disabled manual targets:
+- `https://www.bbc.com/news`
+- `https://www.khanacademy.org/`
+- `https://www.politifact.com/`
+
+The records remain in the catalog with `enabled: false` for provenance. Their
+hosts are assigned to the crawl policy's disabled `disabled-sites` group, so
+they are also denied at scheduler admission before DNS. Re-enabling a catalog
+record alone is insufficient; both controls require a new review.
+
 ## Curlie
 
 Primary site: [Curlie](https://curlie.org/)
@@ -60,12 +70,52 @@ Notes:
 
 Old Reddit base: `https://old.reddit.com`
 
-Recommended v1 use:
-- Discover outbound URLs from selected high-signal subreddits.
-- Do not index Reddit pages themselves by default.
-- Convert every Reddit listing or post page to its JSON endpoint by appending `.json`, then extract outbound URLs from the JSON payload.
+Current status (checked 2026-08-19):
+- Both `https://www.reddit.com/robots.txt` and
+  `https://old.reddit.com/robots.txt` declare `User-agent: *` and
+  `Disallow: /`.
+- The `reddit-crawler` policy group is present but disabled. Do not enqueue,
+  fetch, render, or index Reddit pages without approved access and a newly
+  reviewed policy.
+- `services/seed-importer/reddit.py` accepts only single-source approved local
+  exports matching `contracts/reddit-export-v1.schema.json`. It does not make
+  unauthenticated Reddit requests.
 
-Starter subreddits:
+Pending URL expansion after approval:
+- `https://www.reddit.com/r/games`
+- `https://old.reddit.com/r/games`
+- `https://www.reddit.com/r/games.json`
+- `https://old.reddit.com/r/games.json`
+
+A trailing slash is removed before `.json` is appended, so both input spellings
+`/r/games` and `/r/games/` produce the same `/r/games.json` URL. The four host
+and representation variants above are distinct crawl targets, not canonical
+aliases. Queries are preserved and fragments are removed.
+The expansion helper is tested but is not connected to the feeder or spider
+while the policy group remains disabled.
+
+Hermetic robots verification:
+- `TestHermeticRedditVariantsHonorDisallowAllWithoutPageRequests` enables the
+  group only inside a Go test and queues the four `www`, `old`, and `.json`
+  variants above.
+- A local TLS server, synthetic public DNS answer, pinned local dialer, and
+  in-memory Redis exercise the real scheduler, request gate, secure fetcher,
+  robots manager, and cache without contacting Reddit.
+- The fixture returns `User-agent: *` and `Disallow: /`. The asserted result is
+  two robots requests, one per origin, zero page requests, zero stored pages,
+  and two committed outbound attempts.
+- The checked-in `reddit-crawler` group remains disabled. This test is evidence
+  of fail-closed behavior, not authorization to crawl Reddit.
+- `testOnlyAllowRobotsForGroups` can allow named groups only inside Go tests so
+  local page fixtures can exercise post-robots crawl behavior. It is defined in
+  `_test.go`, has no policy, CLI, or environment switch, and is excluded from
+  the production spider binary.
+- `TestHermeticTestOnlyRobotsOverrideAllowsSelectedGroupPageFetch` proves the
+  selected test group can fetch one local HTML fixture without a robots request;
+  `TestTestOnlyRobotsOverrideDelegatesNonSelectedGroups` proves every other
+  group still delegates to normal robots enforcement.
+
+Pending starter subreddits after approved access:
 - `https://old.reddit.com/r/AskHistorians`
 - `https://old.reddit.com/r/AskScience`
 - `https://old.reddit.com/r/science`
@@ -77,5 +127,5 @@ Starter subreddits:
 
 Important:
 - Respect `robots.txt` and rate limits.
-- Prefer official APIs or manually reviewed exports if Reddit access becomes unreliable.
+- Prefer an approved Reddit Data API integration or manually reviewed export.
 - Store only the extracted outbound URLs as crawl seeds; keep Reddit metadata as source/detail fields.

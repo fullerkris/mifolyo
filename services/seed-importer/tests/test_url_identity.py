@@ -76,9 +76,11 @@ class SharedURLIdentityVectorTests(unittest.TestCase):
                 self.assertEqual("invalid_host", raised.exception.code)
 
     def test_reserved_local_suffix_is_not_crawl_eligible(self):
-        result = identify_url("https://service.test/path")
-        self.assertFalse(result.crawl_eligible)
-        self.assertEqual("local_name_forbidden", result.crawl_rejection)
+        for suffix in ("test", "onion", "alt", "arpa", "example"):
+            with self.subTest(suffix=suffix):
+                result = identify_url(f"https://service.{suffix}/path")
+                self.assertFalse(result.crawl_eligible)
+                self.assertEqual("local_name_forbidden", result.crawl_rejection)
 
     def test_percent_encoded_c0_del_and_c1_controls_share_stable_error(self):
         for suffix in ("%00", "%1F", "%7f", "%C2%85"):

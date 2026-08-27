@@ -81,6 +81,25 @@ class SourceUrlNormalizerTest extends TestCase
         $this->fail('Expected malformed IDNA A-label validation to fail.');
     }
 
+    #[DataProvider('reservedLocalSuffixes')]
+    public function test_reserved_local_suffixes_are_not_crawl_eligible(string $suffix): void
+    {
+        $canonical = SourceUrlNormalizer::canonicalizeV1('https://service.'.$suffix.'/path');
+
+        $this->assertFalse($canonical['crawl_eligible']);
+        $this->assertSame('local_name_forbidden', $canonical['crawl_rejection']);
+    }
+
+    /**
+     * @return iterable<string, array{string}>
+     */
+    public static function reservedLocalSuffixes(): iterable
+    {
+        foreach (['onion', 'alt', 'arpa', 'example'] as $suffix) {
+            yield $suffix => [$suffix];
+        }
+    }
+
     /**
      * @return iterable<string, array{array<string, mixed>}>
      */

@@ -100,6 +100,38 @@
       "crawl_rejection": "local_name_forbidden"
     },
     {
+      "name": "onion namespace is not crawl eligible",
+      "input": "https://service.onion/path",
+      "canonical_url": "https://service.onion/path",
+      "url_id": "d1a5fe733575bf8df289a4779b40ad78d1ed7df8e4e722a3f8c5ec63159e1d31",
+      "crawl_eligible": false,
+      "crawl_rejection": "local_name_forbidden"
+    },
+    {
+      "name": "alternative namespace is not crawl eligible",
+      "input": "https://service.alt/path",
+      "canonical_url": "https://service.alt/path",
+      "url_id": "cd4cc04491a95647a4e96d0d888c8053db07597ea4706db6ddb9e8267e634646",
+      "crawl_eligible": false,
+      "crawl_rejection": "local_name_forbidden"
+    },
+    {
+      "name": "infrastructure namespace is not crawl eligible",
+      "input": "https://service.arpa/path",
+      "canonical_url": "https://service.arpa/path",
+      "url_id": "33df62cb1c522df5e9ddc237139748da7fa830e2080694714a38baecd99b5cba",
+      "crawl_eligible": false,
+      "crawl_rejection": "local_name_forbidden"
+    },
+    {
+      "name": "example namespace is not crawl eligible",
+      "input": "https://service.example/path",
+      "canonical_url": "https://service.example/path",
+      "url_id": "96c122ecadb4e59f421cb554c34a28c081e198cc7d5c6f6d9b457b652205024f",
+      "crawl_eligible": false,
+      "crawl_rejection": "local_name_forbidden"
+    },
+    {
       "name": "punycode hostname",
       "input": "https://xn--fa-hia.de/",
       "canonical_url": "https://xn--fa-hia.de/",

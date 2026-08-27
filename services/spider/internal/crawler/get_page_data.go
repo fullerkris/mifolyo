@@ -1,56 +1,77 @@
 package crawler
 
 import (
+	"context"
 	"fmt"
-	"io"
-	"net/http"
+	"mime"
 	"strings"
-	"time"
+	"unicode/utf8"
+
+	"github.com/IonelPopJara/search-engine/services/spider/internal/crawlpolicy"
+	"github.com/IonelPopJara/search-engine/services/spider/internal/securefetch"
 )
 
 const maxPageBodyBytes int64 = 5 * 1024 * 1024
 
-var pageHTTPClient = &http.Client{Timeout: 15 * time.Second}
+type pageData struct {
+	HTML          string
+	StatusCode    int
+	ContentType   string
+	EffectiveURL  string
+	Decision      crawlpolicy.Decision
+	RedirectChain []string
+}
 
-// Return HTML, Status Code, Content-Type, and Error Code
-func getPageData(rawURL string, userAgent string) (string, int, string, error) {
-	req, err := http.NewRequest(http.MethodGet, rawURL, nil)
+func getPageData(
+	ctx context.Context,
+	fetcher *securefetch.Fetcher,
+	rawURL string,
+	matcher securefetch.Matcher,
+	gate securefetch.RequestGate,
+	authorizer securefetch.HopAuthorizer,
+) (pageData, error) {
+	if fetcher == nil {
+		return pageData{}, fmt.Errorf("secure fetcher is not configured")
+	}
+	result, err := fetcher.FetchAuthorized(ctx, rawURL, matcher, gate, maxPageBodyBytes, authorizer)
 	if err != nil {
-		return "", 0, "", fmt.Errorf("failed to create request: %w", err)
+		return pageData{}, fmt.Errorf("failed to fetch URL: %w", err)
+	}
+	if result.StatusCode > 399 {
+		return pageData{}, fmt.Errorf("HTTP error status: %d", result.StatusCode)
 	}
 
-	if userAgent != "" {
-		req.Header.Set("User-Agent", userAgent)
+	if err := validatePageHTMLResponse(result.ContentType, result.ContentTypeValues, result.Body); err != nil {
+		return pageData{}, err
 	}
 
-	res, err := pageHTTPClient.Do(req)
+	return pageData{
+		HTML:          string(result.Body),
+		StatusCode:    result.StatusCode,
+		ContentType:   result.ContentType,
+		EffectiveURL:  result.EffectiveURL,
+		Decision:      result.Decision,
+		RedirectChain: append([]string(nil), result.RedirectChain...),
+	}, nil
+}
 
-	if err != nil {
-		return "", 0, "", fmt.Errorf("failed to fetch URL: %w", err)
+func validatePageHTMLResponse(contentType string, contentTypeValues []string, body []byte) error {
+	if len(contentTypeValues) != 1 || contentTypeValues[0] == "" || contentTypeValues[0] != contentType ||
+		!utf8.ValidString(contentTypeValues[0]) || strings.TrimSpace(contentTypeValues[0]) != contentTypeValues[0] {
+		return fmt.Errorf("HTML Content-Type must contain exactly one unambiguous value")
 	}
-
-	defer res.Body.Close() // Close the body to prevent memory leaks or something I don't remember
-
-	if res.StatusCode > 399 {
-		return "", res.StatusCode, "", fmt.Errorf("HTTP error: %d %s", res.StatusCode, http.StatusText(res.StatusCode))
+	mediaType, parameters, err := mime.ParseMediaType(contentTypeValues[0])
+	if err != nil || !strings.EqualFold(mediaType, "text/html") {
+		return fmt.Errorf("invalid HTML content type")
 	}
-
-	contentType := res.Header.Get("Content-Type")
-	if !strings.HasPrefix(contentType, "text/html") {
-		return "", res.StatusCode, contentType, fmt.Errorf("invalid content type: %s", contentType)
+	if len(parameters) > 0 {
+		charset, present := parameters["charset"]
+		if len(parameters) != 1 || !present || !strings.EqualFold(charset, "utf-8") {
+			return fmt.Errorf("HTML Content-Type permits only UTF-8 charset")
+		}
 	}
-	if res.ContentLength > maxPageBodyBytes {
-		return "", res.StatusCode, contentType, fmt.Errorf("response body exceeds %d bytes", maxPageBodyBytes)
+	if !utf8.Valid(body) {
+		return fmt.Errorf("HTML body must be valid UTF-8")
 	}
-
-	body, err := io.ReadAll(io.LimitReader(res.Body, maxPageBodyBytes+1))
-
-	if err != nil {
-		return "", res.StatusCode, "text/html", fmt.Errorf("failed to read response body: %w", err)
-	}
-	if int64(len(body)) > maxPageBodyBytes {
-		return "", res.StatusCode, contentType, fmt.Errorf("response body exceeds %d bytes", maxPageBodyBytes)
-	}
-
-	return string(body), res.StatusCode, "text/html", nil
+	return nil
 }

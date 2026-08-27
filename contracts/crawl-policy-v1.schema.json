@@ -1,0 +1,236 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mifolyo.local/contracts/crawl-policy-v1.schema.json",
+  "title": "MiFolyo domain-group crawl policy V1",
+  "description": "Fail-closed crawl admission and per-domain runtime limits. Group IDs and host rules must also be unique across the document.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "unmatched_action",
+    "groups"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "unmatched_action": {
+      "const": "deny"
+    },
+    "groups": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/group"
+      }
+    }
+  },
+  "$defs": {
+    "group": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "enabled",
+        "priority",
+        "host_rules",
+        "allowed_schemes",
+        "max_depth",
+        "allow_path_prefixes",
+        "deny_path_prefixes",
+        "min_request_interval",
+        "max_concurrency",
+        "max_requests_per_batch",
+        "redirects",
+        "robots"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\u0000-\\u001F\\u007F-\\u009F]+$",
+          "description": "Document-wide unique group identifier."
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "priority": {
+          "type": "integer",
+          "description": "Scheduling priority; lower integers are scheduled first and IDs break ties. Never used for host matching."
+        },
+        "host_rules": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/hostRule"
+          }
+        },
+        "allowed_schemes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "http",
+              "https"
+            ]
+          }
+        },
+        "max_depth": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "allow_path_prefixes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/pathPrefix"
+          }
+        },
+        "deny_path_prefixes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/pathPrefix"
+          }
+        },
+        "min_request_interval": {
+          "$ref": "#/$defs/nonNegativeGoDuration"
+        },
+        "max_concurrency": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_requests_per_batch": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "user_agent": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^(?!\\s)(?!.*\\s$)[^\\u0000-\\u001F\\u007F-\\u009F]+$",
+          "description": "Optional override. When omitted, the loader-supplied global user agent is used."
+        },
+        "redirects": {
+          "$ref": "#/$defs/redirects"
+        },
+        "robots": {
+          "$ref": "#/$defs/robots"
+        }
+      }
+    },
+    "hostRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "host",
+        "match"
+      ],
+      "properties": {
+        "host": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 253,
+          "pattern": "^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$",
+          "allOf": [
+            {
+              "not": {
+                "pattern": "^(?:[0-9]+\\.){3}[0-9]+$"
+              }
+            },
+            {
+              "not": {
+                "pattern": "(?:^|\\.)(?:localhost|local|localdomain|lan|home|home\\.arpa|internal|intranet|onion|alt|arpa|test|invalid|example)$"
+              }
+            }
+          ],
+          "description": "Lowercase canonical ASCII DNS hostname. Wildcards, schemes, paths, ports, IP literals, and local names are forbidden; IDNA A-label validity is enforced by the loader."
+        },
+        "match": {
+          "enum": [
+            "exact",
+            "apex_and_subdomains"
+          ]
+        }
+      }
+    },
+    "pathPrefix": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2029,
+      "pattern": "^/(?:[A-Za-z0-9/:@!$&'()*+,;=._~-]|%[0-9A-F]{2})*$",
+      "allOf": [
+        {
+          "not": {
+            "pattern": "//"
+          }
+        },
+        {
+          "not": {
+            "pattern": "%(?:0[0-9A-F]|1[0-9A-F]|7F)|%C2%(?:8[0-9A-F]|9[0-9A-F])"
+          }
+        }
+      ],
+      "description": "Canonical escaped URL path prefix without a query, fragment, backslash, whitespace, or control character."
+    },
+    "nonNegativeGoDuration": {
+      "type": "string",
+      "pattern": "^\\+?(?:0|(?:(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:ns|us|µs|μs|ms|s|m|h))+)$",
+      "format": "go-duration",
+      "description": "A Go time.ParseDuration value greater than or equal to zero."
+    },
+    "positiveGoDuration": {
+      "type": "string",
+      "pattern": "^(?=.*[1-9])\\+?(?:(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:ns|us|µs|μs|ms|s|m|h))+$",
+      "format": "go-duration",
+      "description": "A Go time.ParseDuration value strictly greater than zero."
+    },
+    "redirects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "max_hops"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "none",
+            "same_host",
+            "same_group"
+          ]
+        },
+        "max_hops": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10
+        }
+      }
+    },
+    "robots": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "on_error",
+        "cache_ttl"
+      ],
+      "properties": {
+        "mode": {
+          "const": "enforce"
+        },
+        "on_error": {
+          "enum": [
+            "allow",
+            "deny"
+          ]
+        },
+        "cache_ttl": {
+          "$ref": "#/$defs/positiveGoDuration"
+        }
+      }
+    }
+  }
+}

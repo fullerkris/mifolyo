@@ -1,13 +1,13 @@
 package pages
 
 import (
-    // "fmt"
+// "fmt"
 )
 
 type Image struct {
-    NormalizedPageURL   string
-    NormalizedSourceURL string
-    Alt                 string
+	NormalizedPageURL   string
+	NormalizedSourceURL string
+	Alt                 string
 }
 
 // func (img Image) String() string {

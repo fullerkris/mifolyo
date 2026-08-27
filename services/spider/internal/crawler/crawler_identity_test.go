@@ -46,6 +46,27 @@ func TestUpdateLinksKeepsCanonicalAbsoluteGraphIdentity(t *testing.T) {
 	}
 }
 
+func TestAddImagesRetainsOnlyStaticallyEligiblePolicyURLs(t *testing.T) {
+	config := &CrawlerConfig{
+		Mu:     &sync.Mutex{},
+		Images: make(map[string][]*pages.Image),
+		Policy: schedulerPolicy(t, 1),
+	}
+	config.AddImages("https://a.example.com/page", map[string]map[string]string{
+		"https://a.example.com/image.png":          {"alt": "allowed"},
+		"https://other.example.com/image.png":      {"alt": "not in policy"},
+		"http://169.254.169.254/latest/meta-data/": {"alt": "literal address"},
+	}, 1)
+	config.AddImages("https://a.example.com/page", map[string]map[string]string{
+		"https://a.example.com/too-deep.png": {"alt": "depth denied"},
+	}, 2)
+
+	images := config.Images["https://a.example.com/page"]
+	if len(images) != 1 || images[0].NormalizedSourceURL != "https://a.example.com/image.png" {
+		t.Fatalf("retained images = %#v", images)
+	}
+}
+
 func TestReservePageAttemptIsAConcurrentHardLimit(t *testing.T) {
 	config := &CrawlerConfig{
 		Mu:       &sync.Mutex{},
@@ -58,7 +79,8 @@ func TestReservePageAttemptIsAConcurrentHardLimit(t *testing.T) {
 		workers.Add(1)
 		go func() {
 			defer workers.Done()
-			if config.reservePageAttempt() {
+			if reservation, reserved := config.reservePageAttempt(); reserved {
+				reservation.commit()
 				accepted.Add(1)
 			}
 		}()
@@ -70,5 +92,18 @@ func TestReservePageAttemptIsAConcurrentHardLimit(t *testing.T) {
 	}
 	if config.PageAttempts != 10 {
 		t.Fatalf("recorded attempts = %d, want 10", config.PageAttempts)
+	}
+}
+
+func TestUnusedRequestReservationIsRefundedExactlyOnce(t *testing.T) {
+	config := &CrawlerConfig{Mu: &sync.Mutex{}, MaxPages: 1}
+	reservation, reserved := config.reservePageAttempt()
+	if !reserved || config.PageAttempts != 1 {
+		t.Fatalf("reservation = %v attempts=%d", reserved, config.PageAttempts)
+	}
+	reservation.refund()
+	reservation.refund()
+	if config.PageAttempts != 0 {
+		t.Fatalf("refunded attempts = %d, want 0", config.PageAttempts)
 	}
 }

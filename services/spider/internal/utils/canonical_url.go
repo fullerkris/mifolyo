@@ -510,8 +510,12 @@ func isLocalHostname(host string) bool {
 		".home.arpa",
 		".internal",
 		".intranet",
+		".onion",
+		".alt",
+		".arpa",
 		".test",
 		".invalid",
+		".example",
 	}
 	for _, localName := range localNames {
 		if host == localName || strings.HasSuffix(host, localName) {

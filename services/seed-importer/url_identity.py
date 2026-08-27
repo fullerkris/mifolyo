@@ -60,8 +60,12 @@ _LOCAL_NAMES = (
     "home",
     "home.arpa",
     "lan",
+    "onion",
+    "alt",
+    "arpa",
     "test",
     "invalid",
+    "example",
 )
 
 

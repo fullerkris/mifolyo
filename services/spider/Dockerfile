@@ -1,4 +1,4 @@
-FROM golang:1.24-alpine AS builder
+FROM golang:1.25.13-alpine AS builder
 
 # Set the working directory
 WORKDIR /app
@@ -19,13 +19,20 @@ RUN go build -o spider ./cmd/spider/main.go
 RUN go test -v ./...
 
 # Use a smaller base image
-FROM alpine:latest
+FROM alpine:3.24.1
+
+RUN apk add --no-cache ca-certificates \
+    && mkdir -p /run/mifolyo-render \
+    && chown 65534:65534 /run/mifolyo-render
 
 # Set the working directory
 WORKDIR /app
 
-# Copy thhe built binary from the builder stage
+# Copy the built binary from the builder stage
 COPY --from=builder /app/spider .
+COPY --from=builder /app/config ./config
+
+USER 65534:65534
 
 # EXPOSE ports?
 # EXPOSE 8080

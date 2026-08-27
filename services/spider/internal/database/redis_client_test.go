@@ -3,6 +3,9 @@ package database
 import (
 	"context"
 	"errors"
+	"math"
+	"net"
+	"strings"
 	"testing"
 
 	miniredis "github.com/alicebob/miniredis/v2"
@@ -10,6 +13,25 @@ import (
 
 	"github.com/IonelPopJara/search-engine/services/spider/internal/utils"
 )
+
+func TestConnectToRedisFailsClosedWithoutExactLocalOptIn(t *testing.T) {
+	server := miniredis.RunT(t)
+	host, port, err := net.SplitHostPort(server.Addr())
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("REDIS_USERNAME", "")
+	t.Setenv("ALLOW_INSECURE_DATASTORES", "TRUE")
+	if err := (&Database{}).ConnectToRedis(host, port, "", "0"); err == nil {
+		t.Fatal("non-exact insecure datastore opt-in was accepted")
+	}
+	t.Setenv("ALLOW_INSECURE_DATASTORES", "true")
+	db := &Database{}
+	if err := db.ConnectToRedis(host, port, "", "0"); err != nil {
+		t.Fatalf("exact local opt-in was rejected: %v", err)
+	}
+	t.Cleanup(func() { _ = db.Client.Close() })
+}
 
 func testDatabase(t *testing.T) (*Database, *miniredis.Miniredis) {
 	t.Helper()
@@ -19,6 +41,65 @@ func testDatabase(t *testing.T) (*Database, *miniredis.Miniredis) {
 		_ = client.Close()
 	})
 	return &Database{Client: client, Context: context.Background()}, server
+}
+
+func TestMalformedQueueMemberErrorsUseStableReference(t *testing.T) {
+	rawMember := "malformed-sensitive-queue-member\nforged-log-line"
+	const wantReference = "368f297bb20f716b"
+
+	t.Run("snapshot", func(t *testing.T) {
+		db, _ := testDatabase(t)
+		if err := db.Client.ZAdd(db.Context, utils.CrawlQueueKeyV1, redis.Z{Score: 1, Member: rawMember}).Err(); err != nil {
+			t.Fatal(err)
+		}
+
+		candidates, err := db.ListPendingURLs()
+		if err != nil || len(candidates) != 1 {
+			t.Fatalf("ListPendingURLs = %#v, %v", candidates, err)
+		}
+		candidate := candidates[0]
+		if !errors.Is(candidate.ValidationError, ErrInvalidURLID) {
+			t.Fatalf("validation error = %v, want ErrInvalidURLID", candidate.ValidationError)
+		}
+		if candidate.URLID != "" {
+			t.Fatalf("malformed queue member propagated as URL ID: %q", candidate.URLID)
+		}
+		message := candidate.ValidationError.Error()
+		if strings.Contains(message, rawMember) || !strings.Contains(message, "ref="+wantReference) {
+			t.Fatalf("validation error did not redact member with stable reference: %q", message)
+		}
+	})
+
+	t.Run("pop", func(t *testing.T) {
+		db, _ := testDatabase(t)
+		if err := db.Client.ZAdd(db.Context, utils.CrawlQueueKeyV1, redis.Z{Score: 1, Member: rawMember}).Err(); err != nil {
+			t.Fatal(err)
+		}
+
+		urlID, canonicalURL, _, err := db.PopURL()
+		if !errors.Is(err, ErrInvalidURLID) {
+			t.Fatalf("PopURL error = %v, want ErrInvalidURLID", err)
+		}
+		if urlID != "" || canonicalURL != "" {
+			t.Fatalf("PopURL propagated malformed member: URL ID=%q canonical URL=%q", urlID, canonicalURL)
+		}
+		message := err.Error()
+		if strings.Contains(message, rawMember) || !strings.Contains(message, "ref="+wantReference) {
+			t.Fatalf("PopURL error did not redact member with stable reference: %q", message)
+		}
+	})
+
+	t.Run("lookup input", func(t *testing.T) {
+		db, _ := testDatabase(t)
+		_, _, err := db.ExistsInQueue(rawMember)
+		if !errors.Is(err, ErrInvalidURLID) {
+			t.Fatalf("ExistsInQueue error = %v, want ErrInvalidURLID", err)
+		}
+		message := err.Error()
+		if strings.Contains(message, rawMember) || !strings.Contains(message, "ref="+wantReference) {
+			t.Fatalf("ExistsInQueue error did not redact member with stable reference: %q", message)
+		}
+	})
 }
 
 func TestPushURLStoresV1LookupAndBestScore(t *testing.T) {
@@ -66,6 +147,228 @@ func TestPushURLStoresV1LookupAndBestScore(t *testing.T) {
 	}
 }
 
+func TestPushURLWithDepthRetainsBestScoreAndShallowestDepth(t *testing.T) {
+	db, _ := testDatabase(t)
+	identity, err := utils.CanonicalizeURLV1("https://example.com/depth")
+	if err != nil {
+		t.Fatalf("canonicalize test URL: %v", err)
+	}
+
+	for _, input := range []struct {
+		score float64
+		depth int
+	}{{score: 4, depth: 3}, {score: 2, depth: 5}, {score: 8, depth: 1}} {
+		if err := db.PushURLWithDepth(identity.CanonicalURL, input.score, input.depth); err != nil {
+			t.Fatalf("push score=%v depth=%d: %v", input.score, input.depth, err)
+		}
+	}
+
+	candidates, err := db.ListPendingURLs()
+	if err != nil {
+		t.Fatalf("list pending URLs: %v", err)
+	}
+	if len(candidates) != 1 || candidates[0].ValidationError != nil {
+		t.Fatalf("candidates = %#v", candidates)
+	}
+	if candidates[0].Score != 2 || candidates[0].Depth != 1 {
+		t.Fatalf("candidate score/depth = %v/%d, want 2/1", candidates[0].Score, candidates[0].Depth)
+	}
+}
+
+func TestListPendingURLsRejectsMissingDepthMetadata(t *testing.T) {
+	db, _ := testDatabase(t)
+	identity, err := utils.CanonicalizeURLV1("https://example.com/legacy")
+	if err != nil {
+		t.Fatalf("canonicalize test URL: %v", err)
+	}
+	if err := db.Client.HSet(db.Context, utils.CrawlURLsKeyV1, identity.URLID, identity.CanonicalURL).Err(); err != nil {
+		t.Fatalf("seed URL map: %v", err)
+	}
+	if err := db.Client.ZAdd(db.Context, utils.CrawlQueueKeyV1, redis.Z{Score: 1, Member: identity.URLID}).Err(); err != nil {
+		t.Fatalf("seed queue: %v", err)
+	}
+
+	candidates, err := db.ListPendingURLs()
+	if err != nil || len(candidates) != 1 {
+		t.Fatalf("ListPendingURLs = %#v, %v", candidates, err)
+	}
+	if candidates[0].ValidationError == nil {
+		t.Fatalf("legacy candidate = %#v", candidates[0])
+	}
+}
+
+func TestListPendingURLsRejectsNoncanonicalOrNegativeDepthMetadata(t *testing.T) {
+	for _, depthValue := range []string{"-1", "00", "+1", "1.0"} {
+		t.Run(depthValue, func(t *testing.T) {
+			db, _ := testDatabase(t)
+			identity, err := utils.CanonicalizeURLV1("https://example.com/noncanonical-depth")
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := db.Client.HSet(db.Context, utils.CrawlURLsKeyV1, identity.URLID, identity.CanonicalURL).Err(); err != nil {
+				t.Fatal(err)
+			}
+			if err := db.Client.HSet(db.Context, utils.CrawlDepthsKeyV1, identity.URLID, depthValue).Err(); err != nil {
+				t.Fatal(err)
+			}
+			if err := db.Client.ZAdd(db.Context, utils.CrawlQueueKeyV1, redis.Z{Score: 1, Member: identity.URLID}).Err(); err != nil {
+				t.Fatal(err)
+			}
+
+			candidates, listErr := db.ListPendingURLs()
+			if listErr != nil || len(candidates) != 1 {
+				t.Fatalf("ListPendingURLs = %#v, %v", candidates, listErr)
+			}
+			if !errors.Is(candidates[0].ValidationError, ErrInvalidCrawlDepth) {
+				t.Fatalf("validation error = %v, want ErrInvalidCrawlDepth", candidates[0].ValidationError)
+			}
+		})
+	}
+}
+
+func TestListPendingURLsRejectsOversizedSnapshot(t *testing.T) {
+	db, _ := testDatabase(t)
+	db.CrawlSnapshotLimit = 1
+	for _, rawURL := range []string{"https://example.com/first", "https://example.com/second"} {
+		if err := db.PushURLWithDepth(rawURL, 0, 0); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	if _, err := db.ListPendingURLs(); !errors.Is(err, ErrQueueSnapshotLimit) {
+		t.Fatalf("ListPendingURLs error = %v, want ErrQueueSnapshotLimit", err)
+	}
+}
+
+func TestPushURLWithDepthRejectsCorruptExistingDepthWithoutPartialUpdate(t *testing.T) {
+	db, _ := testDatabase(t)
+	identity, err := utils.CanonicalizeURLV1("https://example.com/corrupt-depth")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := db.Client.HSet(db.Context, utils.CrawlURLsKeyV1, identity.URLID, identity.CanonicalURL).Err(); err != nil {
+		t.Fatal(err)
+	}
+	if err := db.Client.HSet(db.Context, utils.CrawlDepthsKeyV1, identity.URLID, "00").Err(); err != nil {
+		t.Fatal(err)
+	}
+	if err := db.Client.ZAdd(db.Context, utils.CrawlQueueKeyV1, redis.Z{Score: 5, Member: identity.URLID}).Err(); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := db.PushURLWithDepth(identity.CanonicalURL, 1, 0); !errors.Is(err, ErrInvalidCrawlDepth) {
+		t.Fatalf("PushURLWithDepth error = %v, want ErrInvalidCrawlDepth", err)
+	}
+	score, err := db.Client.ZScore(db.Context, utils.CrawlQueueKeyV1, identity.URLID).Result()
+	if err != nil || score != 5 {
+		t.Fatalf("queue score changed after rejected push: score=%v error=%v", score, err)
+	}
+	depth, err := db.Client.HGet(db.Context, utils.CrawlDepthsKeyV1, identity.URLID).Result()
+	if err != nil || depth != "00" {
+		t.Fatalf("depth changed after rejected push: depth=%q error=%v", depth, err)
+	}
+}
+
+func TestClaimURLRequiresInspectedScore(t *testing.T) {
+	db, _ := testDatabase(t)
+	identity, err := utils.CanonicalizeURLV1("https://example.com/claim")
+	if err != nil {
+		t.Fatalf("canonicalize test URL: %v", err)
+	}
+	if err := db.PushURLWithDepth(identity.CanonicalURL, 2, 0); err != nil {
+		t.Fatalf("push URL: %v", err)
+	}
+
+	candidate := CrawlCandidate{URLID: identity.URLID, CanonicalURL: identity.CanonicalURL, Score: 1, Depth: 0}
+	claimed, err := db.ClaimURL(candidate)
+	if err != nil || claimed {
+		t.Fatalf("stale claim = %v, %v", claimed, err)
+	}
+	candidate.Score = 2
+	claimed, err = db.ClaimURL(candidate)
+	if err != nil || !claimed {
+		t.Fatalf("matching claim = %v, %v", claimed, err)
+	}
+	if _, exists, err := db.ExistsInQueue(identity.URLID); err != nil || exists {
+		t.Fatalf("claimed URL still pending: exists=%v error=%v", exists, err)
+	}
+}
+
+func TestRequeueAfterClaimUsesNewMembershipDepth(t *testing.T) {
+	db, _ := testDatabase(t)
+	identity, err := utils.CanonicalizeURLV1("https://example.com/requeue")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := db.PushURLWithDepth(identity.CanonicalURL, 0, 0); err != nil {
+		t.Fatal(err)
+	}
+	candidates, err := db.ListPendingURLs()
+	if err != nil || len(candidates) != 1 {
+		t.Fatalf("initial candidates = %#v, %v", candidates, err)
+	}
+	claimed, err := db.ClaimURL(candidates[0])
+	if err != nil || !claimed {
+		t.Fatalf("claim = %v, %v", claimed, err)
+	}
+	if err := db.PushURLWithDepth(identity.CanonicalURL, 5, 2); err != nil {
+		t.Fatal(err)
+	}
+	candidates, err = db.ListPendingURLs()
+	if err != nil || len(candidates) != 1 || candidates[0].Depth != 2 {
+		t.Fatalf("requeued candidates = %#v, %v", candidates, err)
+	}
+}
+
+func TestPushURLWithDepthRejectsNegativeDepth(t *testing.T) {
+	db, _ := testDatabase(t)
+	if err := db.PushURLWithDepth("https://example.com/", 0, -1); !errors.Is(err, ErrInvalidCrawlDepth) {
+		t.Fatalf("error = %v, want ErrInvalidCrawlDepth", err)
+	}
+}
+
+func TestQueueRejectsNonFiniteScoresAndInexactDepths(t *testing.T) {
+	db, _ := testDatabase(t)
+	identity, err := utils.CanonicalizeURLV1("https://example.com/non-finite")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := db.Client.HSet(db.Context, utils.CrawlURLsKeyV1, identity.URLID, identity.CanonicalURL).Err(); err != nil {
+		t.Fatal(err)
+	}
+	if err := db.Client.HSet(db.Context, utils.CrawlDepthsKeyV1, identity.URLID, "0").Err(); err != nil {
+		t.Fatal(err)
+	}
+	if err := db.Client.ZAdd(db.Context, utils.CrawlQueueKeyV1, redis.Z{Score: math.Inf(1), Member: identity.URLID}).Err(); err != nil {
+		t.Fatal(err)
+	}
+
+	candidates, err := db.ListPendingURLs()
+	if err != nil || len(candidates) != 1 || !errors.Is(candidates[0].ValidationError, ErrInvalidQueueScore) {
+		t.Fatalf("non-finite candidates = %#v, %v", candidates, err)
+	}
+	if _, _, err := db.ExistsInQueue(identity.URLID); !errors.Is(err, ErrInvalidQueueScore) {
+		t.Fatalf("ExistsInQueue error = %v, want ErrInvalidQueueScore", err)
+	}
+	if err := db.PushURLWithDepth(identity.CanonicalURL, 0, 0); !errors.Is(err, ErrInvalidQueueScore) {
+		t.Fatalf("PushURLWithDepth error = %v, want ErrInvalidQueueScore", err)
+	}
+	if _, err := db.ClaimURL(CrawlCandidate{
+		URLID: identity.URLID, CanonicalURL: identity.CanonicalURL, Score: math.Inf(1), Depth: 0,
+	}); !errors.Is(err, ErrInvalidQueueScore) {
+		t.Fatalf("ClaimURL error = %v, want ErrInvalidQueueScore", err)
+	}
+
+	tooDeepValue := utils.MaxCrawlDepthV1 + 1
+	if uint64(^uint(0)>>1) < tooDeepValue {
+		t.Skip("platform int cannot represent a depth above the Redis Lua exact-integer limit")
+	}
+	tooDeep := int(tooDeepValue)
+	if err := db.PushURLWithDepth("https://example.com/too-deep", 0, tooDeep); !errors.Is(err, ErrInvalidCrawlDepth) {
+		t.Fatalf("oversized depth error = %v, want ErrInvalidCrawlDepth", err)
+	}
+}
+
 func TestPopURLReturnsExactCanonicalURL(t *testing.T) {
 	db, _ := testDatabase(t)
 	identity, err := utils.CanonicalizeURLV1("http://example.com/path/?b=2&a=1")
@@ -92,6 +395,39 @@ func TestPopURLReturnsExactCanonicalURL(t *testing.T) {
 	if canonicalURL[:len("http://")] != "http://" {
 		t.Fatalf("PopURL changed the stored HTTP scheme: %q", canonicalURL)
 	}
+}
+
+func TestPopURLRejectsNonFiniteScoreAndMissingDepth(t *testing.T) {
+	t.Run("non-finite score", func(t *testing.T) {
+		db, _ := testDatabase(t)
+		identity, err := utils.CanonicalizeURLV1("https://example.com/pop-non-finite")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := db.Client.ZAdd(db.Context, utils.CrawlQueueKeyV1, redis.Z{Score: math.Inf(-1), Member: identity.URLID}).Err(); err != nil {
+			t.Fatal(err)
+		}
+		if _, _, _, err := db.PopURL(); !errors.Is(err, ErrInvalidQueueScore) {
+			t.Fatalf("PopURL error = %v, want ErrInvalidQueueScore", err)
+		}
+	})
+
+	t.Run("missing depth", func(t *testing.T) {
+		db, _ := testDatabase(t)
+		identity, err := utils.CanonicalizeURLV1("https://example.com/pop-missing-depth")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := db.PushURL(identity.CanonicalURL, 0); err != nil {
+			t.Fatal(err)
+		}
+		if err := db.Client.HDel(db.Context, utils.CrawlDepthsKeyV1, identity.URLID).Err(); err != nil {
+			t.Fatal(err)
+		}
+		if _, _, _, err := db.PopURL(); !errors.Is(err, ErrInvalidQueueEntry) {
+			t.Fatalf("PopURL error = %v, want ErrInvalidQueueEntry", err)
+		}
+	})
 }
 
 func TestPushURLRejectsStaticCrawlIneligibility(t *testing.T) {

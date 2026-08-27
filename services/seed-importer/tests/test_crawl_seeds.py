@@ -22,6 +22,8 @@ from crawl_seed import (  # noqa: E402
 )
 from crawl_seeds import (  # noqa: E402
     EXPECTED_MANUAL_ROWS,
+    EXPECTED_ENABLED_MANUAL_ROWS,
+    DISABLED_MANUAL_CANONICAL_URLS,
     MANUAL_BASELINE_OBSERVED_AT,
     LocalMongoTarget,
     bootstrap_database,
@@ -283,6 +285,14 @@ class CrawlSeedContractTests(unittest.TestCase):
             self.assertEqual(MANUAL_BASELINE_OBSERVED_AT, document["updated_at"])
             self.assertEqual(1, len(document["sources"]))
             self.assertEqual("manual", document["sources"][0]["type"])
+        disabled = {
+            document["canonical_url"] for document in first if not document["enabled"]
+        }
+        self.assertEqual(DISABLED_MANUAL_CANONICAL_URLS, disabled)
+        self.assertEqual(
+            EXPECTED_ENABLED_MANUAL_ROWS,
+            sum(document["enabled"] for document in first),
+        )
 
     def test_merge_uses_newest_observation_and_stored_source_wins_ties(self):
         existing = self.make_document(priority=2, metadata={"score": 20})

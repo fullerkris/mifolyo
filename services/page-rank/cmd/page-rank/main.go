@@ -2,173 +2,268 @@ package main
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
+	"flag"
 	"fmt"
+	"io"
+	"net"
 	"os"
-	"sort"
+	"os/signal"
+	"regexp"
+	"syscall"
+	"time"
 
-	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
+
+var sha256Pattern = regexp.MustCompile(`^[0-9a-f]{64}$`)
+
+const allowInsecureDatastoresEnvironment = "ALLOW_INSECURE_DATASTORES"
+
+type commandOptions struct {
+	Publish             bool
+	ExpectedGraphSHA256 string
+	ConfirmTarget       string
+}
+
+type commandSummary struct {
+	Status                  string  `json:"status"`
+	RunID                   string  `json:"run_id,omitempty"`
+	MongoDatabase           string  `json:"mongo_database"`
+	GraphSHA256             string  `json:"graph_sha256"`
+	AlgorithmVersion        string  `json:"algorithm_version"`
+	CanonicalizationVersion int     `json:"canonicalization_version"`
+	Damping                 float64 `json:"damping"`
+	Tolerance               float64 `json:"tolerance"`
+	MaxIterations           int     `json:"max_iterations"`
+	Iterations              int     `json:"iterations"`
+	Residual                float64 `json:"residual"`
+	RankSum                 float64 `json:"rank_sum"`
+	graphStats
+}
+
+func main() {
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
+
+	if err := run(ctx, os.Args[1:], os.Stdout); err != nil {
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		os.Exit(1)
+	}
+}
+
+func run(ctx context.Context, args []string, output io.Writer) error {
+	commandOptions, err := parseCommandOptions(args)
+	if err != nil {
+		return err
+	}
+	if commandOptions.Publish {
+		if err := validatePublicationEnvironment(commandOptions); err != nil {
+			return err
+		}
+	}
+
+	client, database, err := connectMongo(ctx)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		disconnectContext, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+		_ = client.Disconnect(disconnectContext)
+	}()
+
+	var lock publicationLock
+	lockHeld := false
+	if commandOptions.Publish {
+		lock, err = acquirePublicationLock(ctx, database)
+		if err != nil {
+			return err
+		}
+		lockHeld = true
+		defer func() {
+			if !lockHeld {
+				return
+			}
+			releaseContext, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+			defer cancel()
+			_ = lock.release(releaseContext, database)
+		}()
+	}
+
+	input, err := loadGraph(ctx, database)
+	if err != nil {
+		return err
+	}
+	result, err := calculatePageRank(input)
+	if err != nil {
+		return err
+	}
+
+	summary := commandSummary{
+		Status:                  "validated",
+		MongoDatabase:           database.Name(),
+		GraphSHA256:             input.SHA256,
+		AlgorithmVersion:        algorithmVersion,
+		CanonicalizationVersion: canonicalizationVersion,
+		Damping:                 pageRankDamping,
+		Tolerance:               pageRankTolerance,
+		MaxIterations:           pageRankMaxIterations,
+		Iterations:              result.Iterations,
+		Residual:                result.Residual,
+		RankSum:                 result.Sum,
+		graphStats:              input.Stats,
+	}
+
+	if commandOptions.Publish {
+		if commandOptions.ExpectedGraphSHA256 != input.SHA256 {
+			return fmt.Errorf(
+				"pagerank: expected graph SHA-256 %s, loaded %s",
+				commandOptions.ExpectedGraphSHA256,
+				input.SHA256,
+			)
+		}
+
+		reloadedInput, err := loadGraph(ctx, database)
+		if err != nil {
+			return fmt.Errorf("pagerank: revalidate graph before publication: %w", err)
+		}
+		if reloadedInput.SHA256 != input.SHA256 {
+			return fmt.Errorf("pagerank: graph changed between validation and publication")
+		}
+
+		publication, err := publishPageRank(ctx, client, database, input, result)
+		if err != nil {
+			var unknownOutcome *activationOutcomeUnknownError
+			if errors.As(err, &unknownOutcome) {
+				lockHeld = false
+			}
+			return err
+		}
+		summary.Status = publication.Status
+		summary.RunID = publication.RunID
+
+		releaseContext, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+		if err := lock.release(releaseContext, database); err != nil {
+			return err
+		}
+		lockHeld = false
+	}
+
+	encoder := json.NewEncoder(output)
+	encoder.SetIndent("", "  ")
+	if err := encoder.Encode(summary); err != nil {
+		return fmt.Errorf("pagerank: encode summary: %w", err)
+	}
+	return nil
+}
+
+func parseCommandOptions(args []string) (commandOptions, error) {
+	flags := flag.NewFlagSet("page-rank", flag.ContinueOnError)
+	flags.SetOutput(io.Discard)
+	publish := flags.Bool("publish", false, "publish the validated PageRank generation")
+	expectedGraphSHA256 := flags.String("expected-graph-sha256", "", "required validated graph hash for publication")
+	confirmTarget := flags.String("confirm-target", "", "required host:port/database/pagerank publication target")
+	if err := flags.Parse(args); err != nil {
+		return commandOptions{}, fmt.Errorf("pagerank: parse arguments: %w", err)
+	}
+	if flags.NArg() != 0 {
+		return commandOptions{}, fmt.Errorf("pagerank: unexpected positional arguments")
+	}
+	if *publish && !sha256Pattern.MatchString(*expectedGraphSHA256) {
+		return commandOptions{}, fmt.Errorf("pagerank: --publish requires a lowercase 64-character --expected-graph-sha256")
+	}
+	if *publish && *confirmTarget == "" {
+		return commandOptions{}, fmt.Errorf("pagerank: --publish requires --confirm-target")
+	}
+	if !*publish && *expectedGraphSHA256 != "" {
+		return commandOptions{}, fmt.Errorf("pagerank: --expected-graph-sha256 requires --publish")
+	}
+	if !*publish && *confirmTarget != "" {
+		return commandOptions{}, fmt.Errorf("pagerank: --confirm-target requires --publish")
+	}
+	return commandOptions{
+		Publish:             *publish,
+		ExpectedGraphSHA256: *expectedGraphSHA256,
+		ConfirmTarget:       *confirmTarget,
+	}, nil
+}
+
+func connectMongo(ctx context.Context) (*mongo.Client, *mongo.Database, error) {
+	host := getEnv("MONGO_HOST", "localhost")
+	port := getEnv("MONGO_PORT", "27017")
+	databaseName := getEnv("MONGO_DB", "test")
+	username := getEnv("MONGO_USERNAME", "")
+	password := getEnv("MONGO_PASSWORD", "")
+	if host == "" || port == "" || databaseName == "" {
+		return nil, nil, errors.New("pagerank: MongoDB host, port, and database must be non-empty")
+	}
+	if err := validateMongoAuthentication(
+		username,
+		password,
+		os.Getenv(allowInsecureDatastoresEnvironment) == "true",
+	); err != nil {
+		return nil, nil, err
+	}
+
+	clientOptions := options.Client().
+		ApplyURI("mongodb://" + net.JoinHostPort(host, port)).
+		SetConnectTimeout(10 * time.Second).
+		SetServerSelectionTimeout(10 * time.Second)
+	if username != "" {
+		clientOptions.SetAuth(options.Credential{
+			AuthSource: "admin",
+			Username:   username,
+			Password:   password,
+		})
+	}
+
+	client, err := mongo.Connect(clientOptions)
+	if err != nil {
+		return nil, nil, fmt.Errorf("pagerank: connect to MongoDB: %w", err)
+	}
+	if err := client.Ping(ctx, nil); err != nil {
+		_ = client.Disconnect(context.Background())
+		return nil, nil, fmt.Errorf("pagerank: ping MongoDB: %w", err)
+	}
+	return client, client.Database(databaseName), nil
+}
+
+func validateMongoAuthentication(username, password string, allowInsecure bool) error {
+	if (username == "") != (password == "") {
+		return errors.New("pagerank: MONGO_USERNAME and MONGO_PASSWORD must be set together")
+	}
+	if username == "" && !allowInsecure {
+		return errors.New("pagerank: MongoDB authentication is required unless ALLOW_INSECURE_DATASTORES=true is explicitly set for local testing")
+	}
+	return nil
+}
+
+func validatePublicationEnvironment(commandOptions commandOptions) error {
+	host, hostExists := os.LookupEnv("MONGO_HOST")
+	port, portExists := os.LookupEnv("MONGO_PORT")
+	databaseName, exists := os.LookupEnv("MONGO_DB")
+	if !hostExists || host == "" || !portExists || port == "" || !exists || databaseName == "" {
+		return errors.New("pagerank: publication requires explicit MONGO_HOST, MONGO_PORT, and MONGO_DB")
+	}
+	switch databaseName {
+	case "admin", "config", "local":
+		return fmt.Errorf("pagerank: publication to MongoDB system database %q is forbidden", databaseName)
+	default:
+		target := net.JoinHostPort(host, port) + "/" + databaseName + "/" + pageRankCollection
+		if commandOptions.ConfirmTarget != target {
+			return fmt.Errorf("pagerank: --confirm-target must exactly equal %q", target)
+		}
+		return nil
+	}
+}
 
 func getEnv(key, fallback string) string {
 	if value, exists := os.LookupEnv(key); exists {
 		return value
 	}
 	return fallback
-}
-
-func main() {
-	mongoHost := getEnv("MONGO_HOST", "localhost")
-	mongoPassword := getEnv("MONGO_PASSWORD", "")
-	mongoUsername := getEnv("MONGO_USERNAME", "")
-	mongoDatabase := getEnv("MONGO_DB", "test")
-
-	fmt.Println("Page Rank Service!")
-
-	mongoURI := fmt.Sprintf("mongodb://%s:27017/", mongoHost)
-	if mongoUsername != "" {
-		mongoURI = fmt.Sprintf("mongodb://%s:%s@%s:27017/", mongoUsername, mongoPassword, mongoHost)
-	}
-
-	client, err := mongo.Connect(options.Client().ApplyURI(mongoURI))
-	if err != nil {
-		panic(err)
-	}
-
-	defer func() {
-		if err := client.Disconnect(context.TODO()); err != nil {
-			panic(err)
-		}
-	}()
-
-	err = client.Ping(context.TODO(), nil)
-	if err != nil {
-		panic(fmt.Sprintf("Could not ping MongoDB: %v", err))
-	}
-
-	fmt.Println("Successfully connected to MongoDB!")
-
-	// Access the test database
-	db := client.Database(mongoDatabase)
-
-	// Access the outlinks and backlinks collections
-	outlinksColl := db.Collection("outlinks")
-	backlinksColl := db.Collection("backlinks")
-
-	// Get the count of documents in the outlinks collection
-	count, err := outlinksColl.CountDocuments(context.TODO(), bson.D{})
-	if err != nil {
-		panic(fmt.Sprintf("Could not count documents in outlinks: %v", err))
-	}
-
-	backlinks := make(map[string][]string)
-	cursorBacklinks, err := backlinksColl.Find(context.TODO(), bson.D{})
-	if err != nil {
-		panic(fmt.Sprintf("Could not fetch backlinks: %v", err))
-	}
-	defer cursorBacklinks.Close(context.TODO())
-	for cursorBacklinks.Next(context.TODO()) {
-		var doc struct {
-			ID    string   `bson:"_id"`
-			Links []string `bson:"links"`
-		}
-		if err := cursorBacklinks.Decode(&doc); err != nil {
-			panic(fmt.Sprintf("Could not decode backlink document: %v", err))
-		}
-		backlinks[doc.ID] = doc.Links
-	}
-
-	outlinksCount := make(map[string]int)
-	cursorOutlinks, err := outlinksColl.Find(context.TODO(), bson.D{})
-	if err != nil {
-		panic(fmt.Sprintf("Could not fetch outlinks: %v", err))
-	}
-	defer cursorOutlinks.Close(context.TODO())
-	for cursorOutlinks.Next(context.TODO()) {
-		var doc struct {
-			ID    string   `bson:"_id"`
-			Links []string `bson:"links"`
-		}
-		if err := cursorOutlinks.Decode(&doc); err != nil {
-			panic(fmt.Sprintf("Could not decode outlink document: %v", err))
-		}
-		outlinksCount[doc.ID] = len(doc.Links)
-	}
-
-	pageRank := make(map[string]float64)
-	for url := range outlinksCount {
-		pageRank[url] = 1.0 / float64(count)
-	}
-
-	fmt.Printf("Total number of URLs: %d\n", count)
-
-	iterations := 10
-	damping := 0.85
-	for i := 0; i < iterations; i++ {
-		newPageRank := make(map[string]float64)
-
-		for url, _ := range pageRank {
-			var newCumulativeRank float64
-
-			backlinksForUrl, exists := backlinks[url]
-			if exists {
-				for _, backlink := range backlinksForUrl {
-					outlinkCount, ok := outlinksCount[backlink]
-					if ok {
-						backlinkRank, ok := pageRank[backlink]
-						if ok {
-							newCumulativeRank += backlinkRank / float64(outlinkCount)
-						}
-					}
-				}
-			}
-
-			newPageRank[url] = (1-damping)/float64(count) + damping*newCumulativeRank
-		}
-
-		pageRank = newPageRank
-	}
-
-	var sortedPageRanks []struct {
-		URL  string
-		Rank float64
-	}
-	for url, rank := range pageRank {
-		sortedPageRanks = append(sortedPageRanks, struct {
-			URL  string
-			Rank float64
-		}{url, rank})
-	}
-	sort.Slice(sortedPageRanks, func(i, j int) bool {
-		return sortedPageRanks[i].Rank > sortedPageRanks[j].Rank
-	})
-
-	// Print sorted page ranks
-	fmt.Println("Sorted Page Rank values:")
-	for _, pageRank := range sortedPageRanks {
-		fmt.Printf("Page URL: %s, Page Rank: %f\n", pageRank.URL, pageRank.Rank)
-	}
-
-	var bulkOps []mongo.WriteModel
-	for _, pageRank := range sortedPageRanks {
-		bulkOps = append(bulkOps, mongo.NewUpdateOneModel().
-			SetFilter(bson.D{{Key: "_id", Value: pageRank.URL}}).
-			SetUpdate(bson.D{
-				{Key: "$set", Value: bson.D{
-					{Key: "rank", Value: pageRank.Rank},
-				}},
-			}).
-			SetUpsert(true))
-	}
-
-	// Execute the batch insert
-	if len(bulkOps) > 0 {
-		_, err := db.Collection("pagerank").BulkWrite(context.TODO(), bulkOps)
-		if err != nil {
-			panic(fmt.Sprintf("Could not batch insert page rank values: %v", err))
-		}
-	}
-
-	fmt.Println("Page rank values saved to the database!")
 }

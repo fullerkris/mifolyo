@@ -1,83 +1,118 @@
-# Page Rank
+# PageRank
 
-The Page Rank service is responsible for calculating the PageRank of web pages based on the backlinks data stored in MongoDB. It uses Google's original PageRank algorithm to determine the importance of each page. The PageRank data is stored in MongoDB for fast retrieval by other services.
+The PageRank service computes authority scores for searchable pages in MongoDB.
+It is a one-shot batch job, not a long-running or horizontally scaled service.
 
-## Setup
+## Graph contract
 
-### Using Docker
-Using Docker is the recommended way to run the Page Rank service. It allows you to run the service in an isolated environment without worrying about dependencies or system configurations. To properly run the service with Docker you need to add a `variables.env` file in the `services/page-rank` directory. The `variables.env` file should contain the following variables:
+- Rankable nodes are the canonical HTTP/HTTPS `_id` values in `metadata`.
+- Edges come from `outlinks`, with duplicate edges removed.
+- Sources or targets outside `metadata` are excluded.
+- Missing, empty, or fully filtered outlinks make a node dangling. Dangling
+  rank is redistributed across all nodes.
+- The additive `backlinks` collection is not an input.
+
+The algorithm uses damping `0.85`, uniform initialization, an L1 convergence
+tolerance of `1e-12`, and a maximum of 1000 iterations. Empty or malformed
+input and non-convergence fail without changing active results.
+
+## Publication
+
+Running the binary without flags is read-only. It validates the graph,
+calculates ranks, and prints a deterministic graph SHA-256 and summary as JSON.
+
+Publication requires the exact validated hash:
 
 ```bash
-MONGO_HOST=<your_mongo_host>
-MONGO_DB=<your_mongo_db>             # default: test
-MONGO_USERNAME=<your_mongo_username> # default: empty
-MONGO_PASSWORD=<your_mongo_password> # default: empty
+./page-rank --publish \
+  --expected-graph-sha256=<validated-sha256> \
+  --confirm-target=mongo:27017/mifolyo_index/pagerank
 ```
 
-To run the Page Rank service using Docker, follow these steps:
-1. **Install Docker**: The installation instructions will depend on your operating system. You can find the installation instructions for your OS on the [Docker website](https://docs.docker.com/get-docker/).
-2. **Build the Docker image**: Navigate to the `services/page-rank` directory (if you're not already here) and run the following command.
-   ```bash
-   docker compose up --build
-   ```
-3. **Running in detached mode**: If you want to run the Page Rank service in the background, you can use the `-d` flag.
-   ```bash
-   docker compose up --build -d
-   ```
-4. **Scaling the Page Rank service**: If you want to run multiple instances of the Page Rank service when it is running under detached mode, you can use the `--scale` option.
-   ```bash
-   docker compose up --scale page_rank=3
-   ```
-5. **Stopping the Page Rank service**: To stop the Page Rank service, you can use the following command.
-   ```bash
-   # If you are running in detached mode
-   docker compose down
-   # If you are running in the foreground
-   Ctrl + C
-   ```
+The service writes a complete staging collection, creates the descending rank
+index, revalidates the input, and atomically replaces `pagerank`. Every active
+document records its run ID, graph hash, algorithm version, canonicalization
+version, convergence data, and publication time. Repeating an unchanged run
+returns `already_current` without replacing the collection.
 
-### Without Docker
+Publication acquires a MongoDB single-writer lock before loading the graph, so
+a concurrent publisher fails closed. A hard-killed publisher can leave a stale
+lock that must be reviewed and removed manually. Graph producers do not honor
+this lock: stop and durably flush them before validation and publication, and
+keep them stopped until activation completes.
 
-If you prefer to run the Page Rank service without Docker, you can do so by building and running the Go binary directly on your system. Make sure you have Go installed (version 1.18 or higher is recommended).
+If activation has an unknown outcome, the command deliberately retains the
+lock. Verify the active run and confirm that no PageRank process remains before
+removing that lock by its recorded owner.
 
-1. **Install Go**:  
-   Download and install Go from the [official website](https://go.dev/dl/).
+## Configuration
 
-2. **Set up environment variables**:  
-   Create a `variables.env` file in the `services/page-rank` directory with the following content (adjust values as needed):
-   ```bash
-   MONGO_HOST=<your_mongo_host>
-   MONGO_DB=<your_mongo_db>             # default: test
-   MONGO_USERNAME=<your_mongo_username> # default: empty
-   MONGO_PASSWORD=<your_mongo_password> # default: empty
-   ```
-
-3. **Export environment variables**:  
-   Before running the Page Rank service, export the variables in your shell:
-   ```bash
-   export $(grep -v '^#' variables.env | xargs)
-   ```
-
-4. **Build the Page Rank service**:  
-   Navigate to the `services/page-rank` directory and run:
-   ```bash
-   go build -o page_rank ./cmd/page_rank
-   ```
-
-5. **Run the Page Rank service**:  
-   Start the Page Rank service with optional flags for concurrency and batch size:
-   ```bash
-   ./page_rank -max-concurrency=10 -max-pages=100
-   ```
-
-6. **Stopping the Page Rank service**:  
-   Press `Ctrl + C` in the terminal to stop the process.
-
-**Note:**  
-- Make sure Redis is running and accessible with the credentials you provided.
-- You may need to install Go dependencies using `go mod tidy` before building.
-
-For development or debugging, you can also run the Page Rank service directly:
 ```bash
-go run
+MONGO_HOST=localhost
+MONGO_PORT=27017
+MONGO_DB=test
+MONGO_USERNAME=<required-user>
+MONGO_PASSWORD=<required-password>
+```
+
+Credentials are applied through the MongoDB driver rather than interpolated
+into a connection URI. Username and password must be supplied together, and
+missing authentication fails closed. An isolated local test environment may
+explicitly opt in to unauthenticated MongoDB with the exact setting
+`ALLOW_INSECURE_DATASTORES=true`; never use that flag in production or a shared
+environment. The root and V1 baseline Compose files make this local-only
+exception explicit because their data stores are localhost-bound or isolated
+on internal networks.
+
+The service-level Compose file is a deployment artifact. From the repository
+root, validate the reviewed release digest metadata before pulling or running
+it:
+
+```bash
+bash scripts/validate-release-compose.sh \
+  --env-file services/spider/release-image.env \
+  --env-file services/indexer/release-image.env \
+  --env-file services/image-indexer/release-image.env \
+  --env-file services/page-rank/release-image.env v2026.08.26
+docker compose --env-file services/page-rank/release-image.env \
+  --file services/page-rank/docker-compose.yml pull
+```
+
+`MIFOLYO_PAGE_RANK_IMAGE` must exactly identify
+`ghcr.io/fullerkris/mifolyo/page-rank` by a lowercase SHA-256 digest. Tags,
+alternate repositories, wrong services, and malformed digests are rejected.
+
+## Isolated baseline run
+
+Follow `docs/v1-baseline-crawl-test-checklist.md`. The approved local path uses
+the isolated Compose project's `ranking` profile:
+
+```bash
+docker compose --project-name mifolyo-v1-baseline-test \
+  --file scripts/docker/v1-baseline.compose.yml \
+  --profile ranking run --rm page-rank
+```
+
+Capture `graph_sha256`, then run the explicit publication command shown in the
+checklist. The validation command does not create or update `pagerank`.
+
+## Development
+
+Go toolchain 1.25.13 is required. The module pins `toolchain go1.25.13` so Go's
+toolchain selection uses the same patched release as CI.
+
+```bash
+go test ./...
+go test -race ./...
+go vet ./...
+go build ./cmd/page-rank
+go run ./cmd/page-rank
+```
+
+The MongoDB publication test is opt-in and creates then removes a dedicated
+`mifolyo_pagerank_contract_*` database:
+
+```bash
+PAGERANK_MONGO_INTEGRATION_URI=mongodb://localhost:27017 \
+  go test -run TestPublishPageRankIntegration -count=1 ./cmd/page-rank
 ```

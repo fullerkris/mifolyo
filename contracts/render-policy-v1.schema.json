@@ -1,0 +1,411 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mifolyo.local/contracts/render-policy-v1.schema.json",
+  "title": "MiFolyo JavaScript render policy V1",
+  "description": "Fail-closed, exact-host policy for the networkless inline renderer and secure script/stylesheet resource broker. This contract does not authorize rendering by itself.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "default_action",
+    "rules"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "default_action": {
+      "const": "deny"
+    },
+    "rules": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/rule"
+      }
+    }
+  },
+  "$defs": {
+    "rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "enabled",
+        "host_rule",
+        "allow_paths",
+        "allow_path_prefixes",
+        "deny_path_prefixes",
+        "mode",
+        "failure_action",
+        "resource_rules",
+        "network_controls",
+        "limits"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\u0000-\\u001F\\u007F-\\u009F]+$"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "host_rule": {
+          "$ref": "#/$defs/hostRule"
+        },
+        "allow_paths": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/path"
+          }
+        },
+        "allow_path_prefixes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/allowPathPrefix"
+          }
+        },
+        "deny_path_prefixes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/path"
+          }
+        },
+        "mode": {
+          "enum": [
+            "inline_only",
+            "brokered"
+          ]
+        },
+        "failure_action": {
+          "const": "reject_page"
+        },
+        "resource_rules": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/resourceRule"
+          }
+        },
+        "network_controls": {
+          "$ref": "#/$defs/networkControls"
+        },
+        "limits": {
+          "$ref": "#/$defs/limits"
+        }
+      },
+      "allOf": [
+        {
+          "anyOf": [
+            {
+              "properties": {
+                "allow_paths": {
+                  "minItems": 1
+                }
+              }
+            },
+            {
+              "properties": {
+                "allow_path_prefixes": {
+                  "minItems": 1
+                }
+              }
+            }
+          ]
+        },
+        {
+          "if": {
+            "properties": {
+              "mode": {
+                "const": "inline_only"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "resource_rules": {
+                "maxItems": 0
+              },
+              "limits": {
+                "properties": {
+                  "max_resource_requests": {
+                    "const": 0
+                  },
+                  "max_aggregate_resource_bytes": {
+                    "const": 0
+                  },
+                  "max_resource_body_bytes": {
+                    "const": 0
+                  },
+                  "max_redirect_hops": {
+                    "const": 0
+                  }
+                }
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "resource_rules": {
+                "minItems": 1
+              },
+              "limits": {
+                "properties": {
+                  "max_resource_requests": {
+                    "minimum": 1
+                  },
+                  "max_aggregate_resource_bytes": {
+                    "minimum": 1
+                  },
+                  "max_resource_body_bytes": {
+                    "minimum": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "hostRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "host",
+        "match"
+      ],
+      "properties": {
+        "host": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 253,
+          "pattern": "^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$",
+          "allOf": [
+            {
+              "not": {
+                "pattern": "^(?:[0-9]+\\.){3}[0-9]+$"
+              }
+            },
+            {
+              "not": {
+                "pattern": "(?:^|\\.)(?:localhost|local|localdomain|lan|home|home\\.arpa|internal|intranet|onion|alt|arpa|test|invalid|example)$"
+              }
+            }
+          ]
+        },
+        "match": {
+          "const": "exact"
+        }
+      }
+    },
+    "resourceRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "host_rule",
+        "allow_paths",
+        "allow_path_prefixes",
+        "deny_path_prefixes",
+        "allowed_types"
+      ],
+      "properties": {
+        "host_rule": {
+          "$ref": "#/$defs/hostRule"
+        },
+        "allow_paths": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/path"
+          }
+        },
+        "allow_path_prefixes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/allowPathPrefix"
+          }
+        },
+        "deny_path_prefixes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/path"
+          }
+        },
+        "allowed_types": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "script",
+              "stylesheet"
+            ]
+          }
+        }
+      },
+      "anyOf": [
+        {
+          "properties": {
+            "allow_paths": {
+              "minItems": 1
+            }
+          }
+        },
+        {
+          "properties": {
+            "allow_path_prefixes": {
+              "minItems": 1
+            }
+          }
+        }
+      ]
+    },
+    "path": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2029,
+      "pattern": "^/(?:[A-Za-z0-9/:@!$&'()*+,;=._~-]|%[0-9A-F]{2})*$",
+      "allOf": [
+        {
+          "not": {
+            "pattern": "//"
+          }
+        },
+        {
+          "not": {
+            "pattern": "%(?:0[0-9A-F]|1[0-9A-F]|7F)|%C2%(?:8[0-9A-F]|9[0-9A-F])"
+          }
+        }
+      ]
+    },
+    "allowPathPrefix": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/path"
+        },
+        {
+          "not": {
+            "const": "/"
+          }
+        }
+      ]
+    },
+    "networkControls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "allowed_methods",
+        "robots_for_resources",
+        "allow_cookies",
+        "allow_service_workers",
+        "allow_websockets",
+        "allow_webrtc",
+        "allow_downloads",
+        "allow_popups",
+        "allow_secondary_documents",
+        "allow_javascript_navigation"
+      ],
+      "properties": {
+        "allowed_methods": {
+          "const": [
+            "GET"
+          ]
+        },
+        "robots_for_resources": {
+          "const": true
+        },
+        "allow_cookies": {
+          "const": false
+        },
+        "allow_service_workers": {
+          "const": false
+        },
+        "allow_websockets": {
+          "const": false
+        },
+        "allow_webrtc": {
+          "const": false
+        },
+        "allow_downloads": {
+          "const": false
+        },
+        "allow_popups": {
+          "const": false
+        },
+        "allow_secondary_documents": {
+          "const": false
+        },
+        "allow_javascript_navigation": {
+          "const": false
+        }
+      }
+    },
+    "limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "max_render_time_ms",
+        "settle_time_ms",
+        "max_resource_requests",
+        "max_aggregate_resource_bytes",
+        "max_resource_body_bytes",
+        "max_rendered_dom_bytes",
+        "max_dom_nodes",
+        "max_redirect_hops",
+        "max_console_bytes"
+      ],
+      "properties": {
+        "max_render_time_ms": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30000
+        },
+        "settle_time_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5000
+        },
+        "max_resource_requests": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 64
+        },
+        "max_aggregate_resource_bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 33554432
+        },
+        "max_resource_body_bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5242880
+        },
+        "max_rendered_dom_bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5242880
+        },
+        "max_dom_nodes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100000
+        },
+        "max_redirect_hops": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "max_console_bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65536
+        }
+      }
+    }
+  }
+}

@@ -1,32 +1,47 @@
 # V1 Baseline Crawl Test Checklist
 
-Use this checklist for the first bounded crawl of the 70 reviewed V1 manual
-seeds in the disposable local environment defined by
+Use this checklist for a bounded crawl of the 67 enabled V1 manual seeds in the
+70-record catalog, using the disposable local environment defined by
 `scripts/docker/v1-baseline.compose.yml`. This is a search-only test, not
 approval for Curlie or other untrusted bulk sources.
 
-The stack and pre-crawl sections may be validated now, but spider execution is
-blocked until DNS-pinned address authorization and redirect revalidation are
-implemented and their stop condition below is removed. Reviewed seed syntax is
-not a substitute for fetch-time SSRF protection.
+The spider's DNS-pinned transport, redirect revalidation, robots enforcement,
+and exact baseline-policy validation are implemented and tested. That removes
+the former code-level blocker, but it does not authorize a crawl by itself.
+Section 7 remains operationally blocked until sections 1 through 6, including
+the host-publication and three-key queue preflight, are completed and recorded.
+The policy also contains disabled `disabled-sites` and `reddit-crawler` groups.
+BBC, Khan Academy, PolitiFact, and Reddit are not part of the 67 enabled
+baseline domains and must remain disabled.
+
+> [!IMPORTANT]
+> The first authorization was consumed by the run recorded on 2026-08-18.
+> This checklist does not authorize a repeat. Before any future section 7 run,
+> obtain a new authorization and record explicit dispositions for every prior
+> robots, challenge, or usage-term issue, including BBC and Khan Academy.
 
 ## Test objective
 
 Verify that the V1 pipeline preserves canonical absolute URLs from
-`crawl_seeds` through Redis, the spider, indexers, MongoDB metadata, search
-results. Forum behavior is out of scope and no forum service is in this
+`crawl_seeds` through Redis, the spider, indexers, MongoDB metadata, PageRank,
+and search results. Forum behavior is out of scope and no forum service is in this
 environment. The spider may enqueue image references, but external image
 fetching and image indexing are explicitly out of scope.
+JavaScript rendering is also out of scope. Stage 1 inline rendering exists, but
+the checked-in render policy is empty and the `render` profile must not run for
+this static baseline.
 
-The first run is limited to one spider batch:
+A run is limited to one spider batch:
 
 ```text
 --once --max-concurrency 2 --max-pages 10
 ```
 
-`--max-pages` reserves attempts atomically before workers read the queue.
-Invalid, visited, or failed entries consume an attempt, so concurrency cannot
-raise the batch above ten outbound request slots.
+`--max-pages` is a hard global outbound-attempt budget. First-hop global and
+domain-group capacity is reserved before a queue claim; an unused reservation
+is refunded. Every robots, page, and redirect request consumes a slot, and a
+later capacity denial requeues the original candidate at the same score and
+depth. Concurrency cannot raise the batch above ten outbound attempts.
 
 ## Stop conditions
 
@@ -45,33 +60,52 @@ Stop the test immediately if any of these conditions occur:
   required isolation control.
 - A command would run `FLUSHDB`, `FLUSHALL`, delete a shared volume, or reset
   development, forum, account, or production data.
-- The V1 queue and URL map do not contain the same 70 baseline IDs before the crawl.
+- The V1 queue, URL map, and depth map do not contain the same 67 enabled baseline IDs
+  before the crawl, or any baseline depth is not canonical `0`.
 - A queue ID resolves to a different canonical URL than the corresponding MongoDB seed.
 - The spider attempts to fetch a literal IP, local hostname, private address, or unexpected non-default port.
 - An opaque 64-character URL ID appears as a human-facing page or image URL.
 - The spider is not bounded by `--once --max-concurrency 2 --max-pages 10`.
 - `image-indexer` is running or any service fetches an externally supplied image URL.
+- A render worker or browser process is running, or the spider attempts a
+  browser-originated resource request.
+- A Reddit URL is queued or fetched while `reddit-crawler` is disabled.
 - Crawl-derived records are being written into a production or otherwise shared environment.
+- PageRank publication starts while the spider or indexer is running, before
+  the indexer's final buffer flush is proven successful, or while
+  `pages_queue` is non-zero.
+- PageRank input contains a malformed or non-absolute URL identity, changes
+  between validation and publication, or produces a non-finite, negative, or
+  non-normalized rank.
 
 ## Known limitations
 
-- Redis currently removes a job before crawl acknowledgement. A process crash or fetch failure can lose pending work until the seed feeder is rerun.
-- DNS-pinned SSRF protection and redirect revalidation are not implemented.
-  Do not invoke the spider until both controls are implemented and tested.
+- Redis currently removes a job before crawl acknowledgement. Capacity and
+  cancellation failures are requeued, but a process crash or ordinary fetch
+  failure can still lose pending work until the seed feeder is rerun.
+- Application address checks cannot observe every NAT, DNAT, NAT64, or
+  publicly numbered internal route. Keep the host-publication inventory and
+  outbound network controls as defense in depth.
 - Crawl/data network separation removes baseline MongoDB/PostgreSQL Compose DNS
   resolution from the spider; it does not block access to databases published
   through the Docker host gateway or another host address.
 - The image indexer does not yet have an SSRF-hardened fetch path. Keep its
   separate `image-pipeline` profile disabled.
+- External-resource brokering is implemented but remains unauthorized and
+  disabled for the baseline. Keep the render policy empty and follow
+  `docs/javascript-crawling-v1-scope.md` before approving any rendered crawl.
 - Durable leases, ACK/NACK, retries, cancellation, and dead-letter handling are not implemented.
 - Existing legacy crawl-derived MongoDB and Redis data can mix identity
   versions. Do not attach legacy or development volumes to this isolated
   project.
+- The `backlinks` collection is an additive historical projection and is not
+  authoritative for PageRank. Ranking must derive the current reverse graph
+  from `outlinks` instead.
 
 ## 1. Record the test context
 
 - [ ] Test date and operator recorded.
-- [ ] Branch recorded: `crawl_seeds-and-url-rules-rebuild`.
+- [ ] Current branch recorded.
 - [ ] Commit SHA recorded, or the run explicitly identified as an uncommitted worktree test.
 - [ ] `git status --short --branch` captured.
 - [ ] Compose file recorded as `scripts/docker/v1-baseline.compose.yml`.
@@ -116,10 +150,10 @@ Do not proceed when isolation is ambiguous.
 ```bash
 docker compose --project-name mifolyo-v1-baseline-test \
   --file scripts/docker/v1-baseline.compose.yml \
-  --profile tools --profile pipeline --profile image-pipeline config --quiet
+  --profile tools --profile pipeline --profile ranking --profile crawl --profile image-pipeline config --quiet
 docker compose --project-name mifolyo-v1-baseline-test \
   --file scripts/docker/v1-baseline.compose.yml \
-  --profile tools --profile pipeline build --pull
+  --profile tools --profile pipeline --profile ranking --profile crawl build --pull
 docker run --rm --entrypoint npm \
   mifolyo-v1-baseline-test-query-engine:local \
   audit --audit-level=low
@@ -142,6 +176,16 @@ docker inspect \
   mifolyo-v1-baseline-test-query-assets-1 \
   mifolyo-v1-baseline-test-query-engine-1 \
   --format '{{.Name}} {{.Image}}'
+docker image inspect mifolyo-v1-baseline-test-spider \
+  --format 'runtime-user={{.Config.User}}'
+docker run --rm --network none --read-only \
+  mifolyo-v1-baseline-test-spider \
+  ./spider --validate-policy --validate-baseline-policy \
+  --crawl-policy-file /app/config/crawl-policy-v1.baseline.json \
+  --render-policy-file /app/config/render-policy-v1.disabled.json
+docker run --rm --network none --read-only \
+  mifolyo-v1-baseline-test-spider sh -c \
+  'test -s /etc/ssl/certs/ca-certificates.crt && test "$(id -u):$(id -g)" = "65534:65534"'
 ```
 
 - [ ] Compose configuration validates.
@@ -161,8 +205,20 @@ docker inspect \
   `ALL`, a read-only root filesystem, and exit status 0.
 - [ ] Generated public assets are owned by `query-engine-user:www-data` and are
   served successfully from the project-scoped `query-public` volume.
-- [ ] The spider command resolves to `--once --max-concurrency 2 --max-pages 10`.
+- [ ] The spider belongs only to the `crawl` profile; it is absent from
+  `pipeline`, and its default Compose command is validation-only.
+- [ ] The spider image runtime user is `65534:65534`, includes its CA bundle,
+  and validates in a read-only container with networking disabled.
+- [ ] Baseline policy validation reports SHA-256
+  `50648954d0264f7ac4fdda174178db488e86e335a0b63fdcc448da7bc218bae3`.
+- [ ] Baseline policy reports 67 enabled host rules plus disabled
+  `disabled-sites` and `reddit-crawler` groups; all matching URLs are denied
+  before DNS.
+- [ ] `render-policy-v1.disabled.json` contains no render rules, the `render`
+  profile is inactive, and the spider image contains no browser binary.
 - [ ] No default `STARTING_URL` is configured.
+- [ ] The spider uses `MiFolyoBot/1.0` and the exact V1 queue, URL, and depth
+  keys; baseline execution rejects overrides.
 - [ ] `query-assets` exited successfully and Caddy serves the project-scoped `query-public` volume.
 - [ ] Caddy is the only service with a published port: `127.0.0.1:${MIFOLYO_V1_TEST_HTTP_PORT:-18080}:80`.
 - [ ] `image-indexer` belongs only to `image-pipeline`, which is not active for this test.
@@ -219,7 +275,7 @@ docker compose --project-name mifolyo-v1-baseline-test \
 Expected result:
 
 ```text
-70 direct manual records
+70 direct manual records (67 enabled, 3 disabled)
 8 Reddit discovery rows excluded
 ```
 
@@ -240,7 +296,9 @@ docker compose --project-name mifolyo-v1-baseline-test \
 - [ ] The confirmation token matches the actual host, database, and collection.
 - [ ] Rebuild completes through staged validation and atomic replacement.
 - [ ] `crawl_seeds` contains exactly 70 records.
-- [ ] All 70 records have `enabled: true`, `schema_version: 1`, and `canonicalization_version: 1`.
+- [ ] Exactly 67 records have `enabled: true`; BBC News, Khan Academy, and
+  PolitiFact have `enabled: false`.
+- [ ] All 70 records have `schema_version: 1` and `canonicalization_version: 1`.
 - [ ] Required indexes and strict validation are present.
 
 Example read-only verification:
@@ -273,11 +331,13 @@ docker compose --project-name mifolyo-v1-baseline-test \
   --profile tools run --rm seed-importer python feed.py --limit 1000
 ```
 
-- [ ] Feeder sees 70 enabled records.
+- [ ] Feeder sees 67 enabled records.
 - [ ] Feeder skips zero invalid records.
-- [ ] `mifolyo:crawl:v1:queue` contains 70 baseline IDs before the crawl.
-- [ ] `mifolyo:crawl:v1:urls` contains 70 URL mappings before the crawl.
-- [ ] Every queued ID has a URL mapping.
+- [ ] `mifolyo:crawl:v1:queue` contains 67 baseline IDs before the crawl.
+- [ ] `mifolyo:crawl:v1:urls` contains 67 URL mappings before the crawl.
+- [ ] `mifolyo:crawl:v1:depths` contains 67 depth mappings before the crawl.
+- [ ] Every queued ID has both URL and depth mappings, and every depth is the
+  canonical string `0`.
 - [ ] A sample ID resolves to the expected canonical absolute URL.
 
 Example read-only verification:
@@ -286,13 +346,34 @@ Example read-only verification:
 docker compose --project-name mifolyo-v1-baseline-test \
   --file scripts/docker/v1-baseline.compose.yml \
   exec -T redis redis-cli EVAL '
+local depths = redis.call("HVALS", "mifolyo:crawl:v1:depths")
+local all_zero = 1
+for _, depth in ipairs(depths) do
+  if depth ~= "0" then
+    all_zero = 0
+    break
+  end
+end
+local queue_ids = redis.call("ZRANGE", "mifolyo:crawl:v1:queue", 0, -1)
+local missing_metadata = 0
+for _, url_id in ipairs(queue_ids) do
+  if redis.call("HEXISTS", "mifolyo:crawl:v1:urls", url_id) ~= 1 or
+     redis.call("HEXISTS", "mifolyo:crawl:v1:depths", url_id) ~= 1 then
+    missing_metadata = missing_metadata + 1
+  end
+end
 return {
-  redis.call("ZCARD", "mifolyo:crawl:v1:queue"),
-  redis.call("HLEN", "mifolyo:crawl:v1:urls")
+  #queue_ids,
+  redis.call("HLEN", "mifolyo:crawl:v1:urls"),
+  redis.call("HLEN", "mifolyo:crawl:v1:depths"),
+  missing_metadata,
+  all_zero
 }' 0
 ```
 
-Expected output is `70` and `70`.
+Expected output is `67`, `67`, `67`, `0`, and `1`. The final two values prove
+every queued ID has both mappings and every initial depth is the canonical
+string `0`. Equal counts then exclude extra hash-only IDs.
 
 ## 6. Start downstream consumers
 
@@ -315,9 +396,11 @@ docker compose --project-name mifolyo-v1-baseline-test \
 
 ## 7. Run one bounded spider batch
 
-**BLOCKED:** Do not execute this section while the DNS-pinned address
-authorization and redirect-revalidation stop condition remains active. The
-command is retained as the post-hardening acceptance procedure.
+> [!WARNING]
+> Do not execute this section until every checkbox in sections 1 through 6 has
+> passed in the current test context. Transport hardening is complete, but the
+> host-publication and isolated queue/depth gates remain mandatory.
+> The 2026-08-18 authorization cannot be reused.
 
 Immediately before invoking the spider, recheck that root development data
 stores have not restarted with published ports:
@@ -328,18 +411,21 @@ docker compose --file docker-compose.yml ps mongo redis postgres
 
 - [ ] Root development MongoDB, Redis, and PostgreSQL remain stopped or portless.
 - [ ] No image indexer container or external image fetcher is running.
+- [ ] No render worker is running and no disabled-site or Reddit URL is pending
+  in the V1 queue.
 
 ```bash
 docker compose --project-name mifolyo-v1-baseline-test \
   --file scripts/docker/v1-baseline.compose.yml \
-  --profile pipeline run --rm spider \
-  ./spider --once --max-concurrency 2 --max-pages 10
+  --profile crawl run --rm spider \
+  ./spider --once --max-concurrency 2 --max-pages 10 --validate-baseline-policy
 ```
 
-- [ ] Spider reports the V1 queue key.
+- [ ] The resolved spider environment uses the V1 queue, URL, and depth keys.
 - [ ] Each popped opaque ID resolves to a canonical absolute URL.
-- [ ] No more than 10 page attempts are reserved and no more than 10 outbound
-  requests are made.
+- [ ] No more than 10 outbound attempts are committed across robots, pages, and
+  redirects.
+- [ ] The loaded policy digest exactly matches the approved baseline digest.
 - [ ] HTTP and HTTPS schemes are preserved.
 - [ ] No URL is reconstructed by prepending `https://` to an ID or existing absolute URL.
 - [ ] Crawl output, errors, redirects, and status codes are captured in the test report.
@@ -354,7 +440,77 @@ docker compose --project-name mifolyo-v1-baseline-test \
 - [ ] `image_indexer_queue` count is recorded but its entries were not fetched.
 - [ ] No external image request was made and no image document was indexed.
 - [ ] Failed URLs are listed for manual review because automatic retry state is not yet durable.
-- [ ] The V1 queue and URL-map counts after outlink discovery are recorded.
+- [ ] The V1 queue, URL-map, and depth-map counts after outlink discovery are recorded.
+
+## 8A. Validate and publish PageRank
+
+This batch operates only on the isolated MongoDB data already produced by the
+bounded crawl. It does not start the spider, make an external request, or
+authorize another crawl.
+
+Before ranking:
+
+- [ ] No spider container exists or is running.
+- [ ] `pages_queue` is `0` on two checks at least five seconds apart.
+- [ ] The indexer completed its final MongoDB buffer flush without an error and
+  was then stopped cleanly; an empty Redis queue alone is not proof of a flush.
+- [ ] The backlinks processor is stopped. PageRank does not consume its
+  additive `backlinks` projection.
+- [ ] A read-only validation pass reports a non-empty graph and a deterministic
+  graph SHA-256 without writing a `pagerank` collection.
+- [ ] Every URL referenced by searchable `words` records exists in `metadata`.
+- [ ] The graph SHA-256 is unchanged immediately before publication.
+- [ ] No stale `pagerank_locks` publication document exists. Publication holds
+  this single-writer lock from before graph loading through activation.
+
+The PageRank graph and algorithm must satisfy all of these requirements:
+
+- [ ] Rankable nodes are exactly the canonical absolute HTTP/HTTPS `_id`
+  values in `metadata`.
+- [ ] Edges are unique source-target pairs from current `outlinks` where both
+  endpoints are rankable nodes; unindexed sources and targets are excluded.
+- [ ] A missing, empty, or fully filtered outlink set is treated as a dangling
+  node and its rank mass is redistributed across all rankable nodes.
+- [ ] The damping factor, convergence tolerance, maximum iterations,
+  algorithm version, canonicalization version, graph counts, and graph hash
+  are recorded.
+- [ ] Empty or malformed input, non-convergence, a detected input change before
+  activation, or a pre-activation MongoDB error exits non-zero without changing
+  the active output. Producers remain operationally quiesced because they do
+  not participate in the PageRank publisher lock.
+
+Run the batch only through the isolated `ranking` profile. Capture the graph
+hash from the first command and provide that exact value to the second:
+
+```bash
+docker compose --project-name mifolyo-v1-baseline-test \
+  --file scripts/docker/v1-baseline.compose.yml \
+  --profile ranking run --rm page-rank
+docker compose --project-name mifolyo-v1-baseline-test \
+  --file scripts/docker/v1-baseline.compose.yml \
+  --profile ranking run --rm page-rank \
+  ./page-rank --publish \
+  --expected-graph-sha256=<validated-sha256> \
+  --confirm-target=mongo:27017/mifolyo_index/pagerank
+```
+
+After ranking:
+
+- [ ] Publication atomically replaces the complete `pagerank` collection;
+  stale rows from an older graph cannot survive.
+- [ ] `pagerank` and `metadata` contain exactly the same URL IDs and document
+  counts.
+- [ ] Every rank is finite, non-negative, no greater than `1`, and the sum is
+  within `1e-12` of `1`.
+- [ ] Every row records one run ID, graph SHA-256, algorithm version, and
+  canonicalization version, and a descending rank index exists.
+- [ ] The independently recomputed stationary L1 residual is at most `1e-10`.
+- [ ] No staging collection remains after successful publication.
+- [ ] No publication lock document remains after a successful publication.
+- [ ] Repeating the batch against the unchanged graph reports
+  `already_current` and leaves the active ranks unchanged.
+- [ ] If the filtered graph has no edges, every node has rank `1/N` within
+  `1e-12`.
 
 ## 9. Verify search behavior
 
@@ -372,6 +528,10 @@ curl --fail --show-error \
 - [ ] Search snippets and titles correspond to the fetched pages.
 - [ ] No result URL contains `https://https://` or a bare URL digest.
 - [ ] Existing meaningful-result smoke queries still work.
+- [ ] PageRank is normalized before weighting and applied to the complete
+  matching result set before pagination.
+- [ ] The top-ranked-page endpoint returns a URL present in `metadata` whose
+  rank equals the maximum active PageRank value.
 
 Record each query, expected result, actual result, and pass/fail outcome.
 
@@ -434,12 +594,17 @@ identity control failure is `FAIL`.
 **Scope:** Search only
 **Root development DB publication status:** Stopped / portless
 **Image pipeline:** Disabled
+**JavaScript rendering:** Disabled
+**Policy SHA-256:**
+**Spider image digest:**
+**Reddit crawler group:** Disabled
 
 ## Before
 
 - crawl_seeds count:
 - V1 queue count:
 - V1 URL-map count:
+- V1 depth-map count / values:
 - pages_queue count:
 - image_indexer_queue count:
 - Legacy data present:
@@ -447,13 +612,22 @@ identity control failure is `FAIL`.
 
 ## Execution
 
-- Pages attempted:
+- Outbound attempts (robots/pages/redirects):
 - Pages fetched successfully:
 - Pages indexed:
 - Image references queued:
 - Images fetched/indexed: N/A (deferred)
 - Fetch or parse failures:
 - Unexpected redirects:
+
+## PageRank checks
+
+- Input graph SHA-256:
+- Nodes / internal edges / filtered targets / dangling nodes:
+- Iterations / convergence residual / rank sum:
+- Published run ID:
+- Metadata/PageRank ID-set comparison:
+- Idempotent rerun result:
 
 ## Search checks
 
@@ -469,6 +643,7 @@ identity control failure is `FAIL`.
 
 - V1 queue count:
 - V1 URL-map count:
+- V1 depth-map count:
 - pages_queue count:
 - MongoDB metadata delta:
 - Cleanup performed:

@@ -15,11 +15,29 @@ The search stack is based on Moogle, an educational search engine inspired by ea
 - **Indexer**: Builds the inverted index and page metadata in MongoDB.
 - **Image Indexer**: Indexes images discovered during crawling.
 - **Backlinks Processor**: Transfers backlink data from Redis to MongoDB.
-- **Page Rank**: Calculates PageRank over backlink data.
+- **Page Rank**: Calculates PageRank for searchable metadata using the current outlink graph.
 - **TF-IDF**: Calculates term frequency-inverse document frequency weights.
 - **Query Engine**: Laravel service that returns ranked search results using TF-IDF and PageRank.
 
-The local development stack is defined in the root `docker-compose.yml` and supports optional `pipeline` and `batch` profiles.
+The local development stack is defined in the root `docker-compose.yml` and
+supports optional `pipeline`, `crawl`, and `batch` profiles. The spider is not
+part of `pipeline`; its `crawl` profile defaults to policy validation only.
+The root and isolated baseline Compose files explicitly set
+`ALLOW_INSECURE_DATASTORES=true` for their unauthenticated local-only MongoDB
+and Redis instances. Spider, Indexer, Image Indexer, and PageRank otherwise fail closed when datastore
+authentication is absent; this exception must not be copied to production or
+shared deployments.
+
+Production deployment Compose files for Spider, Indexer, Image Indexer, and
+PageRank require service-specific
+`ghcr.io/fullerkris/mifolyo/<service>@sha256:<64 lowercase hex>` values from the
+reviewed release `release-image.env` artifacts. Release tags are organizational
+metadata, not deployment identities. Use
+`docker compose --env-file release-image.env` and verify the pulled image's
+exact `RepoDigest` before cutover, following the stop/drain/backup procedure in
+`docs/immutable-pipeline-release-cutover.md`. The page/image queue protocol is
+not rolling-upgrade compatible; never mix release generations or add dual-read
+behavior. Root Compose builds remain local and are not production artifacts.
 
 ## Forum Engine Foundation
 
@@ -70,10 +88,10 @@ the root development stack. Configure, build, start, inspect, and read logs:
 ```bash
 docker compose --project-name mifolyo-v1-baseline-test \
   --file scripts/docker/v1-baseline.compose.yml \
-  --profile tools --profile pipeline --profile image-pipeline config --quiet
+  --profile tools --profile pipeline --profile crawl --profile image-pipeline config --quiet
 docker compose --project-name mifolyo-v1-baseline-test \
   --file scripts/docker/v1-baseline.compose.yml \
-  --profile tools --profile pipeline build --pull
+  --profile tools --profile pipeline --profile crawl build --pull
 docker run --rm --entrypoint npm \
   mifolyo-v1-baseline-test-query-engine:local \
   audit --audit-level=low
@@ -166,20 +184,21 @@ docker compose --project-name mifolyo-v1-baseline-test \
   --profile pipeline up -d indexer backlinks-processor
 ```
 
-The future bounded spider command is recorded in the checklist but is currently
-blocked. Do not invoke it until DNS-pinned address authorization and redirect
-revalidation are implemented and tested.
+The spider now enforces DNS-pinned address authorization, redirect
+revalidation, robots policy, and the exact approved baseline policy digest.
+The command remains an operator-gated procedure: do not invoke it until every
+pre-crawl stop condition and checkbox in the baseline checklist has passed.
 
 ```bash
 docker compose --project-name mifolyo-v1-baseline-test \
   --file scripts/docker/v1-baseline.compose.yml \
-  --profile pipeline run --rm spider \
-  ./spider --once --max-concurrency 2 --max-pages 10
+  --profile crawl run --rm spider \
+  ./spider --once --max-concurrency 2 --max-pages 10 --validate-baseline-policy
 ```
 
-Do not enable the separate `image-pipeline` profile for the baseline.
-External image fetching is deferred until the image fetch path validates DNS
-and resolved IPs, revalidates redirects, and blocks private and host targets.
+The optional `image-pipeline` consumes only immutable, spider-authorized
+normalized metadata. It has no outbound image fetch or image decoder path.
+Enable it only when image-indexing behavior is part of the reviewed test scope.
 
 After preserving logs and test evidence, the only approved full cleanup is the
 following project-restricted command. It deliberately deletes this test
@@ -263,11 +282,12 @@ guards.
 
 ### Feed and prepare a bounded crawl
 
-Before preparing the first 70-seed V1 baseline crawl, complete the isolation,
+Before preparing a 67-enabled-seed V1 baseline crawl from the 70-record catalog,
+complete the isolation,
 preflight, evidence, and cleanup steps in
-`docs/v1-baseline-crawl-test-checklist.md`. Spider execution remains blocked
-until DNS-pinned address authorization and redirect revalidation are
-implemented and tested.
+`docs/v1-baseline-crawl-test-checklist.md`. Fetch-time transport controls are
+implemented, but the crawl remains blocked until the environment-specific
+host-publication, queue/depth, image, and evidence checks pass.
 
 Preview the enabled records, then write them to the V1 Redis structures:
 
@@ -278,10 +298,10 @@ docker compose --profile batch run --rm seed-importer \
   python feed.py --limit 1000
 ```
 
-The feeder writes URL IDs to the versioned sorted set
-`mifolyo:crawl:v1:queue` and canonical URL lookups to
-`mifolyo:crawl:v1:urls`. Replays preserve the best queue priority. To inspect
-the pending count without changing data:
+The feeder atomically writes URL IDs to `mifolyo:crawl:v1:queue`, canonical URL
+lookups to `mifolyo:crawl:v1:urls`, and initial depth `0` to
+`mifolyo:crawl:v1:depths`. Replays preserve the best queue priority and
+shallowest depth. To inspect the pending count without changing data:
 
 ```bash
 docker compose exec redis redis-cli ZCARD mifolyo:crawl:v1:queue
@@ -289,14 +309,16 @@ docker compose exec redis redis-cli ZCARD mifolyo:crawl:v1:queue
 
 The current root development file publishes its MongoDB, Redis, and PostgreSQL
 ports. Do **not** run either spider command below with those publications in
-place. A root-stack crawl also requires the pending fetch-time SSRF controls.
-The data stores may remain available to the pipeline only through a reviewed
-portless configuration. Starting the downstream consumers is safe, but the
-spider command below is recorded for future use and must not run yet:
+place. The data stores may remain available to the pipeline only through a
+reviewed portless configuration. Starting the downstream consumers is safe;
+the spider remains operator-gated even though its fetch-time controls are now
+implemented. Its Compose default only validates policy, so a crawl also
+requires the explicit bounded command override:
 
 ```bash
 docker compose --profile pipeline up -d indexer backlinks-processor
-docker compose --profile pipeline run --rm spider
+docker compose --profile crawl run --rm spider \
+  ./spider --once --max-concurrency 2 --max-pages 10 --validate-baseline-policy
 ```
 
 Do not start the development image indexer for this baseline either. External
@@ -307,26 +329,71 @@ For a one-off development target, `STARTING_URL` remains an explicit per-run
 override rather than a stack default:
 
 ```bash
-docker compose --profile pipeline run --rm \
-  -e STARTING_URL=https://example.org/ spider
+docker compose --profile crawl run --rm \
+  -e STARTING_URL=https://archive.org/ spider \
+  ./spider --once --max-concurrency 2 --max-pages 10
 ```
+
+This development override deliberately omits `--validate-baseline-policy`,
+which rejects unreviewed starting URLs.
 
 **Never run Redis `FLUSHDB` or `FLUSHALL` to reset crawling.** Redis database
 0 is shared with other pipeline and application state. The V1 key namespace
 exists to isolate this queue; blanket flushing can destroy unrelated data.
 
+### JavaScript renderer
+
+The optional `render` profile provides a separate Headless Chromium worker for
+exact-host/path `inline_only` and brokered script/stylesheet rules. Chromium has
+no network namespace or data-store credentials; brokered resources are fetched
+only by the page-bound crawler authorization path. Rendering is disabled by
+`services/spider/config/render-policy-v1.disabled.json`; the static baseline
+also rejects every enabled render rule.
+
+The worker and its sandbox can be tested without contacting a public site:
+
+```bash
+docker build -t mifolyo-render-worker:test services/render-worker
+docker run --rm --network none --read-only --user 65534:65534 \
+  --cap-drop ALL --security-opt no-new-privileges:true \
+  --security-opt seccomp=services/render-worker/seccomp_profile.json \
+  --tmpfs /tmp:rw,noexec,nosuid,size=256m \
+  --tmpfs /dev/shm:rw,nosuid,size=256m \
+  mifolyo-render-worker:test node smoke.mjs
+```
+
+External script/style brokering is implemented but is not authorized for the
+baseline. The release workflow promotes the worker image only; it does not
+deploy or activate the required socket and sandbox topology. See
+`services/render-worker/README.md` before changing the disabled policy or
+starting the profile.
+
 ### Batch ranking jobs
 
-Run batch ranking jobs:
+Run TF-IDF and perform a read-only PageRank validation:
 
 ```bash
 docker compose --profile batch run --rm tfidf
 docker compose --profile batch run --rm page-rank
 ```
 
-The local spider identifies itself as `MiFolyoBot/1.0` and the root Compose
-spider command is bounded for development with
-`--once --max-concurrency 2 --max-pages 10`.
+PageRank publication is intentionally a separate, hash-bound command. Stop and
+flush graph producers first, capture `graph_sha256` from validation, and then
+run:
+
+```bash
+docker compose --profile batch run --rm page-rank \
+  ./page-rank --publish \
+  --expected-graph-sha256=<validated-sha256> \
+  --confirm-target=mongo:27017/mifolyo_index/pagerank
+```
+
+For the isolated baseline environment, use the stricter procedure in
+`docs/v1-baseline-crawl-test-checklist.md` instead of the root Compose project.
+
+The local spider identifies itself as `MiFolyoBot/1.0`. Its root Compose
+default is validation-only; the explicit development crawl shown above is
+bounded by `--once --max-concurrency 2 --max-pages 10`.
 
 ## Notes
 

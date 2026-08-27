@@ -196,6 +196,13 @@ body {
     color: #2f66f2;
 }
 
+.mifolyo-search-form {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
 .mifolyo-search-card {
     align-items: center;
     background: #ffffff;
@@ -241,6 +248,11 @@ body {
     height: 3.6rem;
     justify-content: center;
     width: 3.6rem;
+    transition: background-color 180ms ease;
+}
+
+.mifolyo-search-form[data-mode="community"] .mifolyo-search-card button {
+    background: #2f66f2;
 }
 
 .mifolyo-search-card button svg {
@@ -255,7 +267,9 @@ body {
     box-shadow: 0 0.75rem 2rem rgb(0 0 0 / 12%);
     margin-top: -0.15rem;
     max-width: 20rem;
+    min-inline-size: 0;
     overflow: hidden;
+    padding: 0;
     width: 100%;
 }
 
@@ -268,16 +282,14 @@ body {
 }
 
 .mifolyo-mode-tabs span,
-.mifolyo-mode-tabs a,
-.mifolyo-mode-bottom span {
+.mifolyo-mode-bottom label {
     color: #6f6a63;
     font-size: 0.8rem;
     font-weight: 800;
     text-decoration: none;
 }
 
-.mifolyo-mode-tabs .active,
-.mifolyo-mode-bottom .active {
+.mifolyo-mode-tabs .active {
     background: #f35300;
     border-radius: 1.4rem;
     color: #ffffff;
@@ -287,10 +299,72 @@ body {
 .mifolyo-mode-bottom {
     border-top: 1px solid #ded8cf;
     grid-template-columns: 1fr 1fr;
+    position: relative;
 }
 
-.mifolyo-mode-bottom span:last-child {
+.mifolyo-mode-bottom input {
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    width: 1px;
+}
+
+.mifolyo-mode-bottom label {
+    border-radius: 1.4rem;
+    cursor: pointer;
+    padding: 0.58rem 0.8rem;
+    position: relative;
+    transition: color 180ms ease;
+    z-index: 1;
+}
+
+.mifolyo-mode-bottom label:last-child {
     color: #2f66f2;
+}
+
+.mifolyo-mode-indicator {
+    background: #f35300;
+    border-radius: 1.4rem;
+    bottom: 0.38rem;
+    box-shadow: 0 0.1rem 0.2rem rgb(0 0 0 / 10%);
+    left: 0.38rem;
+    position: absolute;
+    top: 0.38rem;
+    transition: background-color 180ms ease, transform 180ms ease;
+    width: calc(50% - 0.38rem);
+}
+
+#mifolyo-mode-community:checked ~ .mifolyo-mode-indicator {
+    background: #2f66f2;
+    transform: translateX(100%);
+}
+
+#mifolyo-mode-search:checked ~ label[for="mifolyo-mode-search"],
+#mifolyo-mode-community:checked ~ label[for="mifolyo-mode-community"] {
+    color: #ffffff;
+}
+
+.mifolyo-mode-bottom:focus-within {
+    outline: 2px solid #2f66f2;
+    outline-offset: -2px;
+}
+
+.mifolyo-search-help,
+.mifolyo-search-error {
+    font-size: 0.85rem;
+    line-height: 1.4;
+    margin-top: 0.8rem;
+    max-width: 32rem;
+}
+
+.mifolyo-search-help {
+    color: #5f5a53;
+}
+
+.mifolyo-search-error {
+    color: #a52c13;
+    font-weight: 700;
 }
 
 .mifolyo-home-copy {

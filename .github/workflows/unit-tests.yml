@@ -14,19 +14,133 @@ jobs:
   test-spider:
     name: Test Spider Service
     runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 127.0.0.1:6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 20
+    env:
+      SPIDER_REDIS_INTEGRATION_ADDR: 127.0.0.1:6379
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - name: Validate explicit crawl Compose profiles
+        run: |
+          python - <<'PY'
+          import json
+          import subprocess
+
+          for compose_file in (
+              "docker-compose.yml",
+              "scripts/docker/v1-baseline.compose.yml",
+          ):
+              pipeline_services = subprocess.check_output(
+                  [
+                      "docker", "compose", "--file", compose_file,
+                      "--profile", "pipeline", "config", "--services",
+                  ],
+                  text=True,
+              ).splitlines()
+              assert "spider" not in pipeline_services, (compose_file, pipeline_services)
+              assert "image-indexer" not in pipeline_services, (compose_file, pipeline_services)
+              assert "render-worker" not in pipeline_services, (compose_file, pipeline_services)
+
+              resolved = json.loads(
+                  subprocess.check_output(
+                      [
+                          "docker", "compose", "--file", compose_file,
+                          "--profile", "crawl", "config", "--format", "json",
+                      ],
+                      text=True,
+                  )
+              )
+              spider = resolved["services"]["spider"]
+              assert spider["profiles"] == ["crawl"], (compose_file, spider["profiles"])
+              assert spider["command"] == [
+                  "./spider", "--validate-policy", "--validate-baseline-policy"
+              ], (compose_file, spider["command"])
+              environment = spider["environment"]
+              assert environment["USER_AGENT"] == "MiFolyoBot/1.0", environment
+              assert environment["CRAWL_QUEUE_KEY"] == "mifolyo:crawl:v1:queue", environment
+              assert environment["CRAWL_URLS_KEY"] == "mifolyo:crawl:v1:urls", environment
+              assert environment["CRAWL_DEPTHS_KEY"] == "mifolyo:crawl:v1:depths", environment
+              assert "STARTING_URL" not in environment, environment
+              assert "image-indexer" not in resolved["services"], (
+                  compose_file, resolved["services"].keys()
+              )
+              assert "render-worker" not in resolved["services"], (
+                  compose_file, resolved["services"].keys()
+              )
+
+              if compose_file == "scripts/docker/v1-baseline.compose.yml":
+                  assert spider["user"] == "65534:65534", spider["user"]
+                  assert spider["read_only"] is True, spider["read_only"]
+                  assert spider["cap_drop"] == ["ALL"], spider["cap_drop"]
+                  assert "no-new-privileges:true" in spider["security_opt"], spider["security_opt"]
+                  assert list(spider["networks"]) == ["crawl"], spider["networks"]
+                  assert spider["mem_limit"] == "268435456", spider["mem_limit"]
+                  assert spider["pids_limit"] == 128, spider["pids_limit"]
+
+              render_resolved = json.loads(
+                  subprocess.check_output(
+                      [
+                          "docker", "compose", "--file", compose_file,
+                          "--profile", "render", "config", "--format", "json",
+                      ],
+                      text=True,
+                  )
+              )
+              assert "spider" not in render_resolved["services"], (
+                  compose_file, render_resolved["services"].keys()
+              )
+              worker = render_resolved["services"]["render-worker"]
+              assert worker["profiles"] == ["render"], (compose_file, worker["profiles"])
+              assert worker["user"] == "65534:65534", worker["user"]
+              assert worker["network_mode"] == "none", worker["network_mode"]
+              assert worker["read_only"] is True, worker["read_only"]
+              assert worker["cap_drop"] == ["ALL"], worker["cap_drop"]
+              assert worker["init"] is True, worker["init"]
+              assert "no-new-privileges:true" in worker["security_opt"], worker["security_opt"]
+              assert any(
+                  option.startswith("seccomp=") for option in worker["security_opt"]
+              ), worker["security_opt"]
+              assert worker["environment"] == {
+                  "CHROMIUM_EXECUTABLE_PATH": "/usr/bin/chromium",
+                  "HOME": "/tmp",
+                  "RENDER_SOCKET": "/run/mifolyo-render/renderer.sock",
+              }, worker["environment"]
+              assert "/tmp:rw,noexec,nosuid,size=256m" in worker["tmpfs"], worker["tmpfs"]
+              assert "/dev/shm:rw,nosuid,size=256m" in worker["tmpfs"], worker["tmpfs"]
+              assert worker["mem_limit"] == "805306368", worker["mem_limit"]
+              assert worker["pids_limit"] == 256, worker["pids_limit"]
+          PY
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5.6.0
         with:
-          go-version: "1.24.1"
+          go-version: "1.25.13"
           cache-dependency-path: services/spider/go.sum
       - name: Build
         working-directory: ./services/spider
         run: go build -v ./cmd/spider/main.go
+      - name: Validate baseline crawl policy
+        working-directory: ./services/spider
+        run: >-
+          go run ./cmd/spider
+          --validate-policy
+          --validate-baseline-policy
+          --crawl-policy-file ./config/crawl-policy-v1.baseline.json
       - name: Test
         working-directory: ./services/spider
-        run: go test -v ./...
+        run: go test -race -v ./...
+      - name: Scan Go dependencies and call paths
+        working-directory: ./services/spider
+        run: |
+          go install golang.org/x/vuln/cmd/govulncheck@v1.7.0
+          "$(go env GOPATH)/bin/govulncheck" ./...
 
   test-seed-importer:
     name: Test Seed Importer Service
@@ -59,17 +173,92 @@ jobs:
       run:
         working-directory: ./services/seed-importer
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: "3.13"
           cache: pip
           cache-dependency-path: services/seed-importer/requirements.txt
       - name: Install dependencies
         run: python -m pip install --requirement requirements.txt
+      - name: Audit Python dependencies
+        run: |
+          python -m venv "${RUNNER_TEMP}/pip-audit"
+          "${RUNNER_TEMP}/pip-audit/bin/python" -m pip install "pip-audit==2.10.1"
+          "${RUNNER_TEMP}/pip-audit/bin/python" -m pip_audit --requirement requirements.txt
       - name: Run unit tests
         run: python -m unittest discover -s tests -v
+      - name: Validate Redis Lua metadata rejection
+        run: |
+          python - <<'PY'
+          import os
+
+          from redis import Redis
+          from redis.exceptions import ResponseError
+
+          from feed import ENQUEUE_SCRIPT
+
+          client = Redis(
+              host=os.environ["REDIS_HOST"],
+              port=int(os.environ["REDIS_PORT"]),
+              db=int(os.environ["REDIS_DB"]),
+              decode_responses=True,
+          )
+          queue = "mifolyo:test:depth-validation:queue"
+          urls = "mifolyo:test:depth-validation:urls"
+          depths = "mifolyo:test:depth-validation:depths"
+          url_id = "depth-test-id"
+          canonical_url = "https://example.com/depth-test"
+          try:
+              for corrupt_depth in ("-1", "00", "9007199254740992"):
+                  client.delete(queue, urls, depths)
+                  client.zadd(queue, {url_id: 2})
+                  client.hset(urls, url_id, canonical_url)
+                  client.hset(depths, url_id, corrupt_depth)
+                  try:
+                      client.eval(
+                          ENQUEUE_SCRIPT,
+                          3,
+                          queue,
+                          urls,
+                          depths,
+                          url_id,
+                          canonical_url,
+                          0,
+                          0,
+                      )
+                  except ResponseError as exc:
+                      assert "INVALID_EXISTING_DEPTH" in str(exc), exc
+                  else:
+                      raise AssertionError(f"accepted corrupt depth {corrupt_depth!r}")
+                  assert client.zscore(queue, url_id) == 2
+                  assert client.hget(depths, url_id) == corrupt_depth
+
+              client.delete(queue, urls, depths)
+              client.zadd(queue, {url_id: float("inf")})
+              client.hset(urls, url_id, canonical_url)
+              client.hset(depths, url_id, "0")
+              try:
+                  client.eval(
+                      ENQUEUE_SCRIPT,
+                      3,
+                      queue,
+                      urls,
+                      depths,
+                      url_id,
+                      canonical_url,
+                      0,
+                      0,
+                  )
+              except ResponseError as exc:
+                  assert "INVALID_EXISTING_SCORE" in str(exc), exc
+              else:
+                  raise AssertionError("accepted non-finite existing score")
+          finally:
+              client.delete(queue, urls, depths)
+              client.close()
+          PY
       - name: Rebuild and feed isolated V1 baseline
         env:
           MIFOLYO_ENV: development
@@ -77,6 +266,38 @@ jobs:
           python crawl_seeds.py rebuild \
             --mongo-uri "${MONGO_URI}" \
             --confirm-rebuild localhost:27017/mifolyo_index/crawl_seeds
+          python - <<'PY'
+          import os
+
+          from pymongo import MongoClient
+          from redis import Redis
+
+          from feed import DEPTHS_KEY, QUEUE_KEY, URLS_KEY
+          from mongo_seeds import COLLECTION_NAME, DATABASE_NAME
+
+          mongo = MongoClient(os.environ["MONGO_URI"])
+          redis = Redis(
+              host=os.environ["REDIS_HOST"],
+              port=int(os.environ["REDIS_PORT"]),
+              db=int(os.environ["REDIS_DB"]),
+              decode_responses=True,
+          )
+          disabled = list(
+              mongo[DATABASE_NAME][COLLECTION_NAME].find(
+                  {"enabled": False}, {"_id": 1, "canonical_url": 1}
+              )
+          )
+          assert len(disabled) == 3, disabled
+          with redis.pipeline(transaction=True) as pipeline:
+              for record in disabled:
+                  pipeline.zadd(QUEUE_KEY, {record["_id"]: 0})
+                  pipeline.hset(URLS_KEY, record["_id"], record["canonical_url"])
+                  pipeline.hset(DEPTHS_KEY, record["_id"], "0")
+              pipeline.execute()
+          redis.close()
+          mongo.close()
+          print("inserted 3 stale disabled queue entries for reconciliation test")
+          PY
           python feed.py --mongo-uri "${MONGO_URI}" --limit 1000
       - name: Verify MongoDB and Redis V1 state
         run: |
@@ -86,7 +307,7 @@ jobs:
           from pymongo import MongoClient
           from redis import Redis
 
-          from feed import QUEUE_KEY, URLS_KEY
+          from feed import DEPTHS_KEY, QUEUE_KEY, URLS_KEY
           from mongo_seeds import COLLECTION_NAME, COLLECTION_VALIDATOR, DATABASE_NAME
 
           mongo = MongoClient(os.environ["MONGO_URI"])
@@ -99,16 +320,32 @@ jobs:
           )
 
           record_count = collection.count_documents({})
+          enabled_count = collection.count_documents({"enabled": True})
+          disabled_count = collection.count_documents({"enabled": False})
           queue_count = redis.zcard(QUEUE_KEY)
           mapping_count = redis.hlen(URLS_KEY)
+          depth_count = redis.hlen(DEPTHS_KEY)
           assert record_count == 70, record_count
-          assert queue_count == 70, queue_count
-          assert mapping_count == 70, mapping_count
+          assert enabled_count == 67, enabled_count
+          assert disabled_count == 3, disabled_count
+          assert queue_count == 67, queue_count
+          assert mapping_count == 67, mapping_count
+          assert depth_count == 67, depth_count
 
           record_ids = set(collection.distinct("_id"))
+          enabled_record_ids = set(collection.distinct("_id", {"enabled": True}))
+          disabled_urls = set(collection.distinct("canonical_url", {"enabled": False}))
           queue_ids = set(redis.zrange(QUEUE_KEY, 0, -1))
           mapping_ids = set(redis.hkeys(URLS_KEY))
-          assert record_ids == queue_ids == mapping_ids
+          depth_ids = set(redis.hkeys(DEPTHS_KEY))
+          assert enabled_record_ids == queue_ids == mapping_ids == depth_ids
+          assert record_ids - enabled_record_ids
+          assert disabled_urls == {
+              "https://www.bbc.com/news",
+              "https://www.khanacademy.org/",
+              "https://www.politifact.com/",
+          }, disabled_urls
+          assert set(redis.hmget(DEPTHS_KEY, sorted(depth_ids))) == {"0"}
 
           info = mongo[DATABASE_NAME].command(
               {"listCollections": 1, "filter": {"name": COLLECTION_NAME}}
@@ -129,27 +366,87 @@ jobs:
 
           redis.close()
           mongo.close()
-          print("verified 70 V1 records, queue IDs, and URL mappings")
+          print("verified 70 V1 records, 67 enabled queue entries, and 3 disabled targets")
           PY
 
   test-image-indexer:
     name: Test Image Indexer Service
     runs-on: ubuntu-latest
+    services:
+      mongo:
+        image: mongo:8
+        ports:
+          - 127.0.0.1:27017:27017
+        options: >-
+          --health-cmd "mongosh --quiet --eval 'quit(db.adminCommand({ ping: 1 }).ok ? 0 : 1)'"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 127.0.0.1:6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 20
+    env:
+      IMAGE_INDEXER_MONGO_INTEGRATION_URI: mongodb://127.0.0.1:27017
+      IMAGE_INDEXER_REDIS_INTEGRATION_ADDR: 127.0.0.1:6379
     defaults:
       run:
         working-directory: ./services/image-indexer
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: "3.13"
           cache: pip
           cache-dependency-path: services/image-indexer/requirements.txt
       - name: Install dependencies
         run: python -m pip install --requirement requirements.txt
-      - name: Run mocked unit tests
-        run: python -m unittest discover -s tests -v
+      - name: Audit Python dependencies
+        run: |
+          python -m venv "${RUNNER_TEMP}/pip-audit"
+          "${RUNNER_TEMP}/pip-audit/bin/python" -m pip install "pip-audit==2.10.1"
+          "${RUNNER_TEMP}/pip-audit/bin/python" -m pip_audit --requirement requirements.txt
+      - name: Run unit, Redis DB15, and MongoDB lock integration tests
+        run: |
+          python - <<'PY'
+          import unittest
+
+          suite = unittest.defaultTestLoader.discover("tests")
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          if result.skipped:
+              print(f"Refusing skipped tests: {result.skipped}")
+              raise SystemExit(1)
+          if not result.wasSuccessful():
+              raise SystemExit(1)
+          PY
+
+  audit-release-python-services:
+    name: Audit ${{ matrix.service }} Python Dependencies
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [backlinks-processor, tfidf, dmoz-importer]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: services/${{ matrix.service }}/requirements.txt
+      - name: Audit image requirements without creating lock files
+        working-directory: ./services/${{ matrix.service }}
+        run: |
+          python -m venv "${RUNNER_TEMP}/pip-audit"
+          "${RUNNER_TEMP}/pip-audit/bin/python" -m pip install "pip-audit==2.10.1"
+          "${RUNNER_TEMP}/pip-audit/bin/python" -m pip_audit --requirement requirements.txt
 
   test-monitoring:
     name: Check Monitoring Service
@@ -158,43 +455,242 @@ jobs:
       run:
         working-directory: ./services/monitoring
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - name: Set up Rust 1.85.1
-        uses: dtolnay/rust-toolchain@1.85.1
+        uses: dtolnay/rust-toolchain@85c23e28f7ccc75a9a153d45d385d94a85464876 # 1.85.1
         with:
           components: clippy
       - name: Cache Rust build artifacts
-        uses: Swatinem/rust-cache@v2
+        uses: Swatinem/rust-cache@49a0bdc70d2e1b713ca9e2869b211fcce03d3c1c # v2
         with:
           workspaces: services/monitoring -> target
+      - name: Audit Rust dependencies
+        run: |
+          cargo install cargo-audit --version 0.22.1 --locked
+          cargo audit
       - name: Check
         run: cargo check --locked
       - name: Clippy
         run: cargo clippy --locked -- -D warnings
 
   test-query-engine-image-component:
-    name: Test Query Engine Image Component
+    name: Test Query Engine
     runs-on: ubuntu-latest
+    services:
+      mongo:
+        image: mongo:8
+        ports:
+          - 127.0.0.1:27017:27017
+        options: >-
+          --health-cmd "mongosh --quiet --eval 'quit(db.adminCommand({ ping: 1 }).ok ? 0 : 1)'"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
     steps:
-      - uses: actions/checkout@v4
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          php-version: "8.3"
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: services/query-engine/package-lock.json
+      - name: Set up PHP
+        uses: shivammathur/setup-php@b604ade2a87db23f8871b7182e69ec5e75effb45 # v2
+        with:
+          php-version: "8.4"
           extensions: mongodb-1.21.0
           tools: composer
           coverage: none
       - name: Install Composer dependencies
         working-directory: ./services/query-engine
-        run: composer install --no-interaction --prefer-dist --no-progress
-      - name: Test image component
+        run: |
+          composer validate --strict
+          composer install --no-interaction --prefer-dist --no-progress
+      - name: Audit Composer lockfile including dev dependencies
         working-directory: ./services/query-engine
-        run: php artisan test tests/Unit/ImageContainerTest.php
+        run: composer audit --locked
+      - name: Build frontend assets
+        working-directory: ./services/query-engine
+        run: npm ci && npm run build
+      - name: Test query engine
+        working-directory: ./services/query-engine
+        env:
+          QUERY_MONGO_INTEGRATION_URI: mongodb://127.0.0.1:27017
+        run: php artisan test
+
+  test-page-rank:
+    name: Test PageRank Service
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./services/page-rank
+    services:
+      mongo:
+        image: mongo:8
+        ports:
+          - 127.0.0.1:27017:27017
+        options: >-
+          --health-cmd "mongosh --quiet --eval 'quit(db.adminCommand({ ping: 1 }).ok ? 0 : 1)'"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    env:
+      PAGERANK_MONGO_INTEGRATION_URI: mongodb://127.0.0.1:27017
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - name: Set up Go
+        uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5.6.0
+        with:
+          go-version: "1.25.13"
+          cache-dependency-path: services/page-rank/go.sum
+      - name: Vet
+        run: go vet ./...
+      - name: Test with race detector
+        run: go test -race -count=1 ./...
+      - name: Scan Go dependencies and call paths
+        run: |
+          go install golang.org/x/vuln/cmd/govulncheck@v1.7.0
+          "$(go env GOPATH)/bin/govulncheck" ./...
 
   test-indexer:
     name: Test Indexer Service
     runs-on: ubuntu-latest
+    services:
+      mongo:
+        image: mongo:8
+        ports:
+          - 127.0.0.1:27017:27017
+        options: >-
+          --health-cmd "mongosh --quiet --eval 'quit(db.adminCommand({ ping: 1 }).ok ? 0 : 1)'"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 127.0.0.1:6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 20
+    env:
+      INDEXER_MONGO_INTEGRATION_URI: mongodb://127.0.0.1:27017
+      INDEXER_REDIS_INTEGRATION_ADDR: 127.0.0.1:6379
     steps:
-      - name: Indexer Placeholder
-        run: echo "Indexer Placeholder!"
-  # Add unit-test for the other services once I have them
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: services/indexer/requirements.txt
+      - name: Install dependencies
+        working-directory: ./services/indexer
+        run: python -m pip install --requirement requirements.txt
+      - name: Audit Python dependencies
+        working-directory: ./services/indexer
+        run: |
+          python -m venv "${RUNNER_TEMP}/pip-audit"
+          "${RUNNER_TEMP}/pip-audit/bin/python" -m pip install "pip-audit==2.10.1"
+          "${RUNNER_TEMP}/pip-audit/bin/python" -m pip_audit --requirement requirements.txt
+      - name: Run unit, Redis DB15, and MongoDB lock integration tests
+        working-directory: ./services/indexer
+        run: |
+          python - <<'PY'
+          import unittest
+
+          suite = unittest.defaultTestLoader.discover("tests")
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          if result.skipped:
+              print(f"Refusing skipped tests: {result.skipped}")
+              raise SystemExit(1)
+          if not result.wasSuccessful():
+              raise SystemExit(1)
+          PY
+
+  test-render-worker:
+    name: Test Render Worker
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "22.18.0"
+          cache: npm
+          cache-dependency-path: services/render-worker/package-lock.json
+      - name: Run protocol tests
+        working-directory: ./services/render-worker
+        run: npm ci --ignore-scripts && npm test && npm audit --omit=dev --audit-level=high
+      - name: Build renderer image
+        working-directory: ./services/render-worker
+        run: docker build --tag mifolyo-render-worker:test .
+      - name: Run sandboxed networkless Chromium smoke tests
+        run: >-
+          docker run --rm
+          --network none
+          --read-only
+          --user 65534:65534
+          --cap-drop ALL
+          --security-opt no-new-privileges:true
+          --security-opt seccomp=services/render-worker/seccomp_profile.json
+          --tmpfs /tmp:rw,noexec,nosuid,size=256m
+          --tmpfs /dev/shm:rw,nosuid,size=256m
+          mifolyo-render-worker:test node smoke.mjs
+      - name: Run Go-to-Chromium IPC integration
+        run: |
+          set -eu
+          volume="mifolyo-render-integration-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          worker="mifolyo-render-integration-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          cleanup() {
+            docker rm --force "${worker}" >/dev/null 2>&1 || true
+            docker volume rm --force "${volume}" >/dev/null 2>&1 || true
+          }
+          trap cleanup EXIT
+
+          docker build --target builder --tag mifolyo-spider-builder:test services/spider
+          docker volume create "${volume}" >/dev/null
+          docker run --detach --name "${worker}" \
+            --network none \
+            --read-only \
+            --user 65534:65534 \
+            --cap-drop ALL \
+            --security-opt no-new-privileges:true \
+            --security-opt seccomp=services/render-worker/seccomp_profile.json \
+            --tmpfs /tmp:rw,noexec,nosuid,size=256m \
+            --tmpfs /dev/shm:rw,nosuid,size=256m \
+            --mount "type=volume,source=${volume},target=/run/mifolyo-render" \
+            mifolyo-render-worker:test >/dev/null
+
+          socket_ready=false
+          for _ in $(seq 1 30); do
+            if docker run --rm \
+              --network none \
+              --read-only \
+              --user 65534:65534 \
+              --cap-drop ALL \
+              --security-opt no-new-privileges:true \
+              --mount "type=volume,source=${volume},target=/run/mifolyo-render,readonly" \
+              --entrypoint /bin/sh \
+              mifolyo-spider-builder:test \
+              -ec 'test -S /run/mifolyo-render/renderer.sock'; then
+              socket_ready=true
+              break
+            fi
+            sleep 1
+          done
+          test "${socket_ready}" = true
+
+          docker run --rm \
+            --network none \
+            --read-only \
+            --user 65534:65534 \
+            --cap-drop ALL \
+            --security-opt no-new-privileges:true \
+            --tmpfs /tmp:rw,exec,nosuid,size=1g \
+            --mount "type=volume,source=${volume},target=/run/mifolyo-render,readonly" \
+            --env HOME=/tmp \
+            --env GOCACHE=/tmp/go-build \
+            --env RENDER_WORKER_INTEGRATION_SOCKET=/run/mifolyo-render/renderer.sock \
+            mifolyo-spider-builder:test \
+            go test -count=1 -run '^TestNetworklessChromiumWorkerIntegration$' \
+              -v ./internal/renderclient

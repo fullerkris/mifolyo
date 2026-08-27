@@ -1,221 +1,373 @@
 import logging
+import os
 import signal
 import sys
-import os
-
-from utils.constants import *
-from data.redis_client import RedisClient
-from data.mongo_client import MongoClient
-from utils.utils import get_html_data, split_url
-
+import time
 from collections import Counter
 
-# SETUP LOGGER
-logger = logging.getLogger(__name__)
+from data.mongo_client import MongoClient
+from data.redis_client import (
+    InvalidPublicationKey,
+    PageDataDecodeError,
+    RedisClient,
+    claim_reference,
+    parse_page_publication_key,
+)
+from utils.constants import (
+    INDEXER_CLAIM_POLL_SECONDS,
+    INDEXER_LOCK_RENEW_SECONDS,
+    INDEXER_RECOVERY_BATCH_SIZE,
+    MAX_INDEX_WORDS,
+)
+from utils.utils import get_html_data, split_url
+
+
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
-
-# SHUTDOWN
 running = True
+COMPLETED = "completed"
+SKIPPED = "skipped"
+QUARANTINED = "quarantined"
+TRANSIENT_FAILURE = "transient_failure"
+LOCK_WAIT_SECONDS = 0.25
+ALLOW_INSECURE_DATASTORES_ENV = "ALLOW_INSECURE_DATASTORES"
+
+
+def allow_insecure_datastores() -> bool:
+    return os.getenv(ALLOW_INSECURE_DATASTORES_ENV) == "true"
 
 
 def handle_exit(signum, frame):
     global running
-    logger.info("Termination signal received - shutting down...")
+    logger.info("Termination signal received - shutting down")
     running = False
-
-    # Perform final bulk operations regardless of the threshold
-    logger.info("Performing final bulk operations...")
-    mongo.create_words_bulk(create_words_entry_operations)
-    mongo.create_metadata_bulk(create_metadata_operations)
-    mongo.create_outlinks_bulk(create_outlinks_operations)
-
-    sys.exit(0)
 
 
 signal.signal(signal.SIGTERM, handle_exit)
 signal.signal(signal.SIGINT, handle_exit)
 
-if __name__ == "__main__":
-    # REDIS ENV VARIABLES
-    redis_host = os.getenv("REDIS_HOST", "localhost")
-    redis_port = int(os.getenv("REDIS_PORT", 6379))
-    redis_password = os.getenv("REDIS_PASSWORD", None)
-    redis_db = int(os.getenv("REDIS_DB", 0))
 
-    # MONGO ENV VARIABLES
-    mongo_host = os.getenv("MONGO_HOST", "localhost")
-    mongo_port = int(os.getenv("MONGO_PORT", 27017))
-    mongo_password = os.getenv("MONGO_PASSWORD", None)
-    mongo_db = os.getenv("MONGO_DB", "test")
-    mongo_username = os.getenv("MONGO_USERNAME", "")
+def renew_owner(redis_client) -> bool:
+    try:
+        return redis_client.renew_lock()
+    except Exception:
+        logger.error("Could not renew indexer owner lock")
+        return False
 
-    # CONNECT TO REDIS
-    logger.info("Initializing Redis...")
-    redis = RedisClient(
-        host=redis_host, port=redis_port, password=redis_password, db=redis_db
-    )
 
-    if not redis.client or redis.client is None:
-        logger.error("Could not initialize Redis...")
-        logger.error("Exiting...")
-        exit(1)
-
-    # CONNECT TO MONGO
-    logger.info("Initializing Mongo...")
-    mongo = MongoClient(
-        host=mongo_host,
-        port=mongo_port,
-        password=mongo_password,
-        db=mongo_db,
-        username=mongo_username,
-    )
-
-    if not mongo.client or mongo.client is None:
-        logger.error("Could not initialize Mongo...")
-        logger.error("Exiting...")
-        exit(1)
-
-    # Define thresholds for batch operations
-    WORDS_OP_THRESHOLD = 1000
-    METADATA_OP_THRESHOLD = 100
-    OUTLINKS_OP_THRESHOLD = 100
-
-    # Initialize operation buffers
-    create_words_entry_operations = []
-    create_metadata_operations = []
-    create_outlinks_operations = []
-
-    # Function to perform bulk operations when thresholds are met
-    def perform_bulk_operations():
-        global create_words_entry_operations, create_metadata_operations, create_outlinks_operations
-
-        if len(create_words_entry_operations) >= WORDS_OP_THRESHOLD:
-            logger.info("Performing words bulk operations...")
-            mongo.create_words_bulk(create_words_entry_operations)
-            create_words_entry_operations = []
-
-        if len(create_metadata_operations) >= METADATA_OP_THRESHOLD:
-            logger.info("Performing metadata bulk operations...")
-            mongo.create_metadata_bulk(create_metadata_operations)
-            create_metadata_operations = []
-
-        if len(create_outlinks_operations) >= OUTLINKS_OP_THRESHOLD:
-            logger.info("Performing outlinks bulk operations...")
-            mongo.create_outlinks_bulk(create_outlinks_operations)
-            create_outlinks_operations = []
-
-    # INDEXING LOOP
-    while running:
-        queue_size = redis.get_queue_size()
-        if queue_size == 0:
-            redis.signal_crawler()
-            logger.info(f"RESUME_CRAWL signal sent")
-
-        logger.info(f"Waiting for message queue...")
-
-        # Get the next page from the queue
-        page_id = redis.pop_page()
-        if not page_id:
-            logger.error("Could not fetch data from indexer queue")
-            continue
-
-        # Fetch page data
-        logger.info(f"Fetching {page_id}...")
-        page = redis.get_page_data(page_id)
-        if page is None:
-            logger.warning(f"Could not fetch {page_id}. Skipping...")
-            continue
-
-        logger.info(f"Page url: {page.normalized_url}")
-        logger.info(
-            f'Page html: {page.html[:15] + "..." if len(page.html) > 15 else page.html}'
+def remove_state_and_skip(
+    redis_client,
+    mongo_client,
+    page_key,
+    normalized_url,
+    canonical_owner_token,
+    owner_check,
+):
+    """Remove prior searchable state before atomically ACKing a permanent skip."""
+    if not owner_check():
+        return TRANSIENT_FAILURE
+    try:
+        removed = mongo_client.remove_search_state(
+            normalized_url,
+            redis_client.owner_epoch,
+            canonical_owner_token,
+            owner_check=owner_check,
         )
+    except Exception:
+        logger.error("Could not remove MongoDB search state")
+        return TRANSIENT_FAILURE
+    if not removed or not owner_check():
+        return TRANSIENT_FAILURE
+    return SKIPPED if redis_client.skip_page(page_key) else TRANSIENT_FAILURE
+
+
+def process_claim(redis_client, mongo_client, page_key) -> str:
+    """Process one validated immutable publication without in-memory retries."""
+    try:
+        publication_id, key_url, _ = parse_page_publication_key(page_key)
+    except InvalidPublicationKey:
+        # Validation normally happens before this function; never interpret a
+        # malformed queue value as a Redis key or URL identity.
+        return TRANSIENT_FAILURE
+
+    if not renew_owner(redis_client):
+        return TRANSIENT_FAILURE
+    canonical_owner_token = MongoClient.lock_token(
+        str(redis_client.owner_token), publication_id
+    )
+    try:
+        acquired = mongo_client.acquire_canonical_lock(
+            key_url,
+            canonical_owner_token,
+            publication_id,
+            redis_client.owner_epoch,
+        )
+    except Exception:
+        logger.error("Could not acquire canonical MongoDB ownership")
+        return TRANSIENT_FAILURE
+    if not acquired:
+        return TRANSIENT_FAILURE
+    owner_check = lambda: (
+        running
+        and renew_owner(redis_client)
+        and mongo_client.owns_canonical_lock(key_url, canonical_owner_token)
+    )
+    try:
+        try:
+            page = redis_client.get_page_data(page_key)
+        except PageDataDecodeError:
+            logger.error("Invalid page payload (claim=%s)", claim_reference(page_key))
+            return (
+                QUARANTINED
+                if owner_check() and redis_client.quarantine_page(page_key)
+                else TRANSIENT_FAILURE
+            )
+        except Exception:
+            logger.error(
+                "Transient Redis claim fetch failure (claim=%s)",
+                claim_reference(page_key),
+            )
+            return TRANSIENT_FAILURE
+
+        if page is None:
+            logger.warning(
+                "Page publication is absent; quarantining (claim=%s)",
+                claim_reference(page_key),
+            )
+            return (
+                QUARANTINED
+                if owner_check() and redis_client.quarantine_page(page_key)
+                else TRANSIENT_FAILURE
+            )
 
         normalized_url = page.normalized_url
+        if normalized_url != key_url:
+            return TRANSIENT_FAILURE
 
-        logger.info(f"Getting {page_id} metadata...")
-        old_metadata = mongo.get_metadata(normalized_url)
-        if old_metadata and old_metadata.last_crawled == page.last_crawled:
-            logger.info(f"No updates to {old_metadata._id}. Skipping...")
-            continue
+        # The non-expiring Mongo lock covers artifacts, canonical state, and
+        # the final owner-fenced Redis ACK/quarantine decision.
+        try:
+            if page.rendered and not mongo_client.save_page_artifact(
+                page,
+                redis_client.owner_epoch,
+                canonical_owner_token,
+                owner_check=owner_check,
+            ):
+                return TRANSIENT_FAILURE
+        except Exception:
+            logger.error(
+                "Transient artifact failure (claim=%s)", claim_reference(page_key)
+            )
+            return TRANSIENT_FAILURE
 
-        logger.info(f"Parsing html data for {page_id}...")
-        html_data = get_html_data(page.html)
-        if not html_data:
-            logger.error(f"Could not parse html data for {page_id}. Skipping...")
-            continue
+        try:
+            html_data = get_html_data(page.html, rendered=page.rendered)
+        except Exception:
+            logger.error(
+                "Transient HTML decode failure (claim=%s)", claim_reference(page_key)
+            )
+            return TRANSIENT_FAILURE
 
-        logger.info(f"Parsed html data for {page_id}...")
-        if html_data["language"] != "en":
-            logger.info(f"{page_id} not english. Skipping...")
-            continue
+        if (
+            not html_data
+            or html_data.get("language") != "en"
+            or not html_data.get("text")
+        ):
+            logger.info(
+                "Publication is permanently non-indexable (claim=%s)",
+                claim_reference(page_key),
+            )
+            return remove_state_and_skip(
+                redis_client,
+                mongo_client,
+                page_key,
+                normalized_url,
+                canonical_owner_token,
+                owner_check,
+            )
 
         text = html_data["text"]
-        if not text:
-            logger.error(f"Could not process text {page_id}. Skipping...")
-            continue
+        keywords = dict(Counter(text).most_common(MAX_INDEX_WORDS))
+        for word in split_url(normalized_url):
+            previous = keywords.get(word, 0)
+            keywords[word] = previous * 50 if previous else 10
 
-        # Make a dictionary with the words in the text and their frequency
-        logger.info(f"Counting words from {page_id}...")
-        words_frequency = Counter(text)
-
-        # Get the top MAX_INDEX_WORDS words
-        keywords = dict(words_frequency.most_common(MAX_INDEX_WORDS))
-
-        logger.info(f"Check words in url {normalized_url}...")
-        # Iterate through the url name to add more frequency to some words
-        words_in_url = split_url(normalized_url)
-        for word in words_in_url:
-            past_score = keywords.get(word, 0)
-
-            # If a word in the url was already in our registry of words we multiply it
-            if past_score != 0:
-                new_score = past_score * 50
-                keywords[word] = new_score
-            else:
-                # If the word is not in our registry we add it with a score of 100
-                keywords[word] = 10
-
-        # Iterate through the images and add them to the word operations
-        for word, frequency in keywords.items():
-            word_op = mongo.create_words_entry_operation(
-                word, normalized_url, frequency
+        try:
+            outlinks = redis_client.get_outlinks(page_key, normalized_url)
+        except Exception:
+            logger.error(
+                "Transient outlinks fetch failure (claim=%s)",
+                claim_reference(page_key),
             )
-            create_words_entry_operations.append(word_op)
+            return TRANSIENT_FAILURE
 
-        # Save the metadata
-        metadata_op = mongo.create_metadata_entry_operation(page, html_data, keywords)
-        create_metadata_operations.append(metadata_op)
+        try:
+            reconciled = mongo_client.replace_search_state(
+                page,
+                html_data,
+                keywords,
+                outlinks,
+                redis_client.owner_epoch,
+                canonical_owner_token,
+                owner_check=owner_check,
+            )
+        except Exception:
+            logger.error(
+                "Could not reconcile MongoDB state (claim=%s)",
+                claim_reference(page_key),
+            )
+            return TRANSIENT_FAILURE
+        if not reconciled or not owner_check():
+            return TRANSIENT_FAILURE
 
-        # Save the outlinks
-        outlinks = redis.get_outlinks(normalized_url)
-        outlinks_op = mongo.create_outlinks_entry_operation(outlinks)
-        create_outlinks_operations.append(outlinks_op)
+        return (
+            COMPLETED
+            if redis_client.complete_page(page_key, normalized_url)
+            else TRANSIENT_FAILURE
+        )
+    finally:
+        try:
+            if not mongo_client.release_canonical_lock(
+                key_url, canonical_owner_token
+            ):
+                logger.error(
+                    "Canonical MongoDB ownership release failed; manual review required"
+                )
+        except Exception:
+            logger.error(
+                "Canonical MongoDB ownership release failed; manual review required"
+            )
 
-        # Store all the words in the dictionary
-        wordsSet = {word.lower() for word in text}
-        mongo.add_words_to_dictionary(wordsSet)
-        logger.info(f"Added words to dictionary...")
 
-        logger.info("Delete page data from redis...")
-        redis.delete_page_data(page_id)
-        redis.delete_outlinks(normalized_url)
+def acquire_owner(redis_client, sleep=time.sleep) -> bool:
+    """Wait in bounded intervals while another healthy indexer owns the lock."""
+    while running:
+        try:
+            if redis_client.acquire_lock():
+                return True
+        except Exception:
+            logger.error("Could not acquire indexer owner lock")
+            return False
+        sleep(LOCK_WAIT_SECONDS)
+    return False
 
-        logger.info("Pushing to image indexer queue...")
-        redis.push_to_image_indexer_queue(normalized_url)
 
-        # Check if any thresholds are exceeded and perform bulk operations
-        perform_bulk_operations()
+def recover_claims(redis_client) -> bool:
+    """Recover in bounded Lua batches, renewing ownership between batches."""
+    while running:
+        if not renew_owner(redis_client):
+            return False
+        try:
+            recovered = redis_client.recover_abandoned_claims(
+                limit=INDEXER_RECOVERY_BATCH_SIZE
+            )
+        except Exception:
+            logger.error("Could not recover abandoned claims")
+            return False
+        if recovered < INDEXER_RECOVERY_BATCH_SIZE:
+            return True
+    return False
 
-    # Save all remaining operations regardless of threshold
-    logger.info("Final bulk operations before exit...")
-    mongo.create_metadata_bulk(create_metadata_operations)
-    mongo.create_outlinks_bulk(create_outlinks_operations)
-    mongo.create_metadata_bulk(create_metadata_operations)
 
-    logger.info("Shutting down...")
+def run_indexer(redis_client, mongo_client, sleep=time.sleep) -> int:
+    global running
+    if not acquire_owner(redis_client, sleep=sleep):
+        return 0 if not running else 1
 
-    sys.exit(0)
+    try:
+        if not recover_claims(redis_client):
+            return 0 if not running else 1
+
+        resume_signal_sent = False
+        last_renewal = time.monotonic()
+        while running:
+            if time.monotonic() - last_renewal >= INDEXER_LOCK_RENEW_SECONDS:
+                if not renew_owner(redis_client):
+                    return 1
+                last_renewal = time.monotonic()
+            try:
+                queued, processing = redis_client.get_work_sizes()
+                if queued == 0 and processing == 0 and not resume_signal_sent:
+                    if not redis_client.signal_crawler():
+                        return 1
+                    resume_signal_sent = True
+                elif queued or processing:
+                    resume_signal_sent = False
+                page_key = redis_client.claim_page()
+            except Exception:
+                logger.error("Redis queue or owner-lock failure")
+                return 1
+
+            if page_key is None:
+                sleep(INDEXER_CLAIM_POLL_SECONDS)
+                continue
+            resume_signal_sent = False
+            if not running:
+                logger.info(
+                    "Leaving claim recoverable during shutdown (claim=%s)",
+                    claim_reference(page_key),
+                )
+                break
+
+            try:
+                parse_page_publication_key(page_key)
+            except InvalidPublicationKey:
+                logger.error(
+                    "Quarantining invalid queue value (claim=%s)",
+                    claim_reference(page_key),
+                )
+                if not redis_client.quarantine_page(page_key):
+                    return 1
+                continue
+
+            outcome = process_claim(redis_client, mongo_client, page_key)
+            if outcome == TRANSIENT_FAILURE:
+                # This operation is owner-fenced. Lock loss leaves the claim in
+                # processing for the replacement owner rather than moving it.
+                redis_client.release_page(page_key)
+                return 1
+        return 0
+    finally:
+        try:
+            redis_client.release_lock()
+        except Exception:
+            logger.error("Could not release indexer owner lock")
+
+
+def main() -> int:
+    allow_insecure = allow_insecure_datastores()
+    try:
+        redis_client = RedisClient(
+            host=os.getenv("REDIS_HOST", "localhost"),
+            port=int(os.getenv("REDIS_PORT", 6379)),
+            username=os.getenv("REDIS_USERNAME", ""),
+            password=os.getenv("REDIS_PASSWORD", ""),
+            db=int(os.getenv("REDIS_DB", 0)),
+            allow_insecure=allow_insecure,
+        )
+    except (TypeError, ValueError):
+        logger.error("Datastore configuration rejected")
+        return 1
+    if redis_client.client is None:
+        return 1
+    try:
+        mongo_client = MongoClient(
+            host=os.getenv("MONGO_HOST", "localhost"),
+            port=int(os.getenv("MONGO_PORT", 27017)),
+            password=os.getenv("MONGO_PASSWORD", ""),
+            db=os.getenv("MONGO_DB", "test"),
+            username=os.getenv("MONGO_USERNAME", ""),
+            allow_insecure=allow_insecure,
+        )
+    except (TypeError, ValueError):
+        logger.error("Datastore configuration rejected")
+        return 1
+    if mongo_client.client is None:
+        return 1
+    return run_indexer(redis_client, mongo_client)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -406,7 +406,7 @@ final class SourceUrlNormalizer
             return true;
         }
 
-        foreach (['localhost', 'local', 'localdomain', 'internal', 'intranet', 'home', 'home.arpa', 'lan', 'test', 'invalid'] as $localName) {
+        foreach (['localhost', 'local', 'localdomain', 'internal', 'intranet', 'home', 'home.arpa', 'lan', 'onion', 'alt', 'arpa', 'test', 'invalid', 'example'] as $localName) {
             if ($host === $localName || str_ends_with($host, '.'.$localName)) {
                 return true;
             }

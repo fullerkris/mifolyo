@@ -3,20 +3,18 @@
 from __future__ import annotations
 
 import argparse
-import csv
 import json
 import logging
-import os
 import re
 import sys
-import time
 from collections import Counter
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence
-from urllib.error import HTTPError, URLError
-from urllib.parse import parse_qsl, urlsplit, urlunsplit
-from urllib.request import Request, urlopen
+from urllib.parse import parse_qsl, quote, unquote_to_bytes, urlsplit, urlunsplit
+
+import jsonschema
 
 from crawl_seed import (
     make_source,
@@ -48,15 +46,29 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-REDDIT_HOSTS = {
+URL_PATTERN = re.compile(r"https?://[^\s<>()\[\]{}\"']+")
+REDDIT_SOURCE_TYPE = "reddit_json"
+MAX_REDDIT_EXPORT_BYTES = 5 * 1024 * 1024
+REDDIT_EXPORT_FIELDS = {
+    "schema_version",
+    "source_url",
+    "category",
+    "priority",
+    "payload",
+}
+REDDIT_PAGE_HOSTS = {
     "reddit.com",
     "www.reddit.com",
     "old.reddit.com",
-    "redd.it",
-    "out.reddit.com",
 }
-URL_PATTERN = re.compile(r"https?://[^\s<>()\[\]{}\"']+")
-REDDIT_SOURCE_TYPE = "reddit_json"
+AMBIGUOUS_REDDIT_PATH_ESCAPE = re.compile(r"%(?:25|2F|5C)", re.IGNORECASE)
+REDDIT_PATH_SAFE = "/:@!$&'()*+,;=-._~"
+with (Path(__file__).resolve().parent / "reddit-export-v1.schema.json").open(
+    encoding="utf-8"
+) as _schema_handle:
+    REDDIT_EXPORT_VALIDATOR = jsonschema.Draft202012Validator(
+        json.load(_schema_handle)
+    )
 
 
 @dataclass
@@ -101,9 +113,14 @@ def unwrap_reddit_out_url(raw_url: str) -> str:
     """Unwrap Reddit's outbound redirect; this is not identity behavior."""
 
     try:
-        parsed = urlsplit(raw_url)
-    except ValueError:
+        identity = identify_url(raw_url)
+    except URLCanonicalizationError:
         return raw_url
+    if not identity.crawl_eligible or not identity.canonical_url.startswith(
+        "https://"
+    ):
+        return raw_url
+    parsed = urlsplit(identity.canonical_url)
     if (parsed.hostname or "").lower() != "out.reddit.com":
         return raw_url
 
@@ -123,34 +140,154 @@ def prepare_reddit_outbound_url(raw_url: str) -> Optional[tuple[str, str]]:
         host = (parsed.hostname or "").lower()
     except ValueError:
         return None
-    if host in REDDIT_HOSTS:
+    if is_reddit_owned_host(host):
         return None
     return observed, candidate
 
 
-def old_reddit_url(raw_url: str) -> Optional[str]:
+def is_reddit_owned_host(host: str) -> bool:
+    host = host.lower()
+    return (
+        host == "reddit.com"
+        or host.endswith(".reddit.com")
+        or host == "redd.it"
+        or host.endswith(".redd.it")
+    )
+
+
+def _is_unambiguous_reddit_path(path: str) -> bool:
+    if "\\" in path or "//" in path or AMBIGUOUS_REDDIT_PATH_ESCAPE.search(path):
+        return False
     try:
-        parsed = urlsplit(raw_url.strip())
-    except ValueError:
+        decoded = unquote_to_bytes(path).decode("utf-8", "strict")
+    except UnicodeDecodeError:
+        return False
+    if quote(decoded, safe=REDDIT_PATH_SAFE) != path:
+        return False
+    return all(segment not in {".", ".."} for segment in decoded.split("/"))
+
+
+def _reddit_page_parts(raw_url: str):
+    try:
+        identity = identify_url(raw_url)
+    except URLCanonicalizationError:
         return None
-    if (parsed.hostname or "").lower() not in {
-        "reddit.com",
-        "www.reddit.com",
-        "old.reddit.com",
-    }:
+    if not identity.crawl_eligible:
         return None
-    return urlunsplit(("https", "old.reddit.com", parsed.path or "/", parsed.query, ""))
+    parsed = urlsplit(identity.canonical_url)
+    if (parsed.hostname or "").lower() not in REDDIT_PAGE_HOSTS:
+        return None
+    if not _is_unambiguous_reddit_path(parsed.path):
+        return None
+    return parsed, "?" in identity.canonical_url
+
+
+def _reddit_url(host: str, path: str, query: str, has_query: bool) -> str:
+    result = urlunsplit(("https", host, path, query, ""))
+    if has_query and not query:
+        result += "?"
+    return result
+
+
+def _validated_generated_reddit_url(raw_url: str) -> Optional[str]:
+    try:
+        identity = identify_url(raw_url)
+    except URLCanonicalizationError:
+        return None
+    if not identity.crawl_eligible or identity.canonical_url != raw_url:
+        return None
+    parsed = urlsplit(identity.canonical_url)
+    if (parsed.hostname or "").lower() not in REDDIT_PAGE_HOSTS:
+        return None
+    if not _is_unambiguous_reddit_path(parsed.path):
+        return None
+    return identity.canonical_url
+
+
+def reddit_html_url(raw_url: str) -> Optional[str]:
+    parts = _reddit_page_parts(raw_url)
+    if not parts:
+        return None
+    parsed, has_query = parts
+    host = (parsed.hostname or "").lower()
+    if host == "reddit.com":
+        host = "www.reddit.com"
+    return _validated_generated_reddit_url(
+        _reddit_url(host, _reddit_html_path(parsed.path), parsed.query, has_query)
+    )
+
+
+def old_reddit_url(raw_url: str) -> Optional[str]:
+    parts = _reddit_page_parts(raw_url)
+    if not parts:
+        return None
+    parsed, has_query = parts
+    return _validated_generated_reddit_url(
+        _reddit_url(
+            "old.reddit.com",
+            _reddit_html_path(parsed.path),
+            parsed.query,
+            has_query,
+        )
+    )
+
+
+def _reddit_html_path(path: str) -> str:
+    path = path or "/"
+    if path != "/":
+        path = path.rstrip("/")
+    if path.endswith("/.json"):
+        path = path[: -len("/.json")]
+    elif path.endswith(".json"):
+        path = path[: -len(".json")]
+    return path or "/"
+
+
+def _reddit_json_path(path: str) -> str:
+    html_path = _reddit_html_path(path)
+    if html_path == "/":
+        return "/.json"
+    return f"{html_path}.json"
 
 
 def reddit_json_url(raw_url: str) -> Optional[str]:
-    old_url = old_reddit_url(raw_url)
-    if not old_url:
+    parts = _reddit_page_parts(raw_url)
+    if not parts:
         return None
-    parsed = urlsplit(old_url)
-    path = parsed.path or "/"
-    if not path.endswith(".json"):
-        path = path.rstrip("/") + "/.json"
-    return urlunsplit((parsed.scheme, parsed.netloc, path, parsed.query, ""))
+    parsed, has_query = parts
+    host = (parsed.hostname or "").lower()
+    if host == "reddit.com":
+        host = "www.reddit.com"
+    return _validated_generated_reddit_url(
+        _reddit_url(
+            host,
+            _reddit_json_path(parsed.path),
+            parsed.query,
+            has_query,
+        )
+    )
+
+
+def reddit_crawl_urls(raw_url: str) -> Optional[tuple[str, ...]]:
+    """Build pending HTML and JSON targets without authorizing a fetch."""
+
+    parts = _reddit_page_parts(raw_url)
+    if not parts:
+        return None
+    parsed, has_query = parts
+
+    html_path = _reddit_html_path(parsed.path)
+    json_path = _reddit_json_path(parsed.path)
+    variants = (
+        _reddit_url("www.reddit.com", html_path, parsed.query, has_query),
+        _reddit_url("old.reddit.com", html_path, parsed.query, has_query),
+        _reddit_url("www.reddit.com", json_path, parsed.query, has_query),
+        _reddit_url("old.reddit.com", json_path, parsed.query, has_query),
+    )
+    validated = tuple(_validated_generated_reddit_url(url) for url in variants)
+    if any(url is None for url in validated):
+        return None
+    return validated
 
 
 def full_reddit_permalink(permalink: str) -> Optional[str]:
@@ -161,25 +298,29 @@ def full_reddit_permalink(permalink: str) -> Optional[str]:
     return old_reddit_url(f"https://old.reddit.com{permalink}")
 
 
-def read_reddit_seed_rows(path: str) -> List[Dict[str, str]]:
-    with open(path, newline="", encoding="utf-8") as handle:
-        rows = list(csv.DictReader(handle))
-    return [
-        row
-        for row in rows
-        if row.get("source", "").strip() == "manual_reddit_discovery"
-    ]
-
-
-def fetch_json(url: str, user_agent: str, timeout: int) -> object:
-    request = Request(url, headers={"User-Agent": user_agent})
-    with urlopen(request, timeout=timeout) as response:
-        return json.loads(response.read().decode("utf-8"))
-
-
 def load_json_file(path: str) -> object:
-    with open(path, encoding="utf-8") as handle:
-        return json.load(handle)
+    with open(path, "rb") as handle:
+        data = handle.read(MAX_REDDIT_EXPORT_BYTES + 1)
+    if len(data) > MAX_REDDIT_EXPORT_BYTES:
+        raise ValueError("Reddit export exceeds the byte limit")
+    return json.loads(
+        data.decode("utf-8"),
+        object_pairs_hook=_unique_json_object,
+        parse_constant=_reject_json_constant,
+    )
+
+
+def _unique_json_object(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"duplicate JSON member {key!r}")
+        result[key] = value
+    return result
+
+
+def _reject_json_constant(value):
+    raise ValueError(f"non-standard JSON constant {value!r}")
 
 
 def iter_listing_posts(payload: object) -> Iterable[Dict[str, object]]:
@@ -203,6 +344,54 @@ def iter_listing_posts(payload: object) -> Iterable[Dict[str, object]]:
             and isinstance(child.get("data"), dict)
         ):
             yield child["data"]
+
+
+def validate_reddit_export(document: object) -> tuple[Dict[str, object], object]:
+    try:
+        REDDIT_EXPORT_VALIDATOR.validate(document)
+    except jsonschema.ValidationError as exc:
+        raise ValueError("Reddit export does not match schema V1") from exc
+    if not isinstance(document, dict) or set(document) != REDDIT_EXPORT_FIELDS:
+        raise ValueError("Reddit export has invalid fields")
+
+    source_url = document["source_url"]
+    source_html_url = (
+        reddit_html_url(source_url) if isinstance(source_url, str) else None
+    )
+    source_json_url = (
+        reddit_json_url(source_url) if isinstance(source_url, str) else None
+    )
+    if not source_html_url or not source_json_url or source_url != source_html_url:
+        raise ValueError("Reddit export has an invalid source URL")
+
+    category = document["category"]
+    priority = document["priority"]
+
+    payload = document["payload"]
+    posts = list(iter_listing_posts(payload))
+    if not posts:
+        raise ValueError("Reddit export payload has no listing posts")
+
+    source_parts = urlsplit(source_url).path.strip("/").split("/")
+    if len(source_parts) != 2 or source_parts[0].lower() != "r":
+        raise ValueError("Reddit export source must be one subreddit listing")
+    source_subreddit = source_parts[1].casefold()
+    for post in posts:
+        subreddit = str(post.get("subreddit") or "").casefold()
+        permalink = str(post.get("permalink") or "").casefold()
+        if subreddit != source_subreddit or not permalink.startswith(
+            f"/r/{source_subreddit}/"
+        ):
+            raise ValueError("Reddit export post does not match its source")
+    return (
+        {
+            "url": source_html_url,
+            "category": category,
+            "priority": priority,
+            "source": "approved_reddit_export",
+        },
+        payload,
+    )
 
 
 def iter_comment_urls(payload: object) -> Iterable[str]:
@@ -376,62 +565,19 @@ def flush_documents(
 
 def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Discover outbound V1 crawl seeds from old.reddit.com JSON pages."
+        description="Discover outbound V1 crawl seeds from an approved local Reddit JSON export."
     )
     parser.add_argument(
-        "--seeds-csv",
-        default="/seeds/manual-seeds.csv",
-        help="CSV containing manual_reddit_discovery rows",
-    )
-    parser.add_argument(
-        "--url", action="append", default=[], help="additional Reddit discovery URL"
-    )
-    parser.add_argument(
-        "--input-json", help="parse a local Reddit JSON file instead of fetching"
+        "--input-json", help="versioned approved local Reddit export"
     )
     parser.add_argument(
         "--mongo-uri", default=mongo_uri_from_env(), help="MongoDB connection string"
     )
     parser.add_argument("--batch-size", type=int, default=1000)
     parser.add_argument("--min-score", type=int, default=25)
-    parser.add_argument("--delay", type=float, default=2.0)
-    parser.add_argument("--timeout", type=int, default=20)
-    parser.add_argument(
-        "--user-agent", default=os.getenv("USER_AGENT", "MiFolyoBot/1.0")
-    )
     parser.add_argument("--include-comment-urls", action="store_true")
-    parser.add_argument("--crawl-post-pages", action="store_true")
-    parser.add_argument("--max-post-pages", type=int, default=25)
     parser.add_argument("--dry-run", action="store_true")
     return parser.parse_args(argv)
-
-
-def rows_from_args(args: argparse.Namespace) -> List[Dict[str, str]]:
-    if args.input_json:
-        return [
-            {
-                "url": "https://old.reddit.com/r/sample",
-                "category": "General",
-                "priority": "3",
-                "source": "reddit_fixture",
-            }
-        ]
-
-    rows: List[Dict[str, str]] = []
-    if os.path.exists(args.seeds_csv):
-        rows.extend(read_reddit_seed_rows(args.seeds_csv))
-    elif not args.url:
-        logger.warning("Seed CSV not found: %s", args.seeds_csv)
-    for url in args.url:
-        rows.append(
-            {
-                "url": url,
-                "category": "General",
-                "priority": "3",
-                "source": "manual_reddit_discovery",
-            }
-        )
-    return rows
 
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
@@ -439,26 +585,26 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     if args.batch_size < 1:
         logger.error("--batch-size must be at least 1")
         return 1
-    rows = rows_from_args(args)
-    if not rows:
-        logger.error("No Reddit discovery rows found")
+    if not args.input_json:
+        logger.error(
+            "Remote Reddit access is disabled pending approved API access; "
+            "use --input-json with an approved local export"
+        )
         return 1
-
-    client = None
-    collection = None
-    if not args.dry_run:
-        if MongoClient is None:
-            logger.error("pymongo is required for non-dry-run imports")
-            return 1
-        try:
-            client = MongoClient(args.mongo_uri, tz_aware=True)
-            client.admin.command("ping")
-            collection = ensure_crawl_seeds_collection(client[DATABASE_NAME])
-        except Exception as exc:
-            if client is not None:
-                client.close()
-            logger.error("Unable to configure the V1 crawl seed collection: %s", exc)
-            return 2
+    try:
+        export = load_json_file(args.input_json)
+        row, payload = validate_reddit_export(export)
+    except (
+        OSError,
+        UnicodeDecodeError,
+        json.JSONDecodeError,
+        ValueError,
+        RecursionError,
+    ) as exc:
+        logger.error(
+            "Unable to load approved Reddit export %s: %s", args.input_json, exc
+        )
+        return 1
 
     stats = ImportStats()
     seen_url_ids = set()
@@ -466,106 +612,68 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     observed_at = datetime.now(timezone.utc)
 
     try:
-        for row in rows:
-            source_url = old_reddit_url(row["url"])
-            source_json_url = reddit_json_url(row["url"])
-            if not source_url or not source_json_url:
-                logger.warning("Skipping non-Reddit seed URL: %s", row["url"])
-                continue
+        source_url = reddit_html_url(row["url"])
+        source_json_url = reddit_json_url(row["url"])
+        if not source_url or not source_json_url:
+            raise ValueError("validated Reddit export source became invalid")
 
-            stats.reddit_pages_seen += 1
-            try:
-                if args.input_json:
-                    payload = load_json_file(args.input_json)
-                else:
-                    payload = fetch_json(source_json_url, args.user_agent, args.timeout)
-                    stats.reddit_pages_fetched += 1
-            except (HTTPError, URLError, TimeoutError, json.JSONDecodeError) as exc:
-                logger.warning("Failed to fetch %s: %s", source_json_url, exc)
-                continue
+        stats.reddit_pages_seen += 1
+        discovered = discover_from_payload(
+            payload,
+            row,
+            source_url,
+            source_json_url,
+            args.min_score,
+            args.include_comment_urls,
+            stats,
+        )
 
-            discovered = discover_from_payload(
-                payload,
-                row,
-                source_url,
-                source_json_url,
-                args.min_score,
-                args.include_comment_urls,
-                stats,
+        for seed in discovered:
+            document = seed_document(seed, observed_at)
+            if document["_id"] in seen_url_ids:
+                stats.duplicate_urls += 1
+            else:
+                seen_url_ids.add(document["_id"])
+                stats.outbound_urls_found += 1
+                stats.by_category[seed.category] += 1
+
+            pending[document["_id"]] = merge_seed_documents(
+                pending.get(document["_id"]), document
             )
-
-            if args.crawl_post_pages and not args.input_json:
-                post_pages_fetched = 0
-                for post in iter_listing_posts(payload):
-                    if post_pages_fetched >= args.max_post_pages:
-                        break
-                    post_url = full_reddit_permalink(str(post.get("permalink") or ""))
-                    post_json_url = reddit_json_url(post_url) if post_url else None
-                    if not post_url or not post_json_url:
-                        continue
-                    time.sleep(args.delay)
-                    try:
-                        post_payload = fetch_json(
-                            post_json_url, args.user_agent, args.timeout
-                        )
-                        stats.reddit_pages_fetched += 1
-                        post_pages_fetched += 1
-                    except (
-                        HTTPError,
-                        URLError,
-                        TimeoutError,
-                        json.JSONDecodeError,
-                    ) as exc:
-                        logger.warning("Failed to fetch %s: %s", post_json_url, exc)
-                        continue
-                    discovered.extend(
-                        discover_from_payload(
-                            post_payload,
-                            row,
-                            post_url,
-                            post_json_url,
-                            args.min_score,
-                            args.include_comment_urls,
-                            stats,
-                        )
-                    )
-
-            for seed in discovered:
-                document = seed_document(seed, observed_at)
-                if document["_id"] in seen_url_ids:
-                    stats.duplicate_urls += 1
-                else:
-                    seen_url_ids.add(document["_id"])
-                    stats.outbound_urls_found += 1
-                    stats.by_category[seed.category] += 1
-
-                pending[document["_id"]] = merge_seed_documents(
-                    pending.get(document["_id"]), document
+            if args.dry_run:
+                logger.info(
+                    "Discovered %s id=%s from %s",
+                    seed.url,
+                    document["_id"],
+                    seed.source_json_url,
                 )
-                if args.dry_run:
-                    logger.info(
-                        "Discovered %s id=%s from %s",
-                        seed.url,
-                        document["_id"],
-                        seed.source_json_url,
-                    )
 
-                if len(pending) >= args.batch_size:
-                    if not args.dry_run:
-                        flush_documents(collection, pending, stats)
-                    pending = {}
-
-            if not args.input_json:
-                time.sleep(args.delay)
-
-        if not args.dry_run:
-            flush_documents(collection, pending, stats)
     except Exception as exc:
         logger.error("Reddit seed discovery failed: %s", exc)
         return 2
-    finally:
-        if client is not None:
-            client.close()
+
+    if not args.dry_run and pending:
+        if MongoClient is None:
+            logger.error("pymongo is required for non-dry-run imports")
+            return 1
+        client = None
+        try:
+            client = MongoClient(args.mongo_uri, tz_aware=True)
+            client.admin.command("ping")
+            collection = ensure_crawl_seeds_collection(client[DATABASE_NAME])
+            items = list(pending.items())
+            for offset in range(0, len(items), args.batch_size):
+                flush_documents(
+                    collection,
+                    dict(items[offset : offset + args.batch_size]),
+                    stats,
+                )
+        except Exception as exc:
+            logger.error("Unable to write the V1 crawl seed collection: %s", exc)
+            return 2
+        finally:
+            if client is not None:
+                client.close()
 
     logger.info("Reddit JSON discovery complete")
     logger.info("Reddit pages seen: %s", stats.reddit_pages_seen)

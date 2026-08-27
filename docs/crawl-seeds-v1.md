@@ -25,14 +25,27 @@ JSON Schema's `maxLength` counts characters rather than encoded bytes. The custo
 
 ## Queue contract
 
-The V1 feeder uses two Redis structures:
+The V1 feeder atomically maintains three Redis structures:
 
 ```text
 mifolyo:crawl:v1:queue  ZSET(url_id => priority - 1)
 mifolyo:crawl:v1:urls   HASH(url_id => canonical_url)
+mifolyo:crawl:v1:depths HASH(url_id => canonical depth from 0 through 9007199254740991)
 ```
 
-The spider pops a URL ID, resolves its exact canonical URL from the hash, and fetches that URL without reconstructing or forcing a scheme. Opaque URL IDs remain queue identifiers and must not replace human-usable page URLs in the search index.
+Seed records enter at depth `0`. Replays preserve both the lowest queue score
+and the shallowest observed depth. The spider inspects all three values and
+atomically claims a URL ID only while its score, canonical URL, and depth still
+match the inspected snapshot. Non-finite scores and missing, out-of-range, or
+noncanonical depth metadata fail closed. A normal feeder replay restores a
+missing field. The feeder
+intentionally refuses to overwrite a corrupt existing value: stop the spider,
+verify the URL ID against MongoDB and `mifolyo:crawl:v1:urls`, remove only that
+ID's field from `mifolyo:crawl:v1:depths`, replay the feeder, and rerun the
+three-key equality check before crawling. The spider fetches the exact
+canonical URL without reconstructing or forcing a scheme.
+Opaque URL IDs remain queue identifiers and must not replace human-usable page
+URLs in the search index.
 
 ## Lifecycle boundary
 
@@ -42,6 +55,16 @@ The spider pops a URL ID, resolves its exact canonical URL from the hash, and fe
 
 The rebuild command may drop and recreate only `mifolyo_index.crawl_seeds`, and must require both a development environment and explicit confirmation. It must not delete the MongoDB volume, flush Redis, reset forum data, or modify search-index collections.
 
-The deterministic baseline imports the 70 direct targets from `seeds/manual-seeds.csv`. The eight `manual_reddit_discovery` rows configure Reddit discovery and are not direct crawl targets. Legacy DMOZ data is excluded.
+The deterministic baseline imports 70 direct records from
+`seeds/manual-seeds.csv`: 67 are enabled, while BBC News, Khan Academy, and
+PolitiFact are retained with `enabled: false`. The feeder atomically removes
+their IDs from the queue, URL map, and depth map; their hosts are also assigned
+to the crawl policy's disabled `disabled-sites` group, so any unreconciled
+corrupt entry is denied before DNS. The eight `manual_reddit_discovery` rows are not direct
+crawl targets. The matching `reddit-crawler` group is disabled because current
+Reddit robots rules disallow all crawling. Approved local JSON exports can
+still provide offline discovery provenance. Legacy DMOZ data is excluded.
 
-Before running the first bounded 70-seed crawl, complete `docs/v1-baseline-crawl-test-checklist.md` and preserve its test report as evidence.
+Before any future bounded 67-seed crawl from this 70-record catalog, complete
+`docs/v1-baseline-crawl-test-checklist.md`, obtain a new run authorization, and
+preserve its test report as evidence.

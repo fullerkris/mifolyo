@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mifolyo.local/contracts/reddit-export-v1.schema.json",
+  "title": "MiFolyo approved Reddit export V1",
+  "description": "Single-source, offline Reddit artifact. This contract does not authorize a Reddit network request.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "source_url",
+    "category",
+    "priority",
+    "payload"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "source_url": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2048,
+      "pattern": "^https://(?:www\\.|old\\.)reddit\\.com/r/[A-Za-z0-9_]+(?:\\?[^#]*)?$"
+    },
+    "category": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "pattern": "^(?!\\s)(?!.*\\s$)[^\\u0000-\\u001F\\u007F-\\u009F]+$"
+    },
+    "priority": {
+      "enum": [
+        1,
+        2,
+        3
+      ]
+    },
+    "payload": {
+      "oneOf": [
+        {
+          "type": "object"
+        },
+        {
+          "type": "array"
+        }
+      ]
+    }
+  }
+}

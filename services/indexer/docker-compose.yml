@@ -1,7 +1,9 @@
 services:
   indexer-service:
-    build: .
-    # image: ghcr.io/ionelpopjara/moogle/indexer:latest
-    env_file: "variables.env"
+    image: ${MIFOLYO_INDEXER_IMAGE:?MIFOLYO_INDEXER_IMAGE must be the approved indexer image at a sha256 digest}
+    pull_policy: always
+    env_file:
+      - path: variables.env
+        required: false
     deploy:
       replicas: 1

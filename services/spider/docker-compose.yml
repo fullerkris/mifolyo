@@ -1,7 +1,9 @@
 services:
   spider-service:
-    build: .
-    # image: ghcr.io/ionelpopjara/moogle/spider:latest
-    env_file: "variables.env"
+    image: ${MIFOLYO_SPIDER_IMAGE:?MIFOLYO_SPIDER_IMAGE must be the approved spider image at a sha256 digest}
+    pull_policy: always
+    env_file:
+      - path: variables.env
+        required: false
     deploy:
       replicas: 1

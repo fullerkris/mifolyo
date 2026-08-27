@@ -2,6 +2,18 @@
 
 # Message Queues
 INDEXER_QUEUE_KEY = "pages_queue"
+# Crash-safe claims live here until completion. Multiple replicas may start,
+# but the renewable owner lock permits exactly one to process or recover work.
+INDEXER_PROCESSING_QUEUE_KEY = "pages_queue:processing"
+INDEXER_DEAD_LETTER_QUEUE_KEY = "pages_queue:dead"
+INDEXER_DEAD_LETTER_MAX_ENTRIES = 1000
+INDEXER_OWNER_LOCK_KEY = "pages_queue:indexer_owner"
+INDEXER_FENCE_EPOCH_KEY = "pages_queue:indexer_fence_epoch"
+INDEXER_LOCK_TTL_SECONDS = 60
+INDEXER_LOCK_RENEW_SECONDS = 10
+INDEXER_RECOVERY_BATCH_SIZE = 100
+INDEXER_CLAIM_POLL_SECONDS = 0.1
+MAX_CANONICAL_URL_BYTES = 2048
 SIGNAL_QUEUE_KEY = "signal_queue"
 RESUME_CRAWL = "RESUME_CRAWL"
 IMAGE_INDEXER_QUEUE_KEY = "image_indexer_queue"

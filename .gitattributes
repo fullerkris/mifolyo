@@ -1,0 +1,6 @@
+/services/spider/config/crawl-policy-v1.baseline.json text eol=lf
+/services/spider/config/crawl-policy-v1.example.json text eol=lf
+/services/spider/config/render-policy-v1.disabled.json text eol=lf
+/contracts/render-policy-v1.schema.json text eol=lf
+/contracts/reddit-export-v1.schema.json text eol=lf
+/services/seed-importer/reddit-export-v1.schema.json text eol=lf

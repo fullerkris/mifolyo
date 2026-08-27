@@ -1,7 +1,16 @@
 services:
   page-rank-service:
-    build: .
-    # image: ghcr.io/ionelpopjara/moogle/page-rank:latest
-    env_file: "variables.env"
-    deploy:
-      replicas: 1
+    image: ${MIFOLYO_PAGE_RANK_IMAGE:?MIFOLYO_PAGE_RANK_IMAGE must be the approved page-rank image at a sha256 digest}
+    pull_policy: always
+    env_file:
+      - path: variables.env
+        required: false
+    restart: "no"
+    user: "65534:65534"
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=16m

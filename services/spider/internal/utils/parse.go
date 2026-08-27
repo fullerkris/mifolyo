@@ -1,41 +1,40 @@
 package utils
 
 import (
-    "fmt"
-    "strconv"
-    "time"
-    "encoding/json"
+	"encoding/json"
+	"fmt"
+	"strconv"
+	"time"
 )
 
 func ParseInt(value string) (int, error) {
-    num, err := strconv.Atoi(value)
+	num, err := strconv.Atoi(value)
 
-    if err != nil {
-        return 0, fmt.Errorf("Error parsing integer: %w", err)
-    }
+	if err != nil {
+		return 0, fmt.Errorf("Error parsing integer: %w", err)
+	}
 
-    return num, nil
+	return num, nil
 }
 
 func ParseTime(value string) (time.Time, error) {
-    t, err := time.Parse(time.RFC1123, value)
+	t, err := time.Parse(time.RFC1123, value)
 
-    if err != nil {
-        return time.Time{}, fmt.Errorf("Error parsing timestamp: %w", err)
-    }
+	if err != nil {
+		return time.Time{}, fmt.Errorf("Error parsing timestamp: %w", err)
+	}
 
-    return t, nil
+	return t, nil
 }
 
 func ParseStringsSlice(value string) ([]string, error) {
-    var links[] string
+	var links []string
 
-    err := json.Unmarshal([]byte(value), &links)
+	err := json.Unmarshal([]byte(value), &links)
 
-    if err != nil {
-        return nil, fmt.Errorf("Error parsing JSON string slice: %w", err)
-    }
+	if err != nil {
+		return nil, fmt.Errorf("Error parsing JSON string slice: %w", err)
+	}
 
-    return links, nil
+	return links, nil
 }
-

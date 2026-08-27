@@ -13,12 +13,12 @@ https://ourworldindata.org,Reference & Research,1,manual,Data-driven public rese
 https://data.gov,Reference & Research,2,manual,US open data catalog
 https://apnews.com,Journalism & Fact-checking,1,manual,Wire service reporting
 https://www.reuters.com,Journalism & Fact-checking,1,manual,Wire service reporting
-https://www.bbc.com/news,Journalism & Fact-checking,1,manual,International public-interest news
+https://www.bbc.com/news,Journalism & Fact-checking,1,manual,Disabled pending explicit crawl permission
 https://www.propublica.org,Journalism & Fact-checking,1,manual,Investigative journalism
 https://www.poynter.org,Journalism & Fact-checking,1,manual,Journalism ethics and media literacy
 https://www.factcheck.org,Journalism & Fact-checking,1,manual,Political fact-checking
 https://www.snopes.com,Journalism & Fact-checking,1,manual,Claim verification
-https://www.politifact.com,Journalism & Fact-checking,1,manual,Political fact-checking
+https://www.politifact.com,Journalism & Fact-checking,1,manual,Disabled pending robots-compatible crawl policy
 https://www.icij.org,Journalism & Fact-checking,2,manual,Investigative journalism consortium
 https://www.cjr.org,Journalism & Fact-checking,2,manual,Journalism criticism and analysis
 https://www.npr.org,Journalism & Fact-checking,2,manual,Public radio journalism
@@ -44,7 +44,7 @@ https://www.science.org,Science & Learning,2,manual,Scientific journal publisher
 https://www.pnas.org,Science & Learning,2,manual,Peer-reviewed science journal
 https://arxiv.org,Science & Learning,1,manual,Open research preprints
 https://www.quantamagazine.org,Science & Learning,1,manual,Science and math journalism
-https://www.khanacademy.org,Science & Learning,1,manual,Educational lessons
+https://www.khanacademy.org,Science & Learning,1,manual,Disabled pending reliable robots authorization
 https://ocw.mit.edu,Science & Learning,1,manual,Open university courseware
 https://www.nngroup.com,Creative & Design,1,manual,UX research and design guidance
 https://www.smashingmagazine.com,Creative & Design,1,manual,Design and frontend articles

@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "unmatched_action": "deny",
+  "groups": [
+    {
+      "id": "wikipedia",
+      "enabled": true,
+      "priority": 10,
+      "host_rules": [
+        {
+          "host": "wikipedia.org",
+          "match": "apex_and_subdomains"
+        }
+      ],
+      "allowed_schemes": [
+        "https"
+      ],
+      "max_depth": 2,
+      "allow_path_prefixes": [
+        "/wiki/"
+      ],
+      "deny_path_prefixes": [
+        "/wiki/Special:",
+        "/wiki/Wikipedia:Database_download"
+      ],
+      "min_request_interval": "2s",
+      "max_concurrency": 1,
+      "max_requests_per_batch": 100,
+      "redirects": {
+        "mode": "same_group",
+        "max_hops": 3
+      },
+      "robots": {
+        "mode": "enforce",
+        "on_error": "deny",
+        "cache_ttl": "1h"
+      }
+    },
+    {
+      "id": "mdn-web-docs",
+      "enabled": true,
+      "priority": 20,
+      "host_rules": [
+        {
+          "host": "developer.mozilla.org",
+          "match": "exact"
+        }
+      ],
+      "allowed_schemes": [
+        "https"
+      ],
+      "max_depth": 2,
+      "allow_path_prefixes": [
+        "/en-US/docs/"
+      ],
+      "deny_path_prefixes": [],
+      "min_request_interval": "2s",
+      "max_concurrency": 1,
+      "max_requests_per_batch": 50,
+      "redirects": {
+        "mode": "same_host",
+        "max_hops": 3
+      },
+      "robots": {
+        "mode": "enforce",
+        "on_error": "deny",
+        "cache_ttl": "1h"
+      }
+    },
+    {
+      "id": "reddit-crawler",
+      "enabled": false,
+      "priority": 30,
+      "host_rules": [
+        {
+          "host": "reddit.com",
+          "match": "apex_and_subdomains"
+        }
+      ],
+      "allowed_schemes": [
+        "https"
+      ],
+      "max_depth": 1,
+      "allow_path_prefixes": [
+        "/r/"
+      ],
+      "deny_path_prefixes": [],
+      "min_request_interval": "10s",
+      "max_concurrency": 1,
+      "max_requests_per_batch": 4,
+      "redirects": {
+        "mode": "same_group",
+        "max_hops": 3
+      },
+      "robots": {
+        "mode": "enforce",
+        "on_error": "deny",
+        "cache_ttl": "1h"
+      }
+    }
+  ]
+}

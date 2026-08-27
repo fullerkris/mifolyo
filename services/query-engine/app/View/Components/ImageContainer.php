@@ -9,10 +9,15 @@ use Illuminate\View\Component;
 class ImageContainer extends Component
 {
     public $url;
+
     public $alt;
+
     public $title;
+
     public $page_url;
+
     public $text;
+
     /**
      * Create a new component instance.
      */

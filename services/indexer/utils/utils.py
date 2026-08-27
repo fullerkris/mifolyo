@@ -93,9 +93,33 @@ def tokenize_large_text(text, chunk_size=10000):
     return tokens
 
 
-def get_html_data(html: str):
-    # Only parse needed sections using lxml parser (faster for large HTML)
-    soup = BeautifulSoup(html, "lxml", parse_only=SoupStrainer(["meta", "p", "title"]))
+def extract_page_text(soup, rendered=False):
+    if not rendered:
+        paragraphs = soup.select("p")
+        return " ".join(
+            BRACKETS_PATTERN.sub("", paragraph.get_text()).strip()
+            for paragraph in paragraphs
+        )
+
+    for element in soup.select(
+        "script, style, noscript, template, svg, [hidden], [aria-hidden='true']"
+    ):
+        element.decompose()
+    content = (
+        soup.select_one("main")
+        or soup.select_one("[role='main']")
+        or soup.select_one("article")
+        or soup.body
+        or soup
+    )
+    return BRACKETS_PATTERN.sub("", content.get_text(" ", strip=True)).strip()
+
+
+def get_html_data(html: str, rendered=False):
+    # Static pages retain the existing paragraph-only behavior. Rendered pages
+    # need their full semantic DOM because custom elements often contain no p tags.
+    parse_only = None if rendered else SoupStrainer(["meta", "p", "title"])
+    soup = BeautifulSoup(html, "lxml", parse_only=parse_only)
 
     # Get all meta tags
     meta_tags = {
@@ -108,11 +132,7 @@ def get_html_data(html: str):
     description = meta_tags.get("og:description") or meta_tags.get("description")
     canonical_url = meta_tags.get("og:url") or meta_tags.get("url")
 
-    # Get all paragraphs
-    paragraphs = soup.select("p")
-    page_text = " ".join(
-        BRACKETS_PATTERN.sub("", p.get_text()).strip() for p in paragraphs
-    )
+    page_text = extract_page_text(soup, rendered=rendered)
 
     # Summary text: take first 500 words
     summary_text = page_text.split()

@@ -45,9 +45,17 @@ logger = logging.getLogger(__name__)
 
 
 EXPECTED_MANUAL_ROWS = 70
+EXPECTED_ENABLED_MANUAL_ROWS = 67
 EXPECTED_REDDIT_DISCOVERY_ROWS = 8
 DIRECT_SOURCE = "manual"
 REDDIT_DISCOVERY_SOURCE = "manual_reddit_discovery"
+DISABLED_MANUAL_CANONICAL_URLS = frozenset(
+    {
+        "https://www.bbc.com/news",
+        "https://www.khanacademy.org/",
+        "https://www.politifact.com/",
+    }
+)
 REBUILD_ENVIRONMENTS = frozenset({"development", "test"})
 REBUILD_ENVIRONMENT_VARIABLE = "MIFOLYO_ENV"
 LOCAL_MONGO_NODES = frozenset(
@@ -203,7 +211,12 @@ def build_manual_seed_documents(
             metadata={"notes": row["notes"]},
             key=stable_source_key(DIRECT_SOURCE, source_ref),
         )
-        incoming = new_seed_document(row["url"], source, updated_at=observed_at)
+        incoming = new_seed_document(
+            row["url"],
+            source,
+            enabled=identity.canonical_url not in DISABLED_MANUAL_CANONICAL_URLS,
+            updated_at=observed_at,
+        )
         documents[incoming["_id"]] = merge_seed_documents(
             documents.get(incoming["_id"]), incoming
         )
@@ -211,6 +224,11 @@ def build_manual_seed_documents(
     if len(documents) != EXPECTED_MANUAL_ROWS:
         raise BaselineSeedError(
             "the 70 direct rows must resolve to exactly 70 distinct V1 URL IDs"
+        )
+    enabled_count = sum(document["enabled"] for document in documents.values())
+    if enabled_count != EXPECTED_ENABLED_MANUAL_ROWS:
+        raise BaselineSeedError(
+            "the direct baseline must contain exactly 67 enabled and 3 disabled records"
         )
     return [documents[url_id] for url_id in sorted(documents)]
 
@@ -349,9 +367,11 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         return 1
 
     logger.info(
-        "%s will import %s direct manual records and exclude %s Reddit discovery rows",
+        "%s will import %s direct manual records (%s enabled, %s disabled) and exclude %s Reddit discovery rows",
         args.action.capitalize(),
         len(documents),
+        EXPECTED_ENABLED_MANUAL_ROWS,
+        len(DISABLED_MANUAL_CANONICAL_URLS),
         EXPECTED_REDDIT_DISCOVERY_ROWS,
     )
     if args.dry_run:

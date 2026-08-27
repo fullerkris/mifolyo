@@ -1,1 +1,16 @@
 .variables.env
+variables.env
+.env
+.env.*
+**/*.env
+**/.env
+**/.env.*
+**/*.key
+**/*.pem
+**/*.crt
+**/*.cer
+**/*.p12
+**/*.pfx
+.git
+page-rank
+/*.test

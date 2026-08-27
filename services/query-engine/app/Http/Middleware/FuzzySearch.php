@@ -4,33 +4,47 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\Response;
 
 class FuzzySearch
 {
     public function handle(Request $request, Closure $next): Response
     {
-        error_log('FuzzySearch middleware called');
-        $query = $request->query('q');
-        if (!$query) {
+        $validated = $request->validate([
+            'q' => [
+                'bail',
+                'nullable',
+                'string',
+                'max:500',
+                static function (string $attribute, mixed $value, \Closure $fail): void {
+                    if (! mb_check_encoding($value, 'UTF-8')) {
+                        $fail('The query must be valid UTF-8.');
+                    }
+                },
+            ],
+            'page' => ['sometimes', 'integer', 'min:1', 'max:100'],
+        ]);
+        $query = $validated['q'] ?? null;
+        if ($query === null || $query === '') {
             return $next($request);
         }
 
         // Split the query string
         $query = str_replace('+', ' ', $query);
-        $queryWords = explode(' ', strtolower($query));
+        $queryWords = preg_split('/\s+/u', mb_strtolower(trim($query), 'UTF-8'), -1, PREG_SPLIT_NO_EMPTY);
+        abort_if($queryWords === false, 422, 'The query must be valid UTF-8.');
+        abort_if(count($queryWords) > 20, 422, 'Too many search terms.');
         $processedQuery = [];
         $hasSuggestions = false;
 
         try {
             foreach ($queryWords as $word) {
-                if (empty(trim($word))) {
+                if (trim($word) === '') {
                     continue;
                 }
                 $suggestion = $this->checkOrSuggestWord($word);
-                error_log('Processing word: ' . $word . ' => ' . ($suggestion ?? 'no suggestion'));
 
                 if ($suggestion && $suggestion !== $word) {
                     $processedQuery[] = $suggestion;
@@ -41,15 +55,13 @@ class FuzzySearch
             }
 
             $processedQueryString = implode(' ', $processedQuery);
-            $request->merge(['processedQuery' => $processedQueryString]);
+            $request->attributes->set('processedQuery', $processedQueryString);
             if ($hasSuggestions) {
-                $request->merge(['hasSuggestions' => true]);
+                $request->attributes->set('hasSuggestions', true);
             }
 
-            error_log('Processed query: ' . $processedQueryString);
-
-        } catch (\Exception $e) {
-            \Log::error('Spell check error: ' . $e->getMessage());
+        } catch (\Exception) {
+            Log::error('Spell-check processing failed.');
         }
 
         return $next($request);
@@ -57,30 +69,18 @@ class FuzzySearch
 
     private function checkOrSuggestWord(string $word): ?string
     {
-        $cacheKey = 'spellcheck:' . $word;
-
-        // Check cache first
-        if (Cache::has($cacheKey)) {
-            error_log('Cache hit for word: ' . $word);
-            return Cache::get($cacheKey);
-        }
-
         try {
             $collection = DB::connection('mongodb')->table('dictionary');
             // Check DB directly for exact word
             $exists = $collection->find($word);
 
             if ($exists) {
-                Cache::put($cacheKey, $word, 3600); // Cache for 1 hour
-                error_log('Word found in DB: ' . $word);
                 return $word;
             }
 
-            error_log('Word not found in DB: ' . $word);
-
-            $length = strlen($word);
+            $length = mb_strlen($word, 'UTF-8');
             $searchLength = $length - 3 > 0 ? $length - 2 : 1;
-            $firstTwoChars = substr($word, 0, $searchLength);
+            $firstTwoChars = preg_quote(mb_substr($word, 0, $searchLength, 'UTF-8'), '/');
 
             $cursor = DB::connection('mongodb')
                 ->table('dictionary')
@@ -88,36 +88,37 @@ class FuzzySearch
                     return $collection->aggregate([
                         [
                             '$match' => [
-                                '_id' => ['$regex' => '^' . $firstTwoChars, '$options' => 'i']
-                            ]
+                                '_id' => ['$regex' => '^'.$firstTwoChars, '$options' => 'i'],
+                            ],
                         ],
                         [
                             '$addFields' => [
-                                'length' => ['$strLenCP' => '$_id']
-                            ]
+                                'length' => ['$strLenCP' => '$_id'],
+                            ],
                         ],
                         [
                             '$match' => [
-                                'length' => ['$gte' => $length - 1, '$lte' => $length + 1]
-                            ]
-                        ]
-                    ]);
+                                'length' => ['$gte' => $length - 1, '$lte' => $length + 1],
+                            ],
+                        ],
+                        ['$limit' => 100],
+                    ], ['maxTimeMS' => 250]);
                 });
 
             // Find best match by Levenshtein distance
             $bestMatch = null;
             $minDistance = PHP_INT_MAX;
-            $wordLength = strlen($word);
+            $wordLength = mb_strlen($word, 'UTF-8');
 
             foreach ($cursor as $document) {
                 $candidate = $document->_id;
-                $candidateLength = strlen($candidate);
+                $candidateLength = mb_strlen($candidate, 'UTF-8');
 
                 if (abs($candidateLength - $wordLength) > 2) {
                     continue; // Too different
                 }
 
-                $distance = levenshtein($word, $candidate);
+                $distance = $this->unicodeLevenshtein($word, $candidate);
 
                 $maxDistance = $wordLength <= 4 ? 1 : min(2, floor($wordLength / 4));
                 if ($distance <= $maxDistance && $distance < $minDistance) {
@@ -126,17 +127,33 @@ class FuzzySearch
                 }
             }
 
-            $finalSuggestion = $bestMatch ?? $word;
-            error_log('Best match found: ' . $finalSuggestion);
+            return $bestMatch ?? $word;
 
-            // Save to cache
-            Cache::put($cacheKey, $finalSuggestion, 3600);
+        } catch (\Exception) {
+            Log::warning('Suggestion lookup failed.');
 
-            return $finalSuggestion;
-
-        } catch (\Exception $e) {
-            error_log('Suggestion lookup error: ' . $e->getMessage());
             return $word; // fallback to original word
         }
+    }
+
+    private function unicodeLevenshtein(string $left, string $right): int
+    {
+        $leftCharacters = mb_str_split($left, 1, 'UTF-8');
+        $rightCharacters = mb_str_split($right, 1, 'UTF-8');
+        $previousRow = range(0, count($rightCharacters));
+
+        foreach ($leftCharacters as $leftIndex => $leftCharacter) {
+            $currentRow = [$leftIndex + 1];
+            foreach ($rightCharacters as $rightIndex => $rightCharacter) {
+                $currentRow[] = min(
+                    $currentRow[$rightIndex] + 1,
+                    $previousRow[$rightIndex + 1] + 1,
+                    $previousRow[$rightIndex] + ($leftCharacter === $rightCharacter ? 0 : 1),
+                );
+            }
+            $previousRow = $currentRow;
+        }
+
+        return $previousRow[count($rightCharacters)];
     }
 }

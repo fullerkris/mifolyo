@@ -46,7 +46,7 @@ Only Caddy publishes a host port:
 ```
 
 MongoDB, Redis, PostgreSQL, Laravel FPM, and pipeline workers have no published
-ports. The five named volumes and all four networks receive the fixed Compose
+ports. The six named volumes and all four networks receive the fixed Compose
 project prefix and are not external. The networks enforce these paths:
 
 - `crawl`: spider and Redis; permits crawler egress to reviewed web targets.
@@ -82,9 +82,9 @@ requirements allow them:
   root-owned build output from breaking non-root fresh-volume startup. It also
   pre-creates `/assets` with the same ownership so an empty named volume is
   writable before the one-shot copy begins.
-- Profiled seed and pipeline containers run as an explicit non-root user with
-  dropped capabilities, read-only root filesystems, bounded temporary storage,
-  and no host-published ports.
+- Profiled seed, pipeline, and crawl containers run as an explicit non-root
+  user with dropped capabilities, read-only root filesystems, bounded temporary
+  storage, and no host-published ports.
 - MongoDB's `/data/db` and `/data/configdb`, Redis data, PostgreSQL data, and
   query public assets all use explicit project-scoped named volumes. No
   anonymous or external volume is part of the test lifecycle.
@@ -102,11 +102,12 @@ that has no host `ports` publications. The isolated stack's network separation
 does not compensate for development ports such as `27017`, `6379`, or `5432`
 being published on the host.
 
-This host-publication check is necessary but not sufficient. Spider execution
-is currently blocked until its HTTP transport implements DNS-pinned address
-authorization and redirect revalidation. The core stack, seed rebuild, queue
-feed, and read-only validations may run while that fetch security work remains
-pending.
+The spider now implements DNS-pinned address authorization, numeric-address
+dialing, remote-endpoint checks, TLS verification, redirect revalidation, and
+fail-closed baseline robots policy. These application controls do not make the
+host-publication check optional: NAT, host routing, or operator-configured
+networks remain outside the process's complete visibility. Do not crawl until
+the host inventory and every remaining checklist preflight have passed.
 
 Inspect the root development services. If any are running with published
 ports, stop them; this does not remove their containers or volumes:
@@ -131,21 +132,46 @@ anything:
 docker compose \
   --project-name mifolyo-v1-baseline-test \
   --file scripts/docker/v1-baseline.compose.yml \
-  --profile tools --profile pipeline --profile image-pipeline config --quiet
+  --profile tools --profile pipeline --profile ranking --profile crawl \
+  --profile image-pipeline --profile render config --quiet
 ```
 
 Repeat the command without `--quiet` when reviewing the fully resolved port,
 network, volume, command, and environment model before a test run.
 
-Build the images required by the first baseline crawl. The deferred image
+Build the images required by a bounded baseline crawl. The deferred image
 indexer is deliberately excluded:
 
 ```bash
 docker compose \
   --project-name mifolyo-v1-baseline-test \
   --file scripts/docker/v1-baseline.compose.yml \
-  --profile tools --profile pipeline build --pull
+  --profile tools --profile pipeline --profile crawl build --pull
 ```
+
+The spider belongs only to `crawl`, and its resolved default command must be
+`./spider --validate-policy --validate-baseline-policy`. Validate the rebuilt
+image without Redis or network access before any operational run:
+
+```bash
+docker image inspect mifolyo-v1-baseline-test-spider \
+  --format 'runtime-user={{.Config.User}}'
+docker run --rm --network none --read-only \
+  mifolyo-v1-baseline-test-spider \
+  ./spider --validate-policy --validate-baseline-policy \
+  --crawl-policy-file /app/config/crawl-policy-v1.baseline.json \
+  --render-policy-file /app/config/render-policy-v1.disabled.json
+docker run --rm --network none --read-only \
+  mifolyo-v1-baseline-test-spider sh -c \
+  'test -s /etc/ssl/certs/ca-certificates.crt && test "$(id -u):$(id -g)" = "65534:65534"'
+```
+
+The required runtime user is `65534:65534`; policy validation must report SHA-256
+`50648954d0264f7ac4fdda174178db488e86e335a0b63fdcc448da7bc218bae3`.
+The policy includes 67 enabled host rules plus disabled `disabled-sites` and
+`reddit-crawler` groups. Stage 1 JavaScript rendering is implemented under the
+separate `render` profile, but the baseline policy file has no render rules and
+the worker must remain stopped for this environment's static crawl.
 
 The query-engine Dockerfile installs frontend dependencies with `npm ci`, not
 `npm install`. The lockfile is therefore the exact dependency input to the
@@ -328,6 +354,13 @@ docker compose \
   indexer backlinks-processor
 ```
 
+PageRank is a separate one-shot batch behind the `ranking` profile. It must not
+run concurrently with the spider or indexer. After the crawl, confirm
+`pages_queue` is stably empty, stop the indexer only after its final flush, and
+follow section 8A of `docs/v1-baseline-crawl-test-checklist.md`. The first
+PageRank invocation is read-only validation; publication requires its exact
+reported graph SHA-256.
+
 `image-indexer` is isolated behind the separate `image-pipeline` profile and
 must not be started for the V1 baseline. It fetches externally supplied image
 URLs; that behavior is deferred until an SSRF-hardened fetch path implements
@@ -335,21 +368,13 @@ DNS/IP validation, redirect revalidation, and private/host address blocking.
 The spider may enqueue image references during this test, but no service may
 fetch them.
 
-After DNS-pinned address authorization and redirect revalidation are
-implemented, tested, and removed from the checklist's stop conditions, the
-approved command will run exactly one explicit bounded spider batch. Do not run
-it in the current milestone:
-
-```bash
-docker compose \
-  --project-name mifolyo-v1-baseline-test \
-  --file scripts/docker/v1-baseline.compose.yml \
-  --profile pipeline run --rm spider \
-  ./spider --once --max-concurrency 2 --max-pages 10
-```
-
-The stack defines no implicit starting URL. Do not add an ad hoc target to the
-baseline run; it must consume only the reviewed V1 queue.
+The stack defines no implicit starting URL. Do not add an ad hoc target to a
+baseline run; it must consume only the reviewed V1 queue. This environment
+guide does not authorize or invoke a crawl. Complete the post-catalog
+verification below, then use section 7 of
+`docs/v1-baseline-crawl-test-checklist.md` only after a fresh authorization is
+recorded. A normal `pipeline` start cannot launch the spider, and a `crawl`
+profile start without an explicit override performs validation only.
 
 ### Post-catalog read-only data verification
 
@@ -377,6 +402,7 @@ docker compose \
 return {
   redis.call("ZCARD", "mifolyo:crawl:v1:queue"),
   redis.call("HLEN", "mifolyo:crawl:v1:urls"),
+  redis.call("HLEN", "mifolyo:crawl:v1:depths"),
   redis.call("LLEN", "pages_queue")
 }' 0
 ```
@@ -422,3 +448,8 @@ The local V1 Compose file is not a production deployment definition. Before a
 production change, require durable backups and restore tests, health and error
 rate monitoring, actionable alerts, secret-managed credentials, and an
 automated rollback to the last known-good application image.
+
+The incompatible immutable page/image publication protocol additionally
+requires the atomic stop/drain/backup/deploy procedure and post-producer
+rollback boundary in `docs/immutable-pipeline-release-cutover.md`. A normal
+rolling deployment is prohibited for Spider, Indexer, and Image Indexer.

@@ -232,6 +232,9 @@ func TestCanonicalizeURLV1StaticCrawlAdmission(t *testing.T) {
 		{name: "IPv6 literal", input: "https://[::1]/", rejection: CrawlRejectionIPLiteral},
 		{name: "single label", input: "https://printer/path", rejection: CrawlRejectionLocalName},
 		{name: "local suffix", input: "https://service.local/path", rejection: CrawlRejectionLocalName},
+		{name: "onion suffix", input: "https://service.onion/path", rejection: CrawlRejectionLocalName},
+		{name: "alternative namespace", input: "https://service.alt/path", rejection: CrawlRejectionLocalName},
+		{name: "infrastructure namespace", input: "https://service.arpa/path", rejection: CrawlRejectionLocalName},
 		{name: "non-default port", input: "https://example.com:444/path", rejection: CrawlRejectionNonDefaultPort},
 		{name: "default port", input: "https://example.com:443/path", rejection: ""},
 	}

@@ -1,28 +1,33 @@
+import inspect
 import unittest
-from unittest.mock import patch
 
-from utils.utils import is_valid_image
+import main
+from models.image import Image
+from utils import utils
 
 
-class IsValidImageTest(unittest.TestCase):
-    @patch("utils.utils.Image.open")
-    @patch("utils.utils.requests.get")
-    def test_requests_absolute_urls_unchanged_and_falls_back_for_legacy_url(
-        self, mock_get, mock_image_open
-    ):
-        mock_get.return_value.content = b"image"
-        mock_image_open.return_value.size = (100, 100)
-        cases = [
-            ("http://cdn.example.com/image.jpg", "http://cdn.example.com/image.jpg"),
-            ("https://cdn.example.com/image.jpg", "https://cdn.example.com/image.jpg"),
-            ("cdn.example.com/legacy.jpg", "https://cdn.example.com/legacy.jpg"),
-        ]
+class MetadataOnlyTests(unittest.TestCase):
+    def test_filename_and_tokens_are_derived_without_network(self):
+        image = Image.from_contract(
+            {
+                "contract_version": "1",
+                "publication_id": "a" * 64,
+                "normalized_page_url": "https://example.org/page",
+                "normalized_source_url": "https://cdn.example.org/Blue-Sky.jpg?q=1",
+                "alt": "Blue sky",
+            },
+            "a" * 64,
+            "https://example.org/page",
+        )
+        self.assertEqual("Blue-Sky.jpg", image.filename)
+        self.assertEqual(["blue", "sky"], utils.split_name(image.filename))
 
-        for url, expected_url in cases:
-            with self.subTest(url=url):
-                mock_get.reset_mock()
-                mock_image_open.reset_mock()
+    def test_runtime_has_no_http_or_image_decoder_fetch_path(self):
+        source = inspect.getsource(utils) + inspect.getsource(main)
+        for forbidden in ("requests", "PIL", "urlopen", "httpx", "aiohttp"):
+            self.assertNotIn(forbidden, source)
+        self.assertFalse(hasattr(utils, "is_valid_image"))
 
-                self.assertTrue(is_valid_image(url))
-                mock_get.assert_called_once_with(expected_url, timeout=5)
-                mock_image_open.assert_called_once()
+
+if __name__ == "__main__":
+    unittest.main()

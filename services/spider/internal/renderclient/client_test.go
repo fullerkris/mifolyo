@@ -17,6 +17,7 @@ import (
 	"strings"
 	"sync"
 	"sync/atomic"
+	"syscall"
 	"testing"
 	"time"
 
@@ -631,7 +632,7 @@ func TestClientRejectsWorkerDataWhileResourceReplyIsOutstanding(t *testing.T) {
 					return err
 				}
 				<-brokerStarted
-				if err := test.writeEarly(connection, start.JobID); err != nil {
+				if err := test.writeEarly(connection, start.JobID); err != nil && !isExpectedPeerClose(err) {
 					return err
 				}
 				var firstReplyByte [1]byte
@@ -730,10 +731,10 @@ func TestClientRejectsWorkerDataBeforeLargeResourceReplyWriteCompletes(t *testin
 				if _, err := io.ReadFull(connection, partialReply); err != nil {
 					return fmt.Errorf("read partial resource reply: %w", err)
 				}
-				if err := test.writeEarly(connection, start.JobID); err != nil {
+				earlyFrameWritten <- time.Now()
+				if err := test.writeEarly(connection, start.JobID); err != nil && !isExpectedPeerClose(err) {
 					return err
 				}
-				earlyFrameWritten <- time.Now()
 				<-renderReturned
 				return nil
 			})
@@ -1288,6 +1289,10 @@ func TestFrameBoundsRemainFourByteBigEndian(t *testing.T) {
 }
 
 type brokerFunc func(context.Context, ResourceIntent) (Resource, error)
+
+func isExpectedPeerClose(err error) bool {
+	return errors.Is(err, net.ErrClosed) || errors.Is(err, syscall.EPIPE) || errors.Is(err, syscall.ECONNRESET)
+}
 
 func (function brokerFunc) Fetch(ctx context.Context, intent ResourceIntent) (Resource, error) {
 	return function(ctx, intent)

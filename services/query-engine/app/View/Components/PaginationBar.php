@@ -9,6 +9,7 @@ use Illuminate\View\Component;
 class PaginationBar extends Component
 {
     public $totalResults;
+
     public $totalPages;
 
     /**
@@ -17,7 +18,7 @@ class PaginationBar extends Component
     public function __construct($totalResults)
     {
         $this->totalResults = $totalResults;
-        $this->totalPages = ceil($totalResults /20);
+        $this->totalPages = ceil($totalResults / 20);
     }
 
     /**

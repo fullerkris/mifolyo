@@ -9,12 +9,10 @@ class QuerySearchController extends Controller
 {
     public function get_page_connections(Request $request)
     {
-        $url = $request->input('url');
-        if (!$url) {
-            return response()->json(['error' => 'URL is required'], 400);
-        }
-
-        error_log('URL: ' . $url);
+        $validated = $request->validate([
+            'url' => ['required', 'url:http,https', 'max:2048'],
+        ]);
+        $url = $validated['url'];
 
         // Fetch page outlinks
         $outlinksData = DB::connection('mongodb')
@@ -53,7 +51,7 @@ class QuerySearchController extends Controller
                 } else {
                     $enrichedOutlinks[] = [
                         'url' => $link,
-                        'title' => 'Page Not Indexed'
+                        'title' => 'Page Not Indexed',
                     ];
                 }
             }
@@ -96,7 +94,7 @@ class QuerySearchController extends Controller
                 } else {
                     $enrichedBacklinks[] = [
                         'url' => $link,
-                        'title' => 'Page Not Indexed'
+                        'title' => 'Page Not Indexed',
                     ];
                 }
             }
@@ -115,39 +113,45 @@ class QuerySearchController extends Controller
             'backlinks' => $enrichedBacklinks,
         ]);
     }
+
     public function getTopImages($query, $page = 1, $perPage = 5)
     {
         // Split the query string
         $query = str_replace('+', ' ', $query);
-        $words = explode(' ', strtolower($query));
+        $words = explode(' ', mb_strtolower($query, 'UTF-8'));
 
         // Use a count aggregation to get total results more efficiently
         $countPipeline = [
             ['$match' => ['word' => ['$in' => $words]]],
-            ['$group' => ['_id' => '$url']],
-            ['$count' => 'total']
+            ['$set' => ['_associationId' => ['$ifNull' => ['$association_id', '$url']]]],
+            ['$group' => ['_id' => '$_associationId']],
+            ['$count' => 'total'],
         ];
 
         $countResult = DB::connection('mongodb')
             ->table('word_images')
-            ->raw(fn($collection) => $collection->aggregate($countPipeline)->toArray());
+            ->raw(fn ($collection) => $collection->aggregate(
+                $countPipeline,
+                ['maxTimeMS' => 2000],
+            )->toArray());
 
         $totalResults = isset($countResult[0]) ? $countResult[0]['total'] : 0;
 
         // Aggregation
         $paginationPipeline = [
             ['$match' => ['word' => ['$in' => $words]]],
+            ['$set' => ['_associationId' => ['$ifNull' => ['$association_id', '$url']]]],
             [
                 '$group' => [
-                    '_id' => '$url',
+                    '_id' => '$_associationId',
                     'cumWeight' => ['$sum' => '$weight'],
                     'matchedWords' => ['$addToSet' => '$word'],
-                    'matchCount' => ['$sum' => 1]
-                ]
+                    'matchCount' => ['$sum' => 1],
+                ],
             ],
             ['$sort' => ['matchCount' => -1, 'cumWeight' => -1]],
             ['$skip' => ($page - 1) * $perPage],
-            ['$limit' => $perPage]
+            ['$limit' => $perPage],
         ];
 
         // Get paginated results
@@ -155,20 +159,24 @@ class QuerySearchController extends Controller
             ->table('word_images')
             ->raw(function ($collection) use ($paginationPipeline) {
                 // Use a cursor to iterate through the results
-                $cursor = $collection->aggregate($paginationPipeline, ['cursor' => ['batchSize' => 20]]);
+                $cursor = $collection->aggregate($paginationPipeline, [
+                    'cursor' => ['batchSize' => 20],
+                    'maxTimeMS' => 2000,
+                ]);
                 $results = [];
                 foreach ($cursor as $document) {
                     $results[] = $document;
                 }
+
                 return $results;
             });
 
         // Populate the metadata for each URL in the paginated results
-        $urls = array_map(fn($result) => $result['_id'], $paginatedResults);
+        $associationIds = array_map(fn ($result) => $result['_id'], $paginatedResults);
 
         // Fetch image data
         $imagesData = DB::connection('mongodb')->table('images')
-            ->whereIn('_id', $urls)
+            ->whereIn('_id', $associationIds)
             ->get();
 
         // First, reindex the metadata by _id for fast lookup
@@ -197,6 +205,10 @@ class QuerySearchController extends Controller
         // Merge image data into each paginated result
         foreach ($paginatedResults as &$result) {
             $imageData = $imageDataByUrl[$result['_id']] ?? null;
+            // Mongo groups and joins by the page-image association. Preserve
+            // the existing public shape by exposing the actual source URL as
+            // _id (legacy source-keyed rows naturally fall back to their id).
+            $result['_id'] = $imageData->source_url ?? $result['_id'];
             $result['alt'] = $imageData->alt ?? '';
             $result['filname'] = $imageData->filename ?? '';
             $result['page_url'] = $imageData->page_url ?? '';
@@ -206,8 +218,8 @@ class QuerySearchController extends Controller
             $result['page_text'] = '';
             $length = 100;
             if (isset($pageMetadata->summary_text)) {
-                $result['page_text'] = strlen($pageMetadata->summary_text) > $length
-                    ? substr($pageMetadata->summary_text, 0, $length) . '...'
+                $result['page_text'] = mb_strlen($pageMetadata->summary_text, 'UTF-8') > $length
+                    ? mb_substr($pageMetadata->summary_text, 0, $length, 'UTF-8').'...'
                     : $pageMetadata->summary_text;
             }
         }
@@ -227,12 +239,26 @@ class QuerySearchController extends Controller
 
     public function search(Request $request)
     {
-        $hasSuggestions = $request->input('hasSuggestions');
-        $originalQuery = $request->input('q');
-        $processedQuery = $request->input('processedQuery');
-        $query = $processedQuery ?: $originalQuery;
-        if (!$query) {
-            $query = "";
+        $validated = $request->validate([
+            'q' => [
+                'bail',
+                'nullable',
+                'string',
+                'max:500',
+                static function (string $attribute, mixed $value, \Closure $fail): void {
+                    if (! mb_check_encoding($value, 'UTF-8')) {
+                        $fail('The query must be valid UTF-8.');
+                    }
+                },
+            ],
+            'page' => ['sometimes', 'integer', 'min:1', 'max:100'],
+        ]);
+        $hasSuggestions = $request->attributes->get('hasSuggestions', false);
+        $originalQuery = $validated['q'] ?? null;
+        $processedQuery = $request->attributes->get('processedQuery');
+        $query = $processedQuery !== null && $processedQuery !== '' ? $processedQuery : $originalQuery;
+        if ($query === null || $query === '') {
+            $query = '';
             if ($request->wantsJson()) {
                 return response()->json([
                     'query' => $query,
@@ -258,69 +284,52 @@ class QuerySearchController extends Controller
 
         // Split the query string
         $query = str_replace('+', ' ', $query);
-        $words = explode(' ', strtolower($query));
+        $words = preg_split('/\s+/u', mb_strtolower(trim($query), 'UTF-8'), -1, PREG_SPLIT_NO_EMPTY);
+        abort_if($words === false, 422, 'The query must be valid UTF-8.');
+        abort_if(count($words) > 20, 422, 'Too many search terms.');
 
         // Set the number of results per page
         $perPage = 20;
-        $page = $request->input('page', 1); // Default page 1
+        $page = (int) ($validated['page'] ?? 1);
 
         // Use a count aggregation to get total results more efficiently
         $countPipeline = [
             ['$match' => ['word' => ['$in' => $words]]],
             ['$group' => ['_id' => '$url']],
-            ['$count' => 'total']
+            ['$count' => 'total'],
         ];
 
         $countResult = DB::connection('mongodb')
             ->table('words')
-            ->raw(fn($collection) => $collection->aggregate($countPipeline)->toArray());
+            ->raw(fn ($collection) => $collection->aggregate(
+                $countPipeline,
+                ['maxTimeMS' => 2000],
+            )->toArray());
 
         $totalResults = isset($countResult[0]) ? $countResult[0]['total'] : 0;
 
-        // Aggregation
-        $paginationPipeline = [
-            ['$match' => ['word' => ['$in' => $words]]],
-            [
-                '$group' => [
-                    '_id' => '$url',
-                    'cumWeight' => ['$sum' => '$weight'],
-                    'matchedWords' => ['$addToSet' => '$word'],
-                    'matchCount' => ['$sum' => 1]
-                ]
-            ],
-            ['$sort' => ['matchCount' => -1, 'cumWeight' => -1]],
-            ['$skip' => ($page - 1) * $perPage],
-            ['$limit' => $perPage]
-        ];
+        $paginationPipeline = $this->buildSearchPaginationPipeline($words, (int) $page, $perPage);
 
         // Get paginated results
         $paginatedResults = DB::connection('mongodb')
             ->table('words')
             ->raw(function ($collection) use ($paginationPipeline) {
                 // Use a cursor to iterate through the results
-                $cursor = $collection->aggregate($paginationPipeline, ['cursor' => ['batchSize' => 20]]);
+                $cursor = $collection->aggregate($paginationPipeline, [
+                    'allowDiskUse' => true,
+                    'cursor' => ['batchSize' => 20],
+                    'maxTimeMS' => 2000,
+                ]);
                 $results = [];
                 foreach ($cursor as $document) {
                     $results[] = $document;
                 }
+
                 return $results;
             });
 
         // Populate the metadata for each URL in the paginated results
-        $urls = array_map(fn($result) => $result['_id'], $paginatedResults);
-
-        // Fetch page rank of the urls
-        $pageRank = DB::connection('mongodb')->table('pagerank')
-            ->whereIn('_id', $urls)
-            ->get();
-
-        $pageRankByUrl = [];
-        foreach ($pageRank as $rank) {
-            $url = $rank->id ?? $rank->_id ?? null;
-            if ($url) {
-                $pageRankByUrl[$url] = (float) ($rank->rank ?? 0);
-            }
-        }
+        $urls = array_map(fn ($result) => $result['_id'], $paginatedResults);
 
         $metadata = DB::connection('mongodb')->table('metadata')
             ->whereIn('_id', $urls)
@@ -339,24 +348,7 @@ class QuerySearchController extends Controller
             $result['last_crawled'] = $resultMetadata->last_crawled ?? '';
             $result['summary_text'] = $resultMetadata->summary_text ?? '';
             $result['title'] = $resultMetadata->title ?? '';
-
-            $result['pagerank'] = $pageRankByUrl[$result['_id']] ?? 0;
-
-            // Calculate combined score
-            $tfidfWeight = $result['cumWeight'];
-            $pageRankWeight = $result['pagerank'];
-
-            // Use 60% TF-IDF and 40% PageRank for the combined score
-            $combinedScore = (0.6 * $tfidfWeight) + (0.4 * $pageRankWeight);
-
-            // Add the combined score to the result for sorting purposes
-            $result['combinedScore'] = $combinedScore;
         }
-
-        // Sort the results by the combined score in descending order
-        usort($paginatedResults, function ($a, $b) {
-            return $b['combinedScore'] <=> $a['combinedScore'];
-        });
 
         if ($request->wantsJson()) {
             return response()->json([
@@ -389,14 +381,161 @@ class QuerySearchController extends Controller
         ]);
     }
 
+    private function buildSearchPaginationPipeline(array $words, int $page, int $perPage): array
+    {
+        return [
+            ['$match' => ['word' => ['$in' => $words]]],
+            [
+                '$group' => [
+                    '_id' => '$url',
+                    'cumWeight' => ['$sum' => '$weight'],
+                    'matchedWords' => ['$addToSet' => '$word'],
+                    'matchCount' => ['$sum' => 1],
+                ],
+            ],
+            [
+                '$lookup' => [
+                    'from' => 'pagerank',
+                    'localField' => '_id',
+                    'foreignField' => '_id',
+                    'as' => '_pagerankDocument',
+                ],
+            ],
+            [
+                '$set' => [
+                    '_rawTfidf' => [
+                        '$convert' => [
+                            'input' => '$cumWeight',
+                            'to' => 'double',
+                            'onError' => 0.0,
+                            'onNull' => 0.0,
+                        ],
+                    ],
+                    '_rawPageRank' => [
+                        '$convert' => [
+                            'input' => ['$arrayElemAt' => ['$_pagerankDocument.rank', 0]],
+                            'to' => 'double',
+                            'onError' => 0.0,
+                            'onNull' => 0.0,
+                        ],
+                    ],
+                ],
+            ],
+            [
+                '$set' => [
+                    '_tfidfForScore' => [
+                        '$cond' => [
+                            [
+                                '$and' => [
+                                    ['$isNumber' => '$_rawTfidf'],
+                                    ['$gte' => ['$_rawTfidf', 0.0]],
+                                    ['$lte' => ['$_rawTfidf', PHP_FLOAT_MAX]],
+                                ],
+                            ],
+                            '$_rawTfidf',
+                            0.0,
+                        ],
+                    ],
+                    'pagerank' => [
+                        '$cond' => [
+                            [
+                                '$and' => [
+                                    ['$isNumber' => '$_rawPageRank'],
+                                    ['$gte' => ['$_rawPageRank', 0.0]],
+                                    ['$lte' => ['$_rawPageRank', 1.0]],
+                                ],
+                            ],
+                            '$_rawPageRank',
+                            0.0,
+                        ],
+                    ],
+                ],
+            ],
+            ['$set' => ['cumWeight' => '$_tfidfForScore']],
+            [
+                '$setWindowFields' => [
+                    'output' => [
+                        '_maxTfidf' => [
+                            '$max' => '$_tfidfForScore',
+                            'window' => ['documents' => ['unbounded', 'unbounded']],
+                        ],
+                        '_maxPageRank' => [
+                            '$max' => '$pagerank',
+                            'window' => ['documents' => ['unbounded', 'unbounded']],
+                        ],
+                    ],
+                ],
+            ],
+            [
+                '$set' => [
+                    '_normalizedTfidf' => [
+                        '$cond' => [
+                            ['$gt' => [['$ifNull' => ['$_maxTfidf', 0.0]], 0.0]],
+                            ['$divide' => ['$_tfidfForScore', '$_maxTfidf']],
+                            0.0,
+                        ],
+                    ],
+                    '_normalizedPageRank' => [
+                        '$cond' => [
+                            ['$gt' => [['$ifNull' => ['$_maxPageRank', 0.0]], 0.0]],
+                            ['$divide' => ['$pagerank', '$_maxPageRank']],
+                            0.0,
+                        ],
+                    ],
+                ],
+            ],
+            [
+                '$set' => [
+                    'combinedScore' => [
+                        '$add' => [
+                            ['$multiply' => [0.6, '$_normalizedTfidf']],
+                            ['$multiply' => [0.4, '$_normalizedPageRank']],
+                        ],
+                    ],
+                ],
+            ],
+            ['$sort' => ['matchCount' => -1, 'combinedScore' => -1, '_id' => 1]],
+            ['$skip' => ($page - 1) * $perPage],
+            ['$limit' => $perPage],
+            [
+                '$unset' => [
+                    '_pagerankDocument',
+                    '_rawTfidf',
+                    '_rawPageRank',
+                    '_tfidfForScore',
+                    '_maxTfidf',
+                    '_maxPageRank',
+                    '_normalizedTfidf',
+                    '_normalizedPageRank',
+                ],
+            ],
+        ];
+    }
+
     public function search_images(Request $request)
     {
-        $suggestions = $request->input('suggestions');
-        $originalQuery = $request->input('q');
+        $validated = $request->validate([
+            'q' => [
+                'bail',
+                'nullable',
+                'string',
+                'max:500',
+                static function (string $attribute, mixed $value, \Closure $fail): void {
+                    if (! mb_check_encoding($value, 'UTF-8')) {
+                        $fail('The query must be valid UTF-8.');
+                    }
+                },
+            ],
+            'page' => ['sometimes', 'integer', 'min:1', 'max:100'],
+            'suggestions' => ['sometimes', 'boolean'],
+        ]);
+        $suggestions = (bool) ($validated['suggestions'] ?? false);
+        $originalQuery = $validated['q'] ?? null;
         // $query = $request->input('processed_query');
         $query = $originalQuery;
-        if (!$query) {
-            $query = "";
+        if ($query === null || $query === '') {
+            $query = '';
+
             return view('search-image-results', [
                 'query' => $query,
                 'results' => [],
@@ -409,11 +548,13 @@ class QuerySearchController extends Controller
 
         // Split the query string
         $query = str_replace('+', ' ', $query);
-        $words = explode(' ', strtolower($query));
+        $words = preg_split('/\s+/u', mb_strtolower(trim($query), 'UTF-8'), -1, PREG_SPLIT_NO_EMPTY);
+        abort_if($words === false, 422, 'The query must be valid UTF-8.');
+        abort_if(count($words) > 20, 422, 'Too many search terms.');
 
         // Set the number of results per page
         $perPage = 20;
-        $page = $request->input('page', 1); // Default page 1
+        $page = (int) ($validated['page'] ?? 1);
 
         [$paginatedResults, $totalResults] = $this->getTopImages($query, $page, $perPage);
 
@@ -442,7 +583,7 @@ class QuerySearchController extends Controller
         $page_metadata = DB::connection('mongodb')->table('metadata')
             ->where('_id', $results[0]->id)
             ->first();
-        if (!$page_metadata) {
+        if (! $page_metadata) {
             return null;
         }
 
@@ -463,7 +604,7 @@ class QuerySearchController extends Controller
             ->table('metadata')
             ->raw(function ($collection) {
                 return $collection->aggregate([
-                    ['$sample' => ['size' => 1]]
+                    ['$sample' => ['size' => 1]],
                 ]);
             });
 
@@ -485,18 +626,31 @@ class QuerySearchController extends Controller
         ];
     }
 
-    public function get_dictionary()
+    public function get_dictionary(Request $request)
     {
+        $validated = $request->validate([
+            'limit' => ['sometimes', 'integer', 'min:1', 'max:500'],
+            'page' => ['sometimes', 'integer', 'min:1'],
+        ]);
+        $limit = (int) ($validated['limit'] ?? 100);
+        $page = (int) ($validated['page'] ?? 1);
+        $total = DB::connection('mongodb')->table('dictionary')->count();
         $results = DB::connection('mongodb')
             ->table('dictionary')
-            ->pluck('_id'); // ONLY get the word strings
+            ->orderBy('_id')
+            ->skip(($page - 1) * $limit)
+            ->limit($limit)
+            ->pluck('id'); // ONLY get the word strings
 
         return response()->json([
             'status' => 'up',
             'dictionary' => $results,
+            'meta' => [
+                'total' => $total,
+                'page' => $page,
+                'per_page' => $limit,
+                'last_page' => (int) ceil($total / $limit),
+            ],
         ]);
     }
-
-
-
 }

@@ -56,7 +56,27 @@ The recommended way to run the Query Engine is with Docker. This ensures all dep
    ```
 
 ### Without Docker
-The process of running the Query Engine without Docker is a bit more involved, as it requires setting up the environment manually. I will update this README with the necessary steps to run the Query Engine without Docker in the future. For now, please refer to the official Laravel documentation for setting up a Laravel application locally: [Laravel Installation](https://laravel.com/docs/installation).
+PHP 8.4.1 or newer is required, matching `composer.json`, the PHP 8.4 Docker
+runtime, and the PHP 8.4 CI job. The process of running the Query Engine without
+Docker is a bit more involved, as it requires setting up the environment
+manually. For now, refer to the official Laravel documentation for setting up a
+Laravel application locally: [Laravel Installation](https://laravel.com/docs/installation).
+
+## Legacy search-term retirement
+
+Raw search-term telemetry is retired. The one-time cleanup is an explicit,
+idempotent operator action:
+
+```bash
+php artisan security:purge-legacy-search-terms
+```
+
+Run it only from the release checklist in
+`../../docs/immutable-pipeline-release-cutover.md`; it is never run by startup,
+migrations, scheduling, or deployment. It deletes only logical `top_searches`
+through Laravel's configured prefixed Redis connection, preserves
+`total_searches`, and reports no stored content. Never use Redis `FLUSHDB` or
+`FLUSHALL` for this cleanup.
 
 ## Frontend Dependency Security
 

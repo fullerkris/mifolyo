@@ -9,7 +9,9 @@ use Illuminate\View\Component;
 class SearchResult extends Component
 {
     public $url;
+
     public $title;
+
     public $text;
 
     /**

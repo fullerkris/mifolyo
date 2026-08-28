@@ -739,11 +739,11 @@ func fetchResourceWhileReplyOutstanding(
 
 	select {
 	case outcome := <-outcomes:
-		if err := ctx.Err(); err != nil {
-			return brokerFetchOutcome{}, temporaryError("worker_read_failed", err)
-		}
 		if err := framePump.rejectFrameBeforeReply(); err != nil {
 			return brokerFetchOutcome{}, err
+		}
+		if err := ctx.Err(); err != nil {
+			return brokerFetchOutcome{}, temporaryError("worker_read_failed", err)
 		}
 		return outcome, nil
 
@@ -752,6 +752,9 @@ func fetchResourceWhileReplyOutstanding(
 		return brokerFetchOutcome{}, frameBeforeReplyError(event, open)
 
 	case <-ctx.Done():
+		if err := framePump.rejectFrameBeforeReply(); err != nil {
+			return brokerFetchOutcome{}, err
+		}
 		return brokerFetchOutcome{}, temporaryError("worker_read_failed", ctx.Err())
 	}
 }
@@ -781,27 +784,29 @@ func denyResourceAndRequireTerminal(
 	return cause
 }
 
-func writeDocument(writer io.Writer, document any) error {
-	payload, err := json.Marshal(document)
-	if err != nil {
-		return fmt.Errorf("encode worker reply: %w", err)
-	}
-	return writeFrame(writer, payload)
-}
-
 func writeResourceReply(framePump *frameReadPump, connection net.Conn, reply resourceReplyDocument) error {
 	if err := framePump.rejectFrameBeforeReply(); err != nil {
 		return err
 	}
-	writeErr := writeDocument(connection, reply)
-	phaseErr := framePump.completeResourceReply()
-	if phaseErr != nil {
-		return phaseErr
+	payload, err := json.Marshal(reply)
+	if err != nil {
+		return framePump.failResourceReply(fmt.Errorf("encode worker reply: %w", err))
 	}
-	if writeErr != nil {
-		return temporaryError("worker_write_failed", writeErr)
+	if len(payload) == 0 || len(payload) > maxFrameBytes {
+		return framePump.failResourceReply(fmt.Errorf("invalid frame length %d", len(payload)))
 	}
-	return nil
+	header := make([]byte, 4)
+	binary.BigEndian.PutUint32(header, uint32(len(payload)))
+	if err := writeAll(connection, header); err != nil {
+		return framePump.failResourceReply(err)
+	}
+	if err := writeAll(connection, payload[:len(payload)-1]); err != nil {
+		return framePump.failResourceReply(err)
+	}
+	if err := framePump.beginResourceReplyFinalization(); err != nil {
+		return err
+	}
+	return framePump.completeResourceReply(writeAll(connection, payload[len(payload)-1:]))
 }
 
 func requireDeniedResourceTerminal(
@@ -948,12 +953,14 @@ const (
 	resourceReplyIdle uint32 = iota
 	resourceReplyOutstanding
 	resourceReplyViolated
+	resourceReplyFinalizing
 )
 
 type frameReadEvent struct {
-	kind    frameReadEventKind
-	payload []byte
-	err     error
+	kind       frameReadEventKind
+	generation uint64
+	payload    []byte
+	err        error
 }
 
 // frameReadPump is the sole reader for a worker connection. A frame-start
@@ -962,11 +969,14 @@ type frameReadEvent struct {
 // worker input while a resource reply is outstanding without peeking at the
 // socket or racing a second reader.
 type frameReadPump struct {
-	connection net.Conn
-	events     chan frameReadEvent
-	stopSignal chan struct{}
-	done       chan struct{}
-	replyState atomic.Uint32
+	connection         net.Conn
+	events             chan frameReadEvent
+	stopSignal         chan struct{}
+	done               chan struct{}
+	replyState         atomic.Uint32
+	inputGeneration    atomic.Uint64
+	consumedGeneration uint64
+	replyGeneration    uint64
 }
 
 func newFrameReadPump(connection net.Conn) *frameReadPump {
@@ -990,15 +1000,17 @@ func (pump *frameReadPump) run() {
 			pump.send(frameReadEvent{kind: frameReadFailed, err: err})
 			return
 		}
+		// This increment is the observation linearization point. Reply phase
+		// transitions check the generation both before and after their CAS.
+		generation := pump.inputGeneration.Add(1)
 		if pump.replyState.CompareAndSwap(resourceReplyOutstanding, resourceReplyViolated) {
-			// A worker byte arrived before the outstanding reply write completed.
-			// Interrupt a potentially blocked large write; completeResourceReply
-			// gives this protocol violation precedence over the resulting timeout.
+			// Definite input before final-byte publication interrupts a blocked
+			// prefix write. The protocol error takes precedence over its timeout.
 			if err := pump.connection.SetWriteDeadline(time.Now()); err != nil {
 				_ = pump.connection.Close()
 			}
 		}
-		if !pump.send(frameReadEvent{kind: frameReadStarted}) {
+		if !pump.send(frameReadEvent{kind: frameReadStarted, generation: generation}) {
 			return
 		}
 
@@ -1064,29 +1076,69 @@ func (pump *frameReadPump) readFrame() ([]byte, error) {
 	if completed.kind != frameReadComplete {
 		return nil, fmt.Errorf("frame reader entered an invalid state")
 	}
+	pump.consumedGeneration = started.generation
 	return completed.payload, nil
 }
 
 func (pump *frameReadPump) beginResourceReply() error {
+	pump.replyGeneration = pump.consumedGeneration
 	if !pump.replyState.CompareAndSwap(resourceReplyIdle, resourceReplyOutstanding) {
 		return protocolError(fmt.Errorf("resource reply state is invalid"))
+	}
+	if pump.inputGeneration.Load() != pump.replyGeneration {
+		pump.replyState.Store(resourceReplyViolated)
+		return protocolError(fmt.Errorf("worker sent bytes before the outstanding resource reply completed"))
 	}
 	return nil
 }
 
-func (pump *frameReadPump) completeResourceReply() error {
+func (pump *frameReadPump) failResourceReply(cause error) error {
 	state := pump.replyState.Swap(resourceReplyIdle)
-	if state == resourceReplyViolated {
+	if state == resourceReplyViolated || pump.inputGeneration.Load() != pump.replyGeneration {
 		return protocolError(fmt.Errorf("worker sent bytes before the outstanding resource reply completed"))
 	}
 	if state != resourceReplyOutstanding {
 		return protocolError(fmt.Errorf("resource reply state is invalid"))
 	}
+	return temporaryError("worker_write_failed", cause)
+}
+
+func (pump *frameReadPump) beginResourceReplyFinalization() error {
+	if pump.inputGeneration.Load() != pump.replyGeneration {
+		return protocolError(fmt.Errorf("worker sent bytes before the outstanding resource reply completed"))
+	}
+	if pump.replyState.CompareAndSwap(resourceReplyOutstanding, resourceReplyFinalizing) {
+		if pump.inputGeneration.Load() == pump.replyGeneration {
+			return nil
+		}
+		pump.replyState.Store(resourceReplyViolated)
+		return protocolError(fmt.Errorf("worker sent bytes before the outstanding resource reply completed"))
+	}
+	if pump.replyState.Load() == resourceReplyViolated {
+		return protocolError(fmt.Errorf("worker sent bytes before the outstanding resource reply completed"))
+	}
+	return protocolError(fmt.Errorf("resource reply state is invalid"))
+}
+
+func (pump *frameReadPump) completeResourceReply(writeErr error) error {
+	state := pump.replyState.Swap(resourceReplyIdle)
+	observed := pump.inputGeneration.Load() != pump.replyGeneration
+	if observed {
+		if writeErr != nil {
+			return protocolError(fmt.Errorf("worker sent bytes before resource reply publication completed: %w", writeErr))
+		}
+	}
+	if state != resourceReplyFinalizing {
+		return protocolError(fmt.Errorf("resource reply state is invalid"))
+	}
+	if writeErr != nil {
+		return temporaryError("worker_write_failed", writeErr)
+	}
 	return nil
 }
 
 func (pump *frameReadPump) rejectFrameBeforeReply() error {
-	if pump.replyState.Load() == resourceReplyViolated {
+	if pump.replyState.Load() == resourceReplyViolated || pump.inputGeneration.Load() != pump.replyGeneration {
 		return protocolError(fmt.Errorf("worker sent bytes before the outstanding resource reply completed"))
 	}
 	select {

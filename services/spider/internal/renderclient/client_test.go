@@ -524,6 +524,169 @@ func TestClientBrokeredResourceExchange(t *testing.T) {
 	}
 }
 
+func TestWriteResourceReplyAcceptsImmediateFrameAfterFullPeerRead(t *testing.T) {
+	reply := resourceReplyDocument{
+		Version:     ProtocolVersion,
+		Kind:        resourceReplyKind,
+		JobID:       "0123456789abcdef0123456789abcdef",
+		IntentID:    1,
+		Status:      "ok",
+		StatusCode:  200,
+		ContentType: "application/javascript",
+		BodyBase64:  "YWJj",
+		BodyBytes:   3,
+		ErrorCode:   "",
+	}
+	clientConnection, workerConnection := net.Pipe()
+	releaseWrite := make(chan struct{})
+	replyDelivered := make(chan struct{})
+	connection := &delayedWriteReturnConn{
+		Conn:      clientConnection,
+		remaining: len(mustFrame(reply)),
+		delivered: replyDelivered,
+		release:   releaseWrite,
+	}
+	framePump := newFrameReadPump(connection)
+	t.Cleanup(func() {
+		select {
+		case <-releaseWrite:
+		default:
+			close(releaseWrite)
+		}
+		framePump.stop()
+		_ = workerConnection.Close()
+	})
+	if err := framePump.beginResourceReply(); err != nil {
+		t.Fatal(err)
+	}
+
+	workerDone := make(chan error, 1)
+	go func() {
+		got, _, err := readResourceReply(workerConnection)
+		if err != nil {
+			workerDone <- err
+			return
+		}
+		if !reflect.DeepEqual(got, reply) {
+			workerDone <- fmt.Errorf("resource reply = %#v, want %#v", got, reply)
+			return
+		}
+		workerDone <- writeWorkerFrame(workerConnection, intentFrame(
+			reply.JobID,
+			2,
+			"https://z.cdn.example.org/chunks/immediate.js",
+			renderpolicy.ResourceTypeScript,
+		))
+	}()
+	writeDone := make(chan error, 1)
+	go func() {
+		writeDone <- writeResourceReply(framePump, connection, reply)
+	}()
+
+	select {
+	case <-replyDelivered:
+	case <-time.After(time.Second):
+		t.Fatal("worker did not receive the complete resource reply")
+	}
+	observationDeadline := time.Now().Add(time.Second)
+	for framePump.inputGeneration.Load() == framePump.replyGeneration {
+		if time.Now().After(observationDeadline) {
+			t.Fatal("client did not observe the immediate worker frame during finalization")
+		}
+		time.Sleep(time.Millisecond)
+	}
+	select {
+	case err := <-writeDone:
+		t.Fatalf("resource reply returned before final publication completed: %v", err)
+	default:
+	}
+	close(releaseWrite)
+	if err := <-writeDone; err != nil {
+		t.Fatalf("resource reply write = %v", err)
+	}
+	payload, err := framePump.readFrame()
+	if err != nil {
+		t.Fatalf("read immediate worker frame: %v", err)
+	}
+	kind, err := inspectFrameKind(payload)
+	if err != nil || kind != resourceIntentKind {
+		t.Fatalf("immediate worker frame kind = %q, %v", kind, err)
+	}
+	if err := <-workerDone; err != nil {
+		t.Fatalf("worker script = %v", err)
+	}
+}
+
+func TestCompleteResourceReplyClassifiesFinalWriteFailure(t *testing.T) {
+	for _, test := range []struct {
+		name     string
+		observed bool
+		wantCode string
+	}{
+		{name: "write failure", wantCode: "worker_write_failed"},
+		{name: "observed worker input", observed: true, wantCode: "worker_protocol_failed"},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			framePump := &frameReadPump{replyGeneration: 1}
+			framePump.replyState.Store(resourceReplyFinalizing)
+			framePump.inputGeneration.Store(1)
+			if test.observed {
+				framePump.inputGeneration.Add(1)
+			}
+			writeFailure := errors.New("injected final-byte write failure")
+			err := framePump.completeResourceReply(writeFailure)
+			var renderErr *Error
+			if !errors.As(err, &renderErr) || renderErr.Code != test.wantCode || renderErr.Temporary != !test.observed {
+				t.Fatalf("final-byte write error = %#v (%v)", renderErr, err)
+			}
+			if !errors.Is(err, writeFailure) {
+				t.Fatalf("final-byte write error does not retain cause: %v", err)
+			}
+		})
+	}
+}
+
+func TestFetchResourcePreservesProtocolViolationOverCancellation(t *testing.T) {
+	clientConnection, workerConnection := net.Pipe()
+	framePump := newFrameReadPump(clientConnection)
+	t.Cleanup(func() {
+		framePump.stop()
+		_ = workerConnection.Close()
+	})
+	if err := framePump.beginResourceReply(); err != nil {
+		t.Fatal(err)
+	}
+
+	brokerStarted := make(chan struct{})
+	ctx, cancel := context.WithCancel(context.Background())
+	t.Cleanup(cancel)
+	fetchDone := make(chan error, 1)
+	go func() {
+		_, err := fetchResourceWhileReplyOutstanding(
+			ctx,
+			framePump,
+			brokerFunc(func(ctx context.Context, _ ResourceIntent) (Resource, error) {
+				close(brokerStarted)
+				<-ctx.Done()
+				return Resource{}, ctx.Err()
+			}),
+			ResourceIntent{},
+		)
+		fetchDone <- err
+	}()
+	<-brokerStarted
+	framePump.inputGeneration.Add(1)
+	framePump.replyState.Store(resourceReplyViolated)
+	cancel()
+
+	select {
+	case err := <-fetchDone:
+		requireProtocolFailure(t, err)
+	case <-time.After(time.Second):
+		t.Fatal("broker fetch did not return after cancellation")
+	}
+}
+
 func TestClientRejectsStaleAndDuplicateResourceIntents(t *testing.T) {
 	for _, test := range []struct {
 		name      string
@@ -1290,8 +1453,28 @@ func TestFrameBoundsRemainFourByteBigEndian(t *testing.T) {
 
 type brokerFunc func(context.Context, ResourceIntent) (Resource, error)
 
+type delayedWriteReturnConn struct {
+	net.Conn
+	remaining int
+	delivered chan struct{}
+	release   <-chan struct{}
+	held      bool
+}
+
+func (connection *delayedWriteReturnConn) Write(data []byte) (int, error) {
+	written, err := connection.Conn.Write(data)
+	connection.remaining -= written
+	if connection.remaining <= 0 && !connection.held {
+		connection.held = true
+		close(connection.delivered)
+		<-connection.release
+	}
+	return written, err
+}
+
 func isExpectedPeerClose(err error) bool {
-	return errors.Is(err, net.ErrClosed) || errors.Is(err, syscall.EPIPE) || errors.Is(err, syscall.ECONNRESET)
+	return errors.Is(err, net.ErrClosed) || errors.Is(err, syscall.EPIPE) ||
+		errors.Is(err, syscall.ECONNRESET) || errors.Is(err, syscall.ENOTCONN)
 }
 
 func (function brokerFunc) Fetch(ctx context.Context, intent ResourceIntent) (Resource, error) {

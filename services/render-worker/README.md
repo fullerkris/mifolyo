@@ -65,10 +65,13 @@ big-endian payload length. Frames are capped at 32 MiB. One connection carries:
 2. Zero or more serialized `resource_intent` / `resource_reply` exchanges.
 3. One terminal `render_result` frame from the worker.
 
-Frame readers preserve fragmentation but reject early, repeated, unsolicited,
-partial, or trailing bytes outside the exact protocol phase. Only one resource
-intent may be outstanding, and intent IDs are consecutive integers starting at
-one.
+Frame readers preserve fragmentation but reject observed early, repeated,
+unsolicited, partial, or trailing bytes outside the exact protocol phase. Only
+one resource intent may be outstanding, and intent IDs are consecutive integers
+starting at one. Reply publication commits with the final payload byte; a worker
+frame that overlaps that one-byte commit remains parked until the complete reply
+write succeeds and cannot start another broker exchange early. If publication
+fails after worker input is observed, the request fails as a protocol violation.
 
 `render_start` contains exactly `version`, `kind`, `job_id`, `mode`,
 `effective_url`, `html`, `resource_hosts`, and `limits`. Resource host arrays

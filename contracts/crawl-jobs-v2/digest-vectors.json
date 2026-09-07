@@ -1,0 +1,794 @@
+{
+  "fixture_version": 2,
+  "suite_name": "crawl-jobs-v2-digest-conformance",
+  "baseline_case_name": "baseline-all-identity-formulas",
+  "identities": {
+    "run_id": "00112233445566778899aabbccddeeff",
+    "job_id": "e73f29cb21ebd90c5b8d31b650169d9154d3ab942bc3dd67a456fe9feddc5f9a",
+    "owner_id": "ffeeddccbbaa99887766554433221100",
+    "alternate_owner_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "lease_token": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+    "fence": 7,
+    "rate_scope_id": "11111111111111111111111111111111",
+    "crawl_policy_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "targets": {
+    "page": {
+      "url_id": "e73f29cb21ebd90c5b8d31b650169d9154d3ab942bc3dd67a456fe9feddc5f9a",
+      "canonical_url": "https://example.com/page"
+    },
+    "target": {
+      "url_id": "3219b3cc346ff852a87a672323789b7132dc0a7587103d8300d5b17c6ec4f841",
+      "canonical_url": "https://example.com/target"
+    },
+    "discovered_a": {
+      "url_id": "e063b68c7d96619332deabb7ed33c89023c6bd710a8fd570326cf8385ca97b7d",
+      "canonical_url": "https://example.com/discovered-a"
+    },
+    "discovered_z": {
+      "url_id": "665d6c66e65654100e91b0a84c5172731b9cdaba676ec0df340df46e301e227f",
+      "canonical_url": "https://example.com/discovered-z"
+    }
+  },
+  "policy_decisions": {
+    "page_document": {
+      "request_kind": "document",
+      "target": "page",
+      "depth": 2,
+      "group_id": "group-a",
+      "rate_scope_id": "11111111111111111111111111111111",
+      "concurrency": 3,
+      "interval_ms": 250
+    },
+    "target_document_depth_2": {
+      "request_kind": "document",
+      "target": "target",
+      "depth": 2,
+      "group_id": "group-a",
+      "rate_scope_id": "11111111111111111111111111111111",
+      "concurrency": 3,
+      "interval_ms": 250
+    },
+    "target_document_depth_3": {
+      "request_kind": "document",
+      "target": "target",
+      "depth": 3,
+      "group_id": "group-a",
+      "rate_scope_id": "11111111111111111111111111111111",
+      "concurrency": 3,
+      "interval_ms": 250
+    },
+    "discovered_a_document": {
+      "request_kind": "document",
+      "target": "discovered_a",
+      "depth": 3,
+      "group_id": "group-a",
+      "rate_scope_id": "11111111111111111111111111111111",
+      "concurrency": 3,
+      "interval_ms": 250
+    },
+    "discovered_z_document": {
+      "request_kind": "document",
+      "target": "discovered_z",
+      "depth": 3,
+      "group_id": "group-a",
+      "rate_scope_id": "11111111111111111111111111111111",
+      "concurrency": 3,
+      "interval_ms": 250
+    }
+  },
+  "policy_groups": [
+    {
+      "group_id": "group-b",
+      "rate_scope_id": "22222222222222222222222222222222",
+      "request_start_limit": 4,
+      "concurrency": 1,
+      "interval_ms": 1000
+    },
+    {
+      "group_id": "group-a",
+      "rate_scope_id": "11111111111111111111111111111111",
+      "request_start_limit": 10,
+      "concurrency": 3,
+      "interval_ms": 250
+    }
+  ],
+  "source_jobs": [
+    {
+      "target": "page",
+      "score_text": "1",
+      "depth": 2,
+      "group_id": "group-a",
+      "rate_scope_id": "11111111111111111111111111111111",
+      "decision": "page_document"
+    },
+    {
+      "target": "target",
+      "score_text": "0.5",
+      "depth": 3,
+      "group_id": "group-a",
+      "rate_scope_id": "11111111111111111111111111111111",
+      "decision": "target_document_depth_3"
+    }
+  ],
+  "reservation": {
+    "request_ordinal": 1,
+    "target": "target",
+    "decision": "target_document_depth_2"
+  },
+  "try_claim": {
+    "source_job_index": 0,
+    "expected_prior_fence": 6,
+    "request_ordinal": 1,
+    "target": "page",
+    "decision": "page_document"
+  },
+  "output_context": {
+    "source_job_index": 0,
+    "requests": [
+      {
+        "request_kind": "document",
+        "target": "page",
+        "started_at_ms": 1788266095000
+      },
+      {
+        "request_kind": "redirect",
+        "target": "target",
+        "started_at_ms": 1788266096789
+      }
+    ]
+  },
+  "output": {
+    "page": {
+      "normalized_target": "target",
+      "html": "<html>ok</html>",
+      "original_html": "",
+      "content_type": "text/html; charset=utf-8",
+      "status_code": 200,
+      "rendered": false,
+      "render_policy_rule": "",
+      "render_policy_sha256": ""
+    },
+    "outlinks": [
+      "https://example.com/z",
+      "https://example.com/a"
+    ],
+    "images": [
+      {
+        "normalized_source_url": "https://example.com/z.jpg",
+        "alt": "Z"
+      },
+      {
+        "normalized_source_url": "https://example.com/a.jpg",
+        "alt": "A"
+      }
+    ],
+    "discoveries": [
+      {
+        "target": "discovered_z",
+        "depth": 3,
+        "score_text": "0.5",
+        "group_id": "group-a",
+        "rate_scope_id": "11111111111111111111111111111111",
+        "decision": "discovered_z_document"
+      },
+      {
+        "target": "discovered_a",
+        "depth": 3,
+        "score_text": "0.5",
+        "group_id": "group-a",
+        "rate_scope_id": "11111111111111111111111111111111",
+        "decision": "discovered_a_document"
+      }
+    ]
+  },
+  "transition_reasons": {
+    "reject_ready": "policy_denied",
+    "retry": "request_timeout",
+    "dead": "http_4xx",
+    "cancel_job": "source_cancelled",
+    "complete_no_output": "already_visited"
+  },
+  "chunk": {
+    "kind": "outlinks",
+    "ordinal": 0,
+    "records": [
+      {
+        "target_url": "https://example.com/a"
+      },
+      {
+        "target_url": "https://example.com/z"
+      }
+    ]
+  },
+  "expected": {
+    "framing": {
+      "u64_1_hex": "0000000000000001",
+      "f_A_hex": "000000000000000141",
+      "record_hex": "00000000000000020000000000000001610000000000000001620000000000000001780000000000000000",
+      "section_hex": "0000000000000001730000000000000001000000000000001a0000000000000001000000000000000161000000000000000162"
+    },
+    "scope_ids": {
+      "global": "66fe5bdaaafad9ff578dec181770dca6559e397bd7139684a0290db0aa8a9914",
+      "group_a": "7276120b4c9499a98374d94dc696af56af05f32d599a03ed547d6109b623cf51",
+      "origin": "62d349b8f97bb7c2016f7ba1b099b8945b8d144d3e9bf28819534d2c8c9d6262"
+    },
+    "url_ids": {
+      "page": "e73f29cb21ebd90c5b8d31b650169d9154d3ab942bc3dd67a456fe9feddc5f9a",
+      "target": "3219b3cc346ff852a87a672323789b7132dc0a7587103d8300d5b17c6ec4f841",
+      "discovered_a": "e063b68c7d96619332deabb7ed33c89023c6bd710a8fd570326cf8385ca97b7d",
+      "discovered_z": "665d6c66e65654100e91b0a84c5172731b9cdaba676ec0df340df46e301e227f"
+    },
+    "target_digests": {
+      "page": "bc20b9fd55eccc87e5cbb03f0c6dc97921a3723d2111d1539f20b9835ea8c186",
+      "target": "dfe65a5c33caf4ff205ed92bbdc2c98888c445e778b45c5de871ac6788b290b6",
+      "discovered_a": "e79512799427ed74ace4cc2246a310a7b0e06ef006df0931d72ac335352fb948",
+      "discovered_z": "ea49adaee493e5e40bcadf68ffc3a8ba2bf5d6e8237ccfa7361d8f855c65c01b"
+    },
+    "policy_decision_digests": {
+      "page_document": "a6cd0dd93f3352374025a093b95d321ca98f789116040f7c32004c49a434030c",
+      "target_document_depth_2": "41446998a668386749ae44da20f98acdf50ac96c6c67a09b4ea933ab895b6ea2",
+      "target_document_depth_3": "b121a1f58684334aaad246b8ce8c24d997596dd8988906134969df4a97ef4182",
+      "discovered_a_document": "85b3c28a26bf38b4876edcb1582b2260b0b02e009723331374a29293e0db268b",
+      "discovered_z_document": "78198d81fbf0b1abd6c2f4276ec7ebfac31a0bc8efec64b3de368274287873f3"
+    },
+    "policy_group_map_sha256": "c31f2171bdf2e4c961830b3e703a0e2bf6d834200635f61e6b4f677e5134a450",
+    "token_digest": "c3f166983801c4d48741e35a5a383eed59c2324d65c187fb05e7151e85c4945a",
+    "reservation_id": "6cd9112ed103bfb206cd5478b5a7ddd23fdaed47fb0740e2b2826b34ebd49330",
+    "source_sha256": "cdb737c7548e5835cb0a515fa5d57c197ec34742b09389a738c6b68f532557cc",
+    "output_digest": "3bb00ac4c53a5da343d499f1f92e55b7306c37959a0f048ffd58595bf2e026cb",
+    "publication_id": "e6f77dbf307f55f773f1576666082184fc6b5d6a2533f69d595e7e4a960abc4e",
+    "commit_id": "004c970e684100a771494054545123611dff2f0e2045d8235eb43fdefc800e94",
+    "chunk_digest": "41fce388822aa605dfb4898a855d9bc0d820ac237046aa3de988986ec82d3359",
+    "transition_payload_digests": {
+      "reject_ready": "f6e9b93a44c763dfa9278797f78e0889962e838e3a83ddcc7b4e48e25cb6dd8d",
+      "try_claim": "083f3bb843388150e57364cc555110c747f3b3ac559c5a2b06805f02d4766e67",
+      "release_before_io": "91918c85a5b1cb0de61d979ab4ed51f022585de2fc26f5ed4805a434270e2d7b",
+      "retry": "91918c85a5b1cb0de61d979ab4ed51f022585de2fc26f5ed4805a434270e2d7b",
+      "dead": "91918c85a5b1cb0de61d979ab4ed51f022585de2fc26f5ed4805a434270e2d7b",
+      "cancel_job": "91918c85a5b1cb0de61d979ab4ed51f022585de2fc26f5ed4805a434270e2d7b",
+      "complete_no_output": "91918c85a5b1cb0de61d979ab4ed51f022585de2fc26f5ed4805a434270e2d7b",
+      "abort_stage": "901c4db47b5f87424b91384aa7e208ebb84782fff5844c89e1263a786d01d3fb"
+    },
+    "transition_ids": {
+      "reject_ready": "f5626d40f52a48b4665bae2cd51ff819e5c3e620c0743cdb61f756b588caf0fd",
+      "try_claim": "fa20836c6037f5e19ea3ec49099d19f4f8fa67433de82dfd343f657d47aef6a7",
+      "release_before_io": "b00b2c945e6a906b6b5eb5b154f0489ccf3dc384a81f13b093e31d2fe87237b2",
+      "retry": "93efce5ab621a5654ad0e2603915cc9befcf36588171ea3df3d1098391be6ce3",
+      "dead": "7bd8481d92dcc47662470ee8585c548b8ed93be8f223b31d9d182f1da6b8d1cf",
+      "cancel_job": "094981451481995e00337dc7c43f1ade4ea74fc8d8302338cdc817a9e300aa22",
+      "complete_no_output": "aa8637ad28cec446100897f1dcd3766a8ccc795c56882ce2228e40193d871a2e",
+      "abort_stage": "669b56bbd29ea7bc044d9fcd16e6334ca572510f066f725dc9fd2e270ab0bcda"
+    }
+  },
+  "cases": [
+    {
+      "name": "u64-maximum-framing",
+      "kind": "u64_max",
+      "input": {"decimal": "18446744073709551615"},
+      "expected": {"u64_hex": "ffffffffffffffff", "frame_length_hex": "ffffffffffffffff"}
+    },
+    {
+      "name": "empty-page-section",
+      "kind": "empty_section",
+      "input": {"label": "page"},
+      "expected": {"section_hex": "0000000000000004706167650000000000000000", "section_sha256": "fcbeb977a3291e1ce87c9675e5d3ddb9df6509fe2da440c352b0cd0bc247eeea"}
+    },
+    {
+      "name": "empty-outlinks-section",
+      "kind": "empty_section",
+      "input": {"label": "outlinks"},
+      "expected": {"section_hex": "00000000000000086f75746c696e6b730000000000000000", "section_sha256": "9aa18b8f39bfac45e418900888751dca20689273e94bf6ce1eff7fc57ad0cb84"}
+    },
+    {
+      "name": "empty-images-section",
+      "kind": "empty_section",
+      "input": {"label": "images"},
+      "expected": {"section_hex": "0000000000000006696d616765730000000000000000", "section_sha256": "b7829b1cc3099c9c6500e735c19ed340a5c6b3bfcb6cf7b5f5caa86cbf97cbef"}
+    },
+    {
+      "name": "empty-discoveries-section",
+      "kind": "empty_section",
+      "input": {"label": "discoveries"},
+      "expected": {"section_hex": "000000000000000b646973636f7665726965730000000000000000", "section_sha256": "22fa7bc642ab1ba01e3b90c610ee9a096f676be228e18eaf94a9787c5b4c98a5"}
+    },
+    {
+      "name": "empty-aliases-section-framing",
+      "kind": "empty_section",
+      "input": {"label": "aliases"},
+      "expected": {"section_hex": "0000000000000007616c69617365730000000000000000", "section_sha256": "80bcd21c6bbac2aa1acb9e4ef8ac122af0cca476b01c5a9fd58a14104a92304a"}
+    },
+    {
+      "name": "empty-source-jobs-section",
+      "kind": "empty_section",
+      "input": {"label": "jobs"},
+      "expected": {"section_hex": "00000000000000046a6f62730000000000000000", "section_sha256": "c2bb707b06722e0dd79e0a04f29e30fd30790fc898760f1ebeaba8f9c6ebe0aa"}
+    },
+    {
+      "name": "empty-contract-lua-section",
+      "kind": "empty_section",
+      "input": {"label": "lua"},
+      "expected": {"section_hex": "00000000000000036c75610000000000000000", "section_sha256": "f82f83fca953f75576d24233a3d1e71bd4501c910a86dd13baffa825f4112f57"}
+    },
+    {
+      "name": "score-zero",
+      "kind": "valid_score",
+      "input": {"score_text": "0", "redis_value": "0"},
+      "expected": {"binary64_hex": "0000000000000000"}
+    },
+    {
+      "name": "score-positive-integer",
+      "kind": "valid_score",
+      "input": {"score_text": "1", "redis_value": "1e0"},
+      "expected": {"binary64_hex": "3ff0000000000000"}
+    },
+    {
+      "name": "score-negative-integer",
+      "kind": "valid_score",
+      "input": {"score_text": "-1", "redis_value": "-1"},
+      "expected": {"binary64_hex": "bff0000000000000"}
+    },
+    {
+      "name": "score-lower-bound",
+      "kind": "valid_score",
+      "input": {"score_text": "-1000", "redis_value": "-1000.0"},
+      "expected": {"binary64_hex": "c08f400000000000"}
+    },
+    {
+      "name": "score-upper-bound",
+      "kind": "valid_score",
+      "input": {"score_text": "10000", "redis_value": "10000"},
+      "expected": {"binary64_hex": "40c3880000000000"}
+    },
+    {
+      "name": "score-positive-zero-fraction",
+      "kind": "valid_score",
+      "input": {"score_text": "0.5", "redis_value": "0.5"},
+      "expected": {"binary64_hex": "3fe0000000000000"}
+    },
+    {
+      "name": "score-negative-zero-fraction",
+      "kind": "valid_score",
+      "input": {"score_text": "-0.5", "redis_value": "-0.5"},
+      "expected": {"binary64_hex": "bfe0000000000000"}
+    },
+    {
+      "name": "score-positive-integer-fraction",
+      "kind": "valid_score",
+      "input": {"score_text": "1.000001", "redis_value": "1.000001"},
+      "expected": {"binary64_hex": "3ff000010c6f7a0b"}
+    },
+    {
+      "name": "score-negative-near-lower-bound",
+      "kind": "valid_score",
+      "input": {"score_text": "-999.999999", "redis_value": "-999.999999"},
+      "expected": {"binary64_hex": "c08f3fffff79c843"}
+    },
+    {
+      "name": "score-minimum-positive-six-place-fraction",
+      "kind": "valid_score",
+      "input": {"score_text": "0.000001", "redis_value": "0.000001"},
+      "expected": {"binary64_hex": "3eb0c6f7a0b5ed8d"}
+    },
+    {
+      "name": "score-minimum-negative-six-place-fraction",
+      "kind": "valid_score",
+      "input": {"score_text": "-0.000001", "redis_value": "-0.000001"},
+      "expected": {"binary64_hex": "beb0c6f7a0b5ed8d"}
+    },
+    {
+      "name": "score-near-upper-bound",
+      "kind": "valid_score",
+      "input": {"score_text": "9999.999999", "redis_value": "9999.999999"},
+      "expected": {"binary64_hex": "40c387fffff79c84"}
+    },
+    {
+      "name": "score-equivalent-binary64-redis-spelling",
+      "kind": "valid_score",
+      "input": {"score_text": "0.1", "redis_value": "0.10000000000000001"},
+      "expected": {"binary64_hex": "3fb999999999999a"}
+    },
+    {
+      "name": "unicode-utf8-byte-order",
+      "kind": "utf8_order",
+      "input": {"values": ["😀", "é", "z", "é", "Å", "a"]},
+      "expected": {
+        "ordered_values": ["a", "é", "z", "Å", "é", "😀"],
+        "section_sha256": "c33be7c8257e27a6902fb723781833c795a0c03295188cfa913a58c25f930fbd"
+      }
+    },
+    {
+      "name": "contract-current-document-empty-lua",
+      "kind": "contract_digest",
+      "input": {
+        "document": {"kind": "path", "value": "docs/crawl-jobs-v2.md"},
+        "lua_sources": []
+      },
+      "expected": {
+        "lua_source_order": [],
+        "contract_sha256": "7115c32256fdba895f115160db6397dcd935b2b33a881951742d887dc0776563"
+      }
+    },
+    {
+      "name": "contract-synthetic-ascii-source-order",
+      "kind": "contract_digest",
+      "input": {
+        "document": {"kind": "path", "value": "docs/crawl-jobs-v2.md"},
+        "lua_sources": [
+          {"source_name": "z.lua", "source_text": "return 'z'\n"},
+          {"source_name": "a.lua", "source_text": "return 'π'\n"},
+          {"source_name": "A.lua", "source_text": "return 'A'\n"}
+        ]
+      },
+      "expected": {
+        "lua_source_order": ["A.lua", "a.lua", "z.lua"],
+        "contract_sha256": "5c7133cd4e1bc41f97175d9f29cf61a9d328d9b8ac8229e621a2d4cdd52b0252"
+      }
+    },
+    {
+      "name": "acyclic-guard-compatibility-stored-relation",
+      "kind": "guard_chain",
+      "input": {
+        "contract_case": "contract-current-document-empty-lua",
+        "guard_core": {
+          "redis_version": "7.2.5",
+          "redis_config_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+          "maximum_shape_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+          "memory_fixture_sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+          "lua_benchmark_sha256": "4444444444444444444444444444444444444444444444444444444444444444",
+          "aof_crash_evidence_sha256": "5555555555555555555555555555555555555555555555555555555555555555",
+          "cutover_mode": "fresh",
+          "candidate_run_id": ""
+        },
+        "compatibility": {
+          "redis_config_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+          "spider_image": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+          "seed_importer_image": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+          "crawl_admin_image": "sha256:8888888888888888888888888888888888888888888888888888888888888888",
+          "indexer_image": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
+          "image_indexer_image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "backlinks_processor_image": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "monitoring_image": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "render_worker_image": "disabled"
+        },
+        "approved_at_ms": 1788266100000
+      },
+      "expected": {
+        "guard_core_sha256": "7987c69fe50aba1f9fd764aae91b6f0cc78a87841303ad076aa41a9b0cbe35bc",
+        "compatibility_manifest_sha256": "4474eb462f421f3393720daae8d4be14c8b6f13089daeaa5f6fd56ab7b892928",
+        "compatibility_marker_sha256": "3ea75ed9d337c2ffeb0c83b23f4180a0c3f7cf3fee93b6954eee819cb98bc4d0",
+        "stored_guard_sha256": "ff17175f0c581eb9180b5b688bbade7b0ef825526318e8d69f1bf13d44dd5801"
+      }
+    },
+    {
+      "name": "transition-reason-payload-and-replay-binding",
+      "kind": "transition_mutation",
+      "input": {
+        "changed_reason": "dns_temporary",
+        "changed_payload_owner_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "expected": {
+        "base_payload_digest": "91918c85a5b1cb0de61d979ab4ed51f022585de2fc26f5ed4805a434270e2d7b",
+        "changed_payload_digest": "0f9e9bbab18129faac3b16f2d816fe2235d707bee363c908bca046c0d0c2bb0f",
+        "base_transition_id": "93efce5ab621a5654ad0e2603915cc9befcf36588171ea3df3d1098391be6ce3",
+        "changed_reason_transition_id": "6a5a0b3696a41c3de81ce17ffc13e33d875d8a3706ce8da66d567966ea30ad0d",
+        "changed_payload_transition_id": "833af08be9169a9b1e6b40896e6895f64331cf15f74d85daf4628546d06c8255",
+        "replay_rejection_class": "IMMUTABLE_MISMATCH"
+      }
+    },
+    {
+      "name": "publication-derived-fields-excluded-from-output",
+      "kind": "publication_independence",
+      "input": {
+        "alternate_publication_id": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+      },
+      "expected": {
+        "output_digest": "3bb00ac4c53a5da343d499f1f92e55b7306c37959a0f048ffd58595bf2e026cb",
+        "projection_a_sha256": "fec975828c6312e53b705989856c53cbb2bcd5aa943397a695bf2c34fa41eece",
+        "projection_b_sha256": "54412e23a4197ade2687df3d703caaf9bc10718e5247c8825d6dd1a971b3cb51"
+      }
+    },
+    {
+      "name": "empty-output-shape",
+      "kind": "output_profile",
+      "input": {"profile": "empty"},
+      "expected": {
+        "output_digest": "2c9018afc48d472518150650b2475af9433a8656e6141e930c216c4606d8b2d5",
+        "publication_id": "6e0fb87fd29120b6e16d6464dee2dad437fbe60179eee384207294919ea7e4c8",
+        "commit_id": "1d8ca3206738816fbb17e076a647061482edd8a33d2d39b2058f8e622053c109",
+        "counts": {"page": 1, "outlinks": 0, "images": 0, "discoveries": 0, "aliases": 1},
+        "section_sha256": {
+          "page": "45c5a9d07d2cc705134bfdce2284215589ba1e3a73efceeba8fff054156e9b3e",
+          "outlinks": "9aa18b8f39bfac45e418900888751dca20689273e94bf6ce1eff7fc57ad0cb84",
+          "images": "b7829b1cc3099c9c6500e735c19ed340a5c6b3bfcb6cf7b5f5caa86cbf97cbef",
+          "discoveries": "22fa7bc642ab1ba01e3b90c610ee9a096f676be228e18eaf94a9787c5b4c98a5",
+          "aliases": "c8e7de3c0e34574623e3bf7157b099d8b22c11b9f5a0801b59c0d4ebd856d751"
+        },
+        "chunk_digests": {
+          "page_fields": ["a3026c31cc67202adfc2086a36893afa6ee5b6a713ea14d7c7dc5e2a65e3374a"],
+          "html": ["298318843313a2ad462eeeef1de9f7f33def59b30aa0c1cca88fdf2143e55df5"],
+          "original_html": ["43acf2381f4d7f0b910dd8d92deb26b0b4a6f5214af2b58278b6c1ee9d06df20"],
+          "outlinks": [],
+          "discoveries": [],
+          "aliases": ["2dd8ddec8086a7d0613e4901cab4996ba1a9f87c24ec4b2e0c78dd29b7a61d09"],
+          "images": [],
+          "image_manifest": ["7959eae8474cfb53eb5d237400199a8159a147b2a3c5f872eb5d33c9faa71351"]
+        }
+      }
+    },
+    {
+      "name": "maximum-output-shape",
+      "kind": "output_profile",
+      "input": {"profile": "maximum"},
+      "expected": {
+        "output_digest": "dcf1f346e1dfbf326121dbc832463ec48dcfbefd83152c59d69309f7f4bed414",
+        "publication_id": "79cc92cb0d49f5759ca75332d140fcca41d558d5241e7cede7cce1c58bbaedcf",
+        "commit_id": "ac0455d2cd5523f84416b17b358642fa7bd76bdad5a29a5ca06eaeb80aab5069",
+        "counts": {"page": 1, "outlinks": 256, "images": 64, "discoveries": 128, "aliases": 5},
+        "section_sha256": {
+          "page": "edd7433be87657c7bfdbc778902030c747da45fc2b6d7755beacfe1a903e38a6",
+          "outlinks": "e1323034074928c3fd1d9b87b872a5818fab430a5bfe14a8a9dd85f84c673617",
+          "images": "e4bd99c71b885bf1acaa4e84c352a6d1e1bfc1fa57e28510bee4b0bc6a0aad4b",
+          "discoveries": "98b9bf1c750035c567350303333453ed6f7bd59231a7bb16e45706f13c3771f0",
+          "aliases": "fe796222bfb6a32e47d58713934551efc28c4f9bb1eb72eb6732a75641016a92"
+        },
+        "chunk_digests": {
+          "page_fields": ["94bb17d5b9bb46bae26a0310bb3dadce62e16d1af389dd5b2123ed4f48c51061"],
+          "html": ["7e154fcbc93b626eeec54f7eafd5cf12bfe9b4f9b418e331619d7f0921925b02"],
+          "original_html": ["892b3d56dae53dea90b2f024def85dac9ccf896c5a033b10b801a8e149386879"],
+          "outlinks": [
+            "3cac7ebeff91a974a43594e1f50626b7b02e6d5a307b66b5437ed12762adba3b",
+            "59d1a0583c98c41c4d16ca0674fbb4919691701a820f943437889fb4184387b0",
+            "b983a9f49dcfb1fc2c06306c89be068877056c66eb38fb74a6005662ee129024",
+            "67420c07c0cddc293d9d630c1e3564a65785b017095708c9a577fddc6ced5715"
+          ],
+          "discoveries": [
+            "b8a26e8cfc3ad99007a52ea7416a173507cc93b8db4f0da11ce3f3c18d20fa10",
+            "9b1de0edb6e819a56fd2bdded7e1501d08dc27b0295af4a84642e1602ac0368f"
+          ],
+          "aliases": ["40bec827137630e790459744be409d9ca94b2a397880b4a1724eab15a5388030"],
+          "images": ["e4f2054a805a64e49724c08a75dd579053cabbfbceb27219a1597b93fb2af68c"],
+          "image_manifest": ["18017911185413fbe1a571485991ce2e2fa8f176744e10701009109205541e8f"]
+        }
+      }
+    },
+    {
+      "name": "rendered-output-shape",
+      "kind": "output_profile",
+      "input": {"profile": "rendered"},
+      "expected": {
+        "output_digest": "d8cbbf5e264a41065ec7e3d35da2aae2464c7cb4feae36ac3fa7224740dc06fd",
+        "publication_id": "c025787d316567f63a2cbca7bba9fa356ca36a5b7bf66d1cc6ffbd816df68e2c",
+        "commit_id": "dc7e86ca17e2034013bbcbe330028f5329a0ff891bdc87f699e15aa2062a28a5",
+        "counts": {"page": 1, "outlinks": 2, "images": 2, "discoveries": 2, "aliases": 2},
+        "section_sha256": {
+          "page": "a3d5b5f2fbc48da8ef95cd7d4ec103fa6878e4e6581b2abc15f134fe2597218b",
+          "outlinks": "b4f21200129c005413067b051a3c326e563c2011a7c0e8d2ba2e3608cdc8e87f",
+          "images": "540584432704e7f4343111f3819c3bca3d22a65164fbb3475d715b61f3f25308",
+          "discoveries": "8a7ecc6462d82392124669b4470c91fca2cf6ff70684bb89b45147330592c370",
+          "aliases": "e6e1db574c78c6d630337cc6e8e962c711b5d5b60beb6482716d8362126a726b"
+        },
+        "chunk_digests": {
+          "page_fields": ["81403590f57c9cbce2f139113fe57fb10c63dae9e86cf307b813084d9aa70ca9"],
+          "html": ["c6358b1a902f24b55497c97e5b88822ffb38d0f20af52ded128baef5d2142121"],
+          "original_html": ["eb14bd2dd3a6e9792d41db1219eabc6f9a72fbeb6aab5b53f05d64d70b27e46a"],
+          "outlinks": ["47c3634370e6d835ceb35cc712db6b61aecd624b6a2a6132e83d812490bd39b3"],
+          "discoveries": ["662cd3ae99b518398164e7f5584e08bb61eed83d39e9136d12ba620538c2327b"],
+          "aliases": ["1596972f0d9290c0826893668d388c43c4acf2a9b4d895205fe074ef2fdf02ea"],
+          "images": ["856ca047f7e593cb9f6265f652f456bdda69ba4e3adac6cab4ef2299db6a6ee7"],
+          "image_manifest": ["a35f390798b7eca5efa2849b9ec7cc4c9493fed7342ac09b2d51fcc286397af3"]
+        }
+      }
+    },
+    {
+      "name": "empty-source-shape",
+      "kind": "source_profile",
+      "input": {"profile": "empty"},
+      "expected": {
+        "count": 0,
+        "section_sha256": "c2bb707b06722e0dd79e0a04f29e30fd30790fc898760f1ebeaba8f9c6ebe0aa",
+        "source_sha256": "3715ec54a10314f2bf686dbad61654e20b7f83724e237b36a9ca60da39057e3b"
+      }
+    },
+    {
+      "name": "maximum-source-shape",
+      "kind": "source_profile",
+      "input": {"profile": "maximum"},
+      "expected": {
+        "count": 10000,
+        "section_sha256": "f00db2fe2c89aae05091269c06f45a3264a267e15b3fe4e74a60672e6df0038e",
+        "source_sha256": "a030a061ae08c034371d97971268dcaec2df7eedfaed696104138d6c6d581bc8"
+      }
+    },
+    {
+      "name": "all-stage-chunk-kinds",
+      "kind": "stage_chunks",
+      "input": {"profile": "baseline"},
+      "expected": {
+        "chunk_digests": {
+          "page_fields": ["bce280add1977921f058b5afb2bb0b9896d3bce656002cd908061a7e2939e736"],
+          "html": ["8f2c71681e8f3a28846855e9f74855ef97629bc88c1783dbb0c9b7d576079cc0"],
+          "original_html": ["01622dc0de2b485366e7f54e5f3485bf73325361f0a5d872b1560a2f034026ca"],
+          "outlinks": ["41fce388822aa605dfb4898a855d9bc0d820ac237046aa3de988986ec82d3359"],
+          "discoveries": ["e72370eb6b35bec8ea6729dc7f3674c8f65b585a88a65a625f0145399b0adb08"],
+          "aliases": ["3ba087202e09d25752546b3b1f8acfa7e0159fc6b9a2af80f0fb10ce28286034"],
+          "images": ["c4032edd14a0384fda1e4b6837413a10878149db9dc638100c19c374890edd04"],
+          "image_manifest": ["cc6682a02b087c8108416912e86c66b91aaeaa972051f65b4a74aa95f7abf608"]
+        }
+      }
+    },
+    {
+      "name": "maximum-field-and-record-sizes",
+      "kind": "field_limits",
+      "input": {"profile": "maximum"},
+      "expected": {
+        "lengths": {
+          "canonical_url_bytes": 2048,
+          "html_bytes": 5242880,
+          "original_html_bytes": 5242880,
+          "combined_html_bytes": 10485760,
+          "content_type_bytes": 1024,
+          "render_policy_rule_bytes": 128,
+          "image_alt_bytes": 1024,
+          "group_id_bytes": 128,
+          "outlink_chunk_records": 64,
+          "discovery_chunk_records": 64,
+          "alias_records": 5,
+          "image_chunk_records": 64,
+          "image_manifest_bytes": 354689,
+          "page_record_bytes": 10489324,
+          "final_image_record_bytes": 5346,
+          "source_record_bytes": 2554
+        },
+        "record_sha256": {
+          "page": "c7566d6ad67afbd5fe816d2f81d35e2be71756e58dd9fba918212441cea3ec33",
+          "final_image": "a868e792537fe9fc90f1064a680f7ca0a49a6975d1f12c74df22b1520523fa49",
+          "source": "ed2878bf906afcf2c252438dadfcc0c5ee327b42be975ecacae7fd486bd71726",
+          "image_manifest": "70060486398f2608d98dfa7c2cb2576439fba4a78e4e2fc73763ad5a72770792"
+        }
+      }
+    }
+  ],
+  "negative_vectors": [
+    {
+      "name": "retry rejects server-only lease expiry reason",
+      "kind": "transition_reason",
+      "input": {"operation": "CJ2_RETRY", "value": "lease_expired_after_io"},
+      "expected_rejection_class": "INVALID_TRANSITION_REASON"
+    },
+    {
+      "name": "dead rejects server-generated exhaustion reason",
+      "kind": "transition_reason",
+      "input": {"operation": "CJ2_DEAD", "value": "retry_exhausted"},
+      "expected_rejection_class": "INVALID_TRANSITION_REASON"
+    },
+    {
+      "name": "source rejects non-document policy binding",
+      "kind": "source_policy_request_kind",
+      "input": {"value": "robots"},
+      "expected_rejection_class": "POLICY_BINDING_MISMATCH"
+    },
+    {
+      "name": "discovery rejects decision depth mismatch",
+      "kind": "discovery_depth",
+      "input": {"value": 4},
+      "expected_rejection_class": "POLICY_BINDING_MISMATCH"
+    },
+    {
+      "name": "output rejects effective URL outside authoritative chain",
+      "kind": "output_normalized_target",
+      "input": {"value": "page"},
+      "expected_rejection_class": "OUTPUT_CONTEXT_MISMATCH"
+    },
+    {
+      "name": "score rejects trailing fractional zero",
+      "kind": "score_text",
+      "input": {"value": "1.0"},
+      "expected_rejection_class": "INVALID_SCORE_SYNTAX"
+    },
+    {
+      "name": "lease token rejects non-hex data",
+      "kind": "lease_token",
+      "input": {"value": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdeg"},
+      "expected_rejection_class": "INVALID_LEASE_TOKEN"
+    },
+
+    {"name": "score rejects empty", "kind": "score_text", "input": {"value": ""}, "expected_rejection_class": "INVALID_SCORE_SYNTAX"},
+    {"name": "score rejects double zero", "kind": "score_text", "input": {"value": "00"}, "expected_rejection_class": "INVALID_SCORE_SYNTAX"},
+    {"name": "score rejects leading zero", "kind": "score_text", "input": {"value": "01"}, "expected_rejection_class": "INVALID_SCORE_SYNTAX"},
+    {"name": "score rejects negative leading zero", "kind": "score_text", "input": {"value": "-01"}, "expected_rejection_class": "INVALID_SCORE_SYNTAX"},
+    {"name": "score rejects plus", "kind": "score_text", "input": {"value": "+1"}, "expected_rejection_class": "INVALID_SCORE_SYNTAX"},
+    {"name": "score rejects negative zero", "kind": "score_text", "input": {"value": "-0"}, "expected_rejection_class": "INVALID_SCORE_SYNTAX"},
+    {"name": "score rejects zero fractional zero", "kind": "score_text", "input": {"value": "0.0"}, "expected_rejection_class": "INVALID_SCORE_SYNTAX"},
+    {"name": "score rejects trailing point", "kind": "score_text", "input": {"value": "1."}, "expected_rejection_class": "INVALID_SCORE_SYNTAX"},
+    {"name": "score rejects missing integer", "kind": "score_text", "input": {"value": ".5"}, "expected_rejection_class": "INVALID_SCORE_SYNTAX"},
+    {"name": "score rejects exponent", "kind": "score_text", "input": {"value": "1e2"}, "expected_rejection_class": "INVALID_SCORE_SYNTAX"},
+    {"name": "score rejects NaN", "kind": "score_text", "input": {"value": "NaN"}, "expected_rejection_class": "INVALID_SCORE_SYNTAX"},
+    {"name": "score rejects infinity", "kind": "score_text", "input": {"value": "Inf"}, "expected_rejection_class": "INVALID_SCORE_SYNTAX"},
+    {"name": "score rejects seven decimal places", "kind": "score_text", "input": {"value": "1.2345678"}, "expected_rejection_class": "INVALID_SCORE_SYNTAX"},
+    {"name": "score rejects sub-micro fraction", "kind": "score_text", "input": {"value": "0.0000001"}, "expected_rejection_class": "INVALID_SCORE_SYNTAX"},
+    {"name": "score rejects integer above range", "kind": "score_text", "input": {"value": "10001"}, "expected_rejection_class": "SCORE_OUT_OF_RANGE"},
+    {"name": "score rejects fraction above upper bound", "kind": "score_text", "input": {"value": "10000.000001"}, "expected_rejection_class": "SCORE_OUT_OF_RANGE"},
+    {"name": "score rejects integer below range", "kind": "score_text", "input": {"value": "-1001"}, "expected_rejection_class": "SCORE_OUT_OF_RANGE"},
+    {"name": "score rejects fraction below lower bound", "kind": "score_text", "input": {"value": "-1000.000001"}, "expected_rejection_class": "SCORE_OUT_OF_RANGE"},
+    {"name": "score rejects whitespace", "kind": "score_text", "input": {"value": " 1"}, "expected_rejection_class": "INVALID_SCORE_SYNTAX"},
+    {"name": "Redis score rejects NaN", "kind": "redis_score", "input": {"score_text": "0", "redis_value": "NaN"}, "expected_rejection_class": "REDIS_SCORE_NOT_FINITE"},
+    {"name": "Redis score rejects positive infinity", "kind": "redis_score", "input": {"score_text": "0", "redis_value": "+Inf"}, "expected_rejection_class": "REDIS_SCORE_NOT_FINITE"},
+    {"name": "Redis score rejects negative infinity", "kind": "redis_score", "input": {"score_text": "0", "redis_value": "-Infinity"}, "expected_rejection_class": "REDIS_SCORE_NOT_FINITE"},
+    {"name": "Redis score rejects invalid syntax", "kind": "redis_score", "input": {"score_text": "0", "redis_value": "not-a-number"}, "expected_rejection_class": "INVALID_REDIS_SCORE"},
+    {"name": "Redis score rejects different binary64", "kind": "redis_score", "input": {"score_text": "0.1", "redis_value": "0.10000000000000002"}, "expected_rejection_class": "SCORE_BINARY64_MISMATCH"},
+    {"name": "Redis score rejects signed-zero bit mismatch", "kind": "redis_score", "input": {"score_text": "0", "redis_value": "-0"}, "expected_rejection_class": "SCORE_BINARY64_MISMATCH"},
+
+    {"name": "canonical URL rejects explicit HTTPS default port", "kind": "canonical_url", "input": {"value": "https://example.com:443/"}, "expected_rejection_class": "URL_DEFAULT_PORT_FORBIDDEN"},
+    {"name": "canonical URL rejects explicit HTTP default port", "kind": "canonical_url", "input": {"value": "http://example.com:80/"}, "expected_rejection_class": "URL_DEFAULT_PORT_FORBIDDEN"},
+    {"name": "canonical URL rejects user information", "kind": "canonical_url", "input": {"value": "https://user:pass@example.com/"}, "expected_rejection_class": "URL_USERINFO_FORBIDDEN"},
+    {"name": "canonical URL rejects fragment", "kind": "canonical_url", "input": {"value": "https://example.com/path#fragment"}, "expected_rejection_class": "URL_FRAGMENT_FORBIDDEN"},
+    {"name": "canonical URL rejects IPv4 literal", "kind": "canonical_url", "input": {"value": "http://127.0.0.1/path"}, "expected_rejection_class": "URL_IP_LITERAL_FORBIDDEN"},
+    {"name": "canonical URL rejects IPv6 literal", "kind": "canonical_url", "input": {"value": "https://[2001:db8::1]/"}, "expected_rejection_class": "URL_IP_LITERAL_FORBIDDEN"},
+    {"name": "canonical URL rejects uppercase scheme and host", "kind": "canonical_url", "input": {"value": "HTTPS://Example.COM/"}, "expected_rejection_class": "CANONICAL_URL_NOT_CANONICAL"},
+    {"name": "canonical URL rejects empty path", "kind": "canonical_url", "input": {"value": "https://example.com"}, "expected_rejection_class": "CANONICAL_URL_NOT_CANONICAL"},
+    {"name": "canonical URL rejects lowercase percent escape", "kind": "canonical_url", "input": {"value": "https://example.com/a%2fb"}, "expected_rejection_class": "CANONICAL_URL_NOT_CANONICAL"},
+    {"name": "canonical URL rejects raw Unicode path", "kind": "canonical_url", "input": {"value": "https://example.com/café"}, "expected_rejection_class": "CANONICAL_URL_NOT_CANONICAL"},
+    {"name": "canonical URL rejects one-over byte limit", "kind": "canonical_url", "input": {"value": "https://example.com/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}, "expected_rejection_class": "URL_TOO_LONG"},
+    {"name": "reservation rejects target different from decision", "kind": "reservation_target", "input": {"value": "page"}, "expected_rejection_class": "RESERVATION_TARGET_MISMATCH"},
+
+    {"name": "output rejects 257 outlinks", "kind": "output_mutation", "input": {"mutation": "outlinks_one_over"}, "expected_rejection_class": "OUTPUT_COUNT_LIMIT"},
+    {"name": "output rejects 129 discoveries", "kind": "output_mutation", "input": {"mutation": "discoveries_one_over"}, "expected_rejection_class": "OUTPUT_COUNT_LIMIT"},
+    {"name": "output rejects 65 images", "kind": "output_mutation", "input": {"mutation": "images_one_over"}, "expected_rejection_class": "OUTPUT_COUNT_LIMIT"},
+    {"name": "output rejects duplicate outlink", "kind": "output_mutation", "input": {"mutation": "duplicate_outlink"}, "expected_rejection_class": "DUPLICATE_OUTLINK"},
+    {"name": "output rejects duplicate image", "kind": "output_mutation", "input": {"mutation": "duplicate_image"}, "expected_rejection_class": "DUPLICATE_IMAGE"},
+    {"name": "output rejects duplicate discovery", "kind": "output_mutation", "input": {"mutation": "duplicate_discovery"}, "expected_rejection_class": "DUPLICATE_DISCOVERY"},
+    {"name": "output rejects HTML one over 5 MiB", "kind": "output_mutation", "input": {"mutation": "html_one_over"}, "expected_rejection_class": "PAGE_BLOB_LIMIT"},
+    {"name": "output rejects original HTML one over 5 MiB", "kind": "output_mutation", "input": {"mutation": "original_html_one_over"}, "expected_rejection_class": "PAGE_BLOB_LIMIT"},
+    {"name": "output rejects image alt one over 1024 bytes", "kind": "output_mutation", "input": {"mutation": "alt_one_over"}, "expected_rejection_class": "IMAGE_ALT_LIMIT"},
+    {"name": "output rejects empty content type", "kind": "output_mutation", "input": {"mutation": "content_type_empty"}, "expected_rejection_class": "INVALID_CONTENT_TYPE"},
+    {"name": "output rejects content type one over 1024 bytes", "kind": "output_mutation", "input": {"mutation": "content_type_one_over"}, "expected_rejection_class": "CONTENT_TYPE_LIMIT"},
+    {"name": "output rejects untrimmed content type", "kind": "output_mutation", "input": {"mutation": "content_type_untrimmed"}, "expected_rejection_class": "INVALID_CONTENT_TYPE"},
+    {"name": "output rejects non-HTML content type", "kind": "output_mutation", "input": {"mutation": "content_type_non_html"}, "expected_rejection_class": "INVALID_CONTENT_TYPE"},
+    {"name": "output rejects extra content parameter", "kind": "output_mutation", "input": {"mutation": "content_type_extra_parameter"}, "expected_rejection_class": "INVALID_CONTENT_TYPE"},
+    {"name": "output rejects wrong charset", "kind": "output_mutation", "input": {"mutation": "content_type_wrong_charset"}, "expected_rejection_class": "INVALID_CONTENT_TYPE"},
+    {"name": "output rejects original HTML when unrendered", "kind": "output_mutation", "input": {"mutation": "render_false_with_original"}, "expected_rejection_class": "INVALID_RENDER_RELATION"},
+    {"name": "output rejects render rule when unrendered", "kind": "output_mutation", "input": {"mutation": "render_false_with_rule"}, "expected_rejection_class": "INVALID_RENDER_RELATION"},
+    {"name": "output rejects render digest when unrendered", "kind": "output_mutation", "input": {"mutation": "render_false_with_digest"}, "expected_rejection_class": "INVALID_RENDER_RELATION"},
+    {"name": "output rejects rendered page without original HTML", "kind": "output_mutation", "input": {"mutation": "render_true_without_original"}, "expected_rejection_class": "INVALID_RENDER_RELATION"},
+    {"name": "output rejects rendered page without rule", "kind": "output_mutation", "input": {"mutation": "render_true_without_rule"}, "expected_rejection_class": "INVALID_RENDER_RELATION"},
+    {"name": "output rejects control in render rule", "kind": "output_mutation", "input": {"mutation": "render_true_rule_control"}, "expected_rejection_class": "INVALID_RENDER_RELATION"},
+    {"name": "output rejects malformed render digest", "kind": "output_mutation", "input": {"mutation": "render_true_bad_digest"}, "expected_rejection_class": "INVALID_RENDER_POLICY_DIGEST"},
+    {"name": "output rejects status below 100", "kind": "output_mutation", "input": {"mutation": "status_below"}, "expected_rejection_class": "STATUS_CODE_RANGE"},
+    {"name": "output rejects status above 399", "kind": "output_mutation", "input": {"mutation": "status_above"}, "expected_rejection_class": "STATUS_CODE_RANGE"},
+    {"name": "output rejects URL one over 2048 bytes", "kind": "output_mutation", "input": {"mutation": "url_one_over"}, "expected_rejection_class": "URL_TOO_LONG"},
+    {"name": "output rejects group ID one over 128 bytes", "kind": "output_mutation", "input": {"mutation": "group_id_one_over"}, "expected_rejection_class": "GROUP_ID_LIMIT"},
+    {"name": "output rejects URL ID witness mismatch", "kind": "output_mutation", "input": {"mutation": "target_id_mismatch"}, "expected_rejection_class": "URL_IDENTITY_MISMATCH"},
+
+    {"name": "page section rejects zero records", "kind": "section_shape", "input": {"section": "page", "count": 0}, "expected_rejection_class": "PAGE_SECTION_SHAPE"},
+    {"name": "page section rejects two records", "kind": "section_shape", "input": {"section": "page", "count": 2}, "expected_rejection_class": "PAGE_SECTION_SHAPE"},
+    {"name": "outlink section rejects one over", "kind": "section_shape", "input": {"section": "outlinks", "count": 257}, "expected_rejection_class": "OUTPUT_COUNT_LIMIT"},
+    {"name": "image section rejects one over", "kind": "section_shape", "input": {"section": "images", "count": 65}, "expected_rejection_class": "OUTPUT_COUNT_LIMIT"},
+    {"name": "discovery section rejects one over", "kind": "section_shape", "input": {"section": "discoveries", "count": 129}, "expected_rejection_class": "OUTPUT_COUNT_LIMIT"},
+    {"name": "alias section rejects empty", "kind": "section_shape", "input": {"section": "aliases", "count": 0}, "expected_rejection_class": "ALIAS_COUNT_LIMIT"},
+    {"name": "alias section rejects one over", "kind": "section_shape", "input": {"section": "aliases", "count": 6}, "expected_rejection_class": "ALIAS_COUNT_LIMIT"},
+    {"name": "source section rejects 10001 records", "kind": "source_shape", "input": {"count": 10001}, "expected_rejection_class": "SOURCE_COUNT_LIMIT"},
+
+    {"name": "stage rejects unknown chunk kind", "kind": "stage_chunk_mutation", "input": {"mutation": "unknown_kind"}, "expected_rejection_class": "UNKNOWN_CHUNK_KIND"},
+    {"name": "stage rejects 65 outlink records", "kind": "stage_chunk_mutation", "input": {"mutation": "outlinks_65_records"}, "expected_rejection_class": "CHUNK_RECORD_COUNT_LIMIT"},
+    {"name": "stage rejects empty outlink chunk", "kind": "stage_chunk_mutation", "input": {"mutation": "outlinks_empty"}, "expected_rejection_class": "CHUNK_RECORD_COUNT_LIMIT"},
+    {"name": "stage rejects 65 discovery records", "kind": "stage_chunk_mutation", "input": {"mutation": "discoveries_65_records"}, "expected_rejection_class": "CHUNK_RECORD_COUNT_LIMIT"},
+    {"name": "stage rejects duplicate alias record", "kind": "stage_chunk_mutation", "input": {"mutation": "aliases_duplicate"}, "expected_rejection_class": "DUPLICATE_CHUNK_RECORD"},
+    {"name": "stage rejects image manifest one over 384 KiB", "kind": "stage_chunk_mutation", "input": {"mutation": "image_manifest_one_over"}, "expected_rejection_class": "IMAGE_MANIFEST_LIMIT"},
+    {"name": "stage rejects blob one over 5 MiB", "kind": "stage_chunk_mutation", "input": {"mutation": "blob_one_over"}, "expected_rejection_class": "PAGE_BLOB_LIMIT"},
+
+    {"name": "schema rejects integer for boolean", "kind": "fixture_type", "input": {"field": "rendered", "value": 0}, "expected_rejection_class": "FIXTURE_TYPE"},
+    {"name": "schema rejects boolean for integer", "kind": "fixture_type", "input": {"field": "fence", "value": true}, "expected_rejection_class": "FIXTURE_TYPE"},
+    {"name": "schema rejects string for status integer", "kind": "fixture_type", "input": {"field": "status_code", "value": "200"}, "expected_rejection_class": "FIXTURE_TYPE"},
+    {"name": "strict JSON rejects duplicate keys", "kind": "json_text", "input": {"text": "{\"field\":1,\"field\":2}"}, "expected_rejection_class": "DUPLICATE_JSON_KEY"},
+    {"name": "U64 rejects one over maximum", "kind": "u64", "input": {"decimal": "18446744073709551616"}, "expected_rejection_class": "U64_RANGE"},
+    {"name": "output rejects invalid UTF-8 HTML bytes", "kind": "output_utf8", "input": {"field": "html", "bytes_hex": "ff"}, "expected_rejection_class": "INVALID_UTF8"},
+    {"name": "output rejects invalid UTF-8 original HTML bytes", "kind": "output_utf8", "input": {"field": "original_html", "bytes_hex": "c080"}, "expected_rejection_class": "INVALID_UTF8"},
+    {"name": "output rejects invalid UTF-8 alt bytes", "kind": "output_utf8", "input": {"field": "alt", "bytes_hex": "edb080"}, "expected_rejection_class": "INVALID_UTF8"},
+    {"name": "output rejects invalid UTF-8 URL bytes", "kind": "output_utf8", "input": {"field": "url", "bytes_hex": "f0288cbc"}, "expected_rejection_class": "INVALID_UTF8"},
+    {"name": "output rejects invalid UTF-8 content type bytes", "kind": "output_utf8", "input": {"field": "content_type", "bytes_hex": "80"}, "expected_rejection_class": "INVALID_UTF8"},
+    {"name": "output rejects invalid UTF-8 render rule bytes", "kind": "output_utf8", "input": {"field": "render_policy_rule", "bytes_hex": "fe"}, "expected_rejection_class": "INVALID_UTF8"},
+    {"name": "transition replay rejects changed legal reason", "kind": "transition_replay", "input": {"mutation": "legal_reason"}, "expected_rejection_class": "IMMUTABLE_MISMATCH"},
+    {"name": "transition replay rejects changed semantic payload", "kind": "transition_replay", "input": {"mutation": "semantic_payload"}, "expected_rejection_class": "IMMUTABLE_MISMATCH"}
+  ]
+}

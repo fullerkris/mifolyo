@@ -68,6 +68,13 @@ type PolicyGroup struct {
 	IntervalMS        uint64
 }
 
+// ValidateRunPinnedPolicyBindings validates values against the immutable group
+// map owned by runPolicy. It is a convenience check only: every production
+// consumer revalidates its own actual input at the consumption boundary.
+func ValidateRunPinnedPolicyBindings(runPolicy RunPolicyAuthority, input RunPinnedPolicyBindings) error {
+	return validateRunPinnedPolicyBindings(runPolicy, input)
+}
+
 type ReservationIntent struct {
 	Lease             LeaseIdentity
 	RequestOrdinal    uint64
@@ -84,12 +91,14 @@ type PublicationIdentity struct {
 }
 
 type CommitIdentity struct {
-	RunID         RunID
-	JobID         JobID
-	OwnerID       OwnerID
-	Fence         Fence
-	Token         LeaseToken
-	PublicationID Digest
+	RunID                   RunID
+	JobID                   JobID
+	OwnerID                 OwnerID
+	Fence                   Fence
+	Token                   LeaseToken
+	PublicationID           Digest
+	RequestStartsBaseline   uint64
+	RequestStartsGeneration uint64
 }
 
 func DeriveGlobalScopeID() Digest {
@@ -122,8 +131,8 @@ func DeriveTargetDigest(target RequestTarget) (Digest, error) {
 }
 
 // NewPolicyDecision derives every target and scope identity from semantic
-// inputs. Callers cannot select a target digest or scope ID independently of
-// the canonical target and policy lineage.
+// inputs. This is a non-authoritative pre-run builder: a run consumer must also
+// validate the result against RunPolicyAuthority's pinned group map.
 func NewPolicyDecision(input PolicyDecisionInput) (PolicyDecision, error) {
 	targetDigest, err := DeriveTargetDigest(input.Target)
 	if err != nil {
@@ -177,6 +186,8 @@ func DeriveTokenDigest(lease LeaseIdentity) (Digest, error) {
 	), nil
 }
 
+// DerivePolicyDecisionDigest is a non-authoritative pre-run serialization
+// helper. It validates internal structure, not membership in any run policy.
 func DerivePolicyDecisionDigest(decision PolicyDecision) (Digest, error) {
 	record, err := policyDecisionRecord(decision)
 	if err != nil {
@@ -189,6 +200,9 @@ func DerivePolicyDecisionDigest(decision PolicyDecision) (Digest, error) {
 	return digestEncoded("mifolyo:policy-decision:v2", section), nil
 }
 
+// DerivePolicyGroupMapDigest is a non-authoritative pre-run digest. Run policy
+// authority is created only after transport parsing compares this canonical
+// digest and count with the fully validated run record.
 func DerivePolicyGroupMapDigest(groups []PolicyGroup) (Digest, error) {
 	if len(groups) == 0 || len(groups) > MaxPolicyGroupsPerRun {
 		return "", ErrInputLimitExceeded
@@ -215,14 +229,26 @@ func DerivePolicyGroupMapDigest(groups []PolicyGroup) (Digest, error) {
 	return digestEncoded("mifolyo:policy-group-map:v2", section), nil
 }
 
-func DeriveReservationID(intent ReservationIntent) (ReservationID, error) {
+// DeriveReservationID validates intent against the exact run and policy-group
+// map before deriving the normative reservation identity.
+func DeriveReservationID(runPolicy RunPolicyAuthority, intent ReservationIntent) (ReservationID, error) {
+	if _, err := validateReservationIntentAgainstRunPolicy(runPolicy, intent); err != nil {
+		return "", err
+	}
+	return deriveReservationIDNonAuthoritative(intent)
+}
+
+// deriveReservationIDNonAuthoritative contains only the normative digest
+// formula and structural relations. It is deliberately unexported so a
+// run-bearing ReservationIntent cannot bypass RunPolicyAuthority validation.
+func deriveReservationIDNonAuthoritative(intent ReservationIntent) (ReservationID, error) {
 	if err := validateLeaseIdentity(intent.Lease); err != nil {
 		return "", err
 	}
-	if intent.RequestOrdinal == 0 || intent.RequestOrdinal > MaxExactInteger {
+	if intent.RequestOrdinal == 0 || intent.RequestOrdinal > MaxReservationCreationsPerRun {
 		return "", ErrInvalidUnsignedDecimal
 	}
-	if err := validateDigest(intent.CrawlPolicyDigest); err != nil {
+	if err := validateNonzeroDigest(intent.CrawlPolicyDigest); err != nil {
 		return "", err
 	}
 	targetDigest, err := DeriveTargetDigest(intent.Target)
@@ -286,7 +312,7 @@ func DerivePublicationID(publication PublicationIdentity) (Digest, error) {
 	if _, err := publication.Fence.Decimal(); err != nil {
 		return "", err
 	}
-	if err := validateDigest(publication.OutputDigest); err != nil {
+	if err := validateNonzeroDigest(publication.OutputDigest); err != nil {
 		return "", err
 	}
 	return digestFramed(
@@ -298,12 +324,17 @@ func DerivePublicationID(publication PublicationIdentity) (Digest, error) {
 	), nil
 }
 
+// DeriveCommitID is a pure identity formula, not output or live-stage authority.
+// The transcript tuple is mandatory; there is no legacy/default generation.
 func DeriveCommitID(commit CommitIdentity) (Digest, error) {
 	lease := LeaseIdentity{RunID: commit.RunID, JobID: commit.JobID, OwnerID: commit.OwnerID, Fence: commit.Fence, Token: commit.Token}
 	if err := validateLeaseIdentity(lease); err != nil {
 		return "", err
 	}
-	if err := validateDigest(commit.PublicationID); err != nil {
+	if err := validateNonzeroDigest(commit.PublicationID); err != nil {
+		return "", err
+	}
+	if err := validateRequestStartsTuple(commit.RequestStartsBaseline, commit.RequestStartsGeneration); err != nil {
 		return "", err
 	}
 	return digestFramed(
@@ -313,7 +344,16 @@ func DeriveCommitID(commit CommitIdentity) (Digest, error) {
 		[]byte(canonicalDecimal(uint64(commit.Fence))),
 		[]byte(commit.Token),
 		[]byte(commit.PublicationID),
+		[]byte(canonicalDecimal(commit.RequestStartsBaseline)),
+		[]byte(canonicalDecimal(commit.RequestStartsGeneration)),
 	), nil
+}
+
+func validateRequestStartsTuple(baseline, generation uint64) error {
+	if baseline >= generation || generation > MaxRequestStartsPerRun {
+		return ErrDigestInputMismatch
+	}
+	return nil
 }
 
 func policyDecisionRecord(decision PolicyDecision) (Record, error) {
@@ -346,7 +386,7 @@ func validatePolicyDecision(decision PolicyDecision) error {
 	if err := validateJobID(decision.TargetURLID); err != nil {
 		return err
 	}
-	if err := validateDigest(decision.TargetDigest); err != nil {
+	if err := validateNonzeroDigest(decision.TargetDigest); err != nil {
 		return err
 	}
 	if err := validateNonnegativeExactInteger(decision.Depth); err != nil {
@@ -359,7 +399,7 @@ func validatePolicyDecision(decision PolicyDecision) error {
 		return err
 	}
 	for _, scopeID := range []Digest{decision.GlobalScopeID, decision.GroupScopeID, decision.OriginScopeID} {
-		if err := validateDigest(scopeID); err != nil {
+		if err := validateNonzeroDigest(scopeID); err != nil {
 			return err
 		}
 	}
@@ -392,7 +432,7 @@ func policyGroupRecord(group PolicyGroup) (Record, error) {
 	if err := validateRateScopeID(group.RateScopeID); err != nil {
 		return nil, err
 	}
-	if err := validateDigest(group.GroupScopeID); err != nil {
+	if err := validateNonzeroDigest(group.GroupScopeID); err != nil {
 		return nil, err
 	}
 	expectedScopeID, err := DeriveGroupScopeID(group.RateScopeID)

@@ -15,6 +15,8 @@ var (
 	ErrResponseStatus           = errors.New("crawljobsv2: status is invalid for operation")
 	ErrResponseScalar           = errors.New("crawljobsv2: response scalar is invalid")
 	ErrInvalidResponseAuthority = errors.New("crawljobsv2: response does not authorize request I/O")
+	ErrResponseContextRequired  = errors.New("crawljobsv2: typed response context is required")
+	ErrInvalidRenewLeaseContext = errors.New("crawljobsv2: invalid renew-lease response context")
 )
 
 type RedisMilliseconds uint64
@@ -49,24 +51,22 @@ type LeaseLostResponse struct {
 // for STARTED/ALREADY_STARTED, RATE_BLOCKED, or LEASE_LOST; definitive
 // authorization and cancellation responses have no detail payload.
 type StartRequestResponse struct {
-	status                Status
-	nowMS                 RedisMilliseconds
-	expectedReservationID ReservationID
-	intent                ReservationIntent
-	started               *StartRequestStarted
-	rateBlocked           *StartRequestRateBlocked
-	leaseLost             *LeaseLostResponse
-	initialized           bool
+	status      Status
+	nowMS       RedisMilliseconds
+	started     *StartRequestStarted
+	rateBlocked *StartRequestRateBlocked
+	leaseLost   *LeaseLostResponse
+	authority   *requestIOAuthorityState
+	initialized bool
 }
 
 // RequestIOPermit is the only value that authorizes DNS or request I/O. Its
 // fields are private so it can only be obtained from an intent-bound Redis
-// STARTED/ALREADY_STARTED response carrying io_permission=1.
+// STARTED/ALREADY_STARTED response carrying io_permission=1, with known-unused
+// local authority retained by the authenticated transport's lease session.
 type RequestIOPermit struct {
-	intent        ReservationIntent
-	reservationID ReservationID
-	started       StartRequestStarted
-	initialized   bool
+	authority   *requestIOAuthorityState
+	initialized bool
 }
 
 func (response StartRequestResponse) Status() Status { return response.status }
@@ -110,15 +110,15 @@ func (lost LeaseLostResponse) CurrentFence() uint64   { return lost.currentFence
 
 func (response StartRequestResponse) IOPermit() (RequestIOPermit, error) {
 	if !response.initialized || response.started == nil || !response.started.ioPermission ||
-		response.started.reservationID != response.expectedReservationID {
+		response.authority == nil ||
+		response.status != StatusStarted && response.status != StatusAlreadyStarted {
 		return RequestIOPermit{}, ErrInvalidResponseAuthority
 	}
-	return RequestIOPermit{
-		intent:        response.intent,
-		reservationID: response.expectedReservationID,
-		started:       *response.started,
-		initialized:   true,
-	}, nil
+	binding := response.authority.binding
+	if binding.started != *response.started || !response.authority.issue(binding) {
+		return RequestIOPermit{}, ErrInvalidResponseAuthority
+	}
+	return RequestIOPermit{authority: response.authority, initialized: true}, nil
 }
 
 type parsedResponse struct {
@@ -151,8 +151,27 @@ func ValidateOperationResponse(operation OperationName, raw any) error {
 	return err
 }
 
-func ParseStartRequestResponse(intent ReservationIntent, raw any) (StartRequestResponse, error) {
-	expectedReservationID, err := DeriveReservationID(intent)
+// ValidateRenewLeaseResponse validates the exact stage-aware lease deadline.
+// Generic response validation cannot authenticate a capped deadline because a
+// RENEWED envelope does not carry the stage's absolute expiry.
+func ValidateRenewLeaseResponse(context RenewLeaseResponseContext, raw any) error {
+	if !context.initialized {
+		return ErrInvalidRenewLeaseContext
+	}
+	_, err := parseOperationResponseWithContext(OperationRenewLease, raw, &context)
+	return err
+}
+
+// parseStartRequestResponse is reachable only through the unexported transport
+// authority. Caller-created arrays are test inputs, never production authority.
+func (authority transportAuthority) parseStartRequestResponse(runPolicy RunPolicyAuthority, intent ReservationIntent, raw any) (StartRequestResponse, error) {
+	if !authority.valid() {
+		return StartRequestResponse{}, ErrInvalidResponseAuthority
+	}
+	if _, err := validateReservationIntentAgainstRunPolicy(runPolicy, intent); err != nil {
+		return StartRequestResponse{}, err
+	}
+	expectedReservationID, err := DeriveReservationID(runPolicy, intent)
 	if err != nil {
 		return StartRequestResponse{}, err
 	}
@@ -161,12 +180,11 @@ func ParseStartRequestResponse(intent ReservationIntent, raw any) (StartRequestR
 		return StartRequestResponse{}, err
 	}
 	response := StartRequestResponse{
-		status: parsed.status, nowMS: parsed.nowMS, expectedReservationID: expectedReservationID,
-		intent: intent, initialized: true,
+		status: parsed.status, nowMS: parsed.nowMS, initialized: true,
 	}
 	switch parsed.status {
 	case StatusStarted, StatusAlreadyStarted:
-		reservationID, err := ParseReservationID(parsed.tail[0])
+		reservationID, err := parseNonzeroReservationID(parsed.tail[0])
 		if err != nil || reservationID != expectedReservationID {
 			return StartRequestResponse{}, ErrResponseScalar
 		}
@@ -179,7 +197,7 @@ func ParseStartRequestResponse(intent ReservationIntent, raw any) (StartRequestR
 			return StartRequestResponse{}, ErrResponseScalar
 		}
 		jobStarts, err := parseResponseUint(parsed.tail[3])
-		if err != nil || jobStarts == 0 || jobStarts > MaxRequestStartsPerRun {
+		if err != nil || jobStarts == 0 || jobStarts > MaxRequestStartsPerRun || jobStarts > intent.RequestOrdinal {
 			return StartRequestResponse{}, ErrResponseScalar
 		}
 		runStarts, err := parseResponseUint(parsed.tail[4])
@@ -200,8 +218,14 @@ func ParseStartRequestResponse(intent ReservationIntent, raw any) (StartRequestR
 			runRequestStarts: runStarts, groupRequestStarts: groupStarts,
 			ioPermission: permission,
 		}
+		response.authority, err = authority.requestIOSession.reconcile(startRequestBinding{
+			runPolicy: runPolicy, intent: intent, reservationID: expectedReservationID, started: *response.started,
+		})
+		if err != nil {
+			return StartRequestResponse{}, err
+		}
 	case StatusRateBlocked:
-		scopeID, err := ParseDigest(parsed.tail[0])
+		scopeID, err := parseNonzeroDigest(parsed.tail[0])
 		if err != nil || scopeID != intent.Decision.GlobalScopeID && scopeID != intent.Decision.GroupScopeID && scopeID != intent.Decision.OriginScopeID {
 			return StartRequestResponse{}, ErrResponseScalar
 		}
@@ -231,6 +255,10 @@ func ParseStartRequestResponse(intent ReservationIntent, raw any) (StartRequestR
 }
 
 func parseOperationResponse(operation OperationName, raw any) (parsedResponse, error) {
+	return parseOperationResponseWithContext(operation, raw, nil)
+}
+
+func parseOperationResponseWithContext(operation OperationName, raw any, renewContext *RenewLeaseResponseContext) (parsedResponse, error) {
 	values, ok := responseArray(raw)
 	if !ok {
 		return parsedResponse{}, ErrResponseNotArray
@@ -269,7 +297,7 @@ func parseOperationResponse(operation OperationName, raw any) (parsedResponse, e
 			return parsedResponse{}, err
 		}
 	}
-	if err := validateResponseRelations(operation, status, RedisMilliseconds(now), scalars[2:]); err != nil {
+	if err := validateResponseRelations(operation, status, RedisMilliseconds(now), scalars[2:], renewContext); err != nil {
 		return parsedResponse{}, err
 	}
 	return parsedResponse{
@@ -279,7 +307,13 @@ func parseOperationResponse(operation OperationName, raw any) (parsedResponse, e
 	}, nil
 }
 
-func validateResponseRelations(operation OperationName, status Status, nowMS RedisMilliseconds, tail []string) error {
+func validateResponseRelations(
+	operation OperationName,
+	status Status,
+	nowMS RedisMilliseconds,
+	tail []string,
+	renewContext *RenewLeaseResponseContext,
+) error {
 	switch operation {
 	case OperationEnqueueBatch:
 		newJobs, err := parseResponseUint(tail[0])
@@ -363,7 +397,30 @@ func validateResponseRelations(operation OperationName, status Status, nowMS Red
 	case OperationRenewLease:
 		if status == StatusRenewed {
 			expiresAt, err := parseResponseUint(tail[0])
-			if err != nil || expiresAt != uint64(nowMS)+LeaseTTLMilliseconds {
+			if uint64(nowMS) > MaxExactInteger-LeaseTTLMilliseconds {
+				return ErrResponseScalar
+			}
+			maximumExpiry := uint64(nowMS) + LeaseTTLMilliseconds
+			if err != nil || expiresAt <= uint64(nowMS) || expiresAt > maximumExpiry {
+				return ErrResponseScalar
+			}
+			if renewContext == nil {
+				return ErrResponseContextRequired
+			}
+			if !renewContext.initialized {
+				return ErrInvalidRenewLeaseContext
+			}
+			expectedExpiry := maximumExpiry
+			if renewContext.hasActiveStage {
+				stageExpiry := uint64(renewContext.stageExpiresAtMS)
+				if stageExpiry <= uint64(nowMS) || stageExpiry > MaxExactInteger {
+					return ErrInvalidRenewLeaseContext
+				}
+				if stageExpiry < expectedExpiry {
+					expectedExpiry = stageExpiry
+				}
+			}
+			if expiresAt != expectedExpiry {
 				return ErrResponseScalar
 			}
 		}
@@ -426,7 +483,7 @@ func validateResponseRelations(operation OperationName, status Status, nowMS Red
 				delay = RetryDelayAttempt2Milliseconds
 			}
 			if err != nil || deliveryAttempts == 0 || deliveryAttempts >= MaxDeliveryAttempts ||
-				notBeforeErr != nil || notBefore != uint64(nowMS)+delay {
+				notBeforeErr != nil || validateRetryScheduledTime(nowMS, notBefore, delay) != nil {
 				return ErrResponseScalar
 			}
 			if err := ValidateTransitionReason(operation, Reason(tail[2])); err != nil {
@@ -581,6 +638,22 @@ func validatePastResponseTime(nowMS RedisMilliseconds, value string) error {
 func validateFutureResponseTime(nowMS RedisMilliseconds, value string) error {
 	timestamp, err := parseResponseUint(value)
 	if err != nil || timestamp <= uint64(nowMS) {
+		return ErrResponseScalar
+	}
+	return nil
+}
+
+func validateRetryScheduledTime(nowMS RedisMilliseconds, notBeforeMS, delayMS uint64) error {
+	// A first execution stores transition_time+delay, while an exact replay
+	// returns that immutable deadline with the replay invocation's later Redis
+	// TIME. Recover the original transition time with checked subtraction rather
+	// than requiring a replay-unsafe now+delay equality (or overflowing it).
+	if uint64(nowMS) > MaxExactInteger || notBeforeMS > MaxExactInteger || delayMS == 0 ||
+		delayMS > MaxExactInteger || notBeforeMS <= delayMS {
+		return ErrResponseScalar
+	}
+	transitionAtMS := notBeforeMS - delayMS
+	if transitionAtMS > uint64(nowMS) {
 		return ErrResponseScalar
 	}
 	return nil
@@ -1028,12 +1101,12 @@ func validateResponseField(field, value string, status Status) error {
 			return ErrResponseScalar
 		}
 	case "reservation_id":
-		if _, err := ParseReservationID(value); err != nil {
+		if _, err := parseNonzeroReservationID(value); err != nil {
 			return ErrResponseScalar
 		}
 	case "manifest_sha256", "contract_sha256", "commit_guard_sha256", "source_sha256",
 		"scope_id", "commit_id", "publication_id", "archive_sha256":
-		if _, err := ParseDigest(value); err != nil {
+		if _, err := parseNonzeroDigest(value); err != nil {
 			return ErrResponseScalar
 		}
 	case "reason", "last_failure_reason", "terminal_reason":

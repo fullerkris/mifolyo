@@ -7,11 +7,7 @@ import (
 	"testing"
 )
 
-type testWireRequest struct{ shape operationWireShape }
-
-func (request testWireRequest) crawlJobsV2WireShape() operationWireShape { return request.shape }
-
-func TestTransportGateEnforcesModeArtifactsAndCandidateSource(t *testing.T) {
+func TestTransportGateModelsCompleteCandidatePreAndPostRetirementSequence(t *testing.T) {
 	artifacts := newGateArtifacts(t)
 
 	boot, err := NewTransportGate(OperationInstallCandidateMarkers, TransportGateInput{
@@ -22,57 +18,114 @@ func TestTransportGateEnforcesModeArtifactsAndCandidateSource(t *testing.T) {
 	}
 	assertGateArguments(t, boot, GateBootOnly, false, false, false, false)
 
-	candidate, err := NewTransportGate(OperationCreateRun, TransportGateInput{
-		Mode: GateCandidate, BootEpoch: artifacts.bootEpoch, Contract: artifacts.contract,
-		Compatibility: &artifacts.marker, Legacy: &artifacts.legacy, AdminFreeze: &artifacts.freeze,
-		SourceKind: SourceV1Migration,
-	})
-	if err != nil {
-		t.Fatal(err)
+	preRetirementOperations := []OperationName{
+		OperationCreateRun,
+		OperationEnqueueBatch,
+		OperationBeginRunAudit,
+		OperationAuditRunBatch,
+		OperationSealRun,
+		OperationCancelRun,
+		OperationCancelBatch,
+		OperationPurgeRunBatch,
+		OperationRetireLegacyKeys,
 	}
-	assertGateArguments(t, candidate, GateCandidate, true, true, true, true)
-
-	if _, err := NewTransportGate(OperationCreateRun, TransportGateInput{
-		Mode: GateCandidate, BootEpoch: artifacts.bootEpoch, Contract: artifacts.contract,
-		Compatibility: &artifacts.marker, Legacy: &artifacts.legacy, AdminFreeze: &artifacts.freeze,
-		SourceKind: SourceMongo,
-	}); !errors.Is(err, ErrInvalidSourceKind) {
-		t.Fatalf("candidate Mongo source error = %v", err)
+	for _, operation := range preRetirementOperations {
+		t.Run(string(operation)+"_before_retirement", func(t *testing.T) {
+			gate, err := NewTransportGate(operation, candidateGateInput(artifacts, CandidateBeforeLegacyRetirement, nil))
+			if err != nil {
+				t.Fatal(err)
+			}
+			assertGateArguments(t, gate, GateCandidate, true, true, false, true)
+		})
 	}
 
-	active, err := NewTransportGate(OperationCreateRun, TransportGateInput{
-		Mode: GateActive, BootEpoch: artifacts.bootEpoch, Contract: artifacts.contract,
-		Compatibility: &artifacts.marker, CommitGuard: &artifacts.guard, Legacy: &artifacts.legacy,
-		SourceKind: SourceMongo,
-	})
-	if err != nil {
-		t.Fatal(err)
+	for _, operation := range []OperationName{OperationRetireLegacyKeys, OperationPromoteCandidateContracts} {
+		t.Run(string(operation)+"_after_retirement", func(t *testing.T) {
+			gate, err := NewTransportGate(operation, candidateGateInput(artifacts, CandidateAfterLegacyRetirement, &artifacts.legacy))
+			if err != nil {
+				t.Fatal(err)
+			}
+			assertGateArguments(t, gate, GateCandidate, true, true, true, true)
+		})
 	}
-	assertGateArguments(t, active, GateActive, true, true, true, false)
 
-	if _, err := NewTransportGate(OperationCreateRun, TransportGateInput{
-		Mode: GateActive, BootEpoch: artifacts.bootEpoch, Contract: artifacts.contract,
-		Compatibility: &artifacts.marker, CommitGuard: &artifacts.guard, Legacy: &artifacts.legacy,
-		SourceKind: SourceV1Migration,
-	}); !errors.Is(err, ErrInvalidSourceKind) {
-		t.Fatalf("active migration source error = %v", err)
+	rejections := []struct {
+		name      string
+		operation OperationName
+		phase     CandidatePhase
+		legacy    *LegacyRetirementRecord
+	}{
+		{name: "run creation cannot require retirement first", operation: OperationCreateRun, phase: CandidateBeforeLegacyRetirement, legacy: &artifacts.legacy},
+		{name: "run operation cannot continue after retirement", operation: OperationCreateRun, phase: CandidateAfterLegacyRetirement, legacy: &artifacts.legacy},
+		{name: "retire post-state requires exact evidence", operation: OperationRetireLegacyKeys, phase: CandidateAfterLegacyRetirement},
+		{name: "promotion cannot run before retirement", operation: OperationPromoteCandidateContracts, phase: CandidateBeforeLegacyRetirement},
+		{name: "promotion requires exact evidence", operation: OperationPromoteCandidateContracts, phase: CandidateAfterLegacyRetirement},
+		{name: "candidate phase is mandatory", operation: OperationCreateRun},
+	}
+	for _, test := range rejections {
+		t.Run(test.name, func(t *testing.T) {
+			_, err := NewTransportGate(test.operation, candidateGateInput(artifacts, test.phase, test.legacy))
+			if err == nil {
+				t.Fatal("invalid candidate sequence was accepted")
+			}
+		})
 	}
 }
 
-func TestTransportGateRejectsCrossArtifactMismatchAndDefensivelyCopies(t *testing.T) {
-	artifacts := newGateArtifacts(t)
-	otherDigest := Digest(strings.Repeat("b", 64))
-	if _, err := NewTransportGate(OperationRetry, TransportGateInput{
-		Mode: GateActive, BootEpoch: artifacts.bootEpoch, Contract: otherDigest,
-		Compatibility: &artifacts.marker, CommitGuard: &artifacts.guard, Legacy: &artifacts.legacy,
-	}); !errors.Is(err, ErrArtifactMismatch) {
-		t.Fatalf("cross-artifact mismatch error = %v", err)
-	}
-
-	gate, err := NewTransportGate(OperationRetry, TransportGateInput{
-		Mode: GateActive, BootEpoch: artifacts.bootEpoch, Contract: artifacts.contract,
-		Compatibility: &artifacts.marker, CommitGuard: &artifacts.guard, Legacy: &artifacts.legacy,
+func TestTransportGateActiveAuthorityBindsConfigAndCutoverSemantics(t *testing.T) {
+	t.Run("fresh", func(t *testing.T) {
+		artifacts := newGateArtifacts(t)
+		gate, err := NewTransportGate(OperationRetry, activeGateInput(artifacts))
+		if err != nil {
+			t.Fatal(err)
+		}
+		assertGateArguments(t, gate, GateActive, true, true, true, false)
 	})
+
+	t.Run("v1 migration", func(t *testing.T) {
+		artifacts := newMigrationGateArtifacts(t, 3)
+		if _, err := NewTransportGate(OperationRetry, activeGateInput(artifacts)); err != nil {
+			t.Fatal(err)
+		}
+	})
+
+	t.Run("fresh rejects positive v1 count", func(t *testing.T) {
+		fresh := newGateArtifacts(t)
+		migration := newMigrationGateArtifacts(t, 3)
+		fresh.legacy = migration.legacy
+		if _, err := NewTransportGate(OperationRetry, activeGateInput(fresh)); !errors.Is(err, ErrArtifactMismatch) {
+			t.Fatalf("error = %v", err)
+		}
+	})
+
+	t.Run("migration rejects zero v1 count", func(t *testing.T) {
+		migration := newMigrationGateArtifacts(t, 3)
+		migration.legacy = newGateArtifacts(t).legacy
+		if _, err := NewTransportGate(OperationRetry, activeGateInput(migration)); !errors.Is(err, ErrArtifactMismatch) {
+			t.Fatalf("error = %v", err)
+		}
+	})
+
+	t.Run("redis config mismatch", func(t *testing.T) {
+		artifacts := newGateArtifactsWithConfigs(t, Digest(strings.Repeat("e", 64)), Digest(strings.Repeat("f", 64)))
+		if _, err := NewTransportGate(OperationRetry, activeGateInput(artifacts)); !errors.Is(err, ErrArtifactMismatch) {
+			t.Fatalf("error = %v", err)
+		}
+	})
+
+	t.Run("contract mismatch", func(t *testing.T) {
+		artifacts := newGateArtifacts(t)
+		input := activeGateInput(artifacts)
+		input.Contract = Digest(strings.Repeat("b", 64))
+		if _, err := NewTransportGate(OperationRetry, input); !errors.Is(err, ErrArtifactMismatch) {
+			t.Fatalf("error = %v", err)
+		}
+	})
+}
+
+func TestTransportGateDefensivelyCopiesAndRevalidatesEncodedAuthority(t *testing.T) {
+	artifacts := newGateArtifacts(t)
+	gate, err := NewTransportGate(OperationRetry, activeGateInput(artifacts))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -82,34 +135,12 @@ func TestTransportGateRejectsCrossArtifactMismatchAndDefensivelyCopies(t *testin
 	if bytes.Equal(first[0], second[0]) || string(second[0]) != string(GateActive) {
 		t.Fatal("transport gate exposed mutable backing data")
 	}
-}
 
-func TestTypedEvalSHARequestDerivesRecordCountAndCopiesWireData(t *testing.T) {
-	sha := strings.Repeat("a", 40)
-	records := make([]Record, MaxAliasesPerJob)
-	for index := range records {
-		records[index] = Record{textField("value", canonicalDecimal(uint64(index)))}
-	}
-	request, err := BuildEvalSHARequest(sha, testWireRequest{shape: operationWireShape{
-		operation: OperationStageAliasesBatch,
-		keys:      [][]byte{[]byte("key")}, arguments: [][]byte{[]byte("argument")}, records: records,
-	}})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if request.Operation() != OperationStageAliasesBatch || request.SerializedSize() == 0 {
-		t.Fatal("typed request identity was not retained")
-	}
-	keys := request.Keys()
-	keys[0][0] = 'X'
-	if string(request.Keys()[0]) != "key" {
-		t.Fatal("typed request exposed mutable keys")
-	}
-	records = append(records, Record{})
-	if _, err := BuildEvalSHARequest(sha, testWireRequest{shape: operationWireShape{
-		operation: OperationStageAliasesBatch, records: records,
-	}}); !errors.Is(err, ErrRecordBoundsExceeded) {
-		t.Fatalf("derived over-limit record count error = %v", err)
+	tampered := gate
+	tampered.arguments[3] = append([]byte(nil), tampered.arguments[3]...)
+	tampered.arguments[3][len(tampered.arguments[3])-1] ^= 1
+	if _, err := tampered.Arguments(); err == nil {
+		t.Fatal("tampered encoded authority was accepted")
 	}
 }
 
@@ -125,11 +156,32 @@ type gateArtifacts struct {
 func newGateArtifacts(t *testing.T) gateArtifacts {
 	t.Helper()
 	digest := Digest(strings.Repeat("a", 64))
+	return newGateArtifactsFor(t, CutoverFresh, 0, digest, digest)
+}
+
+func newMigrationGateArtifacts(t *testing.T, v1Count uint64) gateArtifacts {
+	t.Helper()
+	digest := Digest(strings.Repeat("a", 64))
+	return newGateArtifactsFor(t, CutoverV1Migration, v1Count, digest, digest)
+}
+
+func newGateArtifactsWithConfigs(t *testing.T, artifactConfig, coreConfig Digest) gateArtifacts {
+	t.Helper()
+	return newGateArtifactsFor(t, CutoverFresh, 0, artifactConfig, coreConfig)
+}
+
+func newGateArtifactsFor(t *testing.T, cutover CutoverMode, v1Count uint64, artifactConfig, coreConfig Digest) gateArtifacts {
+	t.Helper()
+	digest := Digest(strings.Repeat("a", 64))
 	image := ImageDigest("sha256:" + strings.Repeat("b", 64))
+	candidateRunID := RunID("")
+	if cutover == CutoverV1Migration {
+		candidateRunID = RunID(strings.Repeat("1", 32))
+	}
 	core, err := NewGuardCore(GuardCoreInput{
-		ContractSHA256: digest, RedisVersion: "7.2.5", RedisConfigSHA256: digest,
+		ContractSHA256: digest, RedisVersion: "7.2.5", RedisConfigSHA256: coreConfig,
 		MaximumShapeSHA256: digest, MemoryFixtureSHA256: digest, LuaBenchmarkSHA256: digest,
-		AOFCrashEvidenceSHA256: digest, CutoverMode: CutoverFresh,
+		AOFCrashEvidenceSHA256: digest, CutoverMode: cutover, CandidateRunID: candidateRunID,
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -139,7 +191,7 @@ func newGateArtifacts(t *testing.T) gateArtifacts {
 		t.Fatal(err)
 	}
 	artifact, err := NewCompatibilityArtifact(CompatibilityArtifactInput{
-		RedisConfigSHA256: digest, CommitGuardSHA256: coreDigest,
+		RedisConfigSHA256: artifactConfig, CommitGuardSHA256: coreDigest,
 		SpiderImage: image, SeedImporterImage: image, CrawlAdminImage: image, IndexerImage: image,
 		ImageIndexerImage: image, BacklinksProcessorImage: image, MonitoringImage: image,
 		RenderWorkerImage: "disabled",
@@ -166,12 +218,17 @@ func newGateArtifacts(t *testing.T) gateArtifacts {
 	if err != nil {
 		t.Fatal(err)
 	}
+	deletedBitmap := "00000"
+	if v1Count > 0 {
+		deletedBitmap = "11100"
+	}
 	legacy, err := NewLegacyRetirementRecord(LegacyRetirementRecordInput{
-		FreezeNonce: strings.Repeat("c", 32), BackupSHA256: digest, V1SourceSHA256: digest,
-		V1QueueEvidenceSHA256: digest, V1URLsEvidenceSHA256: digest, V1DepthsEvidenceSHA256: digest,
+		FreezeNonce: strings.Repeat("c", 32), BackupSHA256: digest,
+		V1Count: v1Count, V1URLFieldCount: v1Count, V1DepthFieldCount: v1Count,
+		V1SourceSHA256: digest, V1QueueEvidenceSHA256: digest, V1URLsEvidenceSHA256: digest, V1DepthsEvidenceSHA256: digest,
 		SpiderQueueType: LegacyTypeNone, SpiderQueueEvidenceSHA256: digest,
 		SignalQueueType: LegacyTypeNone, SignalQueueEvidenceSHA256: digest,
-		DeletedBitmap: "00000", RetiredAtMS: 2,
+		DeletedBitmap: deletedBitmap, RetiredAtMS: 2,
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -179,6 +236,20 @@ func newGateArtifacts(t *testing.T) gateArtifacts {
 	return gateArtifacts{
 		bootEpoch: strings.Repeat("d", 32), contract: digest, marker: marker,
 		guard: guard, legacy: legacy, freeze: freeze,
+	}
+}
+
+func candidateGateInput(artifacts gateArtifacts, phase CandidatePhase, legacy *LegacyRetirementRecord) TransportGateInput {
+	return TransportGateInput{
+		Mode: GateCandidate, CandidatePhase: phase, BootEpoch: artifacts.bootEpoch, Contract: artifacts.contract,
+		Compatibility: &artifacts.marker, Legacy: legacy, AdminFreeze: &artifacts.freeze,
+	}
+}
+
+func activeGateInput(artifacts gateArtifacts) TransportGateInput {
+	return TransportGateInput{
+		Mode: GateActive, BootEpoch: artifacts.bootEpoch, Contract: artifacts.contract,
+		Compatibility: &artifacts.marker, CommitGuard: &artifacts.guard, Legacy: &artifacts.legacy,
 	}
 }
 

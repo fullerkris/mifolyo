@@ -91,6 +91,7 @@ func RecordSchemaFields(schema RecordSchema) ([]string, error) {
 			"protocol_version", "run_id", "job_id", "url_id", "canonical_url", "depth", "score_text",
 			"state", "group_id", "rate_scope_id", "group_scope_id", "initial_origin_scope_id",
 			"policy_decision_sha256", "claim_count", "delivery_attempts", "request_starts",
+			"lease_request_starts_baseline",
 			"retry_count", "pre_io_recoveries", "next_request_ordinal", "last_request_started_at_ms",
 			"last_document_request_started_at_ms", "last_document_request_fence",
 			"last_document_target_url_id", "last_document_target_url", "last_document_target_digest",
@@ -124,7 +125,8 @@ func RecordSchemaFields(schema RecordSchema) ([]string, error) {
 	case SchemaStageMeta:
 		return []string{
 			"protocol_version", "run_id", "job_id", "owner_id", "lease_fence", "token_digest", "commit_id",
-			"publication_id", "output_digest", "created_at_ms", "expires_at_ms", "sealed", "sealed_at_ms",
+			"publication_id", "output_digest", "request_starts_baseline", "request_starts_generation",
+			"created_at_ms", "expires_at_ms", "sealed", "sealed_at_ms",
 			"abandoned", "expected_page_fields", "expected_outlinks", "expected_discoveries",
 			"expected_aliases", "expected_images", "page_fields_written", "html_written",
 			"original_html_written", "outlinks_written", "discoveries_written", "aliases_written",

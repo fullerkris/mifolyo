@@ -203,7 +203,7 @@ func runSuffixKey(runID RunID, suffix string) (string, error) {
 }
 
 func digestKey(prefix string, digest Digest, suffix string) (string, error) {
-	if err := validateDigest(digest); err != nil {
+	if err := validateNonzeroDigest(digest); err != nil {
 		return "", err
 	}
 	return prefix + string(digest) + suffix, nil
@@ -214,7 +214,7 @@ func stageSuffixKey(commitID Digest, suffix string) (string, error) {
 }
 
 func publicationURLKey(prefix string, publicationID Digest, canonicalURL string) (string, error) {
-	if err := validateDigest(publicationID); err != nil {
+	if err := validateNonzeroDigest(publicationID); err != nil {
 		return "", err
 	}
 	if _, err := requireCanonicalURL(canonicalURL); err != nil {

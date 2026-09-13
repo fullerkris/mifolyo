@@ -72,7 +72,7 @@ func validateOperationalReferenceIdentifier(referenceKind OperationalReferenceKi
 		if _, rateErr := ParseRateScopeID(rawIdentifier); rateErr == nil {
 			return nil
 		}
-		_, err = ParseDigest(rawIdentifier)
+		_, err = parseNonzeroDigest(rawIdentifier)
 	default:
 		return ErrInvalidOperationalReferenceKind
 	}

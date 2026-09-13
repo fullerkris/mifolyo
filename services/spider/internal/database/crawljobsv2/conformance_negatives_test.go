@@ -11,7 +11,6 @@ import (
 	"net"
 	"net/url"
 	"regexp"
-	"sort"
 	"strconv"
 	"strings"
 	"testing"
@@ -45,6 +44,8 @@ func TestSharedFixtureV2NegativeCases(t *testing.T) {
 func (h *fixtureConformanceHarness) runNegativeCase(t *testing.T, vector digestVectorNegative) string {
 	t.Helper()
 	switch vector.Kind {
+	case "transcript_binding_mutation":
+		return runTranscriptBindingNegativeCase(t, h.fixture, vector)
 	case "transition_reason":
 		input := decodeVectorPart[struct {
 			Operation string `json:"operation"`
@@ -85,7 +86,8 @@ func (h *fixtureConformanceHarness) runNegativeCase(t *testing.T, vector digestV
 		if !errors.Is(err, ErrDigestInputMismatch) {
 			t.Fatalf("unexpected discovery binding error: %v", err)
 		}
-		_, chunkErr := NewDiscoveriesStageChunk(mustFixtureDigest(t, h.fixture.Expected.CommitID), 0, output.Discoveries)
+		context := vectorOutputContextValue(t, h.fixture)
+		_, chunkErr := NewDiscoveriesStageChunk(outputCommitIdentity(context, mustFixtureDigest(t, h.fixture.Expected.PublicationID)), 0, context, output.Discoveries)
 		requireFixtureAPIRejection(t, chunkErr)
 		return "POLICY_BINDING_MISMATCH"
 	case "output_normalized_target":
@@ -95,11 +97,7 @@ func (h *fixtureConformanceHarness) runNegativeCase(t *testing.T, vector digestV
 		output := vectorOutputValue(t, h.fixture)
 		output.Page.NormalizedURL = vectorTargetValue(t, h.fixture, input.Value).CanonicalURL
 		_, err := DeriveOutputDigest(vectorOutputContextValue(t, h.fixture), output)
-		requireFixtureAPIRejection(t, err)
-		if errors.Is(err, ErrDigestInputMismatch) {
-			return "OUTPUT_CONTEXT_MISMATCH"
-		}
-		t.Fatalf("unexpected output-context error: %v", err)
+		return fixtureProductionOutputRejectionClass(t, err)
 	case "score_text":
 		input := decodeVectorPart[struct {
 			Value string `json:"value"`
@@ -115,6 +113,40 @@ func (h *fixtureConformanceHarness) runNegativeCase(t *testing.T, vector digestV
 			t.Fatalf("unexpected lease-token error: %v", err)
 		}
 		return ""
+	case "policy_group_boundary":
+		validateFixturePolicyGroupGeneratorShape(t, vector.Input, vector.Name+".input")
+		input := decodeVectorPart[fixturePolicyGroupGenerator](t, vector.Input, vector.Name+".input")
+		groups := fixturePolicyGroupsFromGenerator(t, input)
+		_, err := DerivePolicyGroupMapDigest(groups)
+		if !errors.Is(err, ErrInputLimitExceeded) {
+			t.Fatalf("policy-group count boundary error = %v", err)
+		}
+		return "POLICY_GROUP_COUNT_LIMIT"
+	case "group_id":
+		input := decodeVectorPart[struct {
+			Value string `json:"value"`
+		}](t, vector.Input, vector.Name+".input")
+		if _, err := ParseGroupID(input.Value); !errors.Is(err, ErrInvalidGroupID) {
+			t.Fatalf("group-ID control-character error = %v", err)
+		}
+		return "INVALID_GROUP_ID"
+	case "policy_group_binding":
+		input := decodeVectorPart[struct {
+			Mutation string `json:"mutation"`
+		}](t, vector.Input, vector.Name+".input")
+		return h.fixturePolicyGroupBindingRejection(t, input.Mutation)
+	case "guard_core_mutation":
+		input := decodeVectorPart[struct {
+			BaseCase string `json:"base_case"`
+			Mutation string `json:"mutation"`
+		}](t, vector.Input, vector.Name+".input")
+		return h.fixtureGuardCoreMutationRejection(t, input.BaseCase, input.Mutation)
+	case "guard_chain_mutation":
+		input := decodeVectorPart[struct {
+			BaseCase string `json:"base_case"`
+			Mutation string `json:"mutation"`
+		}](t, vector.Input, vector.Name+".input")
+		return h.fixtureGuardChainMutationRejection(t, input.BaseCase, input.Mutation)
 	case "redis_score":
 		input := decodeVectorPart[struct {
 			ScoreText  string `json:"score_text"`
@@ -132,7 +164,8 @@ func (h *fixtureConformanceHarness) runNegativeCase(t *testing.T, vector digestV
 		}](t, vector.Input, vector.Name+".input")
 		intent := vectorReservationValue(t, h.fixture, false)
 		intent.Target = vectorTargetValue(t, h.fixture, input.Value)
-		_, err := DeriveReservationID(intent)
+		authority := vectorRunPolicyAuthority(t, h.fixture, plainSHA256(testDenyAllRenderPolicyArtifact()))
+		_, err := DeriveReservationID(authority, intent)
 		requireFixtureAPIRejection(t, err)
 		if errors.Is(err, ErrDigestInputMismatch) {
 			return "RESERVATION_TARGET_MISMATCH"
@@ -147,24 +180,23 @@ func (h *fixtureConformanceHarness) runNegativeCase(t *testing.T, vector digestV
 		input := decodeVectorPart[struct {
 			Count int `json:"count"`
 		}](t, vector.Input, vector.Name+".input")
-		if input.Count < 0 {
-			t.Fatal("negative source count")
+		jobs := fixtureCountSourceJobs(t, vectorSourceJobValue(t, h.fixture, 0), input.Count)
+		_, err := DeriveSourceDigest(jobs)
+		if err == nil {
+			return ""
 		}
-		_, err := DeriveSourceDigest(make([]SourceJob, input.Count))
-		if input.Count > MaxJobsPerRun {
-			requireFixtureAPIRejection(t, err)
-			return "SOURCE_COUNT_LIMIT"
+		// This is the non-authoritative pre-run source formula, not enqueue
+		// admission. A malformed job or a broader error is not count evidence.
+		if err != ErrInputLimitExceeded {
+			t.Fatalf("source count error = %v; want exact ErrInputLimitExceeded", err)
 		}
-		if err != nil {
-			t.Fatalf("in-range source shape rejected: %v", err)
-		}
-		return ""
+		return "SOURCE_COUNT_LIMIT"
 	case "section_shape":
 		input := decodeVectorPart[struct {
 			Section string `json:"section"`
 			Count   int    `json:"count"`
 		}](t, vector.Input, vector.Name+".input")
-		return fixtureSectionShapeRejection(t, input.Section, input.Count)
+		return fixtureSectionShapeRejection(t, h.fixture, input.Section, input.Count)
 	case "stage_chunk_mutation":
 		input := decodeVectorPart[struct {
 			Mutation string `json:"mutation"`
@@ -208,6 +240,231 @@ func requireFixtureAPIRejection(t testing.TB, err error) {
 	if err == nil {
 		t.Fatal("Go package API accepted a negative fixture")
 	}
+}
+
+func (h *fixtureConformanceHarness) fixturePolicyGroupBindingRejection(t *testing.T, mutation string) string {
+	t.Helper()
+	groups := vectorPolicyGroupsValue(t, h.fixture)
+	authority := vectorRunPolicyAuthority(t, h.fixture, plainSHA256(testDenyAllRenderPolicyArtifact()))
+	decision := vectorDecisionValue(t, h.fixture, "page_document")
+	bindings := RunPinnedPolicyBindings{Decisions: []PolicyDecision{decision}}
+	switch mutation {
+	case "missing_group":
+		filtered := make([]PolicyGroup, 0, len(groups)-1)
+		for _, group := range groups {
+			if group.GroupID != decision.GroupID {
+				filtered = append(filtered, group)
+			}
+		}
+		authority = newAuthenticatedTestRunPolicyAuthority(
+			t, vectorLease(t, h.fixture).RunID, mustFixtureDigest(t, h.fixture.Identities.CrawlPolicyDigest),
+			plainSHA256(testDenyAllRenderPolicyArtifact()), filtered,
+		)
+	case "wrong_rate_lineage":
+		var alternate PolicyGroup
+		for _, group := range groups {
+			if group.GroupID != decision.GroupID {
+				alternate = group
+				break
+			}
+		}
+		if alternate.GroupID == "" {
+			t.Fatal("fixture has no alternate policy rate lineage")
+		}
+		source := vectorSourceJobValue(t, h.fixture, 0)
+		source.RateScopeID = alternate.RateScopeID
+		source.Decision.RateScopeID = alternate.RateScopeID
+		source.Decision.GroupScopeID = alternate.GroupScopeID
+		bindings.Decisions = nil
+		bindings.SourceJobs = []SourceJob{source}
+	case "changed_group_tuple":
+		for index := range groups {
+			if groups[index].GroupID == decision.GroupID {
+				groups[index].Concurrency--
+			}
+		}
+		authority = newAuthenticatedTestRunPolicyAuthority(
+			t, vectorLease(t, h.fixture).RunID, mustFixtureDigest(t, h.fixture.Identities.CrawlPolicyDigest),
+			plainSHA256(testDenyAllRenderPolicyArtifact()), groups,
+		)
+		bindings.Decisions = nil
+		bindings.Discoveries = []OutputDiscovery{vectorOutputValue(t, h.fixture).Discoveries[0]}
+	case "unequal_group_origin_tuple":
+		decision.OriginConcurrency--
+		bindings.Decisions = []PolicyDecision{decision}
+	case "unrelated_group_map":
+		unrelatedID, err := ParseGroupID("unrelated-policy-group")
+		if err != nil {
+			t.Fatal(err)
+		}
+		unrelatedRate, err := ParseRateScopeID(strings.Repeat("9", 32))
+		if err != nil {
+			t.Fatal(err)
+		}
+		unrelatedScope, err := DeriveGroupScopeID(unrelatedRate)
+		if err != nil {
+			t.Fatal(err)
+		}
+		unrelatedGroups := []PolicyGroup{{
+			GroupID: unrelatedID, RateScopeID: unrelatedRate, GroupScopeID: unrelatedScope,
+			RequestStartLimit: 1, Concurrency: 1, IntervalMS: 0,
+		}}
+		unrelatedAuthority := newAuthenticatedTestRunPolicyAuthority(
+			t, vectorLease(t, h.fixture).RunID, mustFixtureDigest(t, h.fixture.Identities.CrawlPolicyDigest),
+			plainSHA256(testDenyAllRenderPolicyArtifact()), unrelatedGroups,
+		)
+		surfaces := []RunPinnedPolicyBindings{
+			{Decisions: []PolicyDecision{decision}},
+			{SourceJobs: []SourceJob{vectorSourceJobValue(t, h.fixture, 0)}},
+			{Discoveries: []OutputDiscovery{vectorOutputValue(t, h.fixture).Discoveries[0]}},
+		}
+		for index, surface := range surfaces {
+			if err := ValidateRunPinnedPolicyBindings(unrelatedAuthority, surface); !errors.Is(err, ErrPolicyGroupBindingMismatch) {
+				t.Fatalf("unrelated group map surface %d error = %v", index, err)
+			}
+		}
+		return "POLICY_GROUP_BINDING_MISMATCH"
+	default:
+		t.Fatalf("unsupported policy-group binding mutation %q", mutation)
+	}
+	err := ValidateRunPinnedPolicyBindings(authority, bindings)
+	if !errors.Is(err, ErrPolicyGroupBindingMismatch) {
+		t.Fatalf("policy-group binding production error = %v", err)
+	}
+	return "POLICY_GROUP_BINDING_MISMATCH"
+}
+
+func (h *fixtureConformanceHarness) fixtureGuardCoreMutationRejection(t *testing.T, baseCase, mutation string) string {
+	t.Helper()
+	mode, input := h.fixtureGuardCoreInputByCase(t, baseCase)
+	switch mutation {
+	case "zero_contract":
+		input.ContractSHA256 = Digest(ZeroSHA256)
+	case "zero_redis_config":
+		input.RedisConfigSHA256 = Digest(ZeroSHA256)
+	case "all_nonzero_provisional":
+		input.MaximumShapeSHA256 = Digest(strings.Repeat("2", 64))
+		input.MemoryFixtureSHA256 = Digest(strings.Repeat("3", 64))
+		input.LuaBenchmarkSHA256 = Digest(strings.Repeat("4", 64))
+		input.AOFCrashEvidenceSHA256 = Digest(strings.Repeat("5", 64))
+	case "migration_provisional":
+		input.CutoverMode = CutoverV1Migration
+		input.CandidateRunID = RunID(strings.Repeat("a", 32))
+	case "production_zero_evidence":
+		input.MaximumShapeSHA256 = Digest(ZeroSHA256)
+	case "redis_6":
+		input.RedisVersion = "6.2.0"
+	case "redis_8":
+		input.RedisVersion = "8.0.0"
+	default:
+		t.Fatalf("unsupported guard-core mutation %q", mutation)
+	}
+	var err error
+	switch mode {
+	case "production":
+		_, err = NewGuardCore(input)
+	case "provisional_fixture":
+		_, err = NewProvisionalGuardCore(input)
+	default:
+		t.Fatalf("unsupported fixture guard mode %q", mode)
+	}
+	if !errors.Is(err, ErrInvalidRecordValue) {
+		t.Fatalf("guard-core production error = %v", err)
+	}
+	if mutation == "redis_6" || mutation == "redis_8" {
+		return "INVALID_REDIS_VERSION"
+	}
+	return "INVALID_GUARD_RELATION"
+}
+
+func (h *fixtureConformanceHarness) fixtureGuardChainMutationRejection(t *testing.T, baseCase, mutation string) string {
+	t.Helper()
+	vector := h.fixtureCaseByName(t, baseCase)
+	if vector.Kind != "guard_chain" {
+		t.Fatalf("guard-chain mutation base %q has kind %q", baseCase, vector.Kind)
+	}
+	input := decodeVectorPart[fixtureGuardChainInput](t, vector.Input, baseCase+".input")
+	contractDigest := h.fixtureContractDigest(t, input.ContractCase)
+	core, err := NewGuardCore(fixtureGuardCoreValue(t, contractDigest, input.GuardCore))
+	if err != nil {
+		t.Fatal(err)
+	}
+	coreDigest, err := core.SHA256()
+	if err != nil {
+		t.Fatal(err)
+	}
+	switch mutation {
+	case "redis_config_disagreement":
+		input.Compatibility.RedisConfigSHA256 = strings.Repeat("f", 64)
+	case "zero_image_digest":
+		input.Compatibility.SpiderImage = "sha256:" + ZeroSHA256
+	default:
+		t.Fatalf("unsupported guard-chain mutation %q", mutation)
+	}
+	artifact, err := NewCompatibilityArtifact(CompatibilityArtifactInput{
+		RedisConfigSHA256:       mustFixtureDigest(t, input.Compatibility.RedisConfigSHA256),
+		CommitGuardSHA256:       coreDigest,
+		SpiderImage:             mustImageDigest(t, input.Compatibility.SpiderImage),
+		SeedImporterImage:       mustImageDigest(t, input.Compatibility.SeedImporterImage),
+		CrawlAdminImage:         mustImageDigest(t, input.Compatibility.CrawlAdminImage),
+		IndexerImage:            mustImageDigest(t, input.Compatibility.IndexerImage),
+		ImageIndexerImage:       mustImageDigest(t, input.Compatibility.ImageIndexerImage),
+		BacklinksProcessorImage: mustImageDigest(t, input.Compatibility.BacklinksProcessorImage),
+		MonitoringImage:         mustImageDigest(t, input.Compatibility.MonitoringImage),
+		RenderWorkerImage:       input.Compatibility.RenderWorkerImage,
+	})
+	if mutation == "zero_image_digest" {
+		if !errors.Is(err, ErrInvalidRecordValue) {
+			t.Fatalf("zero image digest production error = %v", err)
+		}
+		return "INVALID_IMAGE_DIGEST"
+	}
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := ValidateGuardCompatibility(core, artifact); !errors.Is(err, ErrArtifactMismatch) {
+		t.Fatalf("guard/config disagreement production error = %v", err)
+	}
+	return "GUARD_CONFIG_MISMATCH"
+}
+
+func (h *fixtureConformanceHarness) fixtureGuardCoreInputByCase(t *testing.T, name string) (string, GuardCoreInput) {
+	t.Helper()
+	vector := h.fixtureCaseByName(t, name)
+	var mode, contractCase string
+	var spec fixtureGuardCoreSpec
+	switch vector.Kind {
+	case "guard_core":
+		input := decodeVectorPart[fixtureGuardCoreCaseInput](t, vector.Input, name+".input")
+		mode, contractCase, spec = input.GuardMode, input.ContractCase, input.GuardCore
+	case "guard_chain":
+		input := decodeVectorPart[fixtureGuardChainInput](t, vector.Input, name+".input")
+		mode, contractCase, spec = input.GuardMode, input.ContractCase, input.GuardCore
+	default:
+		t.Fatalf("guard mutation base %q has kind %q", name, vector.Kind)
+	}
+	return mode, fixtureGuardCoreValue(t, h.fixtureContractDigest(t, contractCase), spec)
+}
+
+func (h *fixtureConformanceHarness) fixtureCaseByName(t testing.TB, name string) digestVectorCase {
+	t.Helper()
+	for _, vector := range h.fixture.Cases {
+		if vector.Name == name {
+			return vector
+		}
+	}
+	t.Fatalf("unknown positive fixture case %q", name)
+	return digestVectorCase{}
+}
+
+func (h *fixtureConformanceHarness) fixtureContractDigest(t testing.TB, name string) Digest {
+	t.Helper()
+	vector := h.fixtureCaseByName(t, name)
+	if vector.Kind != "contract_digest" {
+		t.Fatalf("guard contract case %q has kind %q", name, vector.Kind)
+	}
+	expected := decodeVectorPart[contractCaseResult](t, vector.Expected, name+".expected")
+	return mustFixtureDigest(t, expected.ContractSHA256)
 }
 
 func fixtureScoreRejection(t testing.TB, value string) string {
@@ -343,7 +600,6 @@ func (h *fixtureConformanceHarness) fixtureOutputMutationRejection(t *testing.T,
 	t.Helper()
 	context := vectorOutputContextValue(t, h.fixture)
 	output := cloneFixtureOutput(vectorOutputValue(t, h.fixture))
-	class := ""
 	switch mutation {
 	case "outlinks_one_over":
 		output.Outlinks = make([]string, MaxOutlinksPerJob+1)
@@ -390,7 +646,7 @@ func (h *fixtureConformanceHarness) fixtureOutputMutationRejection(t *testing.T,
 		output.Page.RenderPolicyRule = "render-main"
 	case "render_false_with_digest":
 		output.Page.RenderPolicyDigest = mustFixtureDigest(t, h.fixture.Identities.CrawlPolicyDigest)
-	case "render_true_without_original", "render_true_without_rule", "render_true_rule_control", "render_true_bad_digest":
+	case "render_true_without_original", "render_true_without_rule", "render_true_rule_one_over", "render_true_rule_control", "render_true_bad_digest":
 		context = vectorOutputContextWith(t, h.fixture, len(h.fixture.OutputContext.Requests), []string{"render-main"})
 		output.Page.Rendered = true
 		output.Page.OriginalHTML = []byte("source")
@@ -401,6 +657,8 @@ func (h *fixtureConformanceHarness) fixtureOutputMutationRejection(t *testing.T,
 			output.Page.OriginalHTML = []byte{}
 		case "render_true_without_rule":
 			output.Page.RenderPolicyRule = ""
+		case "render_true_rule_one_over":
+			output.Page.RenderPolicyRule = strings.Repeat("r", MaxRenderPolicyRuleIDBytes+1)
 		case "render_true_rule_control":
 			output.Page.RenderPolicyRule = "render\nmain"
 		case "render_true_bad_digest":
@@ -420,143 +678,210 @@ func (h *fixtureConformanceHarness) fixtureOutputMutationRejection(t *testing.T,
 		job := vectorSourceJobValue(t, h.fixture, 0)
 		job.JobID = JobID(strings.Repeat("f", 64))
 		_, err := DeriveSourceDigest([]SourceJob{job})
-		requireFixtureAPIRejection(t, err)
-		if errors.Is(err, ErrURLIdentityMismatch) {
-			return "URL_IDENTITY_MISMATCH"
-		}
-		t.Fatalf("unexpected target witness error: %v", err)
+		return fixtureProductionOutputRejectionClass(t, err)
 	default:
 		t.Fatalf("unsupported output mutation %q", mutation)
 	}
-	class = classifyFixtureOutput(output, context)
 	_, err := DeriveOutputDigest(context, output)
-	if class != "" {
-		requireFixtureAPIRejection(t, err)
-	} else if err != nil {
-		t.Fatalf("output classifier accepted value rejected by package API: %v", err)
-	}
-	return class
+	return fixtureProductionOutputRejectionClass(t, err)
 }
 
-func classifyFixtureOutput(output CrawlOutput, context OutputContext) string {
-	if len(output.Outlinks) > MaxOutlinksPerJob || len(output.Discoveries) > MaxDiscoveriesPerJob || len(output.Images) > MaxImagesPerPage {
-		return "OUTPUT_COUNT_LIMIT"
+func fixtureProductionOutputRejectionClass(t testing.TB, err error) string {
+	t.Helper()
+	requireFixtureAPIRejection(t, err)
+	if class, ok := OutputRejectionClass(err); ok {
+		return class
 	}
-	if !utf8.Valid(output.Page.HTML) || !utf8.Valid(output.Page.OriginalHTML) {
-		return "INVALID_UTF8"
+	if errors.Is(err, ErrURLIdentityMismatch) {
+		return "URL_IDENTITY_MISMATCH"
 	}
-	if len(output.Page.HTML) > MaxPageBlobBytes || len(output.Page.OriginalHTML) > MaxPageBlobBytes {
-		return "PAGE_BLOB_LIMIT"
-	}
-	if len(output.Page.HTML)+len(output.Page.OriginalHTML) > MaxCombinedHTMLBytes {
-		return "COMBINED_HTML_LIMIT"
-	}
-	if len(output.Page.ContentType) > 1024 {
-		return "CONTENT_TYPE_LIMIT"
-	}
-	if validateContentType(output.Page.ContentType) != nil {
-		return "INVALID_CONTENT_TYPE"
-	}
-	if output.Page.StatusCode < 100 || output.Page.StatusCode > 399 {
-		return "STATUS_CODE_RANGE"
-	}
-	if output.Page.Rendered {
-		if output.Page.RenderPolicyRule == "" || containsControl(output.Page.RenderPolicyRule) {
-			return "INVALID_RENDER_RELATION"
-		}
-		if len(output.Page.RenderPolicyRule) > MaxRenderPolicyRuleIDBytes {
-			return "RENDER_RULE_LIMIT"
-		}
-		if _, err := ParseDigest(string(output.Page.RenderPolicyDigest)); err != nil {
-			return "INVALID_RENDER_POLICY_DIGEST"
-		}
-		if len(output.Page.OriginalHTML) == 0 {
-			return "INVALID_RENDER_RELATION"
-		}
-	} else if len(output.Page.OriginalHTML) != 0 || output.Page.RenderPolicyRule != "" || output.Page.RenderPolicyDigest != "" {
-		return "INVALID_RENDER_RELATION"
-	}
-	if !context.initialized || output.Page.NormalizedURL != context.finalTarget.CanonicalURL {
-		return "OUTPUT_CONTEXT_MISMATCH"
-	}
-	orderedOutlinks := append([]string(nil), output.Outlinks...)
-	sort.Strings(orderedOutlinks)
-	for index, value := range orderedOutlinks {
-		if !utf8.ValidString(value) {
-			return "INVALID_UTF8"
-		}
-		if len(value) > MaxCanonicalURLBytes {
-			return "URL_TOO_LONG"
-		}
-		if index > 0 && value == orderedOutlinks[index-1] {
-			return "DUPLICATE_OUTLINK"
-		}
-	}
-	orderedImages := append([]OutputImage(nil), output.Images...)
-	sort.Slice(orderedImages, func(left, right int) bool {
-		return orderedImages[left].NormalizedSourceURL < orderedImages[right].NormalizedSourceURL
-	})
-	for index, image := range orderedImages {
-		if !utf8.ValidString(image.Alt) || !utf8.ValidString(image.NormalizedSourceURL) {
-			return "INVALID_UTF8"
-		}
-		if len(image.Alt) > MaxImageAltBytes {
-			return "IMAGE_ALT_LIMIT"
-		}
-		if index > 0 && image.NormalizedSourceURL == orderedImages[index-1].NormalizedSourceURL {
-			return "DUPLICATE_IMAGE"
-		}
-	}
-	orderedDiscoveries := append([]OutputDiscovery(nil), output.Discoveries...)
-	sort.Slice(orderedDiscoveries, func(left, right int) bool { return orderedDiscoveries[left].JobID < orderedDiscoveries[right].JobID })
-	for index, discovery := range orderedDiscoveries {
-		if len(discovery.GroupID) > MaxPolicyGroupIDBytes {
-			return "GROUP_ID_LIMIT"
-		}
-		if index > 0 && discovery.JobID == orderedDiscoveries[index-1].JobID {
-			return "DUPLICATE_DISCOVERY"
-		}
-	}
+	t.Fatalf("production error has no stable output rejection class: %v", err)
 	return ""
+}
+
+func TestOutputRejectionSentinelsAreStableAndBackwardCompatible(t *testing.T) {
+	tests := []struct {
+		name          string
+		err           error
+		class         string
+		compatibility []error
+	}{
+		{"duplicate_outlink", ErrDuplicateOutlink, "DUPLICATE_OUTLINK", nil},
+		{"duplicate_image", ErrDuplicateImage, "DUPLICATE_IMAGE", nil},
+		{"duplicate_discovery", ErrDuplicateDiscovery, "DUPLICATE_DISCOVERY", nil},
+		{"duplicate_alias", ErrDuplicateAlias, "DUPLICATE_ALIAS", nil},
+		{"count_limit", ErrOutputCountLimit, "OUTPUT_COUNT_LIMIT", []error{ErrInputLimitExceeded}},
+		{"alias_count_limit", ErrOutputAliasCountLimit, "ALIAS_COUNT_LIMIT", []error{ErrInputLimitExceeded}},
+		{"page_blob_limit", ErrOutputPageBlobLimit, "PAGE_BLOB_LIMIT", []error{ErrInvalidOutput}},
+		{"combined_html_limit", ErrOutputCombinedHTMLLimit, "COMBINED_HTML_LIMIT", []error{ErrInvalidOutput}},
+		{"image_alt_limit", ErrOutputImageAltLimit, "IMAGE_ALT_LIMIT", []error{ErrInvalidOutput}},
+		{"content_type_limit", ErrOutputContentTypeLimit, "CONTENT_TYPE_LIMIT", []error{ErrInvalidOutput}},
+		{"invalid_content_type", ErrOutputInvalidContentType, "INVALID_CONTENT_TYPE", []error{ErrInvalidOutput}},
+		{"status_code_range", ErrOutputStatusCodeRange, "STATUS_CODE_RANGE", []error{ErrInvalidOutput}},
+		{"invalid_render_relation", ErrOutputInvalidRenderRelation, "INVALID_RENDER_RELATION", []error{ErrInvalidOutput}},
+		{"render_rule_limit", ErrOutputRenderRuleLimit, "RENDER_RULE_LIMIT", []error{ErrInvalidOutput}},
+		{"invalid_render_policy_digest", ErrOutputInvalidRenderPolicyDigest, "INVALID_RENDER_POLICY_DIGEST", []error{ErrDigestInputMismatch}},
+		{"invalid_utf8", ErrOutputInvalidUTF8, "INVALID_UTF8", []error{ErrInvalidOutput, ErrInvalidCanonicalURL}},
+		{"url_too_long", ErrOutputURLTooLong, "URL_TOO_LONG", []error{ErrInvalidCanonicalURL}},
+		{"group_id_limit", ErrOutputGroupIDLimit, "GROUP_ID_LIMIT", []error{ErrInvalidGroupID}},
+		{"context_mismatch", ErrOutputContextMismatch, "OUTPUT_CONTEXT_MISMATCH", []error{ErrInvalidOutput, ErrDigestInputMismatch}},
+	}
+	seenClasses := make(map[string]struct{}, len(tests))
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			class, ok := OutputRejectionClass(test.err)
+			if !ok || class != test.class {
+				t.Fatalf("production rejection class = %q, %t; want %q, true", class, ok, test.class)
+			}
+			if !errors.Is(test.err, test.err) {
+				t.Fatal("static sentinel does not match itself")
+			}
+			for _, broader := range test.compatibility {
+				if !errors.Is(test.err, broader) {
+					t.Fatalf("%v does not preserve errors.Is compatibility with %v", test.err, broader)
+				}
+			}
+			if strings.Contains(test.err.Error(), "output-secret-canary") {
+				t.Fatal("static rejection error exposed caller-controlled input")
+			}
+		})
+		if _, duplicate := seenClasses[test.class]; duplicate {
+			t.Fatalf("duplicate production output rejection class %q", test.class)
+		}
+		seenClasses[test.class] = struct{}{}
+	}
+}
+
+func TestOutputRejectionClassDetectsChangedProductionReturn(t *testing.T) {
+	fixture := loadDigestVectorFixture(t)
+	context := vectorOutputContextValue(t, fixture)
+	tests := []struct {
+		name          string
+		mutate        func(*CrawlOutput)
+		substitute    error
+		expectedClass string
+	}{
+		{
+			name: "duplicate",
+			mutate: func(output *CrawlOutput) {
+				output.Outlinks = append(output.Outlinks, output.Outlinks[0])
+			},
+			substitute: ErrDuplicateImage, expectedClass: "DUPLICATE_OUTLINK",
+		},
+		{
+			name: "limit",
+			mutate: func(output *CrawlOutput) {
+				output.Outlinks = make([]string, MaxOutlinksPerJob+1)
+			},
+			substitute: ErrOutputPageBlobLimit, expectedClass: "OUTPUT_COUNT_LIMIT",
+		},
+		{
+			name: "error",
+			mutate: func(output *CrawlOutput) {
+				output.Page.ContentType = ""
+			},
+			substitute: ErrOutputStatusCodeRange, expectedClass: "INVALID_CONTENT_TYPE",
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			output := cloneFixtureOutput(vectorOutputValue(t, fixture))
+			test.mutate(&output)
+			_, productionErr := DeriveOutputDigest(context, output)
+			class, ok := OutputRejectionClass(productionErr)
+			if !ok || class != test.expectedClass {
+				t.Fatalf("expected production return class = %q, %t; want %q, true", class, ok, test.expectedClass)
+			}
+			changedClass, ok := OutputRejectionClass(test.substitute)
+			if !ok {
+				t.Fatal("substituted production return lost its typed class")
+			}
+			if changedClass == test.expectedClass {
+				t.Fatalf("changing the production %s return preserved the incorrect expected class %q", test.name, changedClass)
+			}
+		})
+	}
 }
 
 func fmtURL(host string, index int) string {
 	return "https://" + host + "/" + fmt.Sprintf("%03d", index)
 }
 
-func fixtureSectionShapeRejection(t testing.TB, section string, count int) string {
+func fixtureSectionShapeRejection(t *testing.T, fixture digestVectorFixture, section string, count int) string {
 	t.Helper()
-	switch section {
-	case "page":
+	if count < 0 || count > MaxJobsPerRun+1 {
+		t.Fatal("unsupported fixture section count")
+	}
+	if section == "page" {
+		// Grammar-only evidence: CrawlOutput has one Page value, not a page
+		// slice. EncodeSection is framing, not a semantic section decoder.
+		t.Log("grammar-only page-section cardinality check; no production API consumes this arbitrary page-count grammar")
 		if count != 1 {
 			return "PAGE_SECTION_SHAPE"
 		}
+		return ""
+	}
+	if section == "aliases" {
+		aliases := make([]outputAlias, count)
+		for index := range aliases {
+			target := mustFixtureTargetForURL(t, fmtURL("count-aliases.example.com", index))
+			aliases[index] = outputAlias{URLID: target.URLID, CanonicalURL: target.CanonicalURL, Depth: 2}
+		}
+		// The production semantic encoder consumes an alias slice; this is
+		// schema evidence, not authority to construct an arbitrary OutputContext.
+		_, err := outputAliasRecords(aliases)
+		if err == nil {
+			return ""
+		}
+		if err != ErrOutputAliasCountLimit {
+			t.Fatalf("alias count error = %v; want exact ErrOutputAliasCountLimit", err)
+		}
+		return fixtureProductionOutputRejectionClass(t, err)
+	}
+	context := vectorOutputContextValue(t, fixture)
+	output := vectorOutputValue(t, fixture)
+	switch section {
 	case "outlinks":
-		if count < 0 || count > MaxOutlinksPerJob {
-			return "OUTPUT_COUNT_LIMIT"
+		output.Outlinks = make([]string, count)
+		for index := range output.Outlinks {
+			output.Outlinks[index] = fmtURL("count-outlinks.example.com", index)
 		}
 	case "images":
-		if count < 0 || count > MaxImagesPerPage {
-			return "OUTPUT_COUNT_LIMIT"
+		output.Images = make([]OutputImage, count)
+		for index := range output.Images {
+			output.Images[index] = OutputImage{NormalizedSourceURL: fmtURL("count-images.example.com", index), Alt: "count fixture"}
 		}
 	case "discoveries":
-		if count < 0 || count > MaxDiscoveriesPerJob {
-			return "OUTPUT_COUNT_LIMIT"
-		}
-	case "aliases":
-		if count < 1 || count > MaxAliasesPerJob {
-			return "ALIAS_COUNT_LIMIT"
+		prototype := output.Discoveries[0]
+		jobs := fixtureCountSourceJobs(t, SourceJob{
+			JobID: prototype.JobID, CanonicalURL: prototype.CanonicalURL, ScoreText: prototype.ScoreText,
+			Depth: prototype.Depth, GroupID: prototype.GroupID, RateScopeID: prototype.RateScopeID, Decision: prototype.Decision,
+		}, count)
+		output.Discoveries = make([]OutputDiscovery, count)
+		for index, job := range jobs {
+			output.Discoveries[index] = OutputDiscovery{
+				JobID: job.JobID, CanonicalURL: job.CanonicalURL, ScoreText: job.ScoreText,
+				Depth: job.Depth, GroupID: job.GroupID, RateScopeID: job.RateScopeID, Decision: job.Decision,
+			}
 		}
 	default:
 		t.Fatalf("unsupported output section %q", section)
 	}
-	return ""
+	_, err := DeriveOutputDigest(context, output)
+	if err == nil {
+		return ""
+	}
+	if err != ErrOutputCountLimit {
+		t.Fatalf("%s count error = %v; want exact ErrOutputCountLimit", section, err)
+	}
+	return fixtureProductionOutputRejectionClass(t, err)
 }
 
 func (h *fixtureConformanceHarness) fixtureStageMutationRejection(t *testing.T, mutation string) string {
 	t.Helper()
 	profile := h.outputProfile(t, "baseline")
 	commitID := mustFixtureDigest(t, profile.result.CommitID)
+	identity := outputCommitIdentity(profile.context, mustFixtureDigest(t, profile.result.PublicationID))
 	switch mutation {
 	case "unknown_kind":
 		_, err := newValidatedStageChunk(commitID, ChunkKind("generic"), 0, nil)
@@ -570,20 +895,23 @@ func (h *fixtureConformanceHarness) fixtureStageMutationRejection(t *testing.T, 
 		for index := range values {
 			values[index] = fmtURL("chunks.example.com", index)
 		}
-		_, err := NewOutlinksStageChunk(commitID, 0, profile.context, values)
-		requireFixtureAPIRejection(t, err)
+		_, err := NewOutlinksStageChunk(identity, 0, profile.context, values)
+		if err != ErrInvalidChunk {
+			t.Fatalf("65 valid outlinks error = %v; want exact ErrInvalidChunk", err)
+		}
 		return "CHUNK_RECORD_COUNT_LIMIT"
 	case "outlinks_empty":
-		_, err := NewOutlinksStageChunk(commitID, 0, profile.context, []string{})
-		requireFixtureAPIRejection(t, err)
+		_, err := NewOutlinksStageChunk(identity, 0, profile.context, []string{})
+		if err != ErrInvalidChunk {
+			t.Fatalf("empty outlink chunk error = %v; want exact ErrInvalidChunk", err)
+		}
 		return "CHUNK_RECORD_COUNT_LIMIT"
 	case "discoveries_65_records":
-		values := make([]OutputDiscovery, MaxNonBlobStageBatchRecords+1)
-		for index := range values {
-			values[index] = profile.output.Discoveries[0]
+		values := fixtureCountDiscoveries(t, profile.context, profile.output.Discoveries[0], MaxNonBlobStageBatchRecords+1)
+		_, err := NewDiscoveriesStageChunk(identity, 0, profile.context, values)
+		if err != ErrInputLimitExceeded {
+			t.Fatalf("65 valid unique discoveries error = %v; want exact ErrInputLimitExceeded", err)
 		}
-		_, err := NewDiscoveriesStageChunk(commitID, 0, values)
-		requireFixtureAPIRejection(t, err)
 		return "CHUNK_RECORD_COUNT_LIMIT"
 	case "aliases_duplicate":
 		alias := cloneRecord(profile.sections.Aliases[0])
@@ -594,19 +922,17 @@ func (h *fixtureConformanceHarness) fixtureStageMutationRejection(t *testing.T, 
 		}
 		return "DUPLICATE_CHUNK_RECORD"
 	case "image_manifest_one_over":
-		record := Record{
-			textField("contract_version", "1"),
-			textField("publication_id", profile.result.PublicationID),
-			textField("normalized_url", profile.output.Page.NormalizedURL),
-			textField("image_count", "0"),
-			textField("image_keys", "["+strings.Repeat(" ", MaxImageManifestBytes)+"]"),
-		}
+		record := fixtureSizedImageManifestRecord(t, identity.PublicationID, profile.output.Page.NormalizedURL, MaxImageManifestBytes+2)
 		_, err := newValidatedStageChunk(commitID, ChunkImageManifest, 0, []Record{record})
-		requireFixtureAPIRejection(t, err)
+		if err != ErrInvalidChunk {
+			t.Fatalf("oversized compact image manifest error = %v; want exact ErrInvalidChunk, not a source-URL content error", err)
+		}
 		return "IMAGE_MANIFEST_LIMIT"
 	case "blob_one_over":
-		_, err := NewPageBlobStageChunk(commitID, ChunkHTML, bytes.Repeat([]byte{'H'}, MaxPageBlobBytes+1))
-		requireFixtureAPIRejection(t, err)
+		_, err := NewPageBlobStageChunk(identity, profile.context, ChunkHTML, bytes.Repeat([]byte{'H'}, MaxPageBlobBytes+1))
+		if err != ErrInvalidChunk {
+			t.Fatalf("oversized valid UTF-8 blob error = %v; want exact ErrInvalidChunk", err)
+		}
 		return "PAGE_BLOB_LIMIT"
 	default:
 		t.Fatalf("unsupported stage mutation %q", mutation)
@@ -743,8 +1069,7 @@ func (h *fixtureConformanceHarness) fixtureOutputUTF8Rejection(t *testing.T, fie
 		t.Fatalf("unsupported UTF-8 field %q", field)
 	}
 	_, err = DeriveOutputDigest(context, output)
-	requireFixtureAPIRejection(t, err)
-	return "INVALID_UTF8"
+	return fixtureProductionOutputRejectionClass(t, err)
 }
 
 func (h *fixtureConformanceHarness) fixtureTransitionReplayRejection(t *testing.T, mutation string) string {

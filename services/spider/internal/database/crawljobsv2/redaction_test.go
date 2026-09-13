@@ -43,7 +43,7 @@ func TestSensitiveValuesRedactStringGoStringAndJSON(t *testing.T) {
 		PolicyGroup{GroupID: GroupID(textCanary)},
 		ReservationIntent{Lease: lease, Target: target, Decision: decision},
 		PublicationIdentity{RunID: lease.RunID, JobID: lease.JobID, OutputDigest: Digest(hexCanary)},
-		CommitIdentity{RunID: lease.RunID, JobID: lease.JobID, OwnerID: lease.OwnerID, Token: token},
+		CommitIdentity{RunID: lease.RunID, JobID: lease.JobID, OwnerID: lease.OwnerID, Token: token, RequestStartsBaseline: 2, RequestStartsGeneration: 3},
 		source,
 		page,
 		OutputImage{NormalizedSourceURL: urlCanary, Alt: textCanary},

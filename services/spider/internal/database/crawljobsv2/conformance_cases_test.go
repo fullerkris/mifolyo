@@ -14,24 +14,27 @@ import (
 	"runtime"
 	"sort"
 	"strconv"
+	"strings"
 	"testing"
 	"unicode/utf8"
 )
 
 type fixtureConformanceHarness struct {
-	fixture        digestVectorFixture
-	contractCases  map[string]contractCaseResult
-	outputProfiles map[string]*fixtureOutputProfile
-	sourceProfiles map[string]sourceProfileResult
+	fixture                 digestVectorFixture
+	contractCases           map[string]contractCaseResult
+	outputProfiles          map[string]*fixtureOutputProfile
+	sourceProfiles          map[string]sourceProfileResult
+	sourceProfileGenerators map[string]string
 }
 
 func newFixtureConformanceHarness(t *testing.T, fixture digestVectorFixture) *fixtureConformanceHarness {
 	t.Helper()
 	return &fixtureConformanceHarness{
-		fixture:        fixture,
-		contractCases:  make(map[string]contractCaseResult),
-		outputProfiles: make(map[string]*fixtureOutputProfile),
-		sourceProfiles: make(map[string]sourceProfileResult),
+		fixture:                 fixture,
+		contractCases:           make(map[string]contractCaseResult),
+		outputProfiles:          make(map[string]*fixtureOutputProfile),
+		sourceProfiles:          make(map[string]sourceProfileResult),
+		sourceProfileGenerators: make(map[string]string),
 	}
 }
 
@@ -55,8 +58,12 @@ func TestSharedFixtureV2PositiveCases(t *testing.T) {
 			case "contract_digest":
 				result := verifyContractDigestCase(t, vector)
 				harness.contractCases[vector.Name] = result
+			case "policy_group_boundary":
+				verifyPolicyGroupBoundaryCase(t, vector)
 			case "guard_chain":
 				harness.verifyGuardChainCase(t, vector)
+			case "guard_core":
+				harness.verifyGuardCoreCase(t, vector)
 			case "transition_mutation":
 				harness.verifyTransitionMutationCase(t, vector)
 			case "publication_independence":
@@ -69,6 +76,8 @@ func TestSharedFixtureV2PositiveCases(t *testing.T) {
 				harness.verifyStageChunksCase(t, vector)
 			case "field_limits":
 				harness.verifyFieldLimitsCase(t, vector)
+			case "transcript_binding":
+				verifyTranscriptBindingCase(t, fixture, vector)
 			default:
 				t.Fatalf("unsupported positive fixture kind %q", vector.Kind)
 			}
@@ -183,6 +192,85 @@ type contractCaseResult struct {
 	ContractSHA256 string   `json:"contract_sha256"`
 }
 
+type fixturePolicyGroupGenerator struct {
+	Grammar              string `json:"grammar"`
+	Count                int    `json:"count"`
+	FirstIndex           int    `json:"first_index"`
+	IndexWidth           int    `json:"index_width"`
+	IndexRadix           int    `json:"index_radix"`
+	GroupIDTemplate      string `json:"group_id_template"`
+	RateScopeIDTemplate  string `json:"rate_scope_id_template"`
+	RequestStartLimit    uint64 `json:"request_start_limit"`
+	Concurrency          uint64 `json:"concurrency"`
+	IntervalMilliseconds uint64 `json:"interval_ms"`
+}
+
+func verifyPolicyGroupBoundaryCase(t *testing.T, vector digestVectorCase) {
+	t.Helper()
+	validateFixturePolicyGroupGeneratorShape(t, vector.Input, vector.Name+".input")
+	input := decodeVectorPart[fixturePolicyGroupGenerator](t, vector.Input, vector.Name+".input")
+	expected := decodeVectorPart[struct {
+		Count  int    `json:"count"`
+		SHA256 string `json:"policy_group_map_sha256"`
+	}](t, vector.Expected, vector.Name+".expected")
+	groups := fixturePolicyGroupsFromGenerator(t, input)
+	digest, err := DerivePolicyGroupMapDigest(groups)
+	if err != nil {
+		t.Fatalf("derive boundary policy-group map: %v", err)
+	}
+	actual := struct {
+		Count  int    `json:"count"`
+		SHA256 string `json:"policy_group_map_sha256"`
+	}{Count: len(groups), SHA256: string(digest)}
+	assertVectorValue(t, actual, expected)
+}
+
+func validateFixturePolicyGroupGeneratorShape(t testing.TB, raw json.RawMessage, path string) {
+	t.Helper()
+	fixtureRawObject(
+		t, raw, path, "grammar", "count", "first_index", "index_width", "index_radix", "group_id_template",
+		"rate_scope_id_template", "request_start_limit", "concurrency", "interval_ms",
+	)
+}
+
+func fixturePolicyGroupsFromGenerator(t testing.TB, generator fixturePolicyGroupGenerator) []PolicyGroup {
+	t.Helper()
+	if generator.Grammar != "indexed_policy_groups_v1" || generator.Count < 0 || generator.Count > MaxPolicyGroupsPerRun+1 ||
+		generator.FirstIndex < 0 || generator.IndexWidth < 1 || generator.IndexWidth > 16 ||
+		(generator.IndexRadix != 10 && generator.IndexRadix != 16) ||
+		strings.Count(generator.GroupIDTemplate, "{index}") != 1 ||
+		strings.Count(generator.RateScopeIDTemplate, "{index}") != 1 {
+		t.Fatal("invalid indexed policy-group generator grammar")
+	}
+	groups := make([]PolicyGroup, 0, generator.Count)
+	for offset := 0; offset < generator.Count; offset++ {
+		index := generator.FirstIndex + offset
+		indexText := strconv.FormatInt(int64(index), generator.IndexRadix)
+		if len(indexText) > generator.IndexWidth {
+			t.Fatal("policy-group generator index exceeds declared width")
+		}
+		indexText = strings.Repeat("0", generator.IndexWidth-len(indexText)) + indexText
+		groupID, err := ParseGroupID(strings.Replace(generator.GroupIDTemplate, "{index}", indexText, 1))
+		if err != nil {
+			t.Fatalf("generated group ID: %v", err)
+		}
+		rateScopeID, err := ParseRateScopeID(strings.Replace(generator.RateScopeIDTemplate, "{index}", indexText, 1))
+		if err != nil {
+			t.Fatalf("generated rate-scope ID: %v", err)
+		}
+		groupScopeID, err := DeriveGroupScopeID(rateScopeID)
+		if err != nil {
+			t.Fatal(err)
+		}
+		groups = append(groups, PolicyGroup{
+			GroupID: groupID, RateScopeID: rateScopeID, GroupScopeID: groupScopeID,
+			RequestStartLimit: generator.RequestStartLimit, Concurrency: generator.Concurrency,
+			IntervalMS: generator.IntervalMilliseconds,
+		})
+	}
+	return groups
+}
+
 func verifyContractDigestCase(t *testing.T, vector digestVectorCase) contractCaseResult {
 	t.Helper()
 	input := decodeVectorPart[struct {
@@ -260,57 +348,64 @@ func verifyContractDigestCase(t *testing.T, vector digestVectorCase) contractCas
 	return actual
 }
 
+type fixtureGuardCoreSpec struct {
+	RedisVersion           string `json:"redis_version"`
+	RedisConfigSHA256      string `json:"redis_config_sha256"`
+	MaximumShapeSHA256     string `json:"maximum_shape_sha256"`
+	MemoryFixtureSHA256    string `json:"memory_fixture_sha256"`
+	LuaBenchmarkSHA256     string `json:"lua_benchmark_sha256"`
+	AOFCrashEvidenceSHA256 string `json:"aof_crash_evidence_sha256"`
+	CutoverMode            string `json:"cutover_mode"`
+	CandidateRunID         string `json:"candidate_run_id"`
+}
+
+type fixtureCompatibilitySpec struct {
+	RedisConfigSHA256       string `json:"redis_config_sha256"`
+	SpiderImage             string `json:"spider_image"`
+	SeedImporterImage       string `json:"seed_importer_image"`
+	CrawlAdminImage         string `json:"crawl_admin_image"`
+	IndexerImage            string `json:"indexer_image"`
+	ImageIndexerImage       string `json:"image_indexer_image"`
+	BacklinksProcessorImage string `json:"backlinks_processor_image"`
+	MonitoringImage         string `json:"monitoring_image"`
+	RenderWorkerImage       string `json:"render_worker_image"`
+}
+
+type fixtureGuardChainInput struct {
+	GuardMode     string                   `json:"guard_mode"`
+	ContractCase  string                   `json:"contract_case"`
+	GuardCore     fixtureGuardCoreSpec     `json:"guard_core"`
+	Compatibility fixtureCompatibilitySpec `json:"compatibility"`
+	ApprovedAtMS  uint64                   `json:"approved_at_ms"`
+}
+
+type fixtureGuardCoreCaseInput struct {
+	GuardMode    string               `json:"guard_mode"`
+	ContractCase string               `json:"contract_case"`
+	GuardCore    fixtureGuardCoreSpec `json:"guard_core"`
+}
+
+type fixtureGuardExpected struct {
+	GuardCoreSHA256             string `json:"guard_core_sha256"`
+	CompatibilityManifestSHA256 string `json:"compatibility_manifest_sha256"`
+	CompatibilityMarkerSHA256   string `json:"compatibility_marker_sha256"`
+	StoredGuardSHA256           string `json:"stored_guard_sha256"`
+}
+
 func (h *fixtureConformanceHarness) verifyGuardChainCase(t *testing.T, vector digestVectorCase) {
 	t.Helper()
-	type guardInput struct {
-		ContractCase string `json:"contract_case"`
-		GuardCore    struct {
-			RedisVersion           string `json:"redis_version"`
-			RedisConfigSHA256      string `json:"redis_config_sha256"`
-			MaximumShapeSHA256     string `json:"maximum_shape_sha256"`
-			MemoryFixtureSHA256    string `json:"memory_fixture_sha256"`
-			LuaBenchmarkSHA256     string `json:"lua_benchmark_sha256"`
-			AOFCrashEvidenceSHA256 string `json:"aof_crash_evidence_sha256"`
-			CutoverMode            string `json:"cutover_mode"`
-			CandidateRunID         string `json:"candidate_run_id"`
-		} `json:"guard_core"`
-		Compatibility struct {
-			RedisConfigSHA256       string `json:"redis_config_sha256"`
-			SpiderImage             string `json:"spider_image"`
-			SeedImporterImage       string `json:"seed_importer_image"`
-			CrawlAdminImage         string `json:"crawl_admin_image"`
-			IndexerImage            string `json:"indexer_image"`
-			ImageIndexerImage       string `json:"image_indexer_image"`
-			BacklinksProcessorImage string `json:"backlinks_processor_image"`
-			MonitoringImage         string `json:"monitoring_image"`
-			RenderWorkerImage       string `json:"render_worker_image"`
-		} `json:"compatibility"`
-		ApprovedAtMS uint64 `json:"approved_at_ms"`
+	input := decodeVectorPart[fixtureGuardChainInput](t, vector.Input, vector.Name+".input")
+	expected := decodeVectorPart[fixtureGuardExpected](t, vector.Expected, vector.Name+".expected")
+	if input.GuardMode != "production" {
+		t.Fatalf("guard chain mode = %q, want production", input.GuardMode)
 	}
-	type guardExpected struct {
-		GuardCoreSHA256             string `json:"guard_core_sha256"`
-		CompatibilityManifestSHA256 string `json:"compatibility_manifest_sha256"`
-		CompatibilityMarkerSHA256   string `json:"compatibility_marker_sha256"`
-		StoredGuardSHA256           string `json:"stored_guard_sha256"`
-	}
-	input := decodeVectorPart[guardInput](t, vector.Input, vector.Name+".input")
-	expected := decodeVectorPart[guardExpected](t, vector.Expected, vector.Name+".expected")
 	contract, ok := h.contractCases[input.ContractCase]
 	if !ok {
 		t.Fatalf("guard references contract case %q before it was consumed", input.ContractCase)
 	}
 	contractDigest := mustFixtureDigest(t, contract.ContractSHA256)
-	core, err := NewGuardCore(GuardCoreInput{
-		ContractSHA256:         contractDigest,
-		RedisVersion:           input.GuardCore.RedisVersion,
-		RedisConfigSHA256:      mustFixtureDigest(t, input.GuardCore.RedisConfigSHA256),
-		MaximumShapeSHA256:     mustFixtureDigest(t, input.GuardCore.MaximumShapeSHA256),
-		MemoryFixtureSHA256:    mustFixtureDigest(t, input.GuardCore.MemoryFixtureSHA256),
-		LuaBenchmarkSHA256:     mustFixtureDigest(t, input.GuardCore.LuaBenchmarkSHA256),
-		AOFCrashEvidenceSHA256: mustFixtureDigest(t, input.GuardCore.AOFCrashEvidenceSHA256),
-		CutoverMode:            CutoverMode(input.GuardCore.CutoverMode),
-		CandidateRunID:         mustOptionalRunID(t, input.GuardCore.CandidateRunID),
-	})
+	coreInput := fixtureGuardCoreValue(t, contractDigest, input.GuardCore)
+	core, err := NewGuardCore(coreInput)
 	if err != nil {
 		t.Fatalf("construct guard core: %v", err)
 	}
@@ -340,6 +435,9 @@ func (h *fixtureConformanceHarness) verifyGuardChainCase(t *testing.T, vector di
 	if err != nil {
 		t.Fatalf("construct compatibility artifact: %v", err)
 	}
+	if err := ValidateGuardCompatibility(core, artifact); err != nil {
+		t.Fatalf("bind guard and compatibility artifact: %v", err)
+	}
 	manifestDigest, err := artifact.SHA256()
 	if err != nil {
 		t.Fatal(err)
@@ -367,13 +465,96 @@ func (h *fixtureConformanceHarness) verifyGuardChainCase(t *testing.T, vector di
 	if err != nil {
 		t.Fatal(err)
 	}
-	actual := guardExpected{
+	actual := fixtureGuardExpected{
 		GuardCoreSHA256:             string(coreDigest),
 		CompatibilityManifestSHA256: string(manifestDigest),
 		CompatibilityMarkerSHA256:   fixtureSHA256(markerBytes),
 		StoredGuardSHA256:           fixtureSHA256(storedBytes),
 	}
 	assertVectorValue(t, actual, expected)
+}
+
+func (h *fixtureConformanceHarness) verifyGuardCoreCase(t *testing.T, vector digestVectorCase) {
+	t.Helper()
+	input := decodeVectorPart[fixtureGuardCoreCaseInput](t, vector.Input, vector.Name+".input")
+	expected := decodeVectorPart[struct {
+		GuardCoreSHA256 string `json:"guard_core_sha256"`
+		RecordHex       string `json:"record_hex"`
+	}](t, vector.Expected, vector.Name+".expected")
+	contract, ok := h.contractCases[input.ContractCase]
+	if !ok {
+		t.Fatalf("guard core references contract case %q before it was consumed", input.ContractCase)
+	}
+	coreInput := fixtureGuardCoreValue(t, mustFixtureDigest(t, contract.ContractSHA256), input.GuardCore)
+	var coreRecord Record
+	var coreBytes []byte
+	var coreDigest Digest
+	var err error
+	switch input.GuardMode {
+	case "production":
+		core, constructErr := NewGuardCore(coreInput)
+		if constructErr != nil {
+			t.Fatalf("construct production guard core: %v", constructErr)
+		}
+		coreRecord, err = core.Record()
+		if err == nil {
+			coreBytes, err = core.Encode()
+		}
+		if err == nil {
+			coreDigest, err = core.SHA256()
+		}
+	case "provisional_fixture":
+		core, constructErr := NewProvisionalGuardCore(coreInput)
+		if constructErr != nil {
+			t.Fatalf("construct provisional guard core: %v", constructErr)
+		}
+		coreRecord, err = core.Record()
+		if err == nil {
+			coreBytes, err = core.Encode()
+		}
+		if err == nil {
+			coreDigest, err = core.SHA256()
+		}
+	default:
+		t.Fatalf("unsupported guard mode %q", input.GuardMode)
+	}
+	if err != nil {
+		t.Fatal(err)
+	}
+	wantNames := guardCoreFieldNames()
+	if len(coreRecord) != len(wantNames) {
+		t.Fatalf("guard core fields = %d, want %d", len(coreRecord), len(wantNames))
+	}
+	for index := range wantNames {
+		if coreRecord[index].Name != wantNames[index] {
+			t.Fatalf("guard core field %d = %q, want %q", index, coreRecord[index].Name, wantNames[index])
+		}
+	}
+	ordinary, err := EncodeRecord(coreRecord)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal(ordinary, coreBytes) || fixtureSHA256(coreBytes) != string(coreDigest) {
+		t.Fatal("guard core is not the exact ordinary RECORD encoding")
+	}
+	actual := struct {
+		GuardCoreSHA256 string `json:"guard_core_sha256"`
+		RecordHex       string `json:"record_hex"`
+	}{GuardCoreSHA256: string(coreDigest), RecordHex: hex.EncodeToString(coreBytes)}
+	assertVectorValue(t, actual, expected)
+}
+
+func fixtureGuardCoreValue(t testing.TB, contractDigest Digest, spec fixtureGuardCoreSpec) GuardCoreInput {
+	t.Helper()
+	return GuardCoreInput{
+		ContractSHA256: contractDigest, RedisVersion: spec.RedisVersion,
+		RedisConfigSHA256:      mustFixtureDigest(t, spec.RedisConfigSHA256),
+		MaximumShapeSHA256:     mustFixtureDigest(t, spec.MaximumShapeSHA256),
+		MemoryFixtureSHA256:    mustFixtureDigest(t, spec.MemoryFixtureSHA256),
+		LuaBenchmarkSHA256:     mustFixtureDigest(t, spec.LuaBenchmarkSHA256),
+		AOFCrashEvidenceSHA256: mustFixtureDigest(t, spec.AOFCrashEvidenceSHA256),
+		CutoverMode:            CutoverMode(spec.CutoverMode), CandidateRunID: mustOptionalRunID(t, spec.CandidateRunID),
+	}
 }
 
 func (h *fixtureConformanceHarness) verifyTransitionMutationCase(t *testing.T, vector digestVectorCase) {

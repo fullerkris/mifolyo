@@ -8,48 +8,54 @@ import (
 var (
 	ErrInvalidScriptSHA1     = errors.New("crawljobsv2: invalid script SHA-1")
 	ErrCommandBoundsExceeded = errors.New("crawljobsv2: serialized command bounds exceeded")
-	ErrRecordBoundsExceeded  = errors.New("crawljobsv2: stage record bounds exceeded")
+	ErrRecordBoundsExceeded  = errors.New("crawljobsv2: operation record bounds exceeded")
 )
 
-// OperationWireRequest is sealed to this package. Authoritative Lua bindings
-// must expose one concrete typed request per operation; external callers cannot
-// substitute arbitrary KEYS/ARGV or a caller-selected record count.
-type OperationWireRequest interface {
-	crawlJobsV2WireShape() operationWireShape
-}
-
-type operationWireShape struct {
-	operation OperationName
-	keys      [][]byte
-	arguments [][]byte
-	records   []Record
-}
-
 // EvalSHARequest is a validated immutable wire request ready for a Redis
-// client. Construction derives the batch count from typed records.
+// client. Its script identity comes from a complete sealed authoritative bundle
+// rather than from a per-request caller-selected SHA-1.
 type EvalSHARequest struct {
-	operation OperationName
-	keys      [][]byte
-	arguments [][]byte
-	size      uint64
+	operation    OperationName
+	scriptName   string
+	scriptSHA1   string
+	sourceSHA256 Digest
+	keys         [][]byte
+	arguments    [][]byte
+	size         uint64
 }
 
-func BuildEvalSHARequest(scriptSHA1 string, request OperationWireRequest) (EvalSHARequest, error) {
-	if request == nil {
-		return EvalSHARequest{}, ErrRecordBoundsExceeded
+func BuildEvalSHARequest(bundle ScriptBindingSet, request OperationWireRequest) (EvalSHARequest, error) {
+	// Validate the trust anchor before processing caller-held request data. The
+	// zero value therefore cannot fall through to a different construction path.
+	if err := bundle.validate(); err != nil {
+		return EvalSHARequest{}, err
 	}
-	shape := request.crawlJobsV2WireShape()
-	size, err := validateEvalSHARequest(shape.operation, scriptSHA1, shape.keys, shape.arguments, uint64(len(shape.records)))
+	keys, arguments, recordCount, err := request.validatedWireParts()
+	if err != nil {
+		return EvalSHARequest{}, err
+	}
+	binding, err := bundle.bindingForValidated(request.operation)
+	if err != nil {
+		return EvalSHARequest{}, err
+	}
+	if err := bundle.validateRequestContract(request); err != nil {
+		return EvalSHARequest{}, err
+	}
+	size, err := validateEvalSHARequest(request.operation, binding.redisSHA1, keys, arguments, recordCount)
 	if err != nil {
 		return EvalSHARequest{}, err
 	}
 	return EvalSHARequest{
-		operation: shape.operation,
-		keys:      cloneByteSlices(shape.keys), arguments: cloneByteSlices(shape.arguments), size: size,
+		operation: request.operation, scriptName: binding.sourceName,
+		scriptSHA1: binding.redisSHA1, sourceSHA256: binding.sourceSHA256,
+		keys: cloneByteSlices(keys), arguments: cloneByteSlices(arguments), size: size,
 	}, nil
 }
 
 func (request EvalSHARequest) Operation() OperationName { return request.operation }
+func (request EvalSHARequest) ScriptName() string       { return request.scriptName }
+func (request EvalSHARequest) ScriptSHA1() string       { return request.scriptSHA1 }
+func (request EvalSHARequest) SourceSHA256() Digest     { return request.sourceSHA256 }
 func (request EvalSHARequest) SerializedSize() uint64   { return request.size }
 func (request EvalSHARequest) Keys() [][]byte           { return cloneByteSlices(request.keys) }
 func (request EvalSHARequest) Arguments() [][]byte      { return cloneByteSlices(request.arguments) }

@@ -55,12 +55,13 @@ func TestCanonicalOriginRejectsUnsafeOrNoncanonicalURLs(t *testing.T) {
 func TestParseStartRequestResponseVariants(t *testing.T) {
 	fixture := loadDigestVectorFixture(t)
 	intent := vectorReservationValue(t, fixture, false)
+	runPolicy := vectorRunPolicyAuthority(t, fixture, plainSHA256(testDenyAllRenderPolicyArtifact()))
 	now := "1788266097000"
 	startedRaw := []any{
 		"STARTED", now, fixture.Expected.ReservationID, now,
-		"2", "3", "7", "4", "1",
+		"1", "1", "7", "4", "1",
 	}
-	started, err := ParseStartRequestResponse(intent, startedRaw)
+	started, err := newTestTransportAuthority().parseStartRequestResponse(runPolicy, intent, startedRaw)
 	if err != nil {
 		t.Fatalf("parse STARTED: %v", err)
 	}
@@ -70,16 +71,32 @@ func TestParseStartRequestResponseVariants(t *testing.T) {
 	}
 	if string(details.ReservationID()) != fixture.Expected.ReservationID ||
 		details.StartedAtMS() != 1_788_266_097_000 ||
-		details.DeliveryAttempts() != 2 || details.JobRequestStarts() != 3 ||
+		details.DeliveryAttempts() != 1 || details.JobRequestStarts() != 1 ||
 		details.RunRequestStarts() != 7 || details.GroupRequestStarts() != 4 ||
 		!details.IOPermission() {
 		t.Fatal("STARTED details did not parse exactly")
+	}
+	for _, mutation := range []struct {
+		name   string
+		status Status
+	}{
+		{name: "new start", status: StatusStarted},
+		{name: "replayed start", status: StatusAlreadyStarted},
+	} {
+		t.Run("job starts exceed reservation ordinal on "+mutation.name, func(t *testing.T) {
+			raw := append([]any(nil), startedRaw...)
+			raw[0] = string(mutation.status)
+			raw[5] = "2"
+			if _, err := newTestTransportAuthority().parseStartRequestResponse(runPolicy, intent, raw); !errors.Is(err, ErrResponseScalar) {
+				t.Fatalf("ordinal authority mutation error = %v", err)
+			}
+		})
 	}
 
 	already := append([]any(nil), startedRaw...)
 	already[0] = "ALREADY_STARTED"
 	already[8] = "0"
-	parsedAlready, err := ParseStartRequestResponse(intent, already)
+	parsedAlready, err := newTestTransportAuthority().parseStartRequestResponse(runPolicy, intent, already)
 	alreadyDetails, ok := parsedAlready.StartedDetails()
 	if err != nil || !ok || alreadyDetails.IOPermission() {
 		t.Fatalf("parse ALREADY_STARTED reconciliation: %v", err)
@@ -89,20 +106,20 @@ func TestParseStartRequestResponseVariants(t *testing.T) {
 	}
 
 	rateRaw := []string{"RATE_BLOCKED", now, fixture.Expected.ScopeIDs["origin"], "1788266097250", "1"}
-	rateBlocked, err := ParseStartRequestResponse(intent, rateRaw)
+	rateBlocked, err := newTestTransportAuthority().parseStartRequestResponse(runPolicy, intent, rateRaw)
 	blockedDetails, ok := rateBlocked.RateBlockedDetails()
 	if err != nil || !ok || !blockedDetails.AfterIO() ||
 		blockedDetails.NextAllowedMS() != 1_788_266_097_250 {
 		t.Fatalf("parse RATE_BLOCKED: %v", err)
 	}
 
-	leaseLost, err := ParseStartRequestResponse(intent, []string{"LEASE_LOST", now, "0"})
+	leaseLost, err := newTestTransportAuthority().parseStartRequestResponse(runPolicy, intent, []string{"LEASE_LOST", now, "0"})
 	lostDetails, ok := leaseLost.LeaseLostDetails()
 	if err != nil || !ok || lostDetails.CurrentFence() != 0 {
 		t.Fatalf("parse LEASE_LOST: %v", err)
 	}
 	for _, status := range []Status{StatusAuthorizationExpired, StatusRunCancelled} {
-		response, err := ParseStartRequestResponse(intent, []string{string(status), now})
+		response, err := newTestTransportAuthority().parseStartRequestResponse(runPolicy, intent, []string{string(status), now})
 		if _, ok := response.StartedDetails(); err != nil || ok {
 			t.Fatalf("parse definitive status %q: %v", status, err)
 		}
@@ -164,8 +181,14 @@ func TestOperationResponseSchemasAreClosedAndExact(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(string(test.operation), func(t *testing.T) {
-			if err := ValidateOperationResponse(test.operation, test.raw); err != nil {
-				t.Fatalf("valid response rejected: %v", err)
+			var validationErr error
+			if test.operation == OperationRenewLease {
+				validationErr = ValidateRenewLeaseResponse(NewUnstagedRenewLeaseResponseContext(), test.raw)
+			} else {
+				validationErr = ValidateOperationResponse(test.operation, test.raw)
+			}
+			if validationErr != nil {
+				t.Fatalf("valid response rejected: %v", validationErr)
 			}
 			status, err := ParseStatus(test.raw[0])
 			if err != nil {
@@ -226,9 +249,69 @@ func TestOperationResponseSchemasAreClosedAndExact(t *testing.T) {
 	}
 }
 
+func TestRenewLeaseResponseUsesTypedStageCapContext(t *testing.T) {
+	const (
+		firstNow       = uint64(1_788_266_097_000)
+		secondNow      = firstNow + 1_000
+		stageExpiresAt = firstNow + 45_000
+	)
+	noncapped := []string{
+		string(StatusRenewed), canonicalDecimal(firstNow), canonicalDecimal(firstNow + LeaseTTLMilliseconds),
+	}
+	capped := []string{
+		string(StatusRenewed), canonicalDecimal(firstNow), canonicalDecimal(stageExpiresAt),
+	}
+
+	if err := ValidateOperationResponse(OperationRenewLease, noncapped); !errors.Is(err, ErrResponseContextRequired) {
+		t.Fatalf("generic non-capped renew error = %v", err)
+	}
+	if err := ValidateOperationResponse(OperationRenewLease, capped); !errors.Is(err, ErrResponseContextRequired) {
+		t.Fatalf("generic capped renew error = %v", err)
+	}
+	if err := ValidateRenewLeaseResponse(NewUnstagedRenewLeaseResponseContext(), noncapped); err != nil {
+		t.Fatalf("unstaged renewal: %v", err)
+	}
+	if err := ValidateRenewLeaseResponse(NewUnstagedRenewLeaseResponseContext(), capped); !errors.Is(err, ErrResponseScalar) {
+		t.Fatalf("unstaged context accepted stage cap: %v", err)
+	}
+
+	stageContext, err := NewStagedRenewLeaseResponseContext(RedisMilliseconds(stageExpiresAt))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := ValidateRenewLeaseResponse(stageContext, capped); err != nil {
+		t.Fatalf("exact stage-capped renewal: %v", err)
+	}
+	for _, expiry := range []uint64{stageExpiresAt - 1, stageExpiresAt + 1, firstNow + LeaseTTLMilliseconds} {
+		response := []string{string(StatusRenewed), canonicalDecimal(firstNow), canonicalDecimal(expiry)}
+		if err := ValidateRenewLeaseResponse(stageContext, response); !errors.Is(err, ErrResponseScalar) {
+			t.Fatalf("inexact stage cap %d error = %v", expiry, err)
+		}
+	}
+
+	// A replay before the absolute stage expiry returns the same cap even though
+	// Redis TIME advanced; it remains an exact min(now+TTL, stage expiry).
+	replay := []string{string(StatusRenewed), canonicalDecimal(secondNow), canonicalDecimal(stageExpiresAt)}
+	if err := ValidateRenewLeaseResponse(stageContext, replay); err != nil {
+		t.Fatalf("stage-capped replay: %v", err)
+	}
+
+	lateStageContext, err := NewStagedRenewLeaseResponseContext(RedisMilliseconds(firstNow + 120_000))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := ValidateRenewLeaseResponse(lateStageContext, noncapped); err != nil {
+		t.Fatalf("non-capped staged renewal: %v", err)
+	}
+	if err := ValidateRenewLeaseResponse(RenewLeaseResponseContext{}, noncapped); !errors.Is(err, ErrInvalidRenewLeaseContext) {
+		t.Fatalf("zero renew context error = %v", err)
+	}
+}
+
 func TestOperationResponsesRejectMalformedDataWithoutDisclosure(t *testing.T) {
 	fixture := loadDigestVectorFixture(t)
 	intent := vectorReservationValue(t, fixture, false)
+	runPolicy := vectorRunPolicyAuthority(t, fixture, plainSHA256(testDenyAllRenderPolicyArtifact()))
 	valid := []string{"STARTED", "1788266097000", fixture.Expected.ReservationID, "1788266097000", "1", "1", "1", "1", "1"}
 	tests := []struct {
 		name string
@@ -247,7 +330,7 @@ func TestOperationResponsesRejectMalformedDataWithoutDisclosure(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			_, err := ParseStartRequestResponse(intent, test.raw)
+			_, err := newTestTransportAuthority().parseStartRequestResponse(runPolicy, intent, test.raw)
 			if !errors.Is(err, test.want) {
 				t.Fatalf("error = %v, want %v", err, test.want)
 			}
@@ -264,36 +347,37 @@ func TestTypedStageChunkConstructorsCoverAllKinds(t *testing.T) {
 	output := vectorOutputValue(t, fixture)
 	commitID := Digest(fixture.Expected.CommitID)
 	publicationID := Digest(fixture.Expected.PublicationID)
+	identity := outputCommitIdentity(context, publicationID)
 
-	pageFields, err := NewPageFieldsStageChunk(commitID, publicationID, context, output.Page)
+	pageFields, err := NewPageFieldsStageChunk(identity, context, output.Page)
 	if err != nil {
 		t.Fatal(err)
 	}
-	html, err := NewPageBlobStageChunk(commitID, ChunkHTML, output.Page.HTML)
+	html, err := NewPageBlobStageChunk(identity, context, ChunkHTML, output.Page.HTML)
 	if err != nil {
 		t.Fatal(err)
 	}
-	originalHTML, err := NewPageBlobStageChunk(commitID, ChunkOriginalHTML, output.Page.OriginalHTML)
+	originalHTML, err := NewPageBlobStageChunk(identity, context, ChunkOriginalHTML, output.Page.OriginalHTML)
 	if err != nil {
 		t.Fatal(err)
 	}
-	outlinks, err := NewOutlinksStageChunk(commitID, 0, context, output.Outlinks)
+	outlinks, err := NewOutlinksStageChunk(identity, 0, context, output.Outlinks)
 	if err != nil {
 		t.Fatal(err)
 	}
-	discoveries, err := NewDiscoveriesStageChunk(commitID, 0, output.Discoveries)
+	discoveries, err := NewDiscoveriesStageChunk(identity, 0, context, output.Discoveries)
 	if err != nil {
 		t.Fatal(err)
 	}
-	aliases, err := NewAliasesStageChunk(commitID, context)
+	aliases, err := NewAliasesStageChunk(identity, context)
 	if err != nil {
 		t.Fatal(err)
 	}
-	images, err := NewImagesStageChunk(commitID, output.Images)
+	images, err := NewImagesStageChunk(identity, context, output.Images)
 	if err != nil {
 		t.Fatal(err)
 	}
-	manifest, err := NewImageManifestStageChunk(commitID, publicationID, context, output.Images)
+	manifest, err := NewImageManifestStageChunk(identity, context, output.Images)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -314,10 +398,10 @@ func TestTypedStageChunkConstructorsCoverAllKinds(t *testing.T) {
 	if _, err := DeriveChunkDigest(StageChunk{}); err == nil {
 		t.Fatal("zero/unvalidated chunk was accepted")
 	}
-	if _, err := NewPageBlobStageChunk(commitID, ChunkOutlinks, nil); !errors.Is(err, ErrUnknownChunkKind) {
+	if _, err := NewPageBlobStageChunk(identity, context, ChunkOutlinks, nil); !errors.Is(err, ErrUnknownChunkKind) {
 		t.Fatalf("blob kind error = %v", err)
 	}
-	if _, err := NewOutlinksStageChunk(commitID, MaxOutlinkChunks, context, []string{"https://example.com/a"}); !errors.Is(err, ErrInvalidChunk) {
+	if _, err := NewOutlinksStageChunk(identity, MaxOutlinkChunks, context, []string{"https://example.com/a"}); !errors.Is(err, ErrInvalidChunk) {
 		t.Fatalf("outlink ordinal error = %v", err)
 	}
 }

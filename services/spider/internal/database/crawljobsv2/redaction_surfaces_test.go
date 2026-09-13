@@ -31,6 +31,7 @@ func TestSensitivePrimitiveRedactionSurfaces(t *testing.T) {
 		{name: "rate scope ID", typeName: "RateScopeID", value: fixture.rateScopeID, rawValues: []string{fixture.rateScopeRaw}},
 		{name: "group ID", typeName: "GroupID", value: fixture.groupID, rawValues: []string{fixture.groupRaw}},
 		{name: "canonical origin", typeName: "CanonicalOrigin", value: fixture.origin, rawValues: []string{fixture.originRaw}},
+		{name: "image digest", typeName: "ImageDigest", value: ImageDigest("sha256:" + fixture.digestRaw), rawValues: []string{fixture.digestRaw}},
 	}
 
 	for _, test := range tests {
@@ -42,6 +43,38 @@ func TestSensitivePrimitiveRedactionSurfaces(t *testing.T) {
 
 func TestSensitiveCompositeRedactionSurfaces(t *testing.T) {
 	fixture := newRedactionSurfaceFixture()
+	binding := startRequestBinding{
+		intent: ReservationIntent{
+			Lease: fixture.lease, Target: fixture.target, CrawlPolicyDigest: fixture.digest, Decision: fixture.decision,
+		},
+		reservationID: fixture.reservationID,
+		started:       fixture.started,
+	}
+	authorityState := newRequestIOAuthorityState(binding)
+	runBinding := runPolicyBinding{
+		runID: fixture.runID, crawlPolicySHA256: fixture.digest, renderPolicySHA256: fixture.digest,
+		policyGroupCount: 7, policyGroupMapSHA256: fixture.digest,
+	}
+	runAuthorityState := runPolicyAuthorityState{
+		binding: runBinding, recordSHA256: fixture.digest, integrity: fixture.digest,
+	}
+	compatibilityInput := CompatibilityArtifactInput{
+		RedisConfigSHA256: fixture.digest, CommitGuardSHA256: fixture.digest,
+		SpiderImage: ImageDigest("sha256:" + fixture.digestRaw), RenderWorkerImage: fixture.textRaw,
+	}
+	compatibility := CompatibilityArtifact{input: compatibilityInput, initialized: true}
+	guardInput := GuardCoreInput{
+		ContractSHA256: fixture.digest, RedisVersion: fixture.textRaw,
+		RedisConfigSHA256: fixture.digest, MaximumShapeSHA256: fixture.digest,
+		CandidateRunID: fixture.runID,
+	}
+	guard := GuardCore{input: guardInput, initialized: true}
+	legacyInput := LegacyRetirementRecordInput{FreezeNonce: fixture.ownerRaw, BackupSHA256: fixture.digest}
+	adminInput := AdminFreezeRecordInput{FreezeNonce: fixture.ownerRaw, ProcessStopEvidenceSHA256: fixture.digest}
+	durabilityInput := DurabilityRecordInput{
+		ApprovedRedisRunID: strings.Repeat("8", 40), BootEpoch: fixture.ownerRaw,
+		PlannedShutdownNonce: fixture.ownerRaw, RehearsalEvidenceSHA256: fixture.digest,
+	}
 	tests := []redactionSurfaceCase{
 		{name: "field", typeName: "Field", value: Field{Name: fixture.textRaw, Value: []byte(fixture.textRaw)}},
 		{name: "record", typeName: "Record", value: Record{{Name: fixture.textRaw, Value: []byte(fixture.textRaw)}}},
@@ -52,16 +85,22 @@ func TestSensitiveCompositeRedactionSurfaces(t *testing.T) {
 		{name: "policy group", typeName: "PolicyGroup", value: PolicyGroup{GroupID: fixture.groupID, RateScopeID: fixture.rateScopeID, GroupScopeID: fixture.digest}},
 		{name: "reservation intent", typeName: "ReservationIntent", value: ReservationIntent{Lease: fixture.lease, Target: fixture.target, CrawlPolicyDigest: fixture.digest, Decision: fixture.decision}},
 		{name: "publication identity", typeName: "PublicationIdentity", value: PublicationIdentity{RunID: fixture.runID, JobID: fixture.jobID, OutputDigest: fixture.digest}},
-		{name: "commit identity", typeName: "CommitIdentity", value: CommitIdentity{RunID: fixture.runID, JobID: fixture.jobID, OwnerID: fixture.ownerID, Token: fixture.token, PublicationID: fixture.digest}},
+		{name: "commit identity", typeName: "CommitIdentity", value: CommitIdentity{RunID: fixture.runID, JobID: fixture.jobID, OwnerID: fixture.ownerID, Token: fixture.token, PublicationID: fixture.digest, RequestStartsBaseline: 2, RequestStartsGeneration: 3}},
 		{name: "source job", typeName: "SourceJob", value: fixture.source},
 		{name: "output page", typeName: "OutputPage", value: fixture.page},
 		{name: "output image", typeName: "OutputImage", value: OutputImage{NormalizedSourceURL: fixture.urlRaw, Alt: fixture.textRaw}},
 		{name: "output discovery", typeName: "OutputDiscovery", value: fixture.discovery},
 		{name: "output alias", typeName: "outputAlias", value: outputAlias{URLID: fixture.jobID, CanonicalURL: fixture.urlRaw}},
 		{name: "successful document request", typeName: "SuccessfulDocumentRequest", value: SuccessfulDocumentRequest{target: fixture.target, lease: fixture.lease}},
-		{name: "output context", typeName: "OutputContext", value: OutputContext{jobID: fixture.jobID, finalTarget: fixture.target, lastCrawled: fixture.textRaw, aliases: []outputAlias{{URLID: fixture.jobID, CanonicalURL: fixture.urlRaw}}}},
+		{name: "document transcript", typeName: "DocumentTranscript", value: DocumentTranscript{sourceJobID: fixture.jobID, sourceURL: fixture.urlRaw, lease: fixture.lease, requests: []SuccessfulDocumentRequest{{target: fixture.target, lease: fixture.lease}}}},
+		{name: "final document witness", typeName: "FinalDocumentWitness", value: FinalDocumentWitness{lease: fixture.lease, target: fixture.target, targetDigest: fixture.digest, leaseRequestStartsBaseline: 2, terminalJobRequestStarts: 3}},
+		{name: "run policy binding", typeName: "runPolicyBinding", value: runBinding},
+		{name: "run policy authority state", typeName: "runPolicyAuthorityState", value: runAuthorityState},
+		{name: "run policy authority", typeName: "RunPolicyAuthority", value: RunPolicyAuthority{binding: runBinding, state: &runAuthorityState}},
+		{name: "render authorization", typeName: "RenderPolicyAuthorization", value: RenderPolicyAuthorization{runID: fixture.runID, digest: fixture.digest}},
+		{name: "output context", typeName: "OutputContext", value: OutputContext{jobID: fixture.jobID, lease: fixture.lease, requestStartsBaseline: 2, requestStartsGeneration: 3, finalTarget: fixture.target, lastCrawled: fixture.textRaw, sourceRequest: &SuccessfulDocumentRequest{target: fixture.target, lease: fixture.lease, authority: authorityState}, witness: &FinalDocumentWitness{lease: fixture.lease, target: fixture.target, targetDigest: fixture.digest, redisStartedAtMS: 1001, terminalRequestStartedAtMS: 1002}, aliases: []outputAlias{{URLID: fixture.jobID, CanonicalURL: fixture.urlRaw}}}},
 		{name: "crawl output", typeName: "CrawlOutput", value: CrawlOutput{Page: fixture.page, Outlinks: []string{fixture.urlRaw}, Discoveries: []OutputDiscovery{fixture.discovery}}},
-		{name: "stage chunk", typeName: "StageChunk", value: StageChunk{commitID: fixture.digest, kind: ChunkHTML, records: []Record{{{Name: fixture.textRaw, Value: []byte(fixture.textRaw)}}}}},
+		{name: "stage chunk", typeName: "StageChunk", value: StageChunk{commitID: fixture.digest, kind: ChunkHTML, context: OutputContext{lease: fixture.lease, requestStartsBaseline: 2, requestStartsGeneration: 3}, identity: CommitIdentity{Token: fixture.token, RequestStartsBaseline: 2, RequestStartsGeneration: 3}, records: []Record{{{Name: fixture.textRaw, Value: []byte(fixture.textRaw)}}}}},
 		{name: "reject ready input", typeName: "RejectReadyTransitionInput", value: RejectReadyTransitionInput{RunID: fixture.runID, Job: fixture.source}},
 		{name: "try claim input", typeName: "TryClaimTransitionInput", value: TryClaimTransitionInput{Job: fixture.source, Lease: fixture.lease}},
 		{name: "release input", typeName: "ReleaseBeforeIOTransitionInput", value: ReleaseBeforeIOTransitionInput{Lease: fixture.lease}},
@@ -73,8 +112,32 @@ func TestSensitiveCompositeRedactionSurfaces(t *testing.T) {
 		{name: "request started", typeName: "StartRequestStarted", value: fixture.started},
 		{name: "request rate blocked", typeName: "StartRequestRateBlocked", value: StartRequestRateBlocked{scopeID: fixture.digest}},
 		{name: "lease lost response", typeName: "LeaseLostResponse", value: LeaseLostResponse{currentFence: 7}},
-		{name: "start request response", typeName: "StartRequestResponse", value: StartRequestResponse{status: StatusStarted, started: &fixture.started, rateBlocked: &StartRequestRateBlocked{scopeID: fixture.digest}}},
+		{name: "start request response", typeName: "StartRequestResponse", value: StartRequestResponse{status: StatusStarted, started: &fixture.started, rateBlocked: &StartRequestRateBlocked{scopeID: fixture.digest}, authority: authorityState}},
+		{name: "request I/O permit", typeName: "RequestIOPermit", value: RequestIOPermit{authority: authorityState, initialized: true}},
 		{name: "parsed response", typeName: "parsedResponse", value: parsedResponse{status: StatusStarted, tail: []string{fixture.reservationRaw, fixture.urlRaw, fixture.textRaw}}},
+		{name: "transport authority", typeName: "transportAuthority", value: newTestTransportAuthority()},
+		{name: "start request binding", typeName: "startRequestBinding", value: binding},
+		{name: "request authority state", typeName: "requestIOAuthorityState", value: *authorityState},
+		{name: "transport gate input", typeName: "TransportGateInput", value: TransportGateInput{BootEpoch: fixture.ownerRaw, Contract: fixture.digest}},
+		{name: "transport gate", typeName: "TransportGate", value: TransportGate{arguments: [7][]byte{[]byte(fixture.redisArgumentRaw), []byte(fixture.urlRaw)}}},
+		{name: "evalsha request", typeName: "EvalSHARequest", value: EvalSHARequest{keys: [][]byte{[]byte(fixture.urlRaw)}, arguments: [][]byte{[]byte(fixture.redisArgumentRaw)}, sourceSHA256: fixture.digest}},
+		{name: "compatibility artifact input", typeName: "CompatibilityArtifactInput", value: compatibilityInput},
+		{name: "compatibility artifact", typeName: "CompatibilityArtifact", value: compatibility},
+		{name: "compatibility marker", typeName: "CompatibilityMarker", value: CompatibilityMarker{artifact: compatibility, manifestSHA256: fixture.digest}},
+		{name: "guard core input", typeName: "GuardCoreInput", value: guardInput},
+		{name: "guard core", typeName: "GuardCore", value: guard},
+		{name: "provisional guard core", typeName: "ProvisionalGuardCore", value: ProvisionalGuardCore{input: guardInput, initialized: true}},
+		{name: "stored commit guard", typeName: "StoredCommitGuard", value: StoredCommitGuard{core: guard, compatibilityManifestSHA256: fixture.digest}},
+		{name: "legacy retirement input", typeName: "LegacyRetirementRecordInput", value: legacyInput},
+		{name: "legacy retirement record", typeName: "LegacyRetirementRecord", value: LegacyRetirementRecord{input: legacyInput, initialized: true}},
+		{name: "admin freeze input", typeName: "AdminFreezeRecordInput", value: adminInput},
+		{name: "admin freeze record", typeName: "AdminFreezeRecord", value: AdminFreezeRecord{input: adminInput, initialized: true}},
+		{name: "durability input", typeName: "DurabilityRecordInput", value: durabilityInput},
+		{name: "durability record", typeName: "DurabilityRecord", value: DurabilityRecord{input: durabilityInput, initialized: true}},
+		{name: "first request evidence", typeName: "FirstRequestStartEvidence", value: FirstRequestStartEvidence{runID: fixture.runID, jobID: fixture.jobID}},
+		{name: "final page record", typeName: "FinalPageRecord", value: FinalPageRecord{record: Record{{Name: fixture.textRaw, Value: []byte(fixture.htmlRaw)}}}},
+		{name: "final image record", typeName: "FinalImageRecord", value: FinalImageRecord{publicationID: fixture.digest, normalizedPageURL: fixture.urlRaw, normalizedSourceURL: fixture.urlRaw, alt: fixture.textRaw}},
+		{name: "image manifest record", typeName: "ImageManifestRecord", value: ImageManifestRecord{publicationID: fixture.digest, normalizedURL: fixture.urlRaw, imageKeys: []string{fixture.redisArgumentRaw}}},
 	}
 
 	for index := range tests {
@@ -212,48 +275,52 @@ func assertRawValuesAbsent(t *testing.T, output string, rawValues []string) {
 }
 
 type redactionSurfaceFixture struct {
-	runRaw         string
-	jobRaw         string
-	ownerRaw       string
-	tokenRaw       string
-	digestRaw      string
-	reservationRaw string
-	rateScopeRaw   string
-	groupRaw       string
-	originRaw      string
-	urlRaw         string
-	textRaw        string
-	runID          RunID
-	jobID          JobID
-	ownerID        OwnerID
-	token          LeaseToken
-	digest         Digest
-	reservationID  ReservationID
-	rateScopeID    RateScopeID
-	groupID        GroupID
-	origin         CanonicalOrigin
-	target         RequestTarget
-	lease          LeaseIdentity
-	decision       PolicyDecision
-	source         SourceJob
-	page           OutputPage
-	discovery      OutputDiscovery
-	started        StartRequestStarted
+	runRaw           string
+	jobRaw           string
+	ownerRaw         string
+	tokenRaw         string
+	digestRaw        string
+	reservationRaw   string
+	rateScopeRaw     string
+	groupRaw         string
+	originRaw        string
+	urlRaw           string
+	textRaw          string
+	htmlRaw          string
+	redisArgumentRaw string
+	runID            RunID
+	jobID            JobID
+	ownerID          OwnerID
+	token            LeaseToken
+	digest           Digest
+	reservationID    ReservationID
+	rateScopeID      RateScopeID
+	groupID          GroupID
+	origin           CanonicalOrigin
+	target           RequestTarget
+	lease            LeaseIdentity
+	decision         PolicyDecision
+	source           SourceJob
+	page             OutputPage
+	discovery        OutputDiscovery
+	started          StartRequestStarted
 }
 
 func newRedactionSurfaceFixture() redactionSurfaceFixture {
 	fixture := redactionSurfaceFixture{
-		runRaw:         strings.Repeat("1", 32),
-		jobRaw:         strings.Repeat("2", 64),
-		ownerRaw:       strings.Repeat("3", 32),
-		tokenRaw:       strings.Repeat("4", 64),
-		digestRaw:      strings.Repeat("5", 64),
-		reservationRaw: strings.Repeat("6", 64),
-		rateScopeRaw:   strings.Repeat("7", 32),
-		groupRaw:       "GROUP_IDENTITY_REDACTION_CANARY",
-		originRaw:      "https://origin-redaction-canary.example:443",
-		urlRaw:         "https://url-redaction-canary.example/private",
-		textRaw:        "ARBITRARY_VALUE_REDACTION_CANARY",
+		runRaw:           strings.Repeat("1", 32),
+		jobRaw:           strings.Repeat("2", 64),
+		ownerRaw:         strings.Repeat("3", 32),
+		tokenRaw:         strings.Repeat("4", 64),
+		digestRaw:        strings.Repeat("5", 64),
+		reservationRaw:   strings.Repeat("6", 64),
+		rateScopeRaw:     strings.Repeat("7", 32),
+		groupRaw:         "GROUP_IDENTITY_REDACTION_CANARY",
+		originRaw:        "https://origin-redaction-canary.example:443",
+		urlRaw:           "https://url-redaction-canary.example/private",
+		textRaw:          "ARBITRARY_VALUE_REDACTION_CANARY",
+		htmlRaw:          "<html>HTML_REDACTION_CANARY</html>",
+		redisArgumentRaw: "REDIS_ARGUMENT_REDACTION_CANARY",
 	}
 	fixture.runID = RunID(fixture.runRaw)
 	fixture.jobID = JobID(fixture.jobRaw)
@@ -302,5 +369,7 @@ func (fixture redactionSurfaceFixture) allRawValues() []string {
 		fixture.originRaw,
 		fixture.urlRaw,
 		fixture.textRaw,
+		fixture.htmlRaw,
+		fixture.redisArgumentRaw,
 	}
 }

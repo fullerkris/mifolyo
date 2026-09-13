@@ -28,6 +28,19 @@ and Redis instances. Spider, Indexer, Image Indexer, and PageRank otherwise fail
 authentication is absent; this exception must not be copied to production or
 shared deployments.
 
+### Crawl runtime and authorization status
+
+> [!IMPORTANT]
+> V1 remains the current runtime. Crawl Jobs V2 is dormant implementation work:
+> authoritative V2 Lua authoring has not started and is not authorized. Runtime
+> wiring, migration, deployment, candidate promotion, rendering activation, and
+> crawling are also not authorized.
+
+F3 checkpoint: M1 passes locally after the approved transcript amendment and
+independent re-review. M2 commit/push is authorized and in progress. See the
+[Crawl Jobs V2 plan](docs/crawl-jobs-v2-plan.md) for the remaining gates.
+Historical V1 commands below do not authorize another crawl.
+
 Production deployment Compose files for Spider, Indexer, Image Indexer, and
 PageRank require service-specific
 `ghcr.io/fullerkris/mifolyo/<service>@sha256:<64 lowercase hex>` values from the

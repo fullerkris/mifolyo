@@ -15,6 +15,18 @@ queue; it does not add a reader for V1 state. The existing immutable page and
 image publication grammar remains the downstream contract for the minimum
 compatible change.
 
+This preactivation V2 amendment binds staging to a complete, frozen request-start
+interval. It retains `protocol_version=2`, the existing hash domain labels, and
+the semantic output/publication and downstream contracts. It adds no operation
+or key family and changes no Lua response arity. Implementations MUST use the
+exact record, request, projection, and digest shapes in this document; missing
+fields, earlier shapes, and the earlier commit formula MUST NOT be accepted
+through a backward fallback. The changed exact document bytes require
+regeneration and independent
+review of the contract digest and affected bindings/vectors under section 4.
+This amendment does not authorize Lua authoring, runtime integration or
+activation, migration, deployment, or crawling; those remain separately gated.
+
 ## 1. Scope and invariants
 
 Crawl Jobs V2 MUST provide all of the following:
@@ -55,6 +67,10 @@ At all times:
 - At most four stage slots may exist. A stage slot is reserved by
   `CJ2_BEGIN_STAGE` and released only by commit, the lease-ending transition
   immediately after abort, or expired-lease recovery.
+- Publication requires a complete authenticated request-start interval for the
+  exact lease. Successful `CJ2_BEGIN_STAGE` atomically compares and freezes that
+  interval; `last_stage_fence` prevents any further request reservation or start
+  on that fence, including after abort or stage-key removal.
 - A run creates at most 100 unique reservation records. Creation, cancellation,
   expiry, tombstone deletion, and replay never restore that finite capacity.
 
@@ -205,6 +221,17 @@ the remainder; the selected following transition or recovery independently
 requires its actual `G` to fit that remainder.
 Stage cleanup runs only after commit or recovery has removed the slot and is
 deletion-only.
+
+Sizing MUST include `lease_request_starts_baseline` in every new-job allocation
+and retained-job fixture, including jobs created by discovery at commit, and
+any allocation from replacing its value on a new claim. `G_begin` includes both
+`request_starts_baseline` and `request_starts_generation` in stage metadata.
+Their field-name/value bytes and hash-field overhead are not free bookkeeping.
+The additional BEGIN arguments also count toward the exact RESP command bound.
+These fields add no key or downstream payload field; metadata remains excluded
+only from the logical `data_bytes` limit, not from memory admission. All existing
+memory reservations, control floors, key limits, and command limits remain
+unchanged and require evidence for the amended shapes.
 
 The safety reserve is available only to `CJ2_FINISH_REQUEST`,
 `CJ2_CANCEL_RESERVATION`, `CJ2_RELEASE_BEFORE_IO`, non-stage job outcomes,
@@ -521,7 +548,9 @@ publication_id = sha256(
 
 commit_id = sha256(
   F("mifolyo:crawl-commit:v2") || F(run_id) || F(job_id) ||
-  F(canonical_decimal(fence)) || F(lease_token) || F(publication_id))
+  F(canonical_decimal(fence)) || F(lease_token) || F(publication_id) ||
+  F(canonical_decimal(request_starts_baseline)) ||
+  F(canonical_decimal(request_starts_generation)))
 
 chunk_digest = sha256(
   F("mifolyo:stage-chunk:v2") || F(commit_id) || F(chunk_kind) ||
@@ -541,6 +570,18 @@ policy_group_map_sha256 = sha256(
   byte order with ordered fields group_id, rate_scope_id, group_scope_id,
   request_start_limit, concurrency, interval_ms))
 ```
+
+The commit's `request_starts_baseline` and `request_starts_generation` are the
+authenticated interval certified under section 8.3 and frozen by BEGIN under
+section 10.5. They MUST satisfy
+`0 <= request_starts_baseline < request_starts_generation <= 10` before commit
+identity derivation. The unchanged `mifolyo:crawl-commit:v2` domain now has those
+two additional framed canonical-decimal inputs in the exact order above.
+Different valid intervals with the same semantic output/publication therefore
+have different commit IDs and stage-key identities. Chunk digests and abort
+transition payload/transition digests change through their existing commit-ID
+inputs; their formulas do not acquire separate interval fields. Reservation,
+policy, source, output, publication, and token digest formulas are unchanged.
 
 `request_kind` is exactly `robots`, `document`, `redirect`, or
 `render_resource`. All numeric values in the decision and group-map records are
@@ -591,12 +632,13 @@ uses the job's exact depth for every record. Each URL ID is recomputed with the
 run-pinned canonicalization contract; a same-ID/different-URL pair is a
 collision, not an alias merge.
 
-The digest excludes every derived `publication_id` field, final Redis key,
-image manifest field, backlink, queue notification, and other deterministic
-projection. This removes the publication-ID cycle: semantic output is digested
-first, then `publication_id` and `commit_id` are derived, and only then are the
-final-shaped page, payload, and manifest staged. Counts and record framing make
-different section partitions byte-distinct.
+The digest excludes the request-start baseline/generation as well as every
+derived `publication_id` field, final Redis key, image manifest field, backlink,
+queue notification, and other deterministic projection. This removes the
+publication-ID cycle: semantic output is digested first, then `publication_id`
+is derived, then `commit_id` additionally binds the authenticated request-start
+interval, and only then are the final-shaped page, payload, and manifest staged.
+Counts and record framing make different section partitions byte-distinct.
 
 The source digest is SHA-256 over `F("mifolyo:crawl-source:v2")` followed by
 `SECTION("jobs", records byte-sorted by job ID)`. Each source record has, in
@@ -621,8 +663,10 @@ ordered fields `source_name` and `source_bytes`. Compatibility-manifest hashing
 is plain SHA-256 over the exact reviewed artifact bytes. Shared positive and
 negative vectors MUST cover every identity,
 empty and maximum sections, all score forms, changed reason/payload rejection,
-the page/publication derivation order, and the acyclic guard-core/compatibility
-derivation. Candidate marker installation is
+the page/publication derivation order, baseline/generation commit binding and
+legacy-shape/formula rejection, and the acyclic guard-core/compatibility
+derivation. Unchanged semantic output MUST retain its output/publication hashes
+when only the request-start interval changes. Candidate marker installation is
 forbidden until Go, Python, the independent verifier, and the Lua implementation
 under real Redis agree on every vector.
 
@@ -918,7 +962,7 @@ Let `T=mifolyo:crawl:v2:stage:C`.
 
 | Key | Type | Contents |
 |---|---|---|
-| `T:meta` | HASH | Stage identity, counts, digest, size, seal state |
+| `T:meta` | HASH | Stage identity, frozen request interval, counts, digest, size, seal state |
 | `T:keys` | LIST | Exact stage keys for bounded cleanup |
 | `T:page` | HASH | Final-shaped page hash |
 | `T:outlinks` | SET | Canonical outlinks; absent means canonical empty set |
@@ -1009,11 +1053,16 @@ Their exact value contract is:
 
 The final document request is the successful `document` or `redirect` request
 whose response supplied `normalized_url`, `status_code`, `content_type`, and
-the unrendered HTML. `CJ2_START_REQUEST` records its Redis timestamp and target
-identity/canonical-URL witness in the job. Seal and commit require page
-`normalized_url` to equal that exact witness and reject a page whose timestamp,
-document fence, URL ID, digest, or effective identity does not match those
-fields.
+the unrendered HTML. `CJ2_START_REQUEST` records each document/redirect start's
+Redis timestamp and target identity/canonical-URL witness in the job; a start
+does not attest network success. The pinned client MUST establish that the last
+document/redirect event in the complete section 8.3 transcript supplied that
+successful response. A later failed document/redirect cannot be ignored in favor
+of an earlier response. Seal and first commit require page `normalized_url` to
+equal the exact current-fence witness and reject a page whose timestamp,
+document fence, URL ID, digest, or effective identity does not match. These
+checks are additional to the frozen baseline/generation checks in section 10.5;
+equal timestamps alone are not freshness evidence.
 
 Outlinks are produced by resolving extracted HTML links against the canonical
 effective page URL with canonicalization V1. Invalid links are rejected from
@@ -1163,7 +1212,8 @@ string for text or `0` for a number.
 | `policy_decision_sha256` | Required exact initial policy decision digest |
 | `claim_count` | Number of new leases |
 | `delivery_attempts` | Leases on which at least one request start was recorded |
-| `request_starts` | Every outbound start for this job |
+| `request_starts` | Cumulative recorded starts for this job; `0..10`, never reset |
+| `lease_request_starts_baseline` | Cumulative job starts captured immediately before the last issued fence; initially `0`, retained until a new claim |
 | `retry_count` | Number of `leased -> delayed` transitions |
 | `pre_io_recoveries` | Expired leases that recorded no request start |
 | `next_request_ordinal` | Monotonic reservation ordinal |
@@ -1184,7 +1234,7 @@ string for text or `0` for a number.
 | `active_reservation_id` | One reservation ID or empty |
 | `active_stage_commit_id` | Current fence's stage commit ID or empty |
 | `last_stage_commit_id` | Most recently begun stage ID or empty; never reused |
-| `last_stage_fence` | Fence that most recently began a stage or `0`; monotonic |
+| `last_stage_fence` | Fence that most recently began a stage or `0`; monotonic and a request-admission freeze for that fence even after abort |
 | `not_before_ms` | Delayed deadline or `0` |
 | `commit_backpressure_fence` | Current blocked commit fence or `0` |
 | `commit_backpressure_reason` | `none`, `pages_queue_full`, or `memory_headroom_low` |
@@ -1198,6 +1248,39 @@ string for text or `0` for a number.
 | `last_transition_status` | Empty or stable response status |
 | `created_at_ms`, `updated_at_ms` | Redis time |
 | `completed_at_ms`, `dead_at_ms`, `cancelled_at_ms` | Redis time or `0` |
+
+Within request-transcript predicates, define `B=lease_request_starts_baseline`
+and `G=request_starts`. These are counts, distinct from section 6's run-key
+prefix `B` and section 2's allocation bound `G`. Every job requires
+`0 <= B <= G <= 10`. A new seed or discovered job has `B=G=0`; a never-claimed
+job with `lease_fence=0` retains those values. A new successful claim atomically
+captures its pre-claim `G` as `B`; existing admission limits require `B<10`.
+Claim replay, blocked claim, and claim-time visited completion do not change B.
+Only a first successful request-start transition increments G, and it never
+changes B. For a leased job:
+
+```text
+lease_delivery_started = 0  iff G = B
+lease_delivery_started = 1  iff G > B
+```
+
+Finish, reservation cancellation, release, retry, abort, recovery, terminal job
+transitions, and cleanup MUST NOT reset or replace B or G. Only a later new
+claim replaces B; a new fence never resets G. Clearing **active lease fields**
+means clearing `lease_owner` and `lease_token` and setting
+`lease_started_at_ms`, `lease_expires_at_ms`, and `lease_delivery_started` to
+`0`. It MUST retain `lease_fence`, `lease_request_starts_baseline`,
+`request_starts`, `last_stage_commit_id`, and `last_stage_fence`. Document
+witnesses retain their own fence until replaced by a later document/redirect
+start; neither a timestamp comparison nor an older document witness establishes
+a start on the current fence.
+
+If `last_stage_fence=lease_fence>0`, then `G>B` and `active_reservation_id` is
+empty even when `active_stage_commit_id` is empty after abort. A still-leased
+frozen job with no active stage is legal only with its exact aborted-stage
+terminal reservation. A published completed job retains B/G for its completed
+commit identity and stage-independent replay; they are not optional terminal
+sentinels.
 
 ### 7.3 Reservation record
 
@@ -1240,6 +1323,12 @@ therefore bounds all active and terminal reservation records to 100 per run and
 bounds terminal tombstone churn to at most 100 keys per run, with at most 10,000
 across the 100 unarchived runs. Expiry may reduce the present key count but never
 decrements the cumulative counter or permits another creation.
+
+The per-fence baseline is not a reservation field or a claim/start response
+field. It is authenticated through the job projection in section 8.3. Historical
+START replay returns this reservation's original post-start snapshots, not the
+current job counters, and MUST NOT validate those snapshots against a newer
+fence's baseline or substitute that baseline into the reply.
 
 ### 7.4 Rate-scope record
 
@@ -1284,6 +1373,7 @@ empty string, never omitted:
 ```text
 protocol_version, run_id, job_id, owner_id, lease_fence, token_digest,
 commit_id, publication_id, output_digest,
+request_starts_baseline, request_starts_generation,
 created_at_ms, expires_at_ms, sealed, sealed_at_ms, abandoned,
 expected_page_fields, expected_outlinks, expected_discoveries,
 expected_aliases, expected_images,
@@ -1296,6 +1386,15 @@ outlinks_chunk_2_digest, outlinks_chunk_3_digest,
 discoveries_chunk_0_digest, discoveries_chunk_1_digest,
 aliases_chunk_0_digest, images_chunk_0_digest, manifest_chunk_digest
 ```
+
+`request_starts_baseline` and `request_starts_generation` are immutable
+canonical-decimal snapshots satisfying
+`0 <= request_starts_baseline < request_starts_generation <= 10`. BEGIN copies
+them only after comparison with the job's B/G and binds them into `commit_id`.
+Owned-stage writes, seal, and first commit require the exact current-fence
+job/stage equality in section 10.5. Recovery does not rewrite these snapshots.
+After recovery and a new claim they describe a historical fence, not the current
+job interval; cleanup MUST NOT apply current-fence equality to that residue.
 
 `expected_page_fields` is exactly `10`, `expected_aliases` is `1..5`, and the
 other expected counts are zero through their section 3 maxima. Outlink chunks
@@ -1327,9 +1426,11 @@ An **aborted-stage terminal reservation** is the matching slot retained after
 abort; `abort_unlinked_keys` is its original positive `key_count`. It contains no
 stage keys or expiry member, grants no stage authority, and may be consumed only
 by the next lease-ending transition or expired-lease recovery.
-Every begin/data/seal/commit/cleanup path requires
-`abort_unlinked_keys=0`; only abort changes it to a positive value, and only a
-lease-ending transition or recovery may remove a slot with that positive value.
+Every begin/data/seal/first-commit path and cleanup check of an existing owner
+slot requires `abort_unlinked_keys=0`; only abort changes it to a positive value,
+and only a lease-ending transition or recovery may remove a slot with that
+positive value. Exact post-abort replay instead requires that retained positive
+count, and completed-COMMIT replay requires no slot or stage keys.
 `T:meta.expires_at_ms` is the immutable original 15-minute stage expiry. A first
 commit may shorten the residual keys' physical expiry and the `stage_expiry`
 cleanup-due score, but never rewrites that metadata field; cleanup therefore
@@ -1421,23 +1522,34 @@ those job fields. Its cardinality cannot exceed the run's ten-start bound.
 ### 8.3 Delivery attempts versus request starts
 
 A successful new **claim** with status `CLAIMED` issues one lease and increments
-`claim_count`. Claim-time visited completion issues no lease and is not a claim
-counter increment. Neither path increments a delivery attempt or request budget.
+`claim_count`, and atomically captures the job's current cumulative
+`request_starts` as `lease_request_starts_baseline`. Claim-time visited completion
+issues no lease, changes no baseline, and is not a claim counter increment.
+Neither path increments a delivery attempt or request budget.
 
 A **delivery attempt** is one lease/fence on which at least one request start is
 recorded. `delivery_attempts` increments exactly once, in the first successful
 `CJ2_START_REQUEST` for that fence.
 
-A **request start** is every `robots`, `document`, `redirect`, or approved
-`render_resource` request. Every successful `CJ2_START_REQUEST` increments:
+A **request start** is the durable pre-I/O charge for a `robots`, `document`,
+`redirect`, or approved `render_resource` request. Each first successful
+`CJ2_START_REQUEST` pending-to-started transition increments exactly once:
 
 - the job's `request_starts`;
 - the run's `request_starts`;
 - the run/group `group_started` count.
 
-It also moves the run/group active reservation counters from pending to started
-and sets job and run `last_request_started_at_ms`. A `document` or `redirect`
-start additionally replaces the job's
+Exact replay increments none of them. A successful ledger start is not a
+successful network response: DNS/dial failures, timeouts, HTTP failures,
+cancellation after START, and a granted start never used for I/O all remain
+counted. The job's `lease_request_starts_baseline` is unchanged. "Before I/O",
+"after I/O", and the response bit `after_io` in ledger lifecycle predicates mean
+before or after the first recorded start on the fence, not proof that a socket
+was used or a response succeeded.
+
+That first transition also moves the run/group active reservation counters from
+pending to started and sets job and run `last_request_started_at_ms`. A
+`document` or `redirect` start additionally replaces the job's
 `last_document_request_started_at_ms`, document fence, target URL ID, target
 digest, and exact canonical target URL. Those fields provide the only permitted
 source for final `last_crawled` and effective-page identity.
@@ -1468,6 +1580,97 @@ pending/started reservation or current lease: that reservation may still start
 or finish, and a worker may stage and commit already obtained output without
 another request. The counter never decreases and cancellation, expiry, or
 tombstone TTL never restores creation capacity.
+
+#### Request-transcript completeness and terminal witness
+
+A candidate request transcript is a bounded immutable sequence of authenticated
+recorded starts for one exact run/job/owner/token/fence. Each event binds its
+reservation ID, ordinal, kind, canonical target and digest, run-pinned policy
+decision, Redis start time, and original post-start job/run/group/delivery
+snapshots. Caller-created arrays, counts, timestamps, or a guessed
+`first_count-1` baseline are not authority. Historical client names such as
+`SuccessfulDocumentRequest` refer to successful ledger starts, not evidence that
+I/O succeeded; robots and render-resource starts are represented too.
+
+After request work has stopped and the active reservation has been finished or
+cancelled, the private authenticated transport obtains the final document
+witness with one `HMGET` on the exact job key derived internally from the lease's
+run/job identity. The exact ordered thirteen-field projection is:
+
+```text
+last_document_request_started_at_ms
+last_document_request_fence
+last_document_target_url_id
+last_document_target_url
+last_document_target_digest
+request_starts
+last_request_started_at_ms
+lease_request_starts_baseline
+state
+lease_owner
+lease_token
+lease_fence
+active_reservation_id
+```
+
+Every element is a required canonical bulk string; missing, additional,
+reordered, or legacy projection fields are rejected. Parsing requires
+`state=leased`, exact returned owner/token/fence equality with the requested
+lease, an empty `active_reservation_id`, and `0 <= B < G <= 10`. The document
+fence must equal that positive lease fence, its target URL/ID/digest must
+recompute exactly, and
+`0 < last_document_request_started_at_ms <= last_request_started_at_ms`.
+The projection is not a new transition or Lua response envelope, does not freeze
+the job, and does not prove that lease/authorization remains live after the read.
+
+Transcript construction may produce a provisional prefix. Only output-context
+construction (`NewOutputContext` in Go) certifies completeness, requiring for
+length `n` and zero-based event index `i`:
+
+```text
+1 <= n <= 10
+first.job_request_starts = B + 1
+event[i].job_request_starts = B + 1 + i
+last.job_request_starts = G
+n = G - B
+```
+
+Every event must authenticate the same full lease identity and exact run-policy
+binding. Reservation ordinals are strictly increasing but may have gaps for
+reservations that never started; they are not start counts. Start timestamps
+are nondecreasing, not necessarily distinct. Delivery-attempt snapshots agree
+within the fence; run snapshots and each revisited group's snapshots increase
+but need not be contiguous because other jobs may start between events.
+
+The source-document event must bind the exact admitted source URL, depth, and
+policy lineage. The final document/redirect event must match the projected
+document timestamp/fence/target witness and supply the successful response
+required by section 6.4. The last event, which may instead be a robots or
+render-resource start, must match projected G and `last_request_started_at_ms`.
+All recorded starts must be represented even if their network attempt failed,
+was cancelled, or never began. A failed required document/redirect takes its
+existing typed outcome path, not publication of an earlier response. An
+independently permissible nonfatal resource failure still contributes a counted
+non-alias event; this rule does not relax any failure or render policy. Missing
+authenticated event evidence or unknown response success suppresses output;
+neither counter arithmetic nor a reconciliation-only receipt can manufacture it.
+
+`OutputContext` MUST privately retain the full lease identity, authenticated B/G,
+source/policy binding, final document witness, and derived aliases. BEGIN, output
+preparation, stage chunks, and independent pre-seal verification MUST consume
+that same binding, not relabel an older context/output with caller-selected B/G.
+A pure commit-hash helper is not output authority. The semantic output digest
+still contains only section 4's five sections.
+
+In a consistent ledger, the unique post-start job counts for a fence are exactly
+`B+1` through G. Authenticated coverage of that interval proves no recorded
+start was omitted or duplicated, including equal-millisecond events and a
+redirect returning to an earlier target. Successful BEGIN then compares B/G
+atomically and freezes further starts; a stale projection alone cannot do so.
+This count proof relies on the section 10.1 trusted-image boundary and section
+10.3's one-per-reservation I/O permit. It is not a hostile-client attestation of
+network success, response bytes, or redirect semantics and requires no hash
+chain or additional operation.
 
 ### 8.4 Reservation states
 
@@ -1798,6 +2001,31 @@ ADMIN_FREEZE_REQUIRED
 COMMIT_GUARD_UNAPPROVED
 ```
 
+Request-transcript and freeze failures use these existing codes:
+
+| Condition | Result |
+|---|---|
+| Noncanonical or out-of-exact-integer-range input baseline/generation | `INVALID_NUMBER` |
+| Canonical input pair not satisfying `0 <= baseline < generation <= 10` | `INVALID_ARGUMENT` |
+| Valid but stale B/G on a first BEGIN against an otherwise valid current job | `STAGE_INVALID`; no stage, freeze, or other mutation |
+| Active request reservation on a first BEGIN | `INVALID_STATE` |
+| Changed immutable BEGIN input, including B/G, under an existing active stage ID | `IMMUTABLE_MISMATCH` |
+| New reservation/start, or non-replay second BEGIN, on a frozen current fence | `INVALID_STATE` |
+| Invalid stored job B/G relation, or an established current owned stage whose stored B/G disagrees with its job | `COUNTER_CORRUPT` |
+| Stale ownership or a different completed commit identity | `LEASE_LOST`, except an explicitly permitted exact reconciliation |
+
+After gate, input-shape, and lexical validation, operation-specific exact replay
+ordering applies: historical START and completed COMMIT reconciliation precede
+live-lease/admission checks, identical active BEGIN precedes one-stage/admission
+checks, post-abort replay precedes stage-key existence checks, and identical
+seal replay precedes the unsealed-state requirement. An active-stage replay
+still validates its current owner, frozen tuple, and applicable lifetime gates.
+A current owned stage must be established before classifying stored tuple drift
+as corruption; a merely stale caller snapshot is not corruption. No caller or
+script may repair a failure by silently replacing B/G or changing an existing
+stage's identity. All listed errors precede mutation, including monotonic rate
+tightening and commit-backpressure bookkeeping.
+
 Errors MUST NOT append key names supplied by untrusted data or stored values.
 Any corruption error blocks the affected run; clients MUST NOT guess a repair.
 
@@ -1936,6 +2164,8 @@ MUST validate all of the following before its first write:
 - run/job/reservation state and exact index membership;
 - owner, token, fence, and nonexpired lease where applicable;
 - authorization and request budgets where applicable;
+- retained job baseline/start relations, the request-admission freeze, and the
+  exact current-fence stage baseline/generation where applicable;
 - every immutable existing value and every destination type;
 - stage-slot and memory-reservation arithmetic where applicable;
 - memory headroom for the exact bounded mutation growth.
@@ -1975,9 +2205,15 @@ bounded batches. Compatible clients calculate those values using section 4;
 shared vectors, exact immutable propagation, byte-for-byte replay checks, run
 audit, and independent pre-seal reads verify them. Lua does not recalculate
 SHA-256 over multi-MiB HTML. The pinned Spider/feeder image is therefore part of
-that bulk-digest correctness trust boundary. This trust does not weaken lease
+that bulk-digest correctness trust boundary. The pinned Spider also authenticates
+and checks complete request-event coverage, enforces one I/O attempt per
+reservation despite separately parsed replay replies, and establishes network
+outcomes and response-byte/redirect provenance. Lua's B/G compare-and-freeze and
+subsequent tuple checks bind that trusted-client proof to publication; they do
+not attest those network facts independently. This trust does not weaken lease
 fencing: only Redis decides whether the immutable stage can be sealed or
-published.
+published. Adding a hash chain without changing the credential/image boundary
+would not make a hostile client trustworthy.
 
 Redis ACL does not provide privilege elevation inside Lua: a caller permitted
 to run a script must also be permitted to invoke each Redis command/key touched
@@ -2177,8 +2413,9 @@ URL identity, submitted group tuple against the run map, decision digest, final
 `job_count <= expected_seed_count <= max_jobs`, state key
 types, duplicates, source ordering, and existing immutable values before any
 write. New jobs receive fixed-shape hashes, `jobs`/`job_order`, ready/ready-at
-membership, and increment run/group open counts. Exact replays are no-ops. A
-URL mismatch is `URL_ID_COLLISION`; any changed binding is
+membership, `lease_request_starts_baseline=0` and `request_starts=0`, and
+increment run/group open counts. Exact replays are no-ops, including for the
+baseline and start counter. A URL mismatch is `URL_ID_COLLISION`; any changed binding is
 `IMMUTABLE_MISMATCH`. Source jobs are immutable once inserted—score/depth
 reconciliation is not applied by feeder replay.
 
@@ -2321,24 +2558,28 @@ into every scope's `active` and `pending` indexes, increments all active/pending
 scope counters plus `pending_request_reservations` and
 `group_pending[group_id]`, increments `reservation_creations_total` exactly
 once, updates the rate-scope inventory, then removes ready membership, writes
-the per-run lease, and inserts
+the per-run lease with `lease_request_starts_baseline` equal to the prevalidated
+pre-claim job `request_starts`, and inserts
 the exact global active-lease member at the same expiry. These effects are one
 atomic script. Any blocked status may persist only the section 8.5 monotonic
 tightening of existing scopes; an error changes nothing.
 
 A new claim increments `claim_count` and fence but not delivery attempts or
-request starts. Repeating with the same owner, token, candidate, and exact
-active pending outbound reservation returns `ALREADY_CLAIMED` with the existing fence and expiry and
-changes no counter. This exact-current replay is checked before new
-budget, reservation-creation, capacity, rate, or stage availability. Another
+request starts. The captured baseline is a server field, not a claim argument
+or response field. Repeating with the same owner, token, candidate, and exact
+active pending outbound reservation returns `ALREADY_CLAIMED` with the existing
+fence and expiry and changes no counter or baseline. This exact-current replay
+is checked before new budget, reservation-creation, capacity, rate, or stage
+availability. Another
 identity receives `LEASE_LOST` or `NO_CANDIDATE`.
 
 #### `CJ2_RENEW_LEASE`
 
 Requires the exact active owner/token/fence and `now < lease_expires_at_ms`.
 Without a stage, it sets the job lease and leased ZSET score to `now+60000`.
-With an active stage, it first validates the exact metadata, slot, and expiry
-membership and sets both lease deadlines to
+With an active stage, it first validates the exact metadata, frozen
+baseline/generation equality with the job, slot, and expiry membership and sets
+both lease deadlines to
 `min(now+60000, stage_expires_at_ms)`; a lease can never be renewed beyond its
 stage's absolute lifetime. In either branch it validates and sets the matching
 global active-lease score to the same deadline. If one reservation is active, it extends the
@@ -2379,6 +2620,13 @@ into `active` and `pending` and increments scope pending/active counters,
 prunes expiry state. A blocked result has only the narrowly permitted monotonic
 tightening side effect in section 8.5.
 
+New reservation creation additionally requires `last_stage_fence < fence` under
+the exact current lease. `last_stage_fence=fence` is `INVALID_STATE` before
+budget/capacity/rate blocked results or any scope tightening. An empty
+`active_stage_commit_id` does not reopen admission after abort. Exact active
+reservation replay still requires a consistent job/reservation pre-state; a
+frozen job cannot validly own a pending or started reservation.
+
 While `lease_delivery_started=0`, a replacement first intent is limited to
 `robots` or `document` and must retain the same immutable job group, rate
 lineage, group scope, and initial-origin consistency required of the claim-
@@ -2406,13 +2654,16 @@ Exact replay is `ALREADY_RESERVED`; any changed intent
 under the same ID is `IMMUTABLE_MISMATCH`. Exact active-reservation replay is
 checked before the creation limit and current budget/capacity/rate availability,
 increments no counter, and creates no new permission; `CJ2_START_REQUEST` still
-applies its current-interval gate.
+applies its current-interval and request-freeze gates.
 
 #### `CJ2_START_REQUEST`
 
-Requires an active, unexpired authorization, current lease, and matching
-`pending` reservation. Before mutation it revalidates all three scope records
-and requires Redis time at or beyond the current group/origin rate deadlines.
+The first pending-to-started transition requires an active, unexpired
+authorization, current lease, matching `pending` reservation, and
+`last_stage_fence < fence`. A frozen current fence rejects a new start with
+`INVALID_STATE` before any rate blocked result or mutation, including after
+abort. Before mutation it revalidates all three scope records and requires Redis
+time at or beyond the current group/origin rate deadlines.
 If blocked, the reservation remains pending and the response's `after_io` bit
 reflects `lease_delivery_started`; the worker renews and waits only within its
 operation deadline. With `after_io=0` it may instead cancel the reservation and
@@ -2422,7 +2673,8 @@ release before I/O; with `after_io=1` it cancels the reservation and uses
 1. decrements `pending_request_reservations` and `group_pending[group_id]`, then
    increments `started_request_reservations` and
    `group_active_started[group_id]`;
-2. increments job, run, and cumulative `group_started` request starts;
+2. increments job, run, and cumulative `group_started` request starts exactly
+   once, retaining `lease_request_starts_baseline` unchanged;
 3. increments `delivery_attempts` only if this is the first request start on the
    current fence, and marks `lease_delivery_started=1`;
 4. changes the reservation to `started`, moving it from each scope's `pending`
@@ -2441,17 +2693,53 @@ release before I/O; with `after_io=1` it cancels the reservation and uses
    stable idempotent responses.
 
 The first-request record contains exactly `protocol_version=2`, `run_id`,
-`job_id`, `lease_fence`, and `started_at_ms`. It contains no URL or token. Only a
-successful response with `io_permission=1` is permission to begin DNS. The
-caller MUST perform no DNS lookup before it.
+`job_id`, `lease_fence`, and `started_at_ms`. It contains no URL or token. Only an
+authenticated `STARTED` or `ALREADY_STARTED` response with `io_permission=1`,
+consumed through the one-use lease-session permit below, can authorize DNS or
+request I/O. The caller MUST perform no DNS lookup before that grant.
 
-Idempotency is checked against the reservation/tombstone before current-lease
-or current-rate failure: an exact repeat returns `ALREADY_STARTED` and changes no counter or
-deadline, even if the job has since taken a later legal transition. It returns
-`io_permission=1` only while that reservation is still `started` under the exact
-current lease; a finished/expired tombstone or later transition returns `0` and
-is reconciliation only. It grants no permission for a different intent. The
-third delivery attempt may start, but no fourth delivery may be claimed.
+After common boot/marker and input validation, idempotency is checked against
+the exact reservation/tombstone before current-lease, authorization, freeze, or
+rate admission failure. An exact repeat of a recorded start returns
+`ALREADY_STARTED` with that reservation's original start timestamp and four
+post-start snapshots and changes no counter or deadline, even after later legal
+job transitions. It MUST NOT reconstruct those snapshots from the current job
+or compare them against a newer fence's baseline. `io_permission=1` is returned
+only while the reservation is still `started`, is the job's exact active
+reservation, and has the exact current unexpired lease, active unexpired run
+authorization, and `last_stage_fence < fence`. Otherwise an exact historical
+receipt returns `0` and is reconciliation only; a contradictory stored live
+reservation/frozen-job pre-state fails ledger validation, not permission
+issuance. The permission bit is current eligibility, not an immutable start
+snapshot. No replay grants permission for a different intent. The third delivery
+attempt may start, but no fourth delivery may be claimed.
+
+The compatible client MUST keep one shared opaque I/O-permit state per
+reservation identity in the exact run/job/owner/token/fence lease session.
+Issuing/using a permit is atomic and one-use across value copies, separately
+parsed replies, concurrent retry callers, and connection reconnects. A second
+permitted reply MUST reuse the same state, never mint a new one. Retain that
+state, including consumed or intentionally unused grants and their observed
+outcomes, until the session is irrevocably closed; the run's ten-start limit
+bounds these entries. Before FINISH or session freeze, any intentionally unused
+grant MUST be irrevocably retired so a retained permit or delayed reply cannot
+later start I/O. Used/retired state cannot return to unused. Network/HTTP
+automatic retries or redirects MUST NOT
+perform another request under an already used grant: every additional outbound
+attempt requires its own admitted reservation and recorded start.
+
+If the original START reply is lost and the existing local session proves that
+I/O never began, the caller may reconcile the same reservation; an eligible
+`io_permission=1` reply can supply its still-unused one permit. If that permit
+was already issued or used, another reply cannot issue another permit.
+`io_permission=0` never authorizes I/O, recreates a success event, or repairs
+missing output evidence. A lost FINISH reply is reconciled by FINISH without
+redoing I/O. If prior execution or the required local permit/event evidence is
+uncertain or lost, the client MUST suppress further I/O and publication on that
+fence rather than reconstruct permission from Redis counts or a fresh local
+session. Existing permitted lease-ending paths apply only while ownership is
+certain; uncertain ownership is left to expiry recovery. A process restart does
+not resume an old owner session or reset one-use state to unused.
 
 #### `CJ2_FINISH_REQUEST`
 
@@ -2460,8 +2748,10 @@ reservation from all active scopes, clears the job's active reservation, sets
 the reservation to `finished` with `terminal_at_ms=now`, removes it from each `active` and `started`
 index, decrements each scope's exact active/started counters plus
 `started_request_reservations` and `group_active_started[group_id]`, and applies
-its 24-hour tombstone TTL. It does not refund request-start counters or shorten
-rate deadlines. Tombstone idempotency is checked first, so exact replay is
+its 24-hour tombstone TTL. It does not change the job baseline, refund
+request-start counters, or shorten rate deadlines. `finished` records capacity
+release, not network success; failed or unused recorded starts remain counted.
+Tombstone idempotency is checked first, so exact replay is
 `ALREADY_FINISHED` even after a later job transition.
 
 Finish is allowed after run cancellation or authorization expiry so a current
@@ -2475,7 +2765,8 @@ membership from each `active` and `pending` index, decrements each scope's exact
 active/pending counters, `pending_request_reservations`, and
 `group_pending[group_id]`, clears the job's active reservation, and
 writes a `cancelled` tombstone with `terminal_at_ms=now`. It consumes no request
-start and does not change the job state. It cannot cancel a started reservation.
+start, changes no job baseline, and does not change the job state. It cannot
+cancel a started reservation.
 Exact tombstone replay
 returns `RESERVATION_CANCELLED` before lease checks and never touches a newer
 reservation. Like finish, cancellation of the current worker's own pending
@@ -2488,7 +2779,8 @@ Its ordered request fields are `lease_identity`, then `transition_id`; its
 transition reason is `none`. It requires a current leased job for which
 `lease_delivery_started=0` in an active, unexpired run. It first
 cancels any matching pending reservation, then moves `leased -> ready`, clears
-the current lease fields, removes the exact global active-lease member, and
+the active lease fields defined in section 7.2 while retaining B/G and fence
+history, removes the exact global active-lease member, and
 records the idempotent transition. It consumes no
 delivery attempt or request start. It is used for graceful shutdown or local
 cancellation before any request starts; it is not a terminal job cancellation.
@@ -2522,7 +2814,9 @@ prebuilt mutation `G` to that slot and removes the slot only after all covered
 writes; any mismatched slot is corruption. With no such reservation it uses the
 ordinary non-stage allocation inequality or the narrowly defined safety reserve.
 Every branch removes the exact per-run and global active-lease memberships when
-it clears the lease.
+it clears the active lease fields defined in section 7.2. None clears the
+retained baseline, cumulative starts, lease fence, or last-stage history; abort
+and its following outcome do not reopen request admission on that fence.
 
 #### `CJ2_RETRY`
 
@@ -2550,7 +2844,7 @@ blocked commit and any unrelated previously begun stage under that reason.
 
 Delayed transitions increment `retry_count`, run `retries_total`, and exactly
 one closed field in `retry_reason_counts`; their sum MUST remain equal. They
-clear all lease and commit-backpressure fields, remove matching
+clear active lease and commit-backpressure fields, remove matching
 commit-backpressure membership and any exact aborted-stage terminal reservation,
 and set both `last_reason` and
 `last_failure_reason` to the supplied retry reason. The third-delivery dead
@@ -2568,7 +2862,8 @@ It requires the current lease, no active reservation or active stage, no slot
 except an exact aborted-stage terminal reservation, and a closed terminal reason
 legal for `CJ2_DEAD`. It atomically removes leased/open
 membership, writes one dead membership with both `last_reason` and
-`last_failure_reason` equal to the submitted reason, clears lease/backpressure fields, and
+`last_failure_reason` equal to the submitted reason, clears active lease and
+commit-backpressure fields, and
 removes matching commit-backpressure membership and that terminal reservation,
 then increments terminal and
 exact disposition-reason counters once. Dead entries
@@ -2582,9 +2877,9 @@ active stage and no slot except an exact aborted-stage terminal reservation;
 ready/delayed selection belongs only to `CJ2_CANCEL_BATCH`, while expired-lease
 selection belongs only to `CJ2_RECOVER_EXPIRED`.
 It atomically removes leased/open membership, writes one cancelled membership
-and reason, clears every lease/backpressure field, decrements run/group open
-counts, removes matching commit-backpressure membership and that terminal
-reservation, and increments one
+and reason, clears active lease and commit-backpressure fields, decrements
+run/group open counts, removes matching commit-backpressure membership and that
+terminal reservation, and increments one
 disposition-reason counter. A current worker aborts its
 active stage first; expired recovery may abandon it. Completed and dead jobs
 remain unchanged. A currently started reservation must finish or expire before
@@ -2596,23 +2891,50 @@ Its ordered request fields are `lease_identity`, `reason`, then `transition_id`.
 It requires the current lease, no active reservation, an empty
 `active_stage_commit_id`, no slot except an exact aborted-stage terminal
 reservation, and the reason `already_visited`. It moves the job to
-completed without page publication, clears lease/backpressure fields and their
-secondary membership, removes that terminal reservation, and is idempotent by
-transition ID.
+completed without page publication, clears active lease and commit-backpressure
+fields and their secondary membership, removes that terminal reservation, and is
+idempotent by transition ID.
 
 ### 10.5 Stage and commit transitions
 
 Ordinary stage writes are forbidden. Every worker stage operation in this
-subsection requires approved boot, exact active markers, the exact current owner/token/fence, no
-active request reservation, and deterministic commit/publication/output/token
-identities. Begin requires no active stage, data writes and seal require an
-unsealed/unabandoned stage, abort accepts either seal state, and commit requires
-a sealed stage. Begin, data writes, seal, and first commit also require active
-unexpired authorization. Each operation validates all affected key types and
-its complete section 2 allocation inequality before mutation. A stage uses one
-absolute
+subsection requires approved boot and exact active markers. Except for the
+explicit completed-COMMIT reconciliation below, each requires the exact current
+unexpired owner/token/fence, no active request reservation, and deterministic
+commit/publication/output/token identities. First BEGIN requires no active
+stage. Data writes, including their replays, require an unsealed/unabandoned
+stage; first seal requires an unsealed/unabandoned stage, identical seal replay
+accepts its sealed post-state, abort accepts either seal state, and first commit
+requires a sealed/unabandoned stage. BEGIN, data writes, seal, and first commit
+also require active unexpired authorization. The explicit post-abort replay
+validates its retained terminal slot instead of requiring deleted stage keys.
+Each operation validates all affected key types and its complete section 2
+allocation inequality before mutation. A stage uses one absolute
 `expires_at_ms=begin_redis_time+900000`; every newly created stage key receives
 that exact `PEXPIREAT` in its creation script. No replay or renewal extends it.
+
+For an owned stage, every data write, seal, first commit, and active-stage replay
+MUST establish the exact metadata/slot/job owner tuple and validate:
+
+```text
+job.last_stage_fence = job.lease_fence = request.fence = stage.lease_fence
+job.active_stage_commit_id = job.last_stage_commit_id = stage.commit_id = request.commit_id
+job.active_reservation_id = ""
+job.lease_delivery_started = 1
+stage.request_starts_baseline = job.lease_request_starts_baseline
+stage.request_starts_generation = job.request_starts
+0 <= stage.request_starts_baseline < stage.request_starts_generation <= 10
+```
+
+Stage run/job/owner and token digest must match the exact lease, and the section
+4 publication and commit IDs are recomputed using the metadata's output digest
+and B/G, not caller-selected replacement snapshots. First abort and renewal of
+an owned stage also validate this frozen binding. Established current-stage
+baseline/generation drift is `COUNTER_CORRUPT`, including before a replay or
+blocked-commit bookkeeping write; it cannot be repaired by re-reading newer
+counts into the stage. Completed-commit and post-abort receipts use their specified retained
+identities instead. Historical recovered residue is subject to section 10.6's
+cleanup rules, not current-fence publication predicates.
 
 Each stage-data request includes, in order, `run_id`, `job_id`, `owner_id`,
 `lease_token`, `fence`, `commit_id`, its operation-specific chunk kind and
@@ -2630,35 +2952,77 @@ kind must match; a generic caller-selected kind is rejected.
 #### `CJ2_BEGIN_STAGE`
 
 Its ordered request fields are `lease_identity`, `commit_id`, `publication_id`,
-`output_digest`, `expected_page_fields`, `expected_outlinks`,
-`expected_discoveries`, `expected_aliases`, and `expected_images`. It requires
-fewer than four entries in `stage_slots`, the full 48 MiB admission reservation,
-an empty job `active_stage_commit_id`, `last_stage_fence < fence`, no stage for
-this commit,
-`lease_delivery_started=1`, `last_document_request_fence=fence`, and empty stage
-destinations. The identical-active replay check precedes the
-one-stage-per-fence check.
-It atomically creates the fixed-shape `T:meta`,
+`output_digest`, `request_starts_baseline`, `request_starts_generation`,
+`expected_page_fields`, `expected_outlinks`, `expected_discoveries`,
+`expected_aliases`, and `expected_images`. The client MUST derive B/G from its
+authenticated section 8.3 `OutputContext` and derive/verify the output digest,
+publication ID, commit ID, and expected counts from that same context and
+validated semantic output. A wire constructor accepting only caller-selected
+counts/digests without this binding is insufficient. The reply shape is
+unchanged; the returned commit ID binds the interval.
+
+After gate, input-shape/lexical, scalar-pair, current-lease, and record validation,
+identical-active replay is checked before the one-stage-per-fence, slot-capacity,
+and new-admission checks. For an existing active stage ID, compare every
+immutable BEGIN input, including B/G, against metadata before recomputing an
+identity from changed caller fields: changed input under that ID is
+`IMMUTABLE_MISMATCH`, not a new first-BEGIN request. An exact active replay also
+requires the frozen job/stage tuple and original lifetime to
+remain valid, even if the stage has since been sealed. It returns
+`EXISTS_IDENTICAL` with the original expiry and current remaining reservation,
+never extending expiry or replenishing memory.
+
+First BEGIN requires an empty job `active_stage_commit_id`,
+`last_stage_fence < fence`, no stage for this commit, no active request
+reservation, `lease_delivery_started=1`,
+`last_document_request_fence=fence`, and empty stage destinations. Before slot
+or memory admission and before any mutation it MUST require:
+
+```text
+request.request_starts_baseline = job.lease_request_starts_baseline
+request.request_starts_generation = job.request_starts
+0 <= request.request_starts_baseline < request.request_starts_generation <= 10
+```
+
+A valid but stale pair is `STAGE_INVALID`, not a freeze or a counter repair.
+If another start finished after the witness read, its increment of G invalidates
+that BEGIN even when its timestamp/target is unchanged. A pending or started
+reservation makes first BEGIN `INVALID_STATE`; a cancelled unstarted reservation
+contributes no start and does not itself invalidate an otherwise matching
+interval. The client may replace a provisional context only through complete authenticated
+revalidation, never by patching B/G alone. Admission then requires fewer than
+four entries in `stage_slots` and the full 48 MiB reservation.
+
+Successful BEGIN is the atomic compare-and-freeze linearization point. It
+creates the fixed-shape `T:meta` with the exact compared B/G,
 creates `T:keys` containing exactly `T:meta` and `T:keys`, applies their common
 absolute expiry, inserts `commit_id` into `stage_expiry`, and inserts
 `commit_id => <50331648-G_begin>:<run_id>:<job_id>:<fence>:0` into `stage_slots`,
-where all fields are canonical and `G_begin` includes all new metadata,
-inventory, and job-field allocation and leaves at least the 64 KiB control
-portion. Colons are unambiguous because each
+where all fields are canonical and `G_begin` includes all new metadata
+(including both interval fields), inventory, and job-field allocation and leaves
+at least the 64 KiB control portion. Colons are unambiguous because each
 component's grammar excludes them. It sets the job's active/last stage commit ID
-to `commit_id` and `last_stage_fence=fence`. A lost response is retried while
-that stage is active with the same identity; the
-original expiry and remaining reservation are returned and never extended. Once
-abort, recovery, or first commit clears the active field, that commit ID cannot begin
-again and no second stage can begin on that fence; the worker must take the
-retry/lease-loss path and a new fence derives a new commit ID.
+to `commit_id` and `last_stage_fence=fence` in that same mutation, without
+changing job B/G. From then on reserve/start MUST reject new request admission
+on that fence, even if abort, recovery, commit, or cleanup removes stage keys or
+the active-stage field. The freeze cannot be undone or replaced by a second
+BEGIN. A different BEGIN, or BEGIN after abort, on the still-current frozen
+lease is `INVALID_STATE`; after ownership ends it is `LEASE_LOST`. Only the
+existing lease-ending/recovery path followed by a new claim may resume work,
+capturing a new baseline and deriving a new fence/commit identity.
+
+A lost BEGIN response is reconciled with the same identity while the stage is
+active; the client MUST NOT infer that requests remain admissible from the lost
+reply. Once abort, recovery, or first commit clears the active field, that commit
+ID cannot begin again. Completed publication is reconciled through COMMIT, not
+by recreating its stage.
 
 If a race fills the fourth slot, or the admission inequality fails after network
 I/O, begin returns `STAGE_CAPACITY_BLOCKED` with `stage_slots_full` or
-`memory_headroom_low` and changes nothing. Because begin already requires no
-active reservation, the worker immediately uses `CJ2_RETRY` with
-`downstream_backpressure`; it does not renew indefinitely while holding fetched
-output in process memory.
+`memory_headroom_low` and changes nothing, including B/G and `last_stage_fence`.
+Because begin already requires no active reservation, the worker immediately
+uses `CJ2_RETRY` with `downstream_backpressure`; it does not renew indefinitely
+while holding fetched output in process memory.
 
 #### `CJ2_STAGE_PAGE_FIELDS` and `CJ2_STAGE_PAGE_BLOB`
 
@@ -2717,15 +3081,19 @@ slot. It prevalidates
 the ordered `lease_identity`, `commit_id`, and `transition_id` using transition
 reason `none`, then the entire
 available at-most-73-key inventory, and unlinks exactly those stage keys,
-removes the `stage_expiry` entry, clears matching staged identity from the job,
-and stores the abort transition. It deducts its proved `G` but retains the exact
+removes the `stage_expiry` entry, clears only the matching
+`active_stage_commit_id` from the job, and stores the abort transition. It MUST
+retain `last_stage_commit_id`, `last_stage_fence`, the job baseline, and cumulative
+request starts: abort never permits another request or stage on that fence.
+It deducts its proved `G` but retains the exact
 `stage_slots` owner field with the remaining terminal reservation and changes
 its final component from `0` to the prevalidated positive `key_count`; it does
-not release that memory to a racing allocator. Exact replay after materialized-
-stage absence requires that same terminal reservation and returns
-`EXISTS_IDENTICAL` with the stored count using the job's last transition identity
-while no newer transition exists;
-otherwise it is `LEASE_LOST`. It never touches a final output key.
+not release that memory to a racing allocator. After common gates, input, and
+current unexpired lease validation, exact post-abort replay is checked before
+requiring materialized stage keys. It requires that same terminal reservation
+and returns `EXISTS_IDENTICAL` with the stored count using the job's last
+transition identity while no newer transition exists; otherwise it is
+`LEASE_LOST`. It never touches a final output key.
 It does not clear commit-backpressure fields or membership. The immediately
 following lease-ending transition validates and clears that evidence and
 removes the retained slot after all covered writes; if the worker dies first,
@@ -2735,13 +3103,22 @@ expired-lease recovery does so.
 
 Before calling seal, the compatible client MUST re-read every stage key in
 bounded pages, recompute the output digest and compact manifest independently of
-its write buffers, and discard those buffers. The ordered seal request contains
-the lease identity, `commit_id`, `verified_output_digest`, and
-`verified_manifest_chunk_digest`. The script requires the current lease, active
-unexpired run authorization, no active reservation, and an unsealed matching
-`T:meta`. It validates:
+its write buffers, and discard those buffers. It retains only the context and
+identity evidence needed to verify the read: metadata B/G, full lease, commit,
+publication, and output identities MUST match the same authenticated
+`OutputContext` used for BEGIN. Verification MUST read and compare the actual
+staged aliases and all other semantic sections; substituting context-derived
+aliases while ignoring the stored alias data is forbidden. A fresh section 8.3
+job witness must still match that context; Lua independently enforces the frozen
+tuple at seal, so a race with recovery cannot make a read confer ownership.
+The ordered seal request contains the lease identity, `commit_id`,
+`verified_output_digest`, and `verified_manifest_chunk_digest`. The script
+requires the current lease, active unexpired run authorization, no active
+reservation, and matching unabandoned `T:meta`. It validates:
 
 - `commit_id`, publication ID, output digest, token digest, run, job, and fence;
+- the exact frozen job/stage baseline/generation and last/active-stage relations
+  above, including on identical seal replay;
 - page, outlink, discovery, alias, manifest, payload, and key-list types;
 - exact completed chunk set, counts, canonical orders, image keys, field shapes,
   publication IDs, final document timestamp/fence/target witness, and policy
@@ -2756,30 +3133,47 @@ This detects write/re-read disagreement in the pinned client but is not a
 hostile-client attestation; section 10.1's immutable-image trust boundary still
 applies.
 
-It then changes only `sealed=1`, `sealed_at_ms`, and the slot's remaining bytes
-by the exact seal `G`; the stage was already inventoried at begin. No stage-write
-operation accepts a sealed stage.
-Repeating an identical seal returns `EXISTS_IDENTICAL`; changed data is
-`STAGE_INVALID`.
+After those checks, repeating an identical seal against its sealed post-state
+returns `EXISTS_IDENTICAL` before the first-seal unsealed-state requirement;
+changed verification data is `STAGE_INVALID`, and stored frozen-tuple drift is
+`COUNTER_CORRUPT`. First seal requires `sealed=0` and changes only `sealed=1`,
+`sealed_at_ms`, and the slot's remaining bytes by the exact seal `G`; the stage
+was already inventoried at begin. Neither first seal nor replay changes B/G or
+expiry. No stage-data operation accepts a sealed stage.
 
 #### `CJ2_COMMIT`
 
 Its ordered request fields are `lease_identity` followed by `commit_id`; all
 bulk output is read from the sealed stage, keeping the serialized request within
-64 KiB. This is the only operation that may expose crawl output.
+64 KiB. There are no separate baseline/generation arguments: the commit ID binds
+them, and first commit reads them from metadata. This is the only operation that
+may expose crawl output.
 
-Idempotency is checked before active-run and authorization checks: if the job is
-already completed with the same `commit_id`, it returns `ALREADY_COMMITTED` and
-the publication ID. This check still requires approved boot, exact active
-markers, and the commit guard, but it does not require retained stage/output
-keys. A completed job with another commit ID is `LEASE_LOST`.
+After approved boot, exact active markers/commit guard, input validation, and
+retained-job validation, completed-commit idempotency is checked before live
+lease, active-run, authorization, stage, destination, or queue admission checks.
+The existing run purge-in-progress rejection remains in force.
+For a job already completed by publication, recompute the section 4 commit ID
+using the request's run/job/fence/token and the retained job's `publication_id`,
+`lease_request_starts_baseline`, and `request_starts`. Require the requested
+fence to equal the retained job/last-stage fence and the recomputed ID to equal
+both the requested `commit_id` and stored job `commit_id=last_stage_commit_id`.
+An exact match returns `ALREADY_COMMITTED` with the original publication ID,
+commit ID, and completion time and changes nothing. It does not compare against
+cleared active lease owner/token/expiry fields, require the old transcript or
+stage/output keys, or recreate a stage, slot, output, or notification. The
+request token participates in identity recomputation, not renewal of authority.
+A different valid requested identity, or a completed job without publication,
+returns `LEASE_LOST`. Missing/purged job state cannot establish this receipt and
+MUST NOT be reported as `ALREADY_COMMITTED`.
 
 For a first commit, the prevalidation phase MUST validate:
 
 1. current, unexpired owner/token/fence;
 2. active run and unexpired authorization;
 3. no active request reservation;
-4. exact sealed stage identity and every stage bound;
+4. exact sealed stage identity, frozen job/stage baseline/generation and
+   last/active-stage equality, and every stage bound;
 5. exact approved commit guard and the section 2 growth/headroom inequalities;
 6. `pages_queue` type and length below 5,000;
 7. final page, outlink, manifest, and every image destination are absent;
@@ -2813,7 +3207,8 @@ The mutation phase MUST atomically perform all of the following:
 5. For every outlink target, `SADD` the page's canonical effective URL to the
    corresponding `backlinks:<target>` set.
 6. Add or reconcile every discovered job. New jobs receive job hashes and ready
-   indexes, exact immutable policy binding, and run/group open counters.
+   indexes, exact immutable policy binding, `lease_request_starts_baseline=0`,
+   `request_starts=0`, and run/group open counters.
    For an existing job with the same canonical URL, first admission wins:
    score, depth, policy binding, state, and indexes are unchanged regardless of
    the later valid discovery record. A same-ID/different-URL collision rejects
@@ -2825,6 +3220,7 @@ The mutation phase MUST atomically perform all of the following:
 9. Move the crawl job from leased to completed with `last_reason=published`.
 10. Store output, publication, and commit digests plus the exact final page key;
     decrement run/group open counts; clear active lease and backpressure fields;
+    retain job B/G, lease fence, and last-stage identity for completed replay;
     remove the exact global active-lease member;
     remove matching commit-backpressure membership; increment completion,
     disposition-reason, and first-commit counters once.
@@ -2858,7 +3254,8 @@ owns the disposition. A process restart
 cannot reset the deadline. This internal timestamp mutation is not a first
 commit and exposes no output.
 
-The script checks an existing matching backpressure deadline before current
+The script validates the frozen tuple before any backpressure result or record,
+then checks an existing matching backpressure deadline before current
 queue/memory admission. At or after that deadline it returns the same durable
 `DOWNSTREAM_BACKPRESSURE` record and MUST NOT publish even if capacity has since
 recovered; only abort plus the next-fence retry, or ordinary expired-lease
@@ -2915,22 +3312,29 @@ reservation never refunds starts or shortens rate deadlines. It then applies:
   `last_failure_reason=lease_expired_after_io`;
 - cancelled/expired run: cancelled with the run's cancellation reason.
 
-Every branch clears lease/backpressure fields and removes matching
-commit-backpressure membership plus the exact global active-lease member as part
-of the same transition.
+Every branch clears active lease and commit-backpressure fields and removes
+matching commit-backpressure membership plus the exact global active-lease member
+as part of the same transition. Every branch retains the job's baseline,
+cumulative request starts, lease fence, and last-stage history. No recovery or later cleanup
+resets these values or permits more requests on the recovered fence.
 
 If the expired fence owns an active stage slot, recovery validates live metadata
-and marks it `abandoned=1`; if the common stage expiry has passed and metadata
-is already absent, the exact slot owner tuple is sufficient. It leaves the
+including its frozen B/G against that still-owning job/fence before clearing
+ownership, and marks it `abandoned=1` without changing either snapshot; if the
+common stage expiry has passed and metadata is already absent, the exact slot
+owner tuple is sufficient. It leaves the
 `stage_expiry` score at the unchanged common absolute expiry, removes its
 unmaterialized stage-slot reservation, and leaves physical keys to bounded
 cleanup at that deadline. If instead the job has the exact aborted-stage
 terminal reservation, recovery validates the abort transition and removes that
 slot; its stage keys and expiry member are already absent. It never renames a
-stage key. It clears only the matching job active-stage field. It MUST NOT
-release a nonexpired or differently owned reservation or stage. Recovery increments
-`recovered_leases_total` and exactly
-one `recovery_outcome_counts` field once per recovered job; the closed fields
+stage key. It clears only the matching job active-stage field. A later claim
+captures the retained cumulative starts as its new baseline; any recovered
+stage then describes an older fence and cannot be reclassified as current output
+authority by comparing or replacing its snapshots with the new job interval.
+Recovery MUST NOT release a nonexpired or differently owned reservation or stage.
+Recovery increments `recovered_leases_total` and exactly one
+`recovery_outcome_counts` field once per recovered job; the closed fields
 are `ready`, `delayed`, `dead`, and `cancelled`, and their sum equals the total.
 Its delayed branch also increments `retries_total` and the
 job's `retry_count` plus the `lease_expired_after_io` retry-reason field exactly
@@ -2968,7 +3372,9 @@ to whether another due entry remains, rather than selecting a different bundle.
 If a matching stage slot remains, the script validates
 `abort_unlinked_keys=0`, the exact leased job/fence/active-stage ownership, and a
 matching per-run/global lease deadline no later than this cleanup deadline. A
-later or inconsistent lease is corruption.
+later or inconsistent lease is corruption. Any still-present metadata must
+match that owning job's frozen B/G; metadata absence at the common expiry is
+handled by recovery's existing slot-owner rule, not by synthesizing snapshots.
 It then returns zero-processed `BATCH_MORE` without unlinking or releasing
 anything; `CJ2_RECOVER_EXPIRED` must perform the lease disposition and remove
 the reserved slot first. A positive abort count with an expiry member is also
@@ -2976,7 +3382,13 @@ corruption. This ordering prevents another allocator from consuming the
 terminal floor needed by recovery.
 
 After the slot is absent, the bundle is commit or recovery residue and cleanup
-is deletion-only. It unlinks at most its 73 validated stage keys per invocation
+is deletion-only. Cleanup MUST NOT mutate any job baseline, cumulative start
+counter, lease fence, or last-stage history. A recovered stage's B/G remain
+historical: a newer job fence or new baseline is not a mismatch requiring repair,
+nor grounds to apply current-fence publication predicates to that residue. The
+exact commit-ID prefix, inventory, expiry, and residue-ownership rules still
+apply; no historical stage can authorize new requests or publication. Cleanup
+unlinks at most its 73 validated stage keys per invocation
 and never follows a key outside the exact
 `mifolyo:crawl:v2:stage:<commit_id>:` prefix. It removes the `stage_expiry`
 member only after the bundle is logically empty. If `T:keys` exists, every
@@ -3150,6 +3562,29 @@ Every worker MUST:
    `RELEASED_READY`, `RETRY_SCHEDULED`, `COMPLETED`, `DEAD`, `CANCELLED`,
    `COMMITTED`, or `ALREADY_COMMITTED`; a transport-ambiguous response is not
    treated as acknowledgment.
+
+Each exact lease session owns the shared per-reservation permit states described
+in section 10.3. Connection reconnects and separately decoded replay responses
+MUST NOT create independent permit sessions. Request I/O must have stopped and
+its typed outcome/evidence be accounted for before releasing the reservation or
+building a publishable transcript; a finished reservation alone is not proof of
+successful I/O.
+
+The worker sequence is: finish/cancel outstanding request work and reconcile its
+reservation; obtain the atomic final-job projection and certify `OutputContext`;
+BEGIN with that exact B/G; write the bound stage; independently re-read and
+verify it; seal; then commit. Client request admission and BEGIN are serialized
+under the lease-session transition mutex, in addition to Redis's atomic freeze.
+Admission is held closed while BEGIN's response is ambiguous until exact
+reconciliation establishes its result; the worker cannot assume a lost reply
+means the fence is unfrozen. Successful BEGIN permanently closes request
+admission for that session, including after abort. A stale BEGIN pair may be
+replaced only through complete transcript/context revalidation before any stage
+has begun, within the existing bounded operation deadline. Lost or uncertain
+local permit/event evidence suppresses further I/O and publication on that
+fence; uncertain lease ownership remains recovery-owned. Exact completed COMMIT
+reconciliation requires only its retained identity, not reconstruction of lost
+output evidence.
 
 The authorization timer is a local monotonic duration calculated as
 `authorization_expires_at_ms-redis_now_ms` from the latest validated Lua
@@ -3523,6 +3958,11 @@ closed reason-counter sum equals its parent total. It requires
 `claims_total <= reservation_creations_total <= 100` and reports remaining
 creation capacity as `100-reservation_creations_total`. It also checks every
 bounded commit-backpressure member against the corresponding leased job fields.
+Every job it inspects must satisfy section 7.2's retained baseline/start and
+freeze relations; owned-stage consistency checks also compare the metadata
+interval with that exact current job/fence. Historical recovered residue is not
+compared against a newer job interval. These checks add no metric or response
+shape and do not expand the bounded job/stage inventories read by a snapshot.
 A mismatch emits one `state_corrupt` condition and pages an operator; it never
 guesses which side is correct.
 Across configured runs that are members of the global `active_runs` inventory,
@@ -3823,6 +4263,16 @@ recovery.
   started, audit-group, retry-reason, recovery-outcome, and disposition-reason
   equality after every operation and exact replay.
 - Same claim token returns the same fence and reservation.
+- New seed and discovered jobs initialize `lease_request_starts_baseline=0` and
+  `request_starts=0`. New claim captures the pre-claim cumulative job starts
+  exactly once; claim replay, blocked claim, and visited completion do not
+  replace that baseline. A pre-I/O lease has `G=B`, and a started lease has
+  `G>B`, even when prior fences consumed starts or all timestamps are equal.
+- Finish, pending cancellation, release, retry, abort, recovery, completion,
+  dead-letter, cancellation maintenance, and stage cleanup retain B/G and fence
+  history. A later claim alone replaces B with the retained G, without resetting
+  G. Missing baseline fields and invalid stored baseline/start relations fail
+  closed rather than receiving a zero/default repair.
 - Reserve/start/finish/cancel retries change counters exactly once; every first
   claim/reserve creation increments `reservation_creations_total` once and no
   replay does.
@@ -3839,6 +4289,9 @@ recovery.
   precedence.
 - Delivery attempts increment once per fence while every request start consumes
   run and group budget.
+- Failed DNS/dial/HTTP attempts, timeout, post-START cancellation, and an unused
+  recorded START still consume the job/run/group starts and the fence's delivery
+  attempt. FINISH and its replay do not attest network success or refund starts.
 - Attempt 1 retries after exactly 30 seconds, attempt 2 after exactly 120
   seconds, and attempt 3 creates exactly one dead record whose response fourth
   element is the literal bulk string `retry_exhausted`.
@@ -3856,7 +4309,22 @@ recovery.
 - SIGKILL immediately after claim recovers after lease expiry without consuming
   a delivery attempt or request start.
 - SIGKILL immediately after recorded request start preserves the consumed job,
-  run, and group counters and rate deadline.
+  run, and group counters, retained baseline, and rate deadline.
+- Lost START response with a locally known unused session reconciles the same
+  reservation and can yield only its one eligible permit. Two separately parsed
+  permitted replies, concurrent replay callers, copied replies/permits, and
+  connection reconnects share one permit state and cannot issue/use it twice.
+  An intentionally unused grant retired before FINISH/freeze cannot be revived
+  by a retained permit or delayed reply.
+  The permission bit may change to zero without changing the original start
+  snapshots. Lost FINISH reply never repeats I/O. Missing or uncertain local
+  permit/event state, including process restart, never resumes old-fence I/O or
+  manufactures successful output evidence.
+- Historical START replay after a newer fence captures another baseline returns
+  only its own original timestamp/counter snapshots with `io_permission=0` and
+  changes no newer job/reservation. Finished/expired, authorization-expired, and
+  cancelled-run reconciliation cannot mint a permit or a successful response
+  event. A missing/expired tombstone cannot be reconstructed from current counts.
 - SIGKILL during DNS/fetch/render produces no visible partial output.
 - SIGKILL after each bounded stage-write point leaves only expiring invisible
   stage data.
@@ -3866,6 +4334,17 @@ recovery.
   leave more than four stage slots or follow an unvalidated key. Abandoned
   stages retain their original cleanup deadline; a first commit changes only
   its residual bundle's deadline to the exact common at-most-60-second expiry.
+- BEGIN lost-response replay checks the identical active stage before one-stage
+  and new-capacity admission, including after seal, and retains the same B/G,
+  expiry, and current slot remainder. Changed immutable fields under that ID
+  fail as `IMMUTABLE_MISMATCH`; a different BEGIN on the frozen current fence is
+  `INVALID_STATE`. Ambiguous BEGIN holds local request admission closed.
+- Race a reservation/start against BEGIN: an outstanding pending/started
+  reservation prevents BEGIN, a start finished after the witness read rejects
+  stale B/G with `STAGE_INVALID`, and BEGIN winning first prevents every new
+  reservation/start. Failed BEGIN, including slot/memory capacity blocks,
+  changes no baseline, count, freeze, stage key, or slot. Cancelling an unstarted
+  reservation between read and BEGIN does not create a false transcript gap.
 - Every renewal while a stage is active is capped at that stage's original
   absolute expiry. At the cleanup deadline a still-owning job's lease is due,
   cleanup never moves that job, and expired-lease recovery performs its one
@@ -3874,6 +4353,16 @@ recovery.
   the terminal slot reserved; active-lease/stage-slot scaling keeps maintenance
   available until expiry recovery removes it exactly once without stage keys or
   an expiry member.
+- After abort, the unchanged `last_stage_fence` rejects new reserve/start and
+  restaging even though the active-stage field and keys are absent. Renewal is
+  still forbidden. Exact abort replay precedes materialized-key checks, and
+  only the serialized lease-ending transition or expiry recovery releases its
+  terminal slot. Neither path resets B/G or last-stage history.
+- Recovery validates any still-present owned metadata interval before clearing
+  ownership, then retains its snapshots while abandoning it. After a new fence
+  captures a new baseline, cleanup of the older residual stage succeeds under
+  its own identity/expiry rules without comparing it to, mutating, or releasing
+  the new fence or stage. Expired metadata is not replaced with current counts.
 - Client death and Redis process `SIGKILL` at every prevalidation/mutation/
   acknowledgment boundary of maximum-shape commit yield, after same-volume AOF
   restart, either fail-closed startup on AOF damage, no first commit, or one
@@ -3881,9 +4370,18 @@ recovery.
 - A dropped commit response followed by retry leaves one completed job, one page
   notification, one backlink/discovery effect set, and all exact image/page
   objects.
+- Exact completed COMMIT replay after stage cleanup, reservation tombstone
+  expiry, downstream output deletion, and run authorization expiry/cancellation
+  recomputes identity from the supplied fence/token and retained publication/B/G
+  before live-state or stage/destination checks. It returns only the original
+  receipt under valid boot/marker/guard gates and recreates nothing. Wrong
+  token/fence/commit ID, no-output completion, and missing/purged job state cannot
+  return `ALREADY_COMMITTED`.
 - A stale fence cannot renew, reserve, start, finish, release, retry, dead-letter,
-  cancel, stage, abort its former or any newer stage, seal, commit, or ACK;
-  recovery owns stale-stage disposition.
+  cancel, stage, abort its former or any newer stage, seal, commit, or ACK new
+  effects; the explicitly allowed exact historical receipts perform no mutation
+  and grant no I/O or publication authority. Recovery owns stale-stage
+  disposition.
 - A live worker cannot reset commit backpressure's first Redis timestamp and, at
   the persisted deadline no later than 120 seconds, either aborts the stage
   before exactly one retry while its lease remains valid or loses the race to
@@ -3927,6 +4425,43 @@ recovery.
   unsigned-64 framing, empty sections, Unicode byte order, score text, URL,
   target, token, scope, policy-decision, group-map, transition, reservation,
   chunk, source, output, publication, and commit identities.
+- Commit vectors append exactly `F(canonical_decimal(request_starts_baseline))`
+  then `F(canonical_decimal(request_starts_generation))` under the unchanged
+  `mifolyo:crawl-commit:v2` domain. Changing either valid value while preserving
+  semantic output/publication changes commit ID, stage keys, chunk digests, and
+  abort transition payload/ID, but not output/publication hashes or downstream
+  grammar. Earlier commit formulas, omitted interval fields, reordered fields,
+  and old contract digests have no backward fallback.
+- The final witness is exactly the thirteen-field section 8.3 job projection
+  from one authenticated read on the internally derived job key. Wrong arity,
+  missing/non-bulk/noncanonical values, wrong state, active reservation, changed
+  owner/token/fence, cross-run/job binding, and invalid target/digest/timestamp
+  relations cannot construct output authority. Caller-supplied raw projections
+  or a guessed baseline are not production authority.
+- Transcript closure rejects an omitted initial robots or document start even
+  when the remaining suffix is contiguous and ends at G, and rejects omitted
+  middle/final events, duplicates, reordered events, a terminal stale prefix,
+  and substituted older-fence events. Full nonzero-baseline transcripts pass;
+  legal unstarted-reservation ordinal gaps and interleaved run/group starts do
+  not require contiguous ordinals or run/group counters.
+- Equal-millisecond document-to-redirect-to-original-target chains and trailing
+  robots/render-resource starts require the complete `B+1..G` interval. Failed,
+  cancelled, and unused STARTs cannot be omitted. A failed required document or
+  redirect cannot publish an earlier response; a separately permitted nonfatal
+  resource failure is counted without becoming an alias. Unknown success or
+  missing authenticated event evidence suppresses output.
+- Output preparation, BEGIN, every chunk family, and independent pre-seal
+  verification preserve the same opaque full-lease/B/G `OutputContext` binding.
+  Relabelling stale context/output with a newer scalar pair is rejected. The
+  verifier compares actual staged aliases, rather than substituting expected
+  context aliases while ignoring changed stored data.
+- Every stage-data write, active-stage replay, seal/replayed seal, and first
+  commit rejects an established current stage whose frozen B/G differs from the
+  job with `COUNTER_CORRUPT`, without data, seal, backpressure, or publication
+  mutation. Current active/last-stage and fence equality is also mandatory.
+  First BEGIN with a valid stale input pair is instead `STAGE_INVALID` without
+  freezing; invalid canonical input relations are `INVALID_ARGUMENT`, and
+  invalid numeric encoding is `INVALID_NUMBER`.
 - Page, outlinks, all payloads, manifest, backlinks, discoveries, notification,
   and job completion become visible in the same Redis transaction.
 - URL-ID/canonical-witness mismatches in source jobs, request reservations,
@@ -3977,6 +4512,12 @@ writes, restart the same AOF volume, and prove zero acknowledged state loss.
   a maximum commit plus the 16 MiB lease-safety reserve remain within every
   reservation inequality; measured growth never exceeds `G` and OOM injection
   occurs only before visible mutation.
+- Maximum amended fixtures include the retained job baseline field, its claim
+  replacement allocation, both stage interval fields in `G_begin`, new discovery
+  job baseline initialization in commit growth, and the added BEGIN RESP bytes.
+  No field/key allocation is omitted as bookkeeping; metadata exclusion from
+  logical `data_bytes` gives no memory-admission credit. The amended shapes fit
+  the unchanged key, memory/control-floor, command-size, and script-time limits.
 - The retained-state fixture includes 100 reservation records for each of 100
   unarchived runs, proves at most 10,000 logical terminal tombstones, and
   includes allocator/lazy-expiration memory in the measured bound.

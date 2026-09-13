@@ -26,6 +26,8 @@ type StageChunk struct {
 	kind     ChunkKind
 	ordinal  uint64
 	records  []Record
+	context  OutputContext
+	identity CommitIdentity
 }
 
 func (chunk StageChunk) CommitID() Digest  { return chunk.commitID }
@@ -33,11 +35,8 @@ func (chunk StageChunk) Kind() ChunkKind   { return chunk.kind }
 func (chunk StageChunk) Ordinal() uint64   { return chunk.ordinal }
 func (chunk StageChunk) Records() []Record { return cloneRecords(chunk.records) }
 
-func NewPageFieldsStageChunk(commitID Digest, publicationID Digest, context OutputContext, page OutputPage) (StageChunk, error) {
-	if err := validateDigest(commitID); err != nil {
-		return StageChunk{}, err
-	}
-	if err := validateDigest(publicationID); err != nil {
+func NewPageFieldsStageChunk(identity CommitIdentity, context OutputContext, page OutputPage) (StageChunk, error) {
+	if err := validateOutputCommitIdentity(context, identity); err != nil {
 		return StageChunk{}, err
 	}
 	pageRecord, err := outputPageRecord(context, page)
@@ -52,12 +51,12 @@ func NewPageFieldsStageChunk(commitID Digest, publicationID Digest, context Outp
 		cloneField(pageRecord[6]),
 		cloneField(pageRecord[7]),
 		cloneField(pageRecord[8]),
-		textField("publication_id", string(publicationID)),
+		textField("publication_id", string(identity.PublicationID)),
 	}
-	return newValidatedStageChunk(commitID, ChunkPageFields, 0, []Record{record})
+	return newBoundStageChunk(identity, context, ChunkPageFields, 0, []Record{record})
 }
 
-func NewPageBlobStageChunk(commitID Digest, kind ChunkKind, value []byte) (StageChunk, error) {
+func NewPageBlobStageChunk(identity CommitIdentity, context OutputContext, kind ChunkKind, value []byte) (StageChunk, error) {
 	if kind != ChunkHTML && kind != ChunkOriginalHTML {
 		return StageChunk{}, ErrUnknownChunkKind
 	}
@@ -65,23 +64,29 @@ func NewPageBlobStageChunk(commitID Digest, kind ChunkKind, value []byte) (Stage
 		textField("field_name", string(kind)),
 		{Name: "field_bytes", Value: append([]byte(nil), value...)},
 	}
-	return newValidatedStageChunk(commitID, kind, 0, []Record{record})
+	return newBoundStageChunk(identity, context, kind, 0, []Record{record})
 }
 
-func NewOutlinksStageChunk(commitID Digest, ordinal uint64, context OutputContext, outlinks []string) (StageChunk, error) {
-	if !context.initialized {
-		return StageChunk{}, ErrInvalidOutput
+func NewOutlinksStageChunk(identity CommitIdentity, ordinal uint64, context OutputContext, outlinks []string) (StageChunk, error) {
+	if err := validateOutputCommitIdentity(context, identity); err != nil {
+		return StageChunk{}, err
 	}
 	records, err := outputOutlinkRecords(context.finalTarget.CanonicalURL, outlinks)
 	if err != nil {
 		return StageChunk{}, err
 	}
-	return newValidatedStageChunk(commitID, ChunkOutlinks, ordinal, records)
+	return newBoundStageChunk(identity, context, ChunkOutlinks, ordinal, records)
 }
 
-func NewDiscoveriesStageChunk(commitID Digest, ordinal uint64, discoveries []OutputDiscovery) (StageChunk, error) {
+func NewDiscoveriesStageChunk(identity CommitIdentity, ordinal uint64, context OutputContext, discoveries []OutputDiscovery) (StageChunk, error) {
 	if len(discoveries) > MaxNonBlobStageBatchRecords {
 		return StageChunk{}, ErrInputLimitExceeded
+	}
+	if err := validateOutputCommitIdentity(context, identity); err != nil {
+		return StageChunk{}, err
+	}
+	if err := validateOutputDiscoveriesAgainstRunPolicy(context.runPolicy, discoveries); err != nil {
+		return StageChunk{}, err
 	}
 	ordered := append([]OutputDiscovery(nil), discoveries...)
 	sort.Slice(ordered, func(left, right int) bool {
@@ -98,34 +103,31 @@ func NewDiscoveriesStageChunk(commitID Digest, ordinal uint64, discoveries []Out
 		}
 		records = append(records, record)
 	}
-	return newValidatedStageChunk(commitID, ChunkDiscoveries, ordinal, records)
+	return newBoundStageChunk(identity, context, ChunkDiscoveries, ordinal, records)
 }
 
-func NewAliasesStageChunk(commitID Digest, context OutputContext) (StageChunk, error) {
-	if !context.initialized {
-		return StageChunk{}, ErrInvalidOutput
+func NewAliasesStageChunk(identity CommitIdentity, context OutputContext) (StageChunk, error) {
+	if err := validateOutputCommitIdentity(context, identity); err != nil {
+		return StageChunk{}, err
 	}
 	records, err := outputAliasRecords(context.aliases)
 	if err != nil {
 		return StageChunk{}, err
 	}
-	return newValidatedStageChunk(commitID, ChunkAliases, 0, records)
+	return newBoundStageChunk(identity, context, ChunkAliases, 0, records)
 }
 
-func NewImagesStageChunk(commitID Digest, images []OutputImage) (StageChunk, error) {
+func NewImagesStageChunk(identity CommitIdentity, context OutputContext, images []OutputImage) (StageChunk, error) {
 	records, err := outputImageRecords(images)
 	if err != nil {
 		return StageChunk{}, err
 	}
-	return newValidatedStageChunk(commitID, ChunkImages, 0, records)
+	return newBoundStageChunk(identity, context, ChunkImages, 0, records)
 }
 
-func NewImageManifestStageChunk(commitID Digest, publicationID Digest, context OutputContext, images []OutputImage) (StageChunk, error) {
-	if err := validateDigest(publicationID); err != nil {
+func NewImageManifestStageChunk(identity CommitIdentity, context OutputContext, images []OutputImage) (StageChunk, error) {
+	if err := validateOutputCommitIdentity(context, identity); err != nil {
 		return StageChunk{}, err
-	}
-	if !context.initialized {
-		return StageChunk{}, ErrInvalidOutput
 	}
 	imageRecords, err := outputImageRecords(images)
 	if err != nil {
@@ -133,7 +135,7 @@ func NewImageManifestStageChunk(commitID Digest, publicationID Digest, context O
 	}
 	imageKeys := make([]string, 0, len(imageRecords))
 	for _, record := range imageRecords {
-		key, err := ImageDataKey(publicationID, context.finalTarget.CanonicalURL, string(record[0].Value))
+		key, err := ImageDataKey(identity.PublicationID, context.finalTarget.CanonicalURL, string(record[0].Value))
 		if err != nil {
 			return StageChunk{}, err
 		}
@@ -145,17 +147,44 @@ func NewImageManifestStageChunk(commitID Digest, publicationID Digest, context O
 	}
 	record := Record{
 		textField("contract_version", "1"),
-		textField("publication_id", string(publicationID)),
+		textField("publication_id", string(identity.PublicationID)),
 		textField("normalized_url", context.finalTarget.CanonicalURL),
 		textField("image_count", canonicalDecimal(uint64(len(imageKeys)))),
 		{Name: "image_keys", Value: encodedKeys},
 	}
-	return newValidatedStageChunk(commitID, ChunkImageManifest, 0, []Record{record})
+	return newBoundStageChunk(identity, context, ChunkImageManifest, 0, []Record{record})
+}
+
+func newBoundStageChunk(identity CommitIdentity, context OutputContext, kind ChunkKind, ordinal uint64, records []Record) (StageChunk, error) {
+	if err := validateOutputCommitIdentity(context, identity); err != nil {
+		return StageChunk{}, err
+	}
+	commitID, err := DeriveCommitID(identity)
+	if err != nil {
+		return StageChunk{}, err
+	}
+	chunk, err := newValidatedStageChunk(commitID, kind, ordinal, records)
+	if err != nil {
+		return StageChunk{}, err
+	}
+	chunk.context, chunk.identity = context, identity
+	return chunk, nil
+}
+
+func validateStageChunkAuthority(chunk StageChunk, lease LeaseIdentity) error {
+	if err := validateOutputCommitIdentity(chunk.context, chunk.identity); err != nil {
+		return err
+	}
+	commitID, err := DeriveCommitID(chunk.identity)
+	if err != nil || commitID != chunk.commitID || lease != chunk.context.lease {
+		return ErrOutputContextMismatch
+	}
+	return validateChunkRecords(chunk)
 }
 
 func newValidatedStageChunk(commitID Digest, kind ChunkKind, ordinal uint64, records []Record) (StageChunk, error) {
 	chunk := StageChunk{commitID: commitID, kind: kind, ordinal: ordinal, records: cloneRecords(records)}
-	if err := validateDigest(commitID); err != nil {
+	if err := validateNonzeroDigest(commitID); err != nil {
 		return StageChunk{}, err
 	}
 	if err := validateChunkKind(kind); err != nil {
@@ -170,8 +199,10 @@ func newValidatedStageChunk(commitID Digest, kind ChunkKind, ordinal uint64, rec
 	return chunk, nil
 }
 
+// DeriveChunkDigest is pure serialization. Wire consumers additionally require
+// the private full lease/transcript binding installed by public constructors.
 func DeriveChunkDigest(chunk StageChunk) (Digest, error) {
-	if err := validateDigest(chunk.commitID); err != nil {
+	if err := validateNonzeroDigest(chunk.commitID); err != nil {
 		return "", err
 	}
 	if err := validateChunkKind(chunk.kind); err != nil {
@@ -254,11 +285,11 @@ func validatePageFieldsChunk(chunk StageChunk) error {
 		if len(values[5]) == 0 || len(values[5]) > MaxRenderPolicyRuleIDBytes || containsControl(values[5]) {
 			return ErrInvalidChunk
 		}
-		if _, err := ParseDigest(values[6]); err != nil {
+		if _, err := parseNonzeroDigest(values[6]); err != nil {
 			return err
 		}
 	}
-	if _, err := ParseDigest(values[7]); err != nil {
+	if _, err := parseNonzeroDigest(values[7]); err != nil {
 		return err
 	}
 	return nil
@@ -337,7 +368,7 @@ func validateDiscoveriesChunk(chunk StageChunk) error {
 			return err
 		}
 		for _, digest := range values[6:] {
-			if _, err := ParseDigest(digest); err != nil {
+			if _, err := parseNonzeroDigest(digest); err != nil {
 				return err
 			}
 		}
@@ -439,7 +470,7 @@ func validateImageManifestChunk(chunk StageChunk) error {
 	if values[0] != "1" {
 		return ErrInvalidChunk
 	}
-	publicationID, err := ParseDigest(values[1])
+	publicationID, err := parseNonzeroDigest(values[1])
 	if err != nil {
 		return err
 	}

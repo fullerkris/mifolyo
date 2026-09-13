@@ -81,6 +81,31 @@ func TestIdentifierValidation(t *testing.T) {
 	}
 }
 
+func TestLexicalDigestParsersDoNotBecomeProductionAuthority(t *testing.T) {
+	parsed, err := ParseDigest(ZeroSHA256)
+	if err != nil || parsed != Digest(ZeroSHA256) {
+		t.Fatalf("lexical ZERO_SHA256 parse = %q, %v", parsed, err)
+	}
+	reservationID, err := ParseReservationID(ZeroSHA256)
+	if err != nil || reservationID != ReservationID(ZeroSHA256) {
+		t.Fatalf("lexical zero reservation parse = %q, %v", reservationID, err)
+	}
+	image, err := ParseImageDigest("sha256:" + ZeroSHA256)
+	if err != nil || image != ImageDigest("sha256:"+ZeroSHA256) {
+		t.Fatalf("lexical zero image parse = %q, %v", image, err)
+	}
+
+	if _, err := parseNonzeroDigest(ZeroSHA256); !errors.Is(err, ErrInvalidRecordValue) {
+		t.Fatalf("production digest helper error = %v", err)
+	}
+	if _, err := parseNonzeroReservationID(ZeroSHA256); !errors.Is(err, ErrInvalidReservationID) {
+		t.Fatalf("production reservation helper error = %v", err)
+	}
+	if err := validateNonzeroImageDigest(image); !errors.Is(err, ErrInvalidRecordValue) {
+		t.Fatalf("production image helper error = %v", err)
+	}
+}
+
 func TestGroupIDAndRequestKindValidation(t *testing.T) {
 	for _, value := range []string{"group-a", "grüppe", strings.Repeat("a", MaxPolicyGroupIDBytes)} {
 		if _, err := ParseGroupID(value); err != nil {

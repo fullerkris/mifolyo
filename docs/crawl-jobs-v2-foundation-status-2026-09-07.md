@@ -1,11 +1,15 @@
 # Crawl Jobs V2 Foundation Status - 2026-09-07
 
+> Historical checkpoint: this file preserves the state recorded on 2026-09-07.
+> Current implementation status and remaining work are maintained only in
+> [`crawl-jobs-v2-plan.md`](crawl-jobs-v2-plan.md).
+
 ## Purpose
 
-This document records the current F3 Crawl Jobs V2 checkpoint. The checkpoint is
-safe to preserve on a feature branch because it is dormant and has no runtime
-wiring. It is not a production-readiness claim and is not ready to merge or
-activate.
+This document records the F3 Crawl Jobs V2 checkpoint as of 2026-09-07. The
+checkpoint is safe to preserve on a feature branch because it is dormant and has
+no runtime wiring. It is not a production-readiness claim and is not ready to
+merge or activate.
 
 ## Scope completed
 
@@ -67,7 +71,7 @@ authoritative Lua files are added.
 - Output remains invisible because no commit implementation or runtime binding
   exists.
 
-## Work still required
+## Work still required at this checkpoint
 
 - Complete an independent post-remediation blocker/high review. The attempted
   review was interrupted by network connectivity and has not issued a final

@@ -249,8 +249,19 @@ func validateDigest(value Digest) error {
 }
 
 func validateReservationID(value ReservationID) error {
-	_, err := ParseReservationID(string(value))
+	_, err := parseNonzeroReservationID(string(value))
 	return err
+}
+
+func parseNonzeroReservationID(value string) (ReservationID, error) {
+	reservationID, err := ParseReservationID(value)
+	if err != nil {
+		return "", err
+	}
+	if string(reservationID) == ZeroSHA256 {
+		return "", ErrInvalidReservationID
+	}
+	return reservationID, nil
 }
 
 func validateRateScopeID(value RateScopeID) error {

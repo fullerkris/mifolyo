@@ -39,6 +39,9 @@ func (CanonicalOrigin) GoString() string           { return redactedValue }
 func (CanonicalOrigin) MarshalJSON() ([]byte, error) {
 	return redactedJSON("CanonicalOrigin")
 }
+func (ImageDigest) String() string               { return redactedValue }
+func (ImageDigest) GoString() string             { return redactedValue }
+func (ImageDigest) MarshalJSON() ([]byte, error) { return redactedJSON("ImageDigest") }
 
 func (Field) String() string               { return redactedString("Field") }
 func (Field) GoString() string             { return redactedString("Field") }
@@ -107,6 +110,29 @@ func (SuccessfulDocumentRequest) GoString() string {
 }
 func (SuccessfulDocumentRequest) MarshalJSON() ([]byte, error) {
 	return redactedJSON("SuccessfulDocumentRequest")
+}
+func (DocumentTranscript) String() string { return redactedString("DocumentTranscript") }
+func (DocumentTranscript) GoString() string {
+	return redactedString("DocumentTranscript")
+}
+func (DocumentTranscript) MarshalJSON() ([]byte, error) {
+	return redactedJSON("DocumentTranscript")
+}
+func (FinalDocumentWitness) String() string { return redactedString("FinalDocumentWitness") }
+func (FinalDocumentWitness) GoString() string {
+	return redactedString("FinalDocumentWitness")
+}
+func (FinalDocumentWitness) MarshalJSON() ([]byte, error) {
+	return redactedJSON("FinalDocumentWitness")
+}
+func (RenderPolicyAuthorization) String() string {
+	return redactedString("RenderPolicyAuthorization")
+}
+func (RenderPolicyAuthorization) GoString() string {
+	return redactedString("RenderPolicyAuthorization")
+}
+func (RenderPolicyAuthorization) MarshalJSON() ([]byte, error) {
+	return redactedJSON("RenderPolicyAuthorization")
 }
 func (OutputContext) String() string               { return redactedString("OutputContext") }
 func (OutputContext) GoString() string             { return redactedString("OutputContext") }
@@ -217,7 +243,171 @@ func (StartRequestResponse) GoString() string {
 func (StartRequestResponse) MarshalJSON() ([]byte, error) {
 	return redactedJSON("StartRequestResponse")
 }
+func (RequestIOPermit) String() string { return redactedString("RequestIOPermit") }
+func (RequestIOPermit) GoString() string {
+	return redactedString("RequestIOPermit")
+}
+func (RequestIOPermit) MarshalJSON() ([]byte, error) {
+	return redactedJSON("RequestIOPermit")
+}
 
 func (parsedResponse) String() string               { return redactedString("parsedResponse") }
 func (parsedResponse) GoString() string             { return redactedString("parsedResponse") }
 func (parsedResponse) MarshalJSON() ([]byte, error) { return redactedJSON("parsedResponse") }
+
+func (transportAuthority) String() string { return redactedString("transportAuthority") }
+func (transportAuthority) GoString() string {
+	return redactedString("transportAuthority")
+}
+func (transportAuthority) MarshalJSON() ([]byte, error) {
+	return redactedJSON("transportAuthority")
+}
+func (startRequestBinding) String() string { return redactedString("startRequestBinding") }
+func (startRequestBinding) GoString() string {
+	return redactedString("startRequestBinding")
+}
+func (startRequestBinding) MarshalJSON() ([]byte, error) {
+	return redactedJSON("startRequestBinding")
+}
+func (requestIOAuthorityState) String() string {
+	return redactedString("requestIOAuthorityState")
+}
+func (requestIOAuthorityState) GoString() string {
+	return redactedString("requestIOAuthorityState")
+}
+func (requestIOAuthorityState) MarshalJSON() ([]byte, error) {
+	return redactedJSON("requestIOAuthorityState")
+}
+
+func (TransportGateInput) String() string { return redactedString("TransportGateInput") }
+func (TransportGateInput) GoString() string {
+	return redactedString("TransportGateInput")
+}
+func (TransportGateInput) MarshalJSON() ([]byte, error) {
+	return redactedJSON("TransportGateInput")
+}
+func (TransportGate) String() string               { return redactedString("TransportGate") }
+func (TransportGate) GoString() string             { return redactedString("TransportGate") }
+func (TransportGate) MarshalJSON() ([]byte, error) { return redactedJSON("TransportGate") }
+func (OperationWireRequest) String() string        { return redactedString("OperationWireRequest") }
+func (OperationWireRequest) GoString() string {
+	return redactedString("OperationWireRequest")
+}
+func (OperationWireRequest) MarshalJSON() ([]byte, error) {
+	return redactedJSON("OperationWireRequest")
+}
+func (EvalSHARequest) String() string               { return redactedString("EvalSHARequest") }
+func (EvalSHARequest) GoString() string             { return redactedString("EvalSHARequest") }
+func (EvalSHARequest) MarshalJSON() ([]byte, error) { return redactedJSON("EvalSHARequest") }
+
+func (CompatibilityArtifactInput) String() string {
+	return redactedString("CompatibilityArtifactInput")
+}
+func (CompatibilityArtifactInput) GoString() string {
+	return redactedString("CompatibilityArtifactInput")
+}
+func (CompatibilityArtifactInput) MarshalJSON() ([]byte, error) {
+	return redactedJSON("CompatibilityArtifactInput")
+}
+func (CompatibilityArtifact) String() string {
+	return redactedString("CompatibilityArtifact")
+}
+func (CompatibilityArtifact) GoString() string {
+	return redactedString("CompatibilityArtifact")
+}
+func (CompatibilityArtifact) MarshalJSON() ([]byte, error) {
+	return redactedJSON("CompatibilityArtifact")
+}
+func (CompatibilityMarker) String() string { return redactedString("CompatibilityMarker") }
+func (CompatibilityMarker) GoString() string {
+	return redactedString("CompatibilityMarker")
+}
+func (CompatibilityMarker) MarshalJSON() ([]byte, error) {
+	return redactedJSON("CompatibilityMarker")
+}
+func (GuardCoreInput) String() string               { return redactedString("GuardCoreInput") }
+func (GuardCoreInput) GoString() string             { return redactedString("GuardCoreInput") }
+func (GuardCoreInput) MarshalJSON() ([]byte, error) { return redactedJSON("GuardCoreInput") }
+func (GuardCore) String() string                    { return redactedString("GuardCore") }
+func (GuardCore) GoString() string                  { return redactedString("GuardCore") }
+func (GuardCore) MarshalJSON() ([]byte, error)      { return redactedJSON("GuardCore") }
+func (ProvisionalGuardCore) String() string         { return redactedString("ProvisionalGuardCore") }
+func (ProvisionalGuardCore) GoString() string       { return redactedString("ProvisionalGuardCore") }
+func (ProvisionalGuardCore) MarshalJSON() ([]byte, error) {
+	return redactedJSON("ProvisionalGuardCore")
+}
+func (StoredCommitGuard) String() string   { return redactedString("StoredCommitGuard") }
+func (StoredCommitGuard) GoString() string { return redactedString("StoredCommitGuard") }
+func (StoredCommitGuard) MarshalJSON() ([]byte, error) {
+	return redactedJSON("StoredCommitGuard")
+}
+func (LegacyRetirementRecordInput) String() string {
+	return redactedString("LegacyRetirementRecordInput")
+}
+func (LegacyRetirementRecordInput) GoString() string {
+	return redactedString("LegacyRetirementRecordInput")
+}
+func (LegacyRetirementRecordInput) MarshalJSON() ([]byte, error) {
+	return redactedJSON("LegacyRetirementRecordInput")
+}
+func (LegacyRetirementRecord) String() string {
+	return redactedString("LegacyRetirementRecord")
+}
+func (LegacyRetirementRecord) GoString() string {
+	return redactedString("LegacyRetirementRecord")
+}
+func (LegacyRetirementRecord) MarshalJSON() ([]byte, error) {
+	return redactedJSON("LegacyRetirementRecord")
+}
+func (AdminFreezeRecordInput) String() string {
+	return redactedString("AdminFreezeRecordInput")
+}
+func (AdminFreezeRecordInput) GoString() string {
+	return redactedString("AdminFreezeRecordInput")
+}
+func (AdminFreezeRecordInput) MarshalJSON() ([]byte, error) {
+	return redactedJSON("AdminFreezeRecordInput")
+}
+func (AdminFreezeRecord) String() string { return redactedString("AdminFreezeRecord") }
+func (AdminFreezeRecord) GoString() string {
+	return redactedString("AdminFreezeRecord")
+}
+func (AdminFreezeRecord) MarshalJSON() ([]byte, error) {
+	return redactedJSON("AdminFreezeRecord")
+}
+func (DurabilityRecordInput) String() string {
+	return redactedString("DurabilityRecordInput")
+}
+func (DurabilityRecordInput) GoString() string {
+	return redactedString("DurabilityRecordInput")
+}
+func (DurabilityRecordInput) MarshalJSON() ([]byte, error) {
+	return redactedJSON("DurabilityRecordInput")
+}
+func (DurabilityRecord) String() string               { return redactedString("DurabilityRecord") }
+func (DurabilityRecord) GoString() string             { return redactedString("DurabilityRecord") }
+func (DurabilityRecord) MarshalJSON() ([]byte, error) { return redactedJSON("DurabilityRecord") }
+func (FirstRequestStartEvidence) String() string {
+	return redactedString("FirstRequestStartEvidence")
+}
+func (FirstRequestStartEvidence) GoString() string {
+	return redactedString("FirstRequestStartEvidence")
+}
+func (FirstRequestStartEvidence) MarshalJSON() ([]byte, error) {
+	return redactedJSON("FirstRequestStartEvidence")
+}
+func (FinalPageRecord) String() string               { return redactedString("FinalPageRecord") }
+func (FinalPageRecord) GoString() string             { return redactedString("FinalPageRecord") }
+func (FinalPageRecord) MarshalJSON() ([]byte, error) { return redactedJSON("FinalPageRecord") }
+func (FinalImageRecord) String() string              { return redactedString("FinalImageRecord") }
+func (FinalImageRecord) GoString() string            { return redactedString("FinalImageRecord") }
+func (FinalImageRecord) MarshalJSON() ([]byte, error) {
+	return redactedJSON("FinalImageRecord")
+}
+func (ImageManifestRecord) String() string { return redactedString("ImageManifestRecord") }
+func (ImageManifestRecord) GoString() string {
+	return redactedString("ImageManifestRecord")
+}
+func (ImageManifestRecord) MarshalJSON() ([]byte, error) {
+	return redactedJSON("ImageManifestRecord")
+}

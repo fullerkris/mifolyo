@@ -72,11 +72,11 @@ func (artifact CompatibilityArtifact) validate() error {
 	if !artifact.initialized {
 		return ErrInvalidRecordValue
 	}
-	if err := validateDigest(artifact.input.RedisConfigSHA256); err != nil {
+	if err := validateNonzeroDigest(artifact.input.RedisConfigSHA256); err != nil {
 		return err
 	}
-	if err := validateDigest(artifact.input.CommitGuardSHA256); err != nil || artifact.input.CommitGuardSHA256 == Digest(ZeroSHA256) {
-		return ErrInvalidRecordValue
+	if err := validateNonzeroDigest(artifact.input.CommitGuardSHA256); err != nil {
+		return err
 	}
 	for _, value := range []ImageDigest{
 		artifact.input.SpiderImage,
@@ -87,12 +87,12 @@ func (artifact CompatibilityArtifact) validate() error {
 		artifact.input.BacklinksProcessorImage,
 		artifact.input.MonitoringImage,
 	} {
-		if _, err := ParseImageDigest(string(value)); err != nil {
+		if err := validateNonzeroImageDigest(value); err != nil {
 			return err
 		}
 	}
 	if artifact.input.RenderWorkerImage != "disabled" {
-		if _, err := ParseImageDigest(artifact.input.RenderWorkerImage); err != nil {
+		if err := validateNonzeroImageDigest(ImageDigest(artifact.input.RenderWorkerImage)); err != nil {
 			return err
 		}
 	}
@@ -151,11 +151,11 @@ func DecodeCompatibilityArtifact(encoded []byte) (CompatibilityArtifact, error) 
 	if err := requireConstants(values, map[int]string{0: "1", 1: "2", 2: "2", 3: "1", 4: "1", 5: "1", 6: "1", 7: "2", 8: "retired", 9: "2"}); err != nil {
 		return CompatibilityArtifact{}, err
 	}
-	redisConfig, err := ParseDigest(values[10])
+	redisConfig, err := parseNonzeroDigest(values[10])
 	if err != nil {
 		return CompatibilityArtifact{}, err
 	}
-	commitGuard, err := ParseDigest(values[11])
+	commitGuard, err := parseNonzeroDigest(values[11])
 	if err != nil {
 		return CompatibilityArtifact{}, err
 	}
@@ -186,6 +186,10 @@ func (artifact CompatibilityArtifact) CommitGuardDigest() Digest {
 	return artifact.input.CommitGuardSHA256
 }
 
+func (artifact CompatibilityArtifact) RedisConfigSHA256() Digest {
+	return artifact.input.RedisConfigSHA256
+}
+
 type CompatibilityMarker struct {
 	artifact       CompatibilityArtifact
 	manifestSHA256 Digest
@@ -196,6 +200,9 @@ func NewCompatibilityMarker(artifact CompatibilityArtifact) (CompatibilityMarker
 	digest, err := artifact.SHA256()
 	if err != nil {
 		return CompatibilityMarker{}, err
+	}
+	if digest == Digest(ZeroSHA256) {
+		return CompatibilityMarker{}, ErrInvalidRecordValue
 	}
 	return CompatibilityMarker{artifact: artifact, manifestSHA256: digest, initialized: true}, nil
 }
@@ -208,7 +215,7 @@ func (marker CompatibilityMarker) validate() error {
 		return err
 	}
 	expected, err := marker.artifact.SHA256()
-	if err != nil || marker.manifestSHA256 != expected {
+	if err != nil || marker.manifestSHA256 == Digest(ZeroSHA256) || marker.manifestSHA256 != expected {
 		return ErrArtifactMismatch
 	}
 	return nil
@@ -245,7 +252,7 @@ func DecodeCompatibilityMarker(encoded []byte) (CompatibilityMarker, error) {
 	if err != nil {
 		return CompatibilityMarker{}, err
 	}
-	manifestDigest, err := ParseDigest(values[1])
+	manifestDigest, err := parseNonzeroDigest(values[1])
 	if err != nil {
 		return CompatibilityMarker{}, err
 	}
@@ -314,49 +321,17 @@ func NewGuardCore(input GuardCoreInput) (GuardCore, error) {
 }
 
 func (core GuardCore) validate() error {
-	if !core.initialized || !validRedisVersion(core.input.RedisVersion) {
+	if !core.initialized {
 		return ErrInvalidRecordValue
 	}
-	for _, digest := range []Digest{
-		core.input.ContractSHA256, core.input.RedisConfigSHA256, core.input.MaximumShapeSHA256,
-		core.input.MemoryFixtureSHA256, core.input.LuaBenchmarkSHA256, core.input.AOFCrashEvidenceSHA256,
-	} {
-		if err := validateDigest(digest); err != nil || digest == Digest(ZeroSHA256) {
-			return ErrInvalidRecordValue
-		}
-	}
-	switch core.input.CutoverMode {
-	case CutoverFresh:
-		if core.input.CandidateRunID != "" {
-			return ErrInvalidRecordValue
-		}
-	case CutoverV1Migration:
-		if err := validateRunID(core.input.CandidateRunID); err != nil {
-			return err
-		}
-	default:
-		return ErrInvalidRecordValue
-	}
-	return nil
+	return validateGuardCoreInput(core.input, false)
 }
 
 func (core GuardCore) Record() (Record, error) {
 	if err := core.validate(); err != nil {
 		return nil, err
 	}
-	return Record{
-		textField("protocol_version", "2"),
-		textField("contract_sha256", string(core.input.ContractSHA256)),
-		textField("redis_version", core.input.RedisVersion),
-		textField("redis_config_sha256", string(core.input.RedisConfigSHA256)),
-		textField("maximum_shape_sha256", string(core.input.MaximumShapeSHA256)),
-		textField("memory_fixture_sha256", string(core.input.MemoryFixtureSHA256)),
-		textField("lua_benchmark_sha256", string(core.input.LuaBenchmarkSHA256)),
-		textField("aof_crash_evidence_sha256", string(core.input.AOFCrashEvidenceSHA256)),
-		textField("cutover_mode", string(core.input.CutoverMode)),
-		textField("candidate_run_id", string(core.input.CandidateRunID)),
-		textField("approved", "1"),
-	}, nil
+	return guardCoreRecord(core.input), nil
 }
 
 func (core GuardCore) Encode() ([]byte, error) {
@@ -394,8 +369,77 @@ func (core GuardCore) SHA256() (Digest, error) {
 }
 
 func (core GuardCore) ContractSHA256() Digest { return core.input.ContractSHA256 }
-func (core GuardCore) Cutover() CutoverMode   { return core.input.CutoverMode }
-func (core GuardCore) CandidateRun() RunID    { return core.input.CandidateRunID }
+func (core GuardCore) RedisConfigSHA256() Digest {
+	return core.input.RedisConfigSHA256
+}
+func (core GuardCore) Cutover() CutoverMode { return core.input.CutoverMode }
+func (core GuardCore) CandidateRun() RunID  { return core.input.CandidateRunID }
+
+// ProvisionalGuardCore is restricted to the disposable acceptance fixture from
+// section 5.1 of the contract. Its distinct type prevents it from being passed
+// to production authority constructors such as NewStoredCommitGuard.
+type ProvisionalGuardCore struct {
+	input       GuardCoreInput
+	initialized bool
+}
+
+func NewProvisionalGuardCore(input GuardCoreInput) (ProvisionalGuardCore, error) {
+	core := ProvisionalGuardCore{input: input, initialized: true}
+	if err := core.validate(); err != nil {
+		return ProvisionalGuardCore{}, err
+	}
+	return core, nil
+}
+
+func (core ProvisionalGuardCore) validate() error {
+	if !core.initialized {
+		return ErrInvalidRecordValue
+	}
+	return validateGuardCoreInput(core.input, true)
+}
+
+func (core ProvisionalGuardCore) Record() (Record, error) {
+	if err := core.validate(); err != nil {
+		return nil, err
+	}
+	return guardCoreRecord(core.input), nil
+}
+
+func (core ProvisionalGuardCore) Encode() ([]byte, error) {
+	record, err := core.Record()
+	if err != nil {
+		return nil, err
+	}
+	return encodeBoundedRecord(record, maxSmallAuthorityRecordBytes)
+}
+
+func EncodeProvisionalGuardCore(core ProvisionalGuardCore) ([]byte, error) {
+	return core.Encode()
+}
+
+func DecodeProvisionalGuardCore(encoded []byte) (ProvisionalGuardCore, error) {
+	record, err := decodeExactRecord(encoded, guardCoreFieldNames(), maxSmallAuthorityRecordBytes)
+	if err != nil {
+		return ProvisionalGuardCore{}, err
+	}
+	values, err := strictTextValues(record)
+	if err != nil || values[0] != "2" || values[10] != "1" {
+		return ProvisionalGuardCore{}, ErrInvalidRecordValue
+	}
+	input, err := parseGuardCoreValues(values)
+	if err != nil {
+		return ProvisionalGuardCore{}, err
+	}
+	return NewProvisionalGuardCore(input)
+}
+
+func (core ProvisionalGuardCore) SHA256() (Digest, error) {
+	encoded, err := core.Encode()
+	if err != nil {
+		return "", err
+	}
+	return plainSHA256(encoded), nil
+}
 
 type StoredCommitGuard struct {
 	core                        GuardCore
@@ -422,7 +466,7 @@ func (guard StoredCommitGuard) validate() error {
 	if err := guard.core.validate(); err != nil {
 		return err
 	}
-	if err := validateDigest(guard.compatibilityManifestSHA256); err != nil {
+	if err := validateNonzeroDigest(guard.compatibilityManifestSHA256); err != nil {
 		return err
 	}
 	return validatePositiveExactInteger(guard.approvedAtMS)
@@ -472,7 +516,7 @@ func DecodeStoredCommitGuard(encoded []byte) (StoredCommitGuard, error) {
 	if err != nil {
 		return StoredCommitGuard{}, err
 	}
-	manifest, err := ParseDigest(values[2])
+	manifest, err := parseNonzeroDigest(values[2])
 	if err != nil {
 		return StoredCommitGuard{}, err
 	}
@@ -547,7 +591,7 @@ func (record LegacyRetirementRecord) validate() error {
 		record.input.V1URLsEvidenceSHA256, record.input.V1DepthsEvidenceSHA256,
 		record.input.SpiderQueueEvidenceSHA256, record.input.SignalQueueEvidenceSHA256,
 	} {
-		if err := validateDigest(digest); err != nil {
+		if err := validateNonzeroDigest(digest); err != nil {
 			return err
 		}
 	}
@@ -624,7 +668,7 @@ func DecodeLegacyRetirementRecord(encoded []byte) (LegacyRetirementRecord, error
 	}
 	digests := make(map[int]Digest, 7)
 	for _, index := range []int{2, 6, 7, 8, 9, 12, 15} {
-		digests[index], err = ParseDigest(values[index])
+		digests[index], err = parseNonzeroDigest(values[index])
 		if err != nil {
 			return LegacyRetirementRecord{}, err
 		}
@@ -674,7 +718,7 @@ func (record AdminFreezeRecord) validate() error {
 		return ErrInvalidRecordValue
 	}
 	for _, digest := range []Digest{record.input.ProcessStopEvidenceSHA256, record.input.CandidateManifestSHA256, record.input.CandidateContractSHA256} {
-		if err := validateDigest(digest); err != nil {
+		if err := validateNonzeroDigest(digest); err != nil {
 			return err
 		}
 	}
@@ -713,15 +757,15 @@ func DecodeAdminFreezeRecord(encoded []byte) (AdminFreezeRecord, error) {
 	if err != nil || values[0] != "2" {
 		return AdminFreezeRecord{}, ErrInvalidRecordValue
 	}
-	process, err := ParseDigest(values[2])
+	process, err := parseNonzeroDigest(values[2])
 	if err != nil {
 		return AdminFreezeRecord{}, err
 	}
-	manifest, err := ParseDigest(values[3])
+	manifest, err := parseNonzeroDigest(values[3])
 	if err != nil {
 		return AdminFreezeRecord{}, err
 	}
-	contract, err := ParseDigest(values[4])
+	contract, err := parseNonzeroDigest(values[4])
 	if err != nil {
 		return AdminFreezeRecord{}, err
 	}
@@ -784,7 +828,7 @@ func (record DurabilityRecord) validate() error {
 	if err := validatePositiveExactInteger(input.ApprovedAtMS); err != nil {
 		return err
 	}
-	if err := validateDigest(input.RehearsalEvidenceSHA256); err != nil {
+	if err := validateNonzeroDigest(input.RehearsalEvidenceSHA256); err != nil {
 		return err
 	}
 	if err := validatePositiveExactInteger(input.RehearsalAtMS); err != nil {
@@ -796,9 +840,13 @@ func (record DurabilityRecord) validate() error {
 		return ErrInvalidRecordValue
 	}
 	if input.PlannedShutdownNonce != "" && !isLowerHex(input.PlannedShutdownNonce, 32) ||
-		input.ConsumedPlannedShutdownNonce != "" && !isLowerHex(input.ConsumedPlannedShutdownNonce, 32) ||
-		input.PlannedShutdownEvidenceSHA256 != "" && validateDigest(input.PlannedShutdownEvidenceSHA256) != nil {
+		input.ConsumedPlannedShutdownNonce != "" && !isLowerHex(input.ConsumedPlannedShutdownNonce, 32) {
 		return ErrInvalidRecordValue
+	}
+	if input.PlannedShutdownEvidenceSHA256 != "" {
+		if err := validateNonzeroDigest(input.PlannedShutdownEvidenceSHA256); err != nil {
+			return err
+		}
 	}
 	switch input.BootState {
 	case BootPlanned:
@@ -966,7 +1014,7 @@ type FinalPageRecord struct {
 }
 
 func NewFinalPageRecord(context OutputContext, page OutputPage, publicationID Digest) (FinalPageRecord, error) {
-	if err := validateDigest(publicationID); err != nil {
+	if err := validateNonzeroDigest(publicationID); err != nil {
 		return FinalPageRecord{}, err
 	}
 	fields, err := outputPageRecord(context, page)
@@ -1009,13 +1057,14 @@ func newFinalPageRecord(fields Record) (FinalPageRecord, error) {
 		if len(fields[2].Value) == 0 || len(values[7]) == 0 || len(values[7]) > MaxRenderPolicyRuleIDBytes || containsControl(values[7]) {
 			return FinalPageRecord{}, ErrInvalidRecordValue
 		}
-		if _, err := ParseDigest(values[8]); err != nil {
+		if _, err := parseNonzeroDigest(values[8]); err != nil {
 			return FinalPageRecord{}, err
 		}
 	} else {
 		return FinalPageRecord{}, ErrInvalidRecordValue
 	}
-	if _, err := ParseDigest(values[9]); err != nil {
+	_, err = parseNonzeroDigest(values[9])
+	if err != nil {
 		return FinalPageRecord{}, err
 	}
 	return FinalPageRecord{record: cloneRecord(fields), initialized: true}, nil
@@ -1050,13 +1099,7 @@ func (record FinalPageRecord) Encode() ([]byte, error) {
 func EncodeFinalPageRecord(record FinalPageRecord) ([]byte, error) { return record.Encode() }
 
 func (record FinalPageRecord) ValidateAgainstContext(context OutputContext) error {
-	if !context.initialized || !record.initialized {
-		return ErrArtifactMismatch
-	}
-	if string(record.record[0].Value) != context.finalTarget.CanonicalURL || string(record.record[5].Value) != context.lastCrawled {
-		return ErrArtifactMismatch
-	}
-	return nil
+	return validateFinalPageOutputAuthority(record, context)
 }
 
 type FinalImageRecord struct {
@@ -1082,7 +1125,7 @@ func (record FinalImageRecord) validate() error {
 	if !record.initialized {
 		return ErrInvalidRecordValue
 	}
-	if err := validateDigest(record.publicationID); err != nil {
+	if err := validateNonzeroDigest(record.publicationID); err != nil {
 		return err
 	}
 	if _, err := requireCanonicalURL(record.normalizedPageURL); err != nil {
@@ -1127,7 +1170,7 @@ func DecodeFinalImageRecord(encoded []byte) (FinalImageRecord, error) {
 	if err != nil || values[0] != "1" {
 		return FinalImageRecord{}, ErrInvalidRecordValue
 	}
-	publicationID, err := ParseDigest(values[1])
+	publicationID, err := parseNonzeroDigest(values[1])
 	if err != nil {
 		return FinalImageRecord{}, err
 	}
@@ -1142,7 +1185,7 @@ type ImageManifestRecord struct {
 }
 
 func NewImageManifestRecord(publicationID Digest, normalizedURL string, images []OutputImage) (ImageManifestRecord, error) {
-	if err := validateDigest(publicationID); err != nil {
+	if err := validateNonzeroDigest(publicationID); err != nil {
 		return ImageManifestRecord{}, err
 	}
 	if _, err := requireCanonicalURL(normalizedURL); err != nil {
@@ -1170,7 +1213,7 @@ func (record ImageManifestRecord) validate() error {
 	if !record.initialized || len(record.imageKeys) > MaxImagesPerPage {
 		return ErrInvalidRecordValue
 	}
-	if err := validateDigest(record.publicationID); err != nil {
+	if err := validateNonzeroDigest(record.publicationID); err != nil {
 		return err
 	}
 	if _, err := requireCanonicalURL(record.normalizedURL); err != nil {
@@ -1233,7 +1276,7 @@ func DecodeImageManifestRecord(encoded []byte) (ImageManifestRecord, error) {
 	if err != nil || values[0] != "1" || len(record[4].Value) > MaxImageManifestBytes {
 		return ImageManifestRecord{}, ErrInvalidRecordValue
 	}
-	publicationID, err := ParseDigest(values[1])
+	publicationID, err := parseNonzeroDigest(values[1])
 	if err != nil {
 		return ImageManifestRecord{}, err
 	}
@@ -1437,8 +1480,101 @@ func plainSHA256(value []byte) Digest {
 	return Digest(hex.EncodeToString(digest[:]))
 }
 
+func validateNonzeroDigest(value Digest) error {
+	_, err := parseNonzeroDigest(string(value))
+	return err
+}
+
+func parseNonzeroDigest(value string) (Digest, error) {
+	digest, err := ParseDigest(value)
+	if err != nil {
+		return "", err
+	}
+	if digest == Digest(ZeroSHA256) {
+		return "", ErrInvalidRecordValue
+	}
+	return digest, nil
+}
+
+func validateNonzeroImageDigest(value ImageDigest) error {
+	parsed, err := ParseImageDigest(string(value))
+	if err != nil {
+		return err
+	}
+	if strings.TrimPrefix(string(parsed), "sha256:") == ZeroSHA256 {
+		return ErrInvalidRecordValue
+	}
+	return nil
+}
+
+func validateGuardCoreInput(input GuardCoreInput, provisional bool) error {
+	if !validRedisVersion(input.RedisVersion) {
+		return ErrInvalidRecordValue
+	}
+	for _, digest := range []Digest{input.ContractSHA256, input.RedisConfigSHA256} {
+		if err := validateNonzeroDigest(digest); err != nil {
+			return err
+		}
+	}
+
+	zeroEvidence := 0
+	for _, digest := range []Digest{
+		input.MaximumShapeSHA256,
+		input.MemoryFixtureSHA256,
+		input.LuaBenchmarkSHA256,
+		input.AOFCrashEvidenceSHA256,
+	} {
+		if err := validateDigest(digest); err != nil {
+			return err
+		}
+		if digest == Digest(ZeroSHA256) {
+			zeroEvidence++
+		}
+	}
+
+	if provisional {
+		if zeroEvidence == 0 || input.CutoverMode != CutoverFresh || input.CandidateRunID != "" {
+			return ErrInvalidRecordValue
+		}
+		return nil
+	}
+	if zeroEvidence != 0 {
+		return ErrInvalidRecordValue
+	}
+
+	switch input.CutoverMode {
+	case CutoverFresh:
+		if input.CandidateRunID != "" {
+			return ErrInvalidRecordValue
+		}
+	case CutoverV1Migration:
+		if err := validateRunID(input.CandidateRunID); err != nil {
+			return err
+		}
+	default:
+		return ErrInvalidRecordValue
+	}
+	return nil
+}
+
+func guardCoreRecord(input GuardCoreInput) Record {
+	return Record{
+		textField("protocol_version", "2"),
+		textField("contract_sha256", string(input.ContractSHA256)),
+		textField("redis_version", input.RedisVersion),
+		textField("redis_config_sha256", string(input.RedisConfigSHA256)),
+		textField("maximum_shape_sha256", string(input.MaximumShapeSHA256)),
+		textField("memory_fixture_sha256", string(input.MemoryFixtureSHA256)),
+		textField("lua_benchmark_sha256", string(input.LuaBenchmarkSHA256)),
+		textField("aof_crash_evidence_sha256", string(input.AOFCrashEvidenceSHA256)),
+		textField("cutover_mode", string(input.CutoverMode)),
+		textField("candidate_run_id", string(input.CandidateRunID)),
+		textField("approved", "1"),
+	}
+}
+
 func validRedisVersion(value string) bool {
-	if value == "" || len(value) > maxRedisVersionBytes {
+	if !strings.HasPrefix(value, "7.") || len(value) > maxRedisVersionBytes {
 		return false
 	}
 	componentLength := 0
@@ -1461,20 +1597,27 @@ func parseGuardCoreValues(values []string) (GuardCoreInput, error) {
 	if len(values) != 11 || values[0] != "2" || values[10] != "1" {
 		return GuardCoreInput{}, ErrInvalidRecordValue
 	}
-	contract, err := ParseDigest(values[1])
+	contract, err := parseNonzeroDigest(values[1])
 	if err != nil {
 		return GuardCoreInput{}, err
 	}
-	digests := make([]Digest, 5)
-	for index, value := range values[3:8] {
-		digests[index], err = ParseDigest(value)
+	redisConfig, err := parseNonzeroDigest(values[3])
+	if err != nil {
+		return GuardCoreInput{}, err
+	}
+	// The four evidence values remain lexical here because this parser is shared
+	// with the isolated provisional-fixture decoder. validateGuardCoreInput is
+	// the sole policy point that permits ZERO_SHA256 for those exact fields.
+	evidence := make([]Digest, 4)
+	for index, value := range values[4:8] {
+		evidence[index], err = ParseDigest(value)
 		if err != nil {
 			return GuardCoreInput{}, err
 		}
 	}
 	return GuardCoreInput{
-		ContractSHA256: contract, RedisVersion: values[2], RedisConfigSHA256: digests[0], MaximumShapeSHA256: digests[1],
-		MemoryFixtureSHA256: digests[2], LuaBenchmarkSHA256: digests[3], AOFCrashEvidenceSHA256: digests[4],
+		ContractSHA256: contract, RedisVersion: values[2], RedisConfigSHA256: redisConfig, MaximumShapeSHA256: evidence[0],
+		MemoryFixtureSHA256: evidence[1], LuaBenchmarkSHA256: evidence[2], AOFCrashEvidenceSHA256: evidence[3],
 		CutoverMode: CutoverMode(values[8]), CandidateRunID: RunID(values[9]),
 	}, nil
 }

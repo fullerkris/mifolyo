@@ -36,6 +36,11 @@ MAX_SOURCE_JOBS = 10_000
 MAX_POLICY_GROUPS = 64
 MAX_NON_BLOB_CHUNK_RECORDS = 64
 MAX_IMAGE_MANIFEST_BYTES = 393_216
+MAX_REQUEST_STARTS = 10
+MAX_REQUEST_ORDINAL = 100
+FIXTURE_POSITIVE_CASE_COUNT = 39
+FIXTURE_NEGATIVE_CASE_COUNT = 139
+FIXTURE_INVENTORY_SHA256 = "56797748de64aa57618104bb5135d0300c9d192f41995e743ddb319219a248df"
 
 SCORE_RE = re.compile(
     r"^(?:0|-?(?:[1-9][0-9]*(?:\.[0-9]{0,5}[1-9])?|0\.[0-9]{0,5}[1-9]))$"
@@ -258,6 +263,205 @@ def schema_chunk_digest_map(value: object, path: str) -> None:
             expect_hex(digest, 64, f"{path}.{kind}[{index}]")
 
 
+GUARD_CORE_KEYS = {
+    "redis_version",
+    "redis_config_sha256",
+    "maximum_shape_sha256",
+    "memory_fixture_sha256",
+    "lua_benchmark_sha256",
+    "aof_crash_evidence_sha256",
+    "cutover_mode",
+    "candidate_run_id",
+}
+
+
+def schema_guard_core(value: object, path: str) -> None:
+    guard = expect_keys(value, GUARD_CORE_KEYS, path)
+    expect_text(guard["redis_version"], f"{path}.redis_version")
+    for field in (
+        "redis_config_sha256",
+        "maximum_shape_sha256",
+        "memory_fixture_sha256",
+        "lua_benchmark_sha256",
+        "aof_crash_evidence_sha256",
+    ):
+        expect_hex(guard[field], 64, f"{path}.{field}")
+    expect_text(guard["cutover_mode"], f"{path}.cutover_mode")
+    candidate = expect_text(guard["candidate_run_id"], f"{path}.candidate_run_id")
+    if candidate and HEX_32_RE.fullmatch(candidate) is None:
+        raise FixtureError(f"{path}.candidate_run_id: invalid run ID")
+
+
+def schema_repeat_generator(value: object, path: str) -> None:
+    item = expect_keys(value, {"text", "repeat_count", "expected_utf8_bytes"}, path)
+    expect_text(item["text"], f"{path}.text")
+    expect_integer(item["repeat_count"], f"{path}.repeat_count")
+    expect_integer(item["expected_utf8_bytes"], f"{path}.expected_utf8_bytes")
+
+
+def schema_indexed_template_generator(value: object, path: str) -> None:
+    item = expect_keys(
+        value,
+        {
+            "grammar", "template", "count", "first_index", "index_width", "index_radix",
+            "fill_to_bytes", "fill_byte_hex", "input_order",
+        },
+        path,
+    )
+    for field in ("grammar", "template", "fill_byte_hex", "input_order"):
+        expect_text(item[field], f"{path}.{field}")
+    for field in ("count", "first_index", "index_width", "index_radix", "fill_to_bytes"):
+        expect_integer(item[field], f"{path}.{field}")
+    if item["grammar"] != "indexed_template_v1":
+        raise FixtureError(f"{path}.grammar: unsupported indexed-template grammar")
+    if re.fullmatch(r"[0-9a-f]{2}", expect_text(item["fill_byte_hex"], f"{path}.fill_byte_hex")) is None:
+        raise FixtureError(f"{path}.fill_byte_hex: expected exactly one lowercase hexadecimal byte")
+
+
+def schema_generated_policy_group(value: object, path: str) -> None:
+    item = expect_keys(
+        value,
+        {
+            "group_id", "rate_scope_id", "request_start_limit", "global_concurrency",
+            "global_interval_ms", "concurrency", "interval_ms", "origin_concurrency",
+            "origin_interval_ms",
+        },
+        path,
+    )
+    schema_repeat_generator(item["group_id"], f"{path}.group_id")
+    schema_repeat_generator(item["rate_scope_id"], f"{path}.rate_scope_id")
+    for field in (
+        "request_start_limit", "global_concurrency", "global_interval_ms", "concurrency",
+        "interval_ms", "origin_concurrency", "origin_interval_ms",
+    ):
+        expect_integer(item[field], f"{path}.{field}")
+
+
+def schema_output_context(value: object, path: str) -> None:
+    context = expect_keys(
+        value,
+        {"source_job_index", "lease_request_starts_baseline", "terminal_request_starts_generation", "requests"},
+        path,
+    )
+    expect_integer(context["source_job_index"], f"{path}.source_job_index")
+    for field in ("lease_request_starts_baseline", "terminal_request_starts_generation"):
+        expect_text(context[field], f"{path}.{field}")
+    for index, request in enumerate(expect_list(context["requests"], f"{path}.requests")):
+        request_path = f"{path}.requests[{index}]"
+        item = expect_keys(
+            request, {"request_kind", "target", "started_at_ms", "job_request_starts", "request_ordinal"},
+            request_path,
+        )
+        for field in ("request_kind", "target", "job_request_starts", "request_ordinal"):
+            expect_text(item[field], f"{request_path}.{field}")
+        expect_integer(item["started_at_ms"], f"{request_path}.started_at_ms")
+
+
+def schema_maximum_output_generator(value: object, path: str) -> None:
+    generator = expect_keys(
+        value,
+        {
+            "grammar", "identity", "policy_group", "aliases", "source", "request_chain",
+            "page", "outlinks", "images", "discoveries",
+        },
+        path,
+    )
+    if expect_text(generator["grammar"], f"{path}.grammar") != "maximum_output_v1":
+        raise FixtureError(f"{path}.grammar: unsupported maximum-output grammar")
+    identity = expect_keys(
+        generator["identity"],
+        {
+            "run_id", "job_id_from", "owner_id", "alternate_owner_id", "lease_token", "fence",
+            "rate_scope_id_from", "crawl_policy_sha256",
+        },
+        f"{path}.identity",
+    )
+    for field in (
+        "run_id", "job_id_from", "owner_id", "alternate_owner_id", "lease_token",
+        "rate_scope_id_from", "crawl_policy_sha256",
+    ):
+        expect_text(identity[field], f"{path}.identity.{field}")
+    expect_integer(identity["fence"], f"{path}.identity.fence")
+    schema_generated_policy_group(generator["policy_group"], f"{path}.policy_group")
+    schema_indexed_template_generator(generator["aliases"], f"{path}.aliases")
+    source = expect_keys(
+        generator["source"],
+        {"target_index", "score_text", "depth", "request_kind", "policy_group_ref"},
+        f"{path}.source",
+    )
+    expect_integer(source["target_index"], f"{path}.source.target_index")
+    expect_integer(source["depth"], f"{path}.source.depth")
+    for field in ("score_text", "request_kind", "policy_group_ref"):
+        expect_text(source[field], f"{path}.source.{field}")
+    request_chain = expect_keys(
+        generator["request_chain"],
+        {
+            "initial_request_kind", "subsequent_request_kind", "first_started_at_ms",
+            "started_at_step_ms", "policy_group_ref", "lease_request_starts_baseline",
+            "terminal_request_starts_generation", "job_request_starts", "request_ordinals",
+        },
+        f"{path}.request_chain",
+    )
+    for field in ("initial_request_kind", "subsequent_request_kind", "policy_group_ref"):
+        expect_text(request_chain[field], f"{path}.request_chain.{field}")
+    for field in ("first_started_at_ms", "started_at_step_ms"):
+        expect_integer(request_chain[field], f"{path}.request_chain.{field}")
+    for field in ("lease_request_starts_baseline", "terminal_request_starts_generation"):
+        expect_text(request_chain[field], f"{path}.request_chain.{field}")
+    for field in ("job_request_starts", "request_ordinals"):
+        schema_string_list(request_chain[field], f"{path}.request_chain.{field}")
+    page = expect_keys(
+        generator["page"],
+        {
+            "normalized_target_index", "html", "original_html", "content_type", "status_code",
+            "rendered", "render_policy_rule", "render_policy_sha256",
+        },
+        f"{path}.page",
+    )
+    expect_integer(page["normalized_target_index"], f"{path}.page.normalized_target_index")
+    schema_repeat_generator(page["html"], f"{path}.page.html")
+    schema_repeat_generator(page["original_html"], f"{path}.page.original_html")
+    content_type = expect_keys(
+        page["content_type"], {"prefix", "fill_text", "suffix", "total_utf8_bytes"},
+        f"{path}.page.content_type",
+    )
+    for field in ("prefix", "fill_text", "suffix"):
+        expect_text(content_type[field], f"{path}.page.content_type.{field}")
+    expect_integer(content_type["total_utf8_bytes"], f"{path}.page.content_type.total_utf8_bytes")
+    expect_integer(page["status_code"], f"{path}.page.status_code")
+    expect_boolean(page["rendered"], f"{path}.page.rendered")
+    schema_repeat_generator(page["render_policy_rule"], f"{path}.page.render_policy_rule")
+    expect_text(page["render_policy_sha256"], f"{path}.page.render_policy_sha256")
+    schema_indexed_template_generator(generator["outlinks"], f"{path}.outlinks")
+    images = expect_keys(generator["images"], {"urls", "alt"}, f"{path}.images")
+    schema_indexed_template_generator(images["urls"], f"{path}.images.urls")
+    schema_repeat_generator(images["alt"], f"{path}.images.alt")
+    discoveries = expect_keys(
+        generator["discoveries"],
+        {"urls", "score_text", "depth", "request_kind", "policy_group_ref"},
+        f"{path}.discoveries",
+    )
+    schema_indexed_template_generator(discoveries["urls"], f"{path}.discoveries.urls")
+    expect_integer(discoveries["depth"], f"{path}.discoveries.depth")
+    for field in ("score_text", "request_kind", "policy_group_ref"):
+        expect_text(discoveries[field], f"{path}.discoveries.{field}")
+
+
+def schema_maximum_source_generator(value: object, path: str) -> None:
+    generator = expect_keys(value, {"grammar", "policy_group", "jobs", "source"}, path)
+    if expect_text(generator["grammar"], f"{path}.grammar") != "maximum_source_v1":
+        raise FixtureError(f"{path}.grammar: unsupported maximum-source grammar")
+    schema_generated_policy_group(generator["policy_group"], f"{path}.policy_group")
+    schema_indexed_template_generator(generator["jobs"], f"{path}.jobs")
+    source = expect_keys(
+        generator["source"], {"score_text", "depth", "request_kind", "policy_group_ref"},
+        f"{path}.source",
+    )
+    expect_integer(source["depth"], f"{path}.source.depth")
+    for field in ("score_text", "request_kind", "policy_group_ref"):
+        expect_text(source[field], f"{path}.source.{field}")
+
+
 def validate_case_schema(case: object, path: str) -> None:
     obj = expect_keys(case, {"name", "kind", "input", "expected"}, path)
     case_name = expect_text(obj["name"], f"{path}.name")
@@ -311,40 +515,38 @@ def validate_case_schema(case: object, path: str) -> None:
         expect_keys(expected, {"lua_source_order", "contract_sha256"}, f"{path}.expected")
         schema_string_list(expected["lua_source_order"], f"{path}.expected.lua_source_order")
         expect_hex(expected["contract_sha256"], 64, f"{path}.expected.contract_sha256")
+    elif kind == "policy_group_boundary":
+        generator = expect_keys(
+            case_input,
+            {
+                "grammar", "count", "first_index", "index_width", "index_radix",
+                "group_id_template", "rate_scope_id_template", "request_start_limit",
+                "concurrency", "interval_ms",
+            },
+            f"{path}.input",
+        )
+        for field in ("grammar", "group_id_template", "rate_scope_id_template"):
+            expect_text(generator[field], f"{path}.input.{field}")
+        for field in (
+            "count", "first_index", "index_width", "index_radix", "request_start_limit",
+            "concurrency", "interval_ms",
+        ):
+            expect_integer(generator[field], f"{path}.input.{field}")
+        if generator["grammar"] != "indexed_policy_groups_v1":
+            raise FixtureError(f"{path}.input.grammar: unsupported policy-group grammar")
+        expect_keys(expected, {"count", "policy_group_map_sha256"}, f"{path}.expected")
+        expect_integer(expected["count"], f"{path}.expected.count")
+        expect_hex(expected["policy_group_map_sha256"], 64, f"{path}.expected.policy_group_map_sha256")
     elif kind == "guard_chain":
         expect_keys(
             case_input,
-            {"contract_case", "guard_core", "compatibility", "approved_at_ms"},
+            {"guard_mode", "contract_case", "guard_core", "compatibility", "approved_at_ms"},
             f"{path}.input",
         )
+        if expect_text(case_input["guard_mode"], f"{path}.input.guard_mode") != "production":
+            raise FixtureError(f"{path}.input.guard_mode: guard chains must be production")
         expect_text(case_input["contract_case"], f"{path}.input.contract_case")
-        guard = expect_keys(
-            case_input["guard_core"],
-            {
-                "redis_version",
-                "redis_config_sha256",
-                "maximum_shape_sha256",
-                "memory_fixture_sha256",
-                "lua_benchmark_sha256",
-                "aof_crash_evidence_sha256",
-                "cutover_mode",
-                "candidate_run_id",
-            },
-            f"{path}.input.guard_core",
-        )
-        expect_text(guard["redis_version"], f"{path}.input.guard_core.redis_version")
-        for field in (
-            "redis_config_sha256",
-            "maximum_shape_sha256",
-            "memory_fixture_sha256",
-            "lua_benchmark_sha256",
-            "aof_crash_evidence_sha256",
-        ):
-            expect_hex(guard[field], 64, f"{path}.input.guard_core.{field}")
-        expect_text(guard["cutover_mode"], f"{path}.input.guard_core.cutover_mode")
-        candidate = expect_text(guard["candidate_run_id"], f"{path}.input.guard_core.candidate_run_id")
-        if candidate and HEX_32_RE.fullmatch(candidate) is None:
-            raise FixtureError(f"{path}.input.guard_core.candidate_run_id: invalid run ID")
+        schema_guard_core(case_input["guard_core"], f"{path}.input.guard_core")
         compatibility = expect_keys(
             case_input["compatibility"],
             {
@@ -385,6 +587,16 @@ def validate_case_schema(case: object, path: str) -> None:
         )
         for field in expected:
             expect_hex(expected[field], 64, f"{path}.expected.{field}")
+    elif kind == "guard_core":
+        expect_keys(case_input, {"guard_mode", "contract_case", "guard_core"}, f"{path}.input")
+        mode = expect_text(case_input["guard_mode"], f"{path}.input.guard_mode")
+        if mode not in {"production", "provisional_fixture"}:
+            raise FixtureError(f"{path}.input.guard_mode: unknown guard mode {mode!r}")
+        expect_text(case_input["contract_case"], f"{path}.input.contract_case")
+        schema_guard_core(case_input["guard_core"], f"{path}.input.guard_core")
+        expect_keys(expected, {"guard_core_sha256", "record_hex"}, f"{path}.expected")
+        expect_hex(expected["guard_core_sha256"], 64, f"{path}.expected.guard_core_sha256")
+        expect_hex_bytes(expected["record_hex"], f"{path}.expected.record_hex")
     elif kind == "transition_mutation":
         expect_keys(case_input, {"changed_reason", "changed_payload_owner_id"}, f"{path}.input")
         expect_text(case_input["changed_reason"], f"{path}.input.changed_reason")
@@ -420,9 +632,23 @@ def validate_case_schema(case: object, path: str) -> None:
         )
         for field in expected:
             expect_hex(expected[field], 64, f"{path}.expected.{field}")
+    elif kind == "transcript_binding":
+        expect_keys(case_input, {"output_context"}, f"{path}.input")
+        schema_output_context(case_input["output_context"], f"{path}.input.output_context")
+        expect_keys(
+            expected, {"output_digest", "publication_id", "commit_id", "chunk_digest", "terminal_witness"},
+            f"{path}.expected",
+        )
+        for field in ("output_digest", "publication_id", "commit_id", "chunk_digest"):
+            expect_hex(expected[field], 64, f"{path}.expected.{field}")
+        schema_string_list(expected["terminal_witness"], f"{path}.expected.terminal_witness")
     elif kind == "output_profile":
-        expect_keys(case_input, {"profile"}, f"{path}.input")
-        expect_text(case_input["profile"], f"{path}.input.profile")
+        profile = expect_text(case_input.get("profile"), f"{path}.input.profile")
+        if profile == "maximum":
+            expect_keys(case_input, {"profile", "generator"}, f"{path}.input")
+            schema_maximum_output_generator(case_input["generator"], f"{path}.input.generator")
+        else:
+            expect_keys(case_input, {"profile"}, f"{path}.input")
         expect_keys(
             expected,
             {
@@ -441,8 +667,12 @@ def validate_case_schema(case: object, path: str) -> None:
         schema_digest_map(expected["section_sha256"], OUTPUT_SECTION_LABELS, f"{path}.expected.section_sha256")
         schema_chunk_digest_map(expected["chunk_digests"], f"{path}.expected.chunk_digests")
     elif kind == "source_profile":
-        expect_keys(case_input, {"profile"}, f"{path}.input")
-        expect_text(case_input["profile"], f"{path}.input.profile")
+        profile = expect_text(case_input.get("profile"), f"{path}.input.profile")
+        if profile == "maximum":
+            expect_keys(case_input, {"profile", "generator"}, f"{path}.input")
+            schema_maximum_source_generator(case_input["generator"], f"{path}.input.generator")
+        else:
+            expect_keys(case_input, {"profile"}, f"{path}.input")
         expect_keys(expected, {"count", "section_sha256", "source_sha256"}, f"{path}.expected")
         expect_integer(expected["count"], f"{path}.expected.count")
         expect_hex(expected["section_sha256"], 64, f"{path}.expected.section_sha256")
@@ -453,8 +683,10 @@ def validate_case_schema(case: object, path: str) -> None:
         expect_keys(expected, {"chunk_digests"}, f"{path}.expected")
         schema_chunk_digest_map(expected["chunk_digests"], f"{path}.expected.chunk_digests")
     elif kind == "field_limits":
-        expect_keys(case_input, {"profile"}, f"{path}.input")
-        expect_text(case_input["profile"], f"{path}.input.profile")
+        expect_keys(case_input, {"profile", "generator"}, f"{path}.input")
+        if expect_text(case_input["profile"], f"{path}.input.profile") != "maximum":
+            raise FixtureError(f"{path}.input.profile: field limits require maximum")
+        schema_maximum_output_generator(case_input["generator"], f"{path}.input.generator")
         length_fields = {
             "canonical_url_bytes",
             "html_bytes",
@@ -505,6 +737,15 @@ NEGATIVE_INPUT_KEYS: dict[str, set[str]] = {
     "u64": {"decimal"},
     "output_utf8": {"field", "bytes_hex"},
     "transition_replay": {"mutation"},
+    "policy_group_boundary": {
+        "grammar", "count", "first_index", "index_width", "index_radix", "group_id_template",
+        "rate_scope_id_template", "request_start_limit", "concurrency", "interval_ms",
+    },
+    "group_id": {"value"},
+    "policy_group_binding": {"mutation"},
+    "guard_core_mutation": {"base_case", "mutation"},
+    "guard_chain_mutation": {"base_case", "mutation"},
+    "transcript_binding_mutation": {"base_case", "mutation"},
 }
 
 
@@ -536,6 +777,11 @@ def validate_negative_schema(case: object, path: str) -> None:
         "u64": ("decimal",),
         "output_utf8": ("field", "bytes_hex"),
         "transition_replay": ("mutation",),
+        "group_id": ("value",),
+        "policy_group_binding": ("mutation",),
+        "guard_core_mutation": ("base_case", "mutation"),
+        "guard_chain_mutation": ("base_case", "mutation"),
+        "transcript_binding_mutation": ("base_case", "mutation"),
     }
     for field in text_fields.get(kind, ()):
         expect_text(case_input[field], f"{path}.input.{field}", utf8=kind != "json_text")
@@ -550,6 +796,14 @@ def validate_negative_schema(case: object, path: str) -> None:
         expect_text(case_input["field"], f"{path}.input.field")
     elif kind == "output_utf8":
         expect_hex_bytes(case_input["bytes_hex"], f"{path}.input.bytes_hex")
+    elif kind == "policy_group_boundary":
+        for field in ("grammar", "group_id_template", "rate_scope_id_template"):
+            expect_text(case_input[field], f"{path}.input.{field}")
+        for field in (
+            "count", "first_index", "index_width", "index_radix", "request_start_limit",
+            "concurrency", "interval_ms",
+        ):
+            expect_integer(case_input[field], f"{path}.input.{field}")
 
 
 def validate_fixture_schema(data: object) -> dict[str, object]:
@@ -668,17 +922,7 @@ def validate_fixture_schema(data: object) -> dict[str, object]:
     for field in ("target", "decision"):
         expect_text(claim[field], f"$.try_claim.{field}")
 
-    context = expect_keys(top["output_context"], {"source_job_index", "requests"}, "$.output_context")
-    expect_integer(context["source_job_index"], "$.output_context.source_job_index")
-    for index, request in enumerate(expect_list(context["requests"], "$.output_context.requests")):
-        request_obj = expect_keys(
-            request,
-            {"request_kind", "target", "started_at_ms"},
-            f"$.output_context.requests[{index}]",
-        )
-        expect_text(request_obj["request_kind"], f"$.output_context.requests[{index}].request_kind")
-        expect_text(request_obj["target"], f"$.output_context.requests[{index}].target")
-        expect_integer(request_obj["started_at_ms"], f"$.output_context.requests[{index}].started_at_ms")
+    schema_output_context(top["output_context"], "$.output_context")
 
     output = expect_keys(top["output"], {"page", "outlinks", "images", "discoveries"}, "$.output")
     page = expect_keys(
@@ -772,18 +1016,40 @@ def validate_fixture_schema(data: object) -> dict[str, object]:
     if not baseline_name:
         raise FixtureError("$.baseline_case_name: empty case name")
     names.add(baseline_name)
-    for index, case in enumerate(expect_list(top["cases"], "$.cases")):
+    positive_cases = expect_list(top["cases"], "$.cases")
+    negative_cases = expect_list(top["negative_vectors"], "$.negative_vectors")
+    for index, case in enumerate(positive_cases):
         validate_case_schema(case, f"$.cases[{index}]")
         name = expect_object(case, f"$.cases[{index}]")["name"]
         if name in names:
             raise FixtureError(f"$.cases[{index}].name: duplicate case name {name!r}")
         names.add(name)  # type: ignore[arg-type]
-    for index, case in enumerate(expect_list(top["negative_vectors"], "$.negative_vectors")):
+    for index, case in enumerate(negative_cases):
         validate_negative_schema(case, f"$.negative_vectors[{index}]")
         name = expect_object(case, f"$.negative_vectors[{index}]")["name"]
         if name in names:
             raise FixtureError(f"$.negative_vectors[{index}].name: duplicate case name {name!r}")
         names.add(name)  # type: ignore[arg-type]
+    if len(positive_cases) != FIXTURE_POSITIVE_CASE_COUNT or len(negative_cases) != FIXTURE_NEGATIVE_CASE_COUNT:
+        raise FixtureError(
+            "fixture inventory count changed: "
+            f"positive={len(positive_cases)}/{FIXTURE_POSITIVE_CASE_COUNT} "
+            f"negative={len(negative_cases)}/{FIXTURE_NEGATIVE_CASE_COUNT}"
+        )
+    inventory = hashlib.sha256()
+    inventory.update(f"B\0{baseline_name}\n".encode("utf-8"))
+    for case in positive_cases:
+        item = expect_object(case, "positive inventory case")
+        inventory.update(f"P\0{item['name']}\0{item['kind']}\n".encode("utf-8"))
+    for case in negative_cases:
+        item = expect_object(case, "negative inventory case")
+        inventory.update(
+            f"N\0{item['name']}\0{item['kind']}\0{item['expected_rejection_class']}\n".encode("utf-8")
+        )
+    if inventory.hexdigest() != FIXTURE_INVENTORY_SHA256:
+        raise FixtureError(
+            f"fixture inventory digest {inventory.hexdigest()} != pinned {FIXTURE_INVENTORY_SHA256}"
+        )
     return top
 
 
@@ -1128,6 +1394,8 @@ def validate_group_id(value: object) -> str:
     raw = group_id.encode("utf-8")
     if not raw or len(raw) > MAX_GROUP_ID_BYTES:
         reject("GROUP_ID_LIMIT")
+    if any(unicodedata.category(character) == "Cc" for character in group_id):
+        reject("INVALID_GROUP_ID")
     return group_id
 
 
@@ -1232,6 +1500,10 @@ def source_job_fields(
     if type(target) is not dict or type(decision) is not dict:
         reject("FIXTURE_TYPE")
     validate_document_binding(item, decision, targets)  # type: ignore[arg-type]
+    groups = data.get("policy_groups")
+    if groups is None:
+        reject("FIXTURE_SCHEMA")
+    validate_decision_policy_group_binding(decision, targets, groups)  # type: ignore[arg-type]
     score = model_text(item["score_text"])
     validate_score_text(score)
     depth = require_exact_integer(item["depth"])
@@ -1284,6 +1556,7 @@ def reservation_id(data: dict[str, object], reservation: dict[str, object]) -> s
     target = targets[target_name]
     if type(target) is not dict:
         reject("FIXTURE_TYPE")
+    validate_decision_policy_group_binding(decision, targets, data.get("policy_groups"))  # type: ignore[arg-type]
     fields = dict(decision_fields(decision, targets))  # type: ignore[arg-type]
     ordinal = require_exact_integer(reservation["request_ordinal"], positive=True)
     return digest_framed(
@@ -1401,6 +1674,95 @@ def validate_render_rule(value: object) -> str:
     return rule
 
 
+def transcript_decimal(value: object, maximum: int, *, positive: bool = False) -> int:
+    if type(value) is not str or CANONICAL_DECIMAL_RE.fullmatch(value) is None:
+        reject("TRANSCRIPT_BINDING_MISMATCH")
+    number = int(value)
+    if number > maximum or (positive and number == 0):
+        reject("TRANSCRIPT_BINDING_MISMATCH")
+    return number
+
+
+def request_start_interval(context: dict[str, object]) -> tuple[int, int]:
+    baseline = transcript_decimal(context["lease_request_starts_baseline"], MAX_REQUEST_STARTS)
+    generation = transcript_decimal(context["terminal_request_starts_generation"], MAX_REQUEST_STARTS, positive=True)
+    if baseline >= generation:
+        reject("TRANSCRIPT_BINDING_MISMATCH")
+    return baseline, generation
+
+
+def output_transcript(
+    data: dict[str, object], witness: list[str] | None = None,
+) -> tuple[list[dict[str, object]], list[str]]:
+    context = expect_object(data["output_context"], "output_context")
+    schema_output_context(context, "output_context")
+    baseline, generation = request_start_interval(context)
+    sources = expect_list(data["source_jobs"], "source_jobs")
+    source_index = model_integer(context["source_job_index"])
+    if not 0 <= source_index < len(sources):
+        reject("OUTPUT_CONTEXT_MISMATCH")
+    source = expect_object(sources[source_index], "source")
+    source_job_fields(source, data)
+    identities = expect_object(data["identities"], "identities")
+    validate_identity_values(identities)
+    targets = expect_object(data["targets"], "targets")
+    if identities["job_id"] != targets[source["target"]]["url_id"]:
+        reject("OUTPUT_CONTEXT_MISMATCH")
+    requests = expect_list(context["requests"], "requests")
+    if not requests or len(requests) != generation - baseline:
+        reject("TRANSCRIPT_BINDING_MISMATCH")
+    documents: list[dict[str, object]] = []
+    previous_count, previous_ordinal, previous_time = baseline, 0, 0
+    has_document = False
+    initial_robots = 0
+    for request in requests:
+        item = expect_object(request, "request")
+        count = transcript_decimal(item["job_request_starts"], MAX_REQUEST_STARTS, positive=True)
+        ordinal = transcript_decimal(item["request_ordinal"], MAX_REQUEST_ORDINAL, positive=True)
+        started = require_exact_integer(item["started_at_ms"], positive=True)
+        if count != previous_count + 1 or ordinal <= previous_ordinal or ordinal < count or started < previous_time:
+            reject("TRANSCRIPT_BINDING_MISMATCH")
+        target_name = model_text(item["target"])
+        if target_name not in targets:
+            reject("OUTPUT_CONTEXT_MISMATCH")
+        validate_target(expect_object(targets[target_name], "request target"))
+        kind = model_text(item["request_kind"])
+        if kind == "document":
+            if has_document or target_name != source["target"]:
+                reject("OUTPUT_CONTEXT_MISMATCH")
+            has_document = True
+            documents.append(item)
+        elif kind == "robots":
+            if not has_document:
+                initial_robots += 1
+                if initial_robots > 1:
+                    reject("OUTPUT_CONTEXT_MISMATCH")
+        elif kind in {"redirect", "render_resource"}:
+            if not has_document:
+                reject("OUTPUT_CONTEXT_MISMATCH")
+            if kind == "redirect":
+                documents.append(item)
+        else:
+            reject("OUTPUT_CONTEXT_MISMATCH")
+        previous_count, previous_ordinal, previous_time = count, ordinal, started
+    if not documents or previous_count != generation:
+        reject("TRANSCRIPT_BINDING_MISMATCH")
+    final = documents[-1]
+    target = expect_object(targets[final["target"]], "final target")
+    expected_witness = [
+        str(final["started_at_ms"]), str(identities["fence"]), model_text(target["url_id"]),
+        model_text(target["canonical_url"]), target_digest(target), str(generation), str(previous_time),
+        str(baseline), "leased", model_text(identities["owner_id"]), model_text(identities["lease_token"]),
+        str(identities["fence"]), "",
+    ]
+    if witness is not None:
+        if type(witness) is not list or len(witness) != 13:
+            reject("RESPONSE_ARITY")
+        if any(type(value) is not str for value in witness) or witness != expected_witness:
+            reject("TRANSCRIPT_BINDING_MISMATCH")
+    return documents, expected_witness
+
+
 def output_records(
     data: dict[str, object],
     *,
@@ -1421,26 +1783,8 @@ def output_records(
     if type(source) is not dict:
         reject("FIXTURE_TYPE")
     source_job_fields(source, data)
-    requests = context["requests"]  # type: ignore[index]
-    if type(requests) is not list or not requests:
-        reject("OUTPUT_CONTEXT_MISMATCH")
-    request_targets: list[str] = []
-    for index, request in enumerate(requests):
-        if type(request) is not dict:
-            reject("FIXTURE_TYPE")
-        request_kind = model_text(request["request_kind"])
-        expected_kind = "document" if index == 0 else "redirect"
-        if request_kind != expected_kind:
-            reject("OUTPUT_CONTEXT_MISMATCH")
-        target_name = model_text(request["target"])
-        if target_name not in targets:  # type: ignore[operator]
-            reject("OUTPUT_CONTEXT_MISMATCH")
-        target = targets[target_name]  # type: ignore[index]
-        if type(target) is not dict:
-            reject("FIXTURE_TYPE")
-        validate_target(target)
-        require_exact_integer(request["started_at_ms"])
-        request_targets.append(target_name)
+    requests, _witness = output_transcript(data)
+    request_targets = [model_text(request["target"]) for request in requests]
 
     final_target_name = request_targets[-1]
     page = output["page"]  # type: ignore[index]
@@ -1564,6 +1908,7 @@ def output_records(
         if type(decision) is not dict:
             reject("FIXTURE_TYPE")
         validate_document_binding(item, decision, targets)  # type: ignore[arg-type]
+        validate_decision_policy_group_binding(decision, targets, data.get("policy_groups"))  # type: ignore[arg-type]
         score = model_text(item["score_text"])
         validate_score_text(score)
         depth = require_exact_integer(item["depth"])
@@ -1618,7 +1963,7 @@ def validate_policy_groups(groups_value: object) -> list[list[tuple[str, str]]]:
     groups = groups_value
     if type(groups) is not list:
         reject("FIXTURE_TYPE")
-    if len(groups) > MAX_POLICY_GROUPS:
+    if not 1 <= len(groups) <= MAX_POLICY_GROUPS:
         reject("POLICY_GROUP_COUNT_LIMIT")
     ordered = sorted(groups, key=lambda item: model_text(item["group_id"]).encode("utf-8") if type(item) is dict else b"")
     records: list[list[tuple[str, str]]] = []
@@ -1647,6 +1992,122 @@ def validate_policy_groups(groups_value: object) -> list[list[tuple[str, str]]]:
             ]
         )
     return records
+
+
+def policy_group_index(groups_value: object) -> dict[str, dict[str, object]]:
+    validate_policy_groups(groups_value)
+    groups = expect_list(groups_value, "policy groups")
+    indexed: dict[str, dict[str, object]] = {}
+    for item in groups:
+        if type(item) is not dict:
+            reject("FIXTURE_TYPE")
+        group_id = validate_group_id(item["group_id"])
+        indexed[group_id] = item
+    return indexed
+
+
+def generated_policy_groups_boundary(generator: dict[str, object]) -> list[dict[str, object]]:
+    if model_text(generator["grammar"]) != "indexed_policy_groups_v1":
+        raise FixtureError("unsupported indexed policy-group grammar")
+    count = model_integer(generator["count"])
+    first = model_integer(generator["first_index"])
+    width = model_integer(generator["index_width"])
+    radix = model_integer(generator["index_radix"])
+    group_template = model_text(generator["group_id_template"])
+    rate_template = model_text(generator["rate_scope_id_template"])
+    if (
+        count < 0 or count > MAX_POLICY_GROUPS + 1 or first < 0 or not 1 <= width <= 16
+        or radix not in {10, 16} or group_template.count("{index}") != 1
+        or rate_template.count("{index}") != 1
+    ):
+        raise FixtureError("invalid indexed policy-group generator")
+    groups: list[dict[str, object]] = []
+    for offset in range(count):
+        raw_index = format(first + offset, "d" if radix == 10 else "x")
+        if len(raw_index) > width:
+            raise FixtureError("policy-group index exceeds its declared width")
+        index = raw_index.rjust(width, "0")
+        group_id = group_template.replace("{index}", index, 1)
+        rate_scope_id = rate_template.replace("{index}", index, 1)
+        validate_group_id(group_id)
+        validate_rate_scope_id(rate_scope_id)
+        groups.append(
+            {
+                "group_id": group_id,
+                "rate_scope_id": rate_scope_id,
+                "request_start_limit": model_integer(generator["request_start_limit"]),
+                "concurrency": model_integer(generator["concurrency"]),
+                "interval_ms": model_integer(generator["interval_ms"]),
+            }
+        )
+    return groups
+
+
+def validate_decision_policy_group_binding(
+    decision: dict[str, object],
+    targets: dict[str, dict[str, object]],
+    groups_value: object,
+    *,
+    origin_concurrency: int | None = None,
+    origin_interval_ms: int | None = None,
+) -> None:
+    fields = dict(decision_fields(decision, targets))
+    groups = policy_group_index(groups_value)
+    group = groups.get(fields["group_id"])
+    if group is None:
+        reject("POLICY_GROUP_BINDING_MISMATCH")
+    group_rate_scope = validate_rate_scope_id(group["rate_scope_id"])
+    group_concurrency = model_integer(group["concurrency"])
+    group_interval = model_integer(group["interval_ms"])
+    decision_origin_concurrency = (
+        int(fields["origin_concurrency"])
+        if origin_concurrency is None
+        else model_integer(origin_concurrency)
+    )
+    decision_origin_interval = (
+        int(fields["origin_interval_ms"])
+        if origin_interval_ms is None
+        else model_integer(origin_interval_ms)
+    )
+    if (
+        fields["rate_scope_id"] != group_rate_scope
+        or fields["group_scope_id"] != group_scope(group_rate_scope)
+        or int(fields["group_concurrency"]) != group_concurrency
+        or int(fields["group_interval_ms"]) != group_interval
+        or decision_origin_concurrency != int(fields["group_concurrency"])
+        or decision_origin_interval != int(fields["group_interval_ms"])
+        or decision_origin_concurrency != group_concurrency
+        or decision_origin_interval != group_interval
+    ):
+        reject("POLICY_GROUP_BINDING_MISMATCH")
+
+
+def validate_run_policy_bindings(data: dict[str, object]) -> None:
+    targets = data.get("targets")
+    decisions = data.get("policy_decisions")
+    groups = data.get("policy_groups")
+    if type(targets) is not dict or type(decisions) is not dict or groups is None:
+        reject("FIXTURE_TYPE")
+    policy_group_index(groups)
+    for decision in decisions.values():
+        if type(decision) is not dict:
+            reject("FIXTURE_TYPE")
+        validate_decision_policy_group_binding(decision, targets, groups)  # type: ignore[arg-type]
+    sources = data.get("source_jobs", [])
+    if type(sources) is not list:
+        reject("FIXTURE_TYPE")
+    for source in sources:
+        if type(source) is not dict:
+            reject("FIXTURE_TYPE")
+        source_job_fields(source, data)
+    output = data.get("output")
+    if output is not None:
+        if type(output) is not dict or type(output.get("discoveries")) is not list:
+            reject("FIXTURE_TYPE")
+        for discovery in output["discoveries"]:
+            if type(discovery) is not dict:
+                reject("FIXTURE_TYPE")
+            source_job_fields(discovery, data)
 
 
 def validate_stage_chunk(
@@ -1958,6 +2419,7 @@ def publication_and_commit(data: dict[str, object], output_digest: str) -> tuple
     identities = data["identities"]
     if type(identities) is not dict:
         reject("FIXTURE_TYPE")
+    baseline, generation = request_start_interval(expect_object(data["output_context"], "output_context"))
     publication = digest_framed(
         "mifolyo:page-publication:v2",
         model_text(identities["run_id"]),
@@ -1972,6 +2434,8 @@ def publication_and_commit(data: dict[str, object], output_digest: str) -> tuple
         str(require_exact_integer(identities["fence"], positive=True)),
         model_text(identities["lease_token"]),
         publication,
+        str(baseline),
+        str(generation),
     )
     return publication, commit
 
@@ -1983,6 +2447,7 @@ def compute_baseline(data: dict[str, object]) -> dict[str, object]:
     if not all(type(value) is dict for value in (identities, targets, decisions)):
         reject("FIXTURE_TYPE")
     validate_identity_values(identities)  # type: ignore[arg-type]
+    validate_run_policy_bindings(data)
     for target in targets.values():  # type: ignore[union-attr]
         if type(target) is not dict:
             reject("FIXTURE_TYPE")
@@ -2141,129 +2606,287 @@ def sized_url(host: str, namespace: str, index: int, size: int = MAX_CANONICAL_U
     return prefix + "x" * (size - len(prefix))
 
 
-def maximum_content_type() -> str:
-    suffix = "charset=utf-8"
-    prefix = "text/html;"
-    return prefix + " " * (MAX_CONTENT_TYPE_BYTES - len(prefix) - len(suffix)) + suffix
+def generated_repeat(value: object) -> str:
+    if type(value) is not dict:
+        raise FixtureError("repeated-text generator is not an object")
+    text = model_text(value["text"])
+    count = model_integer(value["repeat_count"])
+    expected_bytes = model_integer(value["expected_utf8_bytes"])
+    if not text or count < 1 or expected_bytes < 1:
+        raise FixtureError("invalid repeated-text generator")
+    result = text * count
+    if len(result.encode("utf-8")) != expected_bytes:
+        raise FixtureError("repeated-text generator did not produce its declared UTF-8 width")
+    return result
 
 
-def build_maximum_output_data(base: dict[str, object]) -> tuple[dict[str, object], str, set[str]]:
-    identities = copy.deepcopy(base["identities"])
-    group_id = "g" * MAX_GROUP_ID_BYTES
-    rate_scope_id = "3" * 32
-    targets: dict[str, dict[str, object]] = {}
-    decisions: dict[str, dict[str, object]] = {}
-    alias_names = [f"alias_{index}" for index in range(MAX_ALIASES)]
-    for index, name in enumerate(alias_names):
-        canonical = sized_url("aliases.example.com", "alias", index)
-        targets[name] = {"url_id": url_id(canonical), "canonical_url": canonical}
-    source_target = alias_names[0]
-    source_decision = "source_document"
-    decisions[source_decision] = {
-        "request_kind": "document",
-        "target": source_target,
-        "depth": MAX_EXACT_INTEGER,
+def generated_padded_text(value: object) -> str:
+    if type(value) is not dict:
+        raise FixtureError("padded-text generator is not an object")
+    prefix = model_text(value["prefix"])
+    fill = model_text(value["fill_text"])
+    suffix = model_text(value["suffix"])
+    total = model_integer(value["total_utf8_bytes"])
+    fixed = len(prefix.encode("utf-8")) + len(suffix.encode("utf-8"))
+    fill_width = len(fill.encode("utf-8"))
+    if fill_width == 0 or total < fixed or (total - fixed) % fill_width:
+        raise FixtureError("invalid padded-text generator width")
+    result = prefix + fill * ((total - fixed) // fill_width) + suffix
+    if len(result.encode("utf-8")) != total:
+        raise FixtureError("padded-text generator did not produce its declared UTF-8 width")
+    return result
+
+
+def generated_indexed_urls(value: object) -> list[str]:
+    if type(value) is not dict or model_text(value["grammar"]) != "indexed_template_v1":
+        raise FixtureError("unsupported indexed-template generator")
+    template = model_text(value["template"])
+    count = model_integer(value["count"])
+    first = model_integer(value["first_index"])
+    width = model_integer(value["index_width"])
+    radix = model_integer(value["index_radix"])
+    fill_to = model_integer(value["fill_to_bytes"])
+    order = model_text(value["input_order"])
+    try:
+        fill = bytes.fromhex(model_text(value["fill_byte_hex"])).decode("utf-8", "strict")
+    except (ValueError, UnicodeDecodeError) as error:
+        raise FixtureError("indexed-template fill byte is invalid") from error
+    if (
+        count < 1 or count > MAX_SOURCE_JOBS or first < 0 or not 1 <= width <= 16
+        or radix not in {10, 16} or template.count("{index}") != 1
+        or len(fill.encode("utf-8")) != 1 or order not in {"ascending", "descending"}
+    ):
+        raise FixtureError("invalid indexed-template generator fields")
+    result: list[str] = []
+    for offset in range(count):
+        raw_index = format(first + offset, "d" if radix == 10 else "x")
+        if len(raw_index) > width:
+            raise FixtureError("indexed-template index exceeds its declared width")
+        rendered = template.replace("{index}", raw_index.rjust(width, "0"), 1)
+        rendered_bytes = len(rendered.encode("utf-8"))
+        if fill_to:
+            if rendered_bytes > fill_to:
+                raise FixtureError("indexed-template prefix exceeds fill_to_bytes")
+            rendered += fill * (fill_to - rendered_bytes)
+        canonical_url_v1(rendered)
+        result.append(rendered)
+    if order == "descending":
+        result.reverse()
+    return result
+
+
+def generated_policy_group(value: object) -> tuple[dict[str, object], dict[str, object]]:
+    if type(value) is not dict:
+        raise FixtureError("generated policy group is not an object")
+    group_id = generated_repeat(value["group_id"])
+    rate_scope_id = generated_repeat(value["rate_scope_id"])
+    group = {
         "group_id": group_id,
         "rate_scope_id": rate_scope_id,
-        "concurrency": 32,
-        "interval_ms": 3_600_000,
+        "request_start_limit": model_integer(value["request_start_limit"]),
+        "concurrency": model_integer(value["concurrency"]),
+        "interval_ms": model_integer(value["interval_ms"]),
     }
+    if (
+        model_integer(value["global_concurrency"]) != 2
+        or model_integer(value["global_interval_ms"]) != 0
+        or model_integer(value["origin_concurrency"]) != group["concurrency"]
+        or model_integer(value["origin_interval_ms"]) != group["interval_ms"]
+    ):
+        reject("POLICY_GROUP_BINDING_MISMATCH")
+    validate_policy_groups([group])
+    return group, value
+
+
+def generated_decision(
+    request_kind: object,
+    target: str,
+    depth: object,
+    group: dict[str, object],
+    tuple_spec: dict[str, object],
+) -> dict[str, object]:
+    if model_text(request_kind) not in {"robots", "document", "redirect", "render_resource"}:
+        reject("INVALID_REQUEST_KIND")
+    return {
+        "request_kind": model_text(request_kind),
+        "target": target,
+        "depth": require_exact_integer(depth),
+        "group_id": model_text(group["group_id"]),
+        "rate_scope_id": model_text(group["rate_scope_id"]),
+        "concurrency": model_integer(tuple_spec["concurrency"]),
+        "interval_ms": model_integer(tuple_spec["interval_ms"]),
+    }
+
+
+def build_maximum_output_data(generator_value: object) -> tuple[dict[str, object], str, set[str]]:
+    if type(generator_value) is not dict or model_text(generator_value["grammar"]) != "maximum_output_v1":
+        raise FixtureError("maximum output is missing its declarative generator")
+    identity_spec = generator_value["identity"]
+    policy_spec_value = generator_value["policy_group"]
+    if type(identity_spec) is not dict or type(policy_spec_value) is not dict:
+        raise FixtureError("maximum output generator identity/policy shape mismatch")
+    group, policy_spec = generated_policy_group(policy_spec_value)
+    alias_urls = generated_indexed_urls(generator_value["aliases"])
+    if len(alias_urls) != MAX_ALIASES:
+        raise FixtureError("maximum output alias generator is not at the protocol maximum")
+    targets: dict[str, dict[str, object]] = {}
+    decisions: dict[str, dict[str, object]] = {}
+    alias_names = [f"alias_{index}" for index in range(len(alias_urls))]
+    for name, canonical in zip(alias_names, alias_urls):
+        targets[name] = {"url_id": url_id(canonical), "canonical_url": canonical}
+    source_spec = generator_value["source"]
+    if type(source_spec) is not dict or model_text(source_spec["policy_group_ref"]) != "policy_group":
+        raise FixtureError("maximum output source has an invalid policy-group reference")
+    source_index = model_integer(source_spec["target_index"])
+    if source_index < 0 or source_index >= len(alias_names):
+        raise FixtureError("maximum output source target index is out of range")
+    source_target = alias_names[source_index]
+    source_decision_name = "source_document"
+    decisions[source_decision_name] = generated_decision(
+        source_spec["request_kind"], source_target, source_spec["depth"], group, policy_spec,
+    )
+    if decisions[source_decision_name]["request_kind"] != "document":
+        raise FixtureError("maximum output source decision must be document")
+    if model_text(identity_spec["job_id_from"]) != "source_target_url_id":
+        raise FixtureError("maximum output identity has an unknown job-ID source")
+    if model_text(identity_spec["rate_scope_id_from"]) != "policy_group.rate_scope_id":
+        raise FixtureError("maximum output identity has an unknown rate-scope source")
+    identities: dict[str, object] = {
+        "run_id": model_text(identity_spec["run_id"]),
+        "job_id": targets[source_target]["url_id"],
+        "owner_id": model_text(identity_spec["owner_id"]),
+        "alternate_owner_id": model_text(identity_spec["alternate_owner_id"]),
+        "lease_token": model_text(identity_spec["lease_token"]),
+        "fence": model_integer(identity_spec["fence"]),
+        "rate_scope_id": group["rate_scope_id"],
+        "crawl_policy_sha256": model_text(identity_spec["crawl_policy_sha256"]),
+    }
+    discovery_spec = generator_value["discoveries"]
+    if type(discovery_spec) is not dict or model_text(discovery_spec["policy_group_ref"]) != "policy_group":
+        raise FixtureError("maximum discoveries have an invalid policy-group reference")
+    discovery_urls = generated_indexed_urls(discovery_spec["urls"])
+    if len(discovery_urls) != MAX_DISCOVERIES:
+        raise FixtureError("maximum discovery generator is not at the protocol maximum")
     discovery_items: list[dict[str, object]] = []
-    for index in range(MAX_DISCOVERIES):
+    for index, canonical in enumerate(discovery_urls):
         name = f"discovery_{index}"
-        canonical = sized_url("discoveries.example.com", "discovery", index)
         targets[name] = {"url_id": url_id(canonical), "canonical_url": canonical}
         decision_name = f"discovery_decision_{index}"
-        decisions[decision_name] = {
-            "request_kind": "document",
-            "target": name,
-            "depth": MAX_EXACT_INTEGER,
-            "group_id": group_id,
-            "rate_scope_id": rate_scope_id,
-            "concurrency": 32,
-            "interval_ms": 3_600_000,
-        }
+        decisions[decision_name] = generated_decision(
+            discovery_spec["request_kind"], name, discovery_spec["depth"], group, policy_spec,
+        )
+        if decisions[decision_name]["request_kind"] != "document":
+            raise FixtureError("maximum discovery decision must be document")
         discovery_items.append(
             {
                 "target": name,
-                "score_text": "10000",
-                "depth": MAX_EXACT_INTEGER,
-                "group_id": group_id,
-                "rate_scope_id": rate_scope_id,
+                "score_text": model_text(discovery_spec["score_text"]),
+                "depth": require_exact_integer(discovery_spec["depth"]),
+                "group_id": group["group_id"],
+                "rate_scope_id": group["rate_scope_id"],
                 "decision": decision_name,
             }
         )
-    identities["job_id"] = targets[source_target]["url_id"]
-    identities["rate_scope_id"] = rate_scope_id
-    render_digest = model_text(identities["crawl_policy_sha256"])
-    render_rule = "r" * MAX_RENDER_RULE_BYTES
-    outlinks = [sized_url("outlinks.example.com", "outlink", index) for index in range(MAX_OUTLINKS)]
-    images = [
-        {
-            "normalized_source_url": sized_url("images.example.com", "image", index),
-            "alt": "é" * (MAX_IMAGE_ALT_BYTES // 2),
-        }
-        for index in range(MAX_IMAGES)
-    ]
+    chain_spec = generator_value["request_chain"]
+    if type(chain_spec) is not dict or model_text(chain_spec["policy_group_ref"]) != "policy_group":
+        raise FixtureError("maximum request chain has an invalid policy-group reference")
+    first_started = require_exact_integer(chain_spec["first_started_at_ms"], positive=True)
+    step = require_exact_integer(chain_spec["started_at_step_ms"], positive=True)
+    initial_kind = model_text(chain_spec["initial_request_kind"])
+    subsequent_kind = model_text(chain_spec["subsequent_request_kind"])
+    if initial_kind != "document" or subsequent_kind != "redirect":
+        raise FixtureError("maximum request chain must declare document then redirect")
+    counts = expect_list(chain_spec["job_request_starts"], "request_chain.job_request_starts")
+    ordinals = expect_list(chain_spec["request_ordinals"], "request_chain.request_ordinals")
+    if len(counts) != len(alias_names) or len(ordinals) != len(alias_names):
+        raise FixtureError("maximum request chain snapshot arrays must cover every event")
     requests = [
         {
-            "request_kind": "document" if index == 0 else "redirect",
+            "request_kind": initial_kind if index == 0 else subsequent_kind,
             "target": name,
-            "started_at_ms": 1_788_266_095_000 + index * 1_000,
+            "started_at_ms": first_started + index * step,
+            "job_request_starts": counts[index],
+            "request_ordinal": ordinals[index],
         }
         for index, name in enumerate(alias_names)
     ]
+    outlinks = generated_indexed_urls(generator_value["outlinks"])
+    if len(outlinks) != MAX_OUTLINKS:
+        raise FixtureError("maximum outlink generator is not at the protocol maximum")
+    images_spec = generator_value["images"]
+    if type(images_spec) is not dict:
+        raise FixtureError("maximum image generator is not an object")
+    image_urls = generated_indexed_urls(images_spec["urls"])
+    if len(image_urls) != MAX_IMAGES:
+        raise FixtureError("maximum image generator is not at the protocol maximum")
+    image_alt = generated_repeat(images_spec["alt"])
+    page_spec = generator_value["page"]
+    if type(page_spec) is not dict:
+        raise FixtureError("maximum page generator is not an object")
+    normalized_index = model_integer(page_spec["normalized_target_index"])
+    if normalized_index < 0 or normalized_index >= len(alias_names):
+        raise FixtureError("maximum page normalized target index is out of range")
+    render_digest = model_text(page_spec["render_policy_sha256"])
+    if render_digest != identities["crawl_policy_sha256"]:
+        raise FixtureError("maximum page render digest differs from its identity input")
+    render_rule = generated_repeat(page_spec["render_policy_rule"])
     generated: dict[str, object] = {
         "identities": identities,
         "targets": targets,
         "policy_decisions": decisions,
-        "policy_groups": [
-            {
-                "group_id": group_id,
-                "rate_scope_id": rate_scope_id,
-                "request_start_limit": 10,
-                "concurrency": 32,
-                "interval_ms": 3_600_000,
-            }
-        ],
+        "policy_groups": [group],
         "source_jobs": [
             {
                 "target": source_target,
-                "score_text": "-1000",
-                "depth": MAX_EXACT_INTEGER,
-                "group_id": group_id,
-                "rate_scope_id": rate_scope_id,
-                "decision": source_decision,
+                "score_text": model_text(source_spec["score_text"]),
+                "depth": require_exact_integer(source_spec["depth"]),
+                "group_id": group["group_id"],
+                "rate_scope_id": group["rate_scope_id"],
+                "decision": source_decision_name,
             }
         ],
-        "output_context": {"source_job_index": 0, "requests": requests},
+        "output_context": {
+            "source_job_index": 0,
+            "lease_request_starts_baseline": chain_spec["lease_request_starts_baseline"],
+            "terminal_request_starts_generation": chain_spec["terminal_request_starts_generation"],
+            "requests": requests,
+        },
         "output": {
             "page": {
-                "normalized_target": alias_names[-1],
-                "html": "H" * MAX_PAGE_BLOB_BYTES,
-                "original_html": "O" * MAX_PAGE_BLOB_BYTES,
-                "content_type": maximum_content_type(),
-                "status_code": 399,
-                "rendered": True,
+                "normalized_target": alias_names[normalized_index],
+                "html": generated_repeat(page_spec["html"]),
+                "original_html": generated_repeat(page_spec["original_html"]),
+                "content_type": generated_padded_text(page_spec["content_type"]),
+                "status_code": model_integer(page_spec["status_code"]),
+                "rendered": model_boolean(page_spec["rendered"]),
                 "render_policy_rule": render_rule,
                 "render_policy_sha256": render_digest,
             },
-            "outlinks": list(reversed(outlinks)),
-            "images": list(reversed(images)),
-            "discoveries": list(reversed(discovery_items)),
+            "outlinks": outlinks,
+            "images": [{"normalized_source_url": value, "alt": image_alt} for value in image_urls],
+            "discoveries": discovery_items,
         },
     }
+    validate_identity_values(identities)
+    validate_run_policy_bindings(generated)
     return generated, render_digest, {render_rule}
 
 
 def build_output_profile_data(
     profile: str,
     base: dict[str, object],
+    generator: object | None = None,
 ) -> tuple[dict[str, object], str | None, set[str] | None]:
     if profile == "baseline":
+        if generator is not None:
+            raise FixtureError("baseline output profile must not provide a generator")
         return base, None, None
     if profile == "maximum":
-        return build_maximum_output_data(base)
+        if generator is None:
+            raise FixtureError("maximum output profile requires a declarative generator")
+        return build_maximum_output_data(generator)
+    if generator is not None:
+        raise FixtureError(f"non-maximum output profile {profile!r} must not provide a generator")
     changed = copy.deepcopy(base)
     output = changed["output"]
     context = changed["output_context"]
@@ -2278,6 +2901,7 @@ def build_output_profile_data(
         if type(requests) is not list:
             raise FixtureError("baseline requests have invalid internal shape")
         context["requests"] = requests[:1]
+        context["terminal_request_starts_generation"] = requests[0]["job_request_starts"]
         page.update(
             {
                 "normalized_target": "page",
@@ -2313,10 +2937,20 @@ def build_output_profile_data(
 _OUTPUT_PROFILE_CACHE: dict[str, dict[str, object]] = {}
 
 
-def output_profile_result(profile: str, base: dict[str, object]) -> dict[str, object]:
-    if profile in _OUTPUT_PROFILE_CACHE:
-        return _OUTPUT_PROFILE_CACHE[profile]
-    data, render_digest, rules = build_output_profile_data(profile, base)
+def profile_cache_key(profile: str, generator: object | None) -> str:
+    encoded = json.dumps(generator, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return f"{profile}:{plain_sha256(encoded.encode('utf-8'))}"
+
+
+def output_profile_result(
+    profile: str,
+    base: dict[str, object],
+    generator: object | None = None,
+) -> dict[str, object]:
+    cache_key = profile_cache_key(profile, generator)
+    if cache_key in _OUTPUT_PROFILE_CACHE:
+        return _OUTPUT_PROFILE_CACHE[cache_key]
+    data, render_digest, rules = build_output_profile_data(profile, base, generator)
     validate_identity_values(data["identities"])  # type: ignore[arg-type]
     records = output_records(
         data,
@@ -2343,44 +2977,55 @@ def output_profile_result(profile: str, base: dict[str, object]) -> dict[str, ob
             "chunk_digests": chunk_digests,
         },
     }
-    _OUTPUT_PROFILE_CACHE[profile] = result
+    _OUTPUT_PROFILE_CACHE[cache_key] = result
     return result
 
 
 _SOURCE_PROFILE_CACHE: dict[str, dict[str, object]] = {}
 
 
-def source_profile_result(profile: str) -> dict[str, object]:
-    if profile in _SOURCE_PROFILE_CACHE:
-        return _SOURCE_PROFILE_CACHE[profile]
+def source_profile_result(profile: str, generator: object | None = None) -> dict[str, object]:
+    cache_key = profile_cache_key(profile, generator)
+    if cache_key in _SOURCE_PROFILE_CACHE:
+        return _SOURCE_PROFILE_CACHE[cache_key]
     if profile == "empty":
+        if generator is not None:
+            raise FixtureError("empty source profile must not provide a generator")
         records: list[list[tuple[str, str]]] = []
     elif profile == "maximum":
-        group_id = "source-group"
-        rate_scope_id = "4" * 32
+        if type(generator) is not dict or model_text(generator["grammar"]) != "maximum_source_v1":
+            raise FixtureError("maximum source profile requires a maximum_source_v1 generator")
+        group_value = generator["policy_group"]
+        source = generator["source"]
+        if type(group_value) is not dict or type(source) is not dict:
+            raise FixtureError("maximum source generator shape mismatch")
+        group, tuple_spec = generated_policy_group(group_value)
+        if model_text(source["policy_group_ref"]) != "policy_group":
+            raise FixtureError("maximum source has an invalid policy-group reference")
+        request_kind = model_text(source["request_kind"])
+        if request_kind != "document":
+            raise FixtureError("maximum source request kind must be document")
+        score_text = model_text(source["score_text"])
+        validate_score_text(score_text)
+        depth = require_exact_integer(source["depth"])
+        urls = generated_indexed_urls(generator["jobs"])
+        if len(urls) != MAX_SOURCE_JOBS:
+            raise FixtureError("maximum source generator is not at the protocol maximum")
         sortable: list[tuple[str, list[tuple[str, str]]]] = []
-        for index in range(MAX_SOURCE_JOBS):
-            canonical = f"https://sources.example.com/job/{index:05d}"
+        for canonical in urls:
             target = {"url_id": url_id(canonical), "canonical_url": canonical}
-            decision = {
-                "request_kind": "document",
-                "target": "item",
-                "depth": MAX_EXACT_INTEGER,
-                "group_id": group_id,
-                "rate_scope_id": rate_scope_id,
-                "concurrency": 32,
-                "interval_ms": 3_600_000,
-            }
+            decision = generated_decision(request_kind, "item", depth, group, tuple_spec)
             data: dict[str, object] = {
                 "targets": {"item": target},
                 "policy_decisions": {"decision": decision},
+                "policy_groups": [group],
             }
             item: dict[str, object] = {
                 "target": "item",
-                "score_text": "0",
-                "depth": MAX_EXACT_INTEGER,
-                "group_id": group_id,
-                "rate_scope_id": rate_scope_id,
+                "score_text": score_text,
+                "depth": depth,
+                "group_id": group["group_id"],
+                "rate_scope_id": group["rate_scope_id"],
                 "decision": "decision",
             }
             sortable.append((model_text(target["url_id"]), source_job_fields(item, data)))
@@ -2393,7 +3038,7 @@ def source_profile_result(profile: str) -> dict[str, object]:
         "section_sha256": plain_sha256(encoded),
         "source_sha256": digest_sections("mifolyo:crawl-source:v2", encoded),
     }
-    _SOURCE_PROFILE_CACHE[profile] = result
+    _SOURCE_PROFILE_CACHE[cache_key] = result
     return result
 
 
@@ -2438,6 +3083,13 @@ def contract_case_result(case_input: dict[str, object], root: Path) -> dict[str,
 def _valid_nonzero_digest(value: object) -> str:
     digest = model_text(value)
     if HEX_64_RE.fullmatch(digest) is None or digest == "0" * 64:
+        reject("INVALID_GUARD_RELATION")
+    return digest
+
+
+def _valid_evidence_digest(value: object) -> str:
+    digest = model_text(value)
+    if HEX_64_RE.fullmatch(digest) is None:
         reject("INVALID_DIGEST")
     return digest
 
@@ -2446,47 +3098,65 @@ def _validate_image_digest(value: object, *, allow_disabled: bool = False) -> st
     image = model_text(value)
     if allow_disabled and image == "disabled":
         return image
-    if not image.startswith("sha256:") or HEX_64_RE.fullmatch(image[7:]) is None:
+    if (
+        not image.startswith("sha256:")
+        or HEX_64_RE.fullmatch(image[7:]) is None
+        or image[7:] == "0" * 64
+    ):
         reject("INVALID_IMAGE_DIGEST")
     return image
 
 
-def guard_chain_result(
+def guard_core_fields(
     case_input: dict[str, object],
     prior_cases: dict[str, dict[str, object]],
-) -> dict[str, object]:
+) -> list[tuple[str, str]]:
     contract_case = model_text(case_input["contract_case"])
     if contract_case not in prior_cases or "contract_sha256" not in prior_cases[contract_case]:
         raise FixtureError(f"guard references unavailable contract case {contract_case!r}")
-    contract_sha = model_text(prior_cases[contract_case]["contract_sha256"])
+    contract_sha = _valid_nonzero_digest(prior_cases[contract_case]["contract_sha256"])
     guard = case_input["guard_core"]
-    compatibility = case_input["compatibility"]
-    if type(guard) is not dict or type(compatibility) is not dict:
-        raise FixtureError("guard case internal schema mismatch")
+    if type(guard) is not dict:
+        raise FixtureError("guard core case internal schema mismatch")
+    guard_mode = model_text(case_input["guard_mode"])
     redis_version = model_text(guard["redis_version"])
-    if len(redis_version.encode("ascii", "ignore")) > 64 or re.fullmatch(r"[0-9]+(?:\.[0-9]+){1,3}", redis_version) is None:
+    if (
+        len(redis_version.encode("ascii", "ignore")) > 64
+        or re.fullmatch(r"[0-9]+(?:\.[0-9]+){1,3}", redis_version) is None
+        or not redis_version.startswith("7.")
+    ):
         reject("INVALID_REDIS_VERSION")
-    digest_fields = {
-        field: _valid_nonzero_digest(guard[field])
-        for field in (
-            "redis_config_sha256",
-            "maximum_shape_sha256",
-            "memory_fixture_sha256",
-            "lua_benchmark_sha256",
-            "aof_crash_evidence_sha256",
-        )
+    digest_fields: dict[str, str] = {
+        "redis_config_sha256": _valid_nonzero_digest(guard["redis_config_sha256"]),
     }
+    evidence_names = (
+        "maximum_shape_sha256",
+        "memory_fixture_sha256",
+        "lua_benchmark_sha256",
+        "aof_crash_evidence_sha256",
+    )
+    for field in evidence_names:
+        digest_fields[field] = _valid_evidence_digest(guard[field])
+    zero_evidence = sum(digest_fields[field] == "0" * 64 for field in evidence_names)
     mode = model_text(guard["cutover_mode"])
     candidate = model_text(guard["candidate_run_id"])
-    if mode == "fresh":
-        if candidate:
+    if guard_mode == "provisional_fixture":
+        if zero_evidence == 0 or mode != "fresh" or candidate:
             reject("INVALID_GUARD_RELATION")
-    elif mode == "v1_migration":
-        if HEX_32_RE.fullmatch(candidate) is None:
+    elif guard_mode == "production":
+        if zero_evidence:
+            reject("INVALID_GUARD_RELATION")
+        if mode == "fresh":
+            if candidate:
+                reject("INVALID_GUARD_RELATION")
+        elif mode == "v1_migration":
+            if HEX_32_RE.fullmatch(candidate) is None:
+                reject("INVALID_GUARD_RELATION")
+        else:
             reject("INVALID_GUARD_RELATION")
     else:
-        reject("INVALID_GUARD_RELATION")
-    guard_fields = [
+        raise FixtureError(f"unknown guard mode {guard_mode!r}")
+    return [
         ("protocol_version", "2"),
         ("contract_sha256", contract_sha),
         ("redis_version", redis_version),
@@ -2499,13 +3169,38 @@ def guard_chain_result(
         ("candidate_run_id", candidate),
         ("approved", "1"),
     ]
+
+
+def guard_core_result(
+    case_input: dict[str, object],
+    prior_cases: dict[str, dict[str, object]],
+) -> dict[str, object]:
+    guard_fields = guard_core_fields(case_input, prior_cases)
     guard_bytes = record(guard_fields)
     if len(guard_bytes) > 16 * 1024:
         reject("AUTHORITY_RECORD_LIMIT")
     guard_digest = plain_sha256(guard_bytes)
+    return {"guard_core_sha256": guard_digest, "record_hex": guard_bytes.hex()}
+
+
+def guard_chain_result(
+    case_input: dict[str, object],
+    prior_cases: dict[str, dict[str, object]],
+) -> dict[str, object]:
+    if model_text(case_input["guard_mode"]) != "production":
+        raise FixtureError("stored guard chains require production mode")
+    guard_fields = guard_core_fields(case_input, prior_cases)
+    guard_bytes = record(guard_fields)
+    if len(guard_bytes) > 16 * 1024:
+        reject("AUTHORITY_RECORD_LIMIT")
+    guard_digest = plain_sha256(guard_bytes)
+    compatibility = case_input["compatibility"]
+    if type(compatibility) is not dict:
+        raise FixtureError("guard compatibility case internal schema mismatch")
+    digest_fields = dict(guard_fields)
     compatibility_redis = _valid_nonzero_digest(compatibility["redis_config_sha256"])
     if compatibility_redis != digest_fields["redis_config_sha256"]:
-        reject("INVALID_GUARD_RELATION")
+        reject("GUARD_CONFIG_MISMATCH")
     image_fields = [
         ("spider_image", _validate_image_digest(compatibility["spider_image"])),
         ("seed_importer_image", _validate_image_digest(compatibility["seed_importer_image"])),
@@ -2686,10 +3381,10 @@ def publication_independence_result(case_input: dict[str, object], data: dict[st
     }
 
 
-def field_limits_result(profile_name: str, data: dict[str, object]) -> dict[str, object]:
+def field_limits_result(profile_name: str, data: dict[str, object], generator: object) -> dict[str, object]:
     if profile_name != "maximum":
         raise FixtureError(f"unknown field-limit profile {profile_name!r}")
-    profile = output_profile_result("maximum", data)
+    profile = output_profile_result("maximum", data, generator)
     generated = profile["data"]
     records = profile["records"]
     chunks = profile["chunks"]
@@ -2750,6 +3445,86 @@ def field_limits_result(profile_name: str, data: dict[str, object]) -> dict[str,
     }
 
 
+def transcript_binding_result(case_input: dict[str, object], data: dict[str, object]) -> dict[str, object]:
+    changed = copy.deepcopy(data)
+    changed["output_context"] = copy.deepcopy(case_input["output_context"])
+    _documents, witness = output_transcript(changed)
+    baseline = compute_baseline(changed)
+    expected = expect_object(data["expected"], "expected")
+    for field in ("output_digest", "publication_id"):
+        if baseline[field] != expected[field]:
+            raise FixtureError(f"transcript-only binding changed {field}")
+    return {
+        **{field: baseline[field] for field in ("output_digest", "publication_id", "commit_id", "chunk_digest")},
+        "terminal_witness": witness,
+    }
+
+
+def run_transcript_binding_mutation(case_input: dict[str, object], data: dict[str, object]) -> None:
+    base_name = model_text(case_input["base_case"])
+    base = next((case for case in data["cases"] if case["name"] == base_name), None)
+    if base is None or base["kind"] != "transcript_binding":
+        raise FixtureError(f"unknown transcript binding case {base_name!r}")
+    changed = copy.deepcopy(data)
+    context = copy.deepcopy(base["input"]["output_context"])
+    changed["output_context"] = context
+    _documents, witness = output_transcript(changed)
+    requests = context["requests"]
+    mutation = model_text(case_input["mutation"])
+    if mutation == "omit_leading":
+        del requests[0]
+    elif mutation == "omit_middle":
+        del requests[2]
+    elif mutation == "omit_trailing":
+        del requests[-1]
+    elif mutation == "duplicate_start_count":
+        requests[2]["job_request_starts"] = requests[1]["job_request_starts"]
+    elif mutation == "skipped_start_count":
+        requests[2]["job_request_starts"] = "7"
+    elif mutation == "duplicate_ordinal":
+        requests[-1]["request_ordinal"] = requests[-2]["request_ordinal"]
+    elif mutation == "start_count_exceeds_ordinal":
+        requests[0]["request_ordinal"] = "3"
+    elif mutation == "baseline_equal_generation":
+        context["lease_request_starts_baseline"] = context["terminal_request_starts_generation"]
+    elif mutation == "baseline_negative":
+        context["lease_request_starts_baseline"] = "-1"
+    elif mutation == "baseline_noncanonical":
+        context["lease_request_starts_baseline"] = "03"
+    elif mutation == "generation_one_over":
+        context["terminal_request_starts_generation"] = "11"
+    elif mutation == "generation_noncanonical":
+        context["terminal_request_starts_generation"] = "07"
+    elif mutation == "count_noncanonical":
+        requests[0]["job_request_starts"] = "04"
+    elif mutation == "ordinal_noncanonical":
+        requests[0]["request_ordinal"] = "07"
+    elif mutation == "ordinal_one_over":
+        requests[-1]["request_ordinal"] = "101"
+    elif mutation == "old_projection":
+        witness = witness[:7]
+    elif mutation == "witness_lease_mismatch":
+        witness[9] = model_text(changed["identities"]["alternate_owner_id"])
+    elif mutation == "witness_active_reservation":
+        witness[12] = "a" * 64
+    elif mutation == "witness_document_timestamp":
+        witness[0] = str(int(witness[0]) - 1)
+    elif mutation in {"stale_generation_binding", "stale_baseline_binding"}:
+        output_digest = output_digest_from_records(output_records(changed))
+        _publication, commit = publication_and_commit(changed, output_digest)
+        field = (
+            "terminal_request_starts_generation" if mutation == "stale_generation_binding"
+            else "lease_request_starts_baseline"
+        )
+        context[field] = str(int(context[field]) - 1)
+        _publication, stale_commit = publication_and_commit(changed, output_digest)
+        verify_replay(commit, stale_commit)
+        return
+    else:
+        raise FixtureError(f"unknown transcript binding mutation {mutation!r}")
+    output_transcript(changed, witness)
+
+
 def evaluate_cases(cases: list[object], data: dict[str, object], root: Path) -> dict[str, dict[str, object]]:
     results: dict[str, dict[str, object]] = {}
     for raw_case in cases:
@@ -2777,21 +3552,34 @@ def evaluate_cases(cases: list[object], data: dict[str, object], root: Path) -> 
             actual = {"ordered_values": ordered, "section_sha256": plain_sha256(encoded)}
         elif kind == "contract_digest":
             actual = contract_case_result(case_input, root)
+        elif kind == "policy_group_boundary":
+            groups = generated_policy_groups_boundary(case_input)
+            group_records = validate_policy_groups(groups)
+            actual = {
+                "count": len(groups),
+                "policy_group_map_sha256": digest_sections(
+                    "mifolyo:policy-group-map:v2", section("groups", group_records)
+                ),
+            }
         elif kind == "guard_chain":
             actual = guard_chain_result(case_input, results)
+        elif kind == "guard_core":
+            actual = guard_core_result(case_input, results)
         elif kind == "transition_mutation":
             actual = transition_mutation_result(case_input, data)
         elif kind == "publication_independence":
             actual = publication_independence_result(case_input, data)
         elif kind == "output_profile":
             profile = model_text(case_input["profile"])
-            profile_data = output_profile_result(profile, data)
+            profile_data = output_profile_result(profile, data, case_input.get("generator"))
             actual_value = profile_data["expected"]
             if type(actual_value) is not dict:
                 raise FixtureError(f"case {name!r} profile result missing")
             actual = actual_value
+        elif kind == "transcript_binding":
+            actual = transcript_binding_result(case_input, data)
         elif kind == "source_profile":
-            actual = source_profile_result(model_text(case_input["profile"]))
+            actual = source_profile_result(model_text(case_input["profile"]), case_input.get("generator"))
         elif kind == "stage_chunks":
             profile = output_profile_result(model_text(case_input["profile"]), data)
             profile_expected = profile["expected"]
@@ -2799,7 +3587,7 @@ def evaluate_cases(cases: list[object], data: dict[str, object], root: Path) -> 
                 raise FixtureError(f"case {name!r} chunk result missing")
             actual = {"chunk_digests": profile_expected["chunk_digests"]}
         elif kind == "field_limits":
-            actual = field_limits_result(model_text(case_input["profile"]), data)
+            actual = field_limits_result(model_text(case_input["profile"]), data, case_input["generator"])
         else:
             raise FixtureError(f"case {name!r}: unknown positive kind {kind!r}")
         results[name] = actual
@@ -2827,6 +3615,7 @@ OUTPUT_MUTATIONS = {
     "render_false_with_digest",
     "render_true_without_original",
     "render_true_without_rule",
+    "render_true_rule_one_over",
     "render_true_rule_control",
     "render_true_bad_digest",
     "status_below",
@@ -2895,6 +3684,7 @@ def run_output_mutation(mutation: str, data: dict[str, object]) -> None:
     elif mutation in {
         "render_true_without_original",
         "render_true_without_rule",
+        "render_true_rule_one_over",
         "render_true_rule_control",
         "render_true_bad_digest",
     }:
@@ -2908,6 +3698,8 @@ def run_output_mutation(mutation: str, data: dict[str, object]) -> None:
             page["original_html"] = ""
         elif mutation == "render_true_without_rule":
             page["render_policy_rule"] = ""
+        elif mutation == "render_true_rule_one_over":
+            page["render_policy_rule"] = "r" * (MAX_RENDER_RULE_BYTES + 1)
         elif mutation == "render_true_rule_control":
             page["render_policy_rule"] = "render\nmain"
         elif mutation == "render_true_bad_digest":
@@ -2978,7 +3770,189 @@ def run_stage_mutation(mutation: str, data: dict[str, object]) -> None:
         raise FixtureError(f"unknown stage chunk mutation {mutation!r}")
 
 
-def run_negative_case(case: dict[str, object], data: dict[str, object]) -> None:
+def fixture_positive_case(data: dict[str, object], name: str) -> dict[str, object]:
+    cases = data.get("cases")
+    if type(cases) is not list:
+        raise FixtureError("positive fixture case inventory is unavailable")
+    for value in cases:
+        if type(value) is dict and value.get("name") == name:
+            return value
+    raise FixtureError(f"unknown positive fixture case {name!r}")
+
+
+def run_policy_group_binding_mutation(mutation: str, data: dict[str, object]) -> None:
+    changed = copy.deepcopy(data)
+    groups = changed.get("policy_groups")
+    decisions = changed.get("policy_decisions")
+    targets = changed.get("targets")
+    if type(groups) is not list or type(decisions) is not dict or type(targets) is not dict:
+        raise FixtureError("baseline policy binding shape mismatch")
+    decision = decisions.get("page_document")
+    if type(decision) is not dict:
+        raise FixtureError("baseline page decision is unavailable")
+    if mutation == "missing_group":
+        changed["policy_groups"] = [
+            group for group in groups
+            if type(group) is dict and group.get("group_id") != decision.get("group_id")
+        ]
+        validate_decision_policy_group_binding(decision, targets, changed["policy_groups"])
+        return
+    elif mutation == "wrong_rate_lineage":
+        alternate = next(
+            (
+                group for group in groups
+                if type(group) is dict and group.get("group_id") != decision.get("group_id")
+            ),
+            None,
+        )
+        if type(alternate) is not dict:
+            raise FixtureError("baseline alternate rate lineage is unavailable")
+        sources = changed.get("source_jobs")
+        if type(sources) is not list or not sources or type(sources[0]) is not dict:
+            raise FixtureError("baseline source policy surface is unavailable")
+        source = sources[0]
+        source_decision = decisions.get(source.get("decision"))
+        if type(source_decision) is not dict:
+            raise FixtureError("baseline source decision is unavailable")
+        source["rate_scope_id"] = alternate["rate_scope_id"]
+        source_decision["rate_scope_id"] = alternate["rate_scope_id"]
+        source_job_fields(source, changed)
+        return
+    elif mutation == "changed_group_tuple":
+        matching = next(
+            (group for group in groups if type(group) is dict and group.get("group_id") == decision.get("group_id")),
+            None,
+        )
+        if type(matching) is not dict:
+            raise FixtureError("baseline matching policy group is unavailable")
+        matching["concurrency"] = model_integer(matching["concurrency"]) - 1
+        output = changed.get("output")
+        if type(output) is not dict or type(output.get("discoveries")) is not list or not output["discoveries"]:
+            raise FixtureError("baseline discovery policy surface is unavailable")
+        discovery = output["discoveries"][0]
+        if type(discovery) is not dict:
+            raise FixtureError("baseline discovery policy surface is invalid")
+        source_job_fields(discovery, changed)
+        return
+    elif mutation == "unequal_group_origin_tuple":
+        validate_decision_policy_group_binding(
+            decision, targets, groups,
+            origin_concurrency=model_integer(decision["concurrency"]) - 1,
+            origin_interval_ms=model_integer(decision["interval_ms"]),
+        )
+        return
+    elif mutation == "unrelated_group_map":
+        changed["policy_groups"] = [
+            {
+                "group_id": "unrelated-policy-group",
+                "rate_scope_id": "9" * 32,
+                "request_start_limit": 1,
+                "concurrency": 1,
+                "interval_ms": 0,
+            }
+        ]
+        unrelated = changed["policy_groups"]
+        sources = changed.get("source_jobs")
+        output = changed.get("output")
+        if (
+            type(sources) is not list or not sources or type(sources[0]) is not dict
+            or type(output) is not dict or type(output.get("discoveries")) is not list
+            or not output["discoveries"] or type(output["discoveries"][0]) is not dict
+        ):
+            raise FixtureError("baseline policy surfaces are unavailable")
+        checks = (
+            lambda: validate_decision_policy_group_binding(decision, targets, unrelated),
+            lambda: source_job_fields(sources[0], changed),
+            lambda: source_job_fields(output["discoveries"][0], changed),
+        )
+        for index, check in enumerate(checks):
+            try:
+                check()
+            except Rejection as error:
+                if error.rejection_class != "POLICY_GROUP_BINDING_MISMATCH":
+                    raise FixtureError(
+                        f"unrelated policy-group surface {index} returned {error.rejection_class}"
+                    ) from error
+            else:
+                raise FixtureError(f"unrelated policy-group surface {index} was accepted")
+        reject("POLICY_GROUP_BINDING_MISMATCH")
+    else:
+        raise FixtureError(f"unknown policy-group binding mutation {mutation!r}")
+
+
+def run_guard_core_mutation(
+    base_case: str,
+    mutation: str,
+    data: dict[str, object],
+    positive_results: dict[str, dict[str, object]],
+) -> None:
+    base = fixture_positive_case(data, base_case)
+    base_input = base.get("input")
+    if type(base_input) is not dict or base.get("kind") not in {"guard_core", "guard_chain"}:
+        raise FixtureError(f"guard mutation base {base_case!r} is invalid")
+    changed = copy.deepcopy(base_input)
+    guard = changed.get("guard_core")
+    if type(guard) is not dict:
+        raise FixtureError("guard mutation base core is invalid")
+    prior = copy.deepcopy(positive_results)
+    if mutation == "zero_contract":
+        contract_case = model_text(changed["contract_case"])
+        if contract_case not in prior:
+            raise FixtureError("guard mutation contract result is unavailable")
+        prior[contract_case]["contract_sha256"] = "0" * 64
+    elif mutation == "zero_redis_config":
+        guard["redis_config_sha256"] = "0" * 64
+    elif mutation == "all_nonzero_provisional":
+        guard.update(
+            {
+                "maximum_shape_sha256": "2" * 64,
+                "memory_fixture_sha256": "3" * 64,
+                "lua_benchmark_sha256": "4" * 64,
+                "aof_crash_evidence_sha256": "5" * 64,
+            }
+        )
+    elif mutation == "migration_provisional":
+        guard["cutover_mode"] = "v1_migration"
+        guard["candidate_run_id"] = "a" * 32
+    elif mutation == "production_zero_evidence":
+        guard["maximum_shape_sha256"] = "0" * 64
+    elif mutation == "redis_6":
+        guard["redis_version"] = "6.2.0"
+    elif mutation == "redis_8":
+        guard["redis_version"] = "8.0.0"
+    else:
+        raise FixtureError(f"unknown guard-core mutation {mutation!r}")
+    record(guard_core_fields(changed, prior))
+
+
+def run_guard_chain_mutation(
+    base_case: str,
+    mutation: str,
+    data: dict[str, object],
+    positive_results: dict[str, dict[str, object]],
+) -> None:
+    base = fixture_positive_case(data, base_case)
+    base_input = base.get("input")
+    if type(base_input) is not dict or base.get("kind") != "guard_chain":
+        raise FixtureError(f"guard-chain mutation base {base_case!r} is invalid")
+    changed = copy.deepcopy(base_input)
+    compatibility = changed.get("compatibility")
+    if type(compatibility) is not dict:
+        raise FixtureError("guard-chain compatibility input is invalid")
+    if mutation == "redis_config_disagreement":
+        compatibility["redis_config_sha256"] = "f" * 64
+    elif mutation == "zero_image_digest":
+        compatibility["spider_image"] = "sha256:" + "0" * 64
+    else:
+        raise FixtureError(f"unknown guard-chain mutation {mutation!r}")
+    guard_chain_result(changed, positive_results)
+
+
+def run_negative_case(
+    case: dict[str, object],
+    data: dict[str, object],
+    positive_results: dict[str, dict[str, object]],
+) -> None:
     name = model_text(case["name"])
     kind = model_text(case["kind"])
     case_input = case["input"]
@@ -2994,6 +3968,23 @@ def run_negative_case(case: dict[str, object], data: dict[str, object]) -> None:
             decision = changed["policy_decisions"][source["decision"]]  # type: ignore[index]
             decision["request_kind"] = case_input["value"]  # type: ignore[index]
             source_job_fields(source, changed)  # type: ignore[arg-type]
+        elif kind == "policy_group_boundary":
+            groups = generated_policy_groups_boundary(case_input)
+            validate_policy_groups(groups)
+        elif kind == "group_id":
+            validate_group_id(case_input["value"])
+        elif kind == "policy_group_binding":
+            run_policy_group_binding_mutation(model_text(case_input["mutation"]), data)
+        elif kind == "guard_core_mutation":
+            run_guard_core_mutation(
+                model_text(case_input["base_case"]), model_text(case_input["mutation"]),
+                data, positive_results,
+            )
+        elif kind == "guard_chain_mutation":
+            run_guard_chain_mutation(
+                model_text(case_input["base_case"]), model_text(case_input["mutation"]),
+                data, positive_results,
+            )
         elif kind == "discovery_depth":
             changed = copy.deepcopy(data)
             discovery = changed["output"]["discoveries"][0]  # type: ignore[index]
@@ -3019,6 +4010,8 @@ def run_negative_case(case: dict[str, object], data: dict[str, object]) -> None:
             reservation_id(data, changed)  # type: ignore[arg-type]
         elif kind == "output_mutation":
             run_output_mutation(model_text(case_input["mutation"]), data)
+        elif kind == "transcript_binding_mutation":
+            run_transcript_binding_mutation(case_input, data)
         elif kind == "source_shape":
             count = model_integer(case_input["count"])
             if count > MAX_SOURCE_JOBS:
@@ -3091,10 +4084,14 @@ def run_negative_case(case: dict[str, object], data: dict[str, object]) -> None:
         raise FixtureError(f"negative case {name!r}: accepted; expected {expected}")
 
 
-def verify_negatives(cases: list[object], data: dict[str, object]) -> None:
+def verify_negatives(
+    cases: list[object],
+    data: dict[str, object],
+    positive_results: dict[str, dict[str, object]],
+) -> None:
     for raw_case in cases:
         case = expect_object(raw_case, "negative case")
-        run_negative_case(case, data)
+        run_negative_case(case, data, positive_results)
 
 
 def compare(expected: object, actual: object, path: str) -> list[str]:
@@ -3142,7 +4139,7 @@ def main() -> int:
         if type(cases_value) is not list or type(negatives_value) is not list:
             raise FixtureError("validated case arrays changed type")
         cases = evaluate_cases(cases_value, data, root)
-        verify_negatives(negatives_value, data)
+        verify_negatives(negatives_value, data, cases)
         computed = {"expected": baseline, "cases": cases}
         if args.print_computed:
             print(json.dumps(computed, ensure_ascii=False, indent=2, sort_keys=True))

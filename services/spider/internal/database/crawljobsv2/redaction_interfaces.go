@@ -63,6 +63,11 @@ func (CanonicalOrigin) Format(state fmt.State, verb rune) {
 }
 func (CanonicalOrigin) MarshalText() ([]byte, error) { return redactedPrimitiveText() }
 func (CanonicalOrigin) LogValue() slog.Value         { return redactedLogValue("CanonicalOrigin") }
+func (ImageDigest) Format(state fmt.State, verb rune) {
+	formatRedacted(state, verb, redactedValue)
+}
+func (ImageDigest) MarshalText() ([]byte, error) { return redactedPrimitiveText() }
+func (ImageDigest) LogValue() slog.Value         { return redactedLogValue("ImageDigest") }
 
 func (Field) Format(state fmt.State, verb rune) {
 	formatRedacted(state, verb, redactedString("Field"))
@@ -172,6 +177,33 @@ func (SuccessfulDocumentRequest) MarshalText() ([]byte, error) {
 }
 func (SuccessfulDocumentRequest) LogValue() slog.Value {
 	return redactedLogValue("SuccessfulDocumentRequest")
+}
+func (DocumentTranscript) Format(state fmt.State, verb rune) {
+	formatRedacted(state, verb, redactedString("DocumentTranscript"))
+}
+func (DocumentTranscript) MarshalText() ([]byte, error) {
+	return redactedCompositeText("DocumentTranscript")
+}
+func (DocumentTranscript) LogValue() slog.Value {
+	return redactedLogValue("DocumentTranscript")
+}
+func (FinalDocumentWitness) Format(state fmt.State, verb rune) {
+	formatRedacted(state, verb, redactedString("FinalDocumentWitness"))
+}
+func (FinalDocumentWitness) MarshalText() ([]byte, error) {
+	return redactedCompositeText("FinalDocumentWitness")
+}
+func (FinalDocumentWitness) LogValue() slog.Value {
+	return redactedLogValue("FinalDocumentWitness")
+}
+func (RenderPolicyAuthorization) Format(state fmt.State, verb rune) {
+	formatRedacted(state, verb, redactedString("RenderPolicyAuthorization"))
+}
+func (RenderPolicyAuthorization) MarshalText() ([]byte, error) {
+	return redactedCompositeText("RenderPolicyAuthorization")
+}
+func (RenderPolicyAuthorization) LogValue() slog.Value {
+	return redactedLogValue("RenderPolicyAuthorization")
 }
 func (OutputContext) Format(state fmt.State, verb rune) {
 	formatRedacted(state, verb, redactedString("OutputContext"))
@@ -298,6 +330,13 @@ func (StartRequestResponse) MarshalText() ([]byte, error) {
 func (StartRequestResponse) LogValue() slog.Value {
 	return redactedLogValue("StartRequestResponse")
 }
+func (RequestIOPermit) Format(state fmt.State, verb rune) {
+	formatRedacted(state, verb, redactedString("RequestIOPermit"))
+}
+func (RequestIOPermit) MarshalText() ([]byte, error) {
+	return redactedCompositeText("RequestIOPermit")
+}
+func (RequestIOPermit) LogValue() slog.Value { return redactedLogValue("RequestIOPermit") }
 func (parsedResponse) Format(state fmt.State, verb rune) {
 	formatRedacted(state, verb, redactedString("parsedResponse"))
 }
@@ -305,3 +344,206 @@ func (parsedResponse) MarshalText() ([]byte, error) {
 	return redactedCompositeText("parsedResponse")
 }
 func (parsedResponse) LogValue() slog.Value { return redactedLogValue("parsedResponse") }
+
+func (transportAuthority) Format(state fmt.State, verb rune) {
+	formatRedacted(state, verb, redactedString("transportAuthority"))
+}
+func (transportAuthority) MarshalText() ([]byte, error) {
+	return redactedCompositeText("transportAuthority")
+}
+func (transportAuthority) LogValue() slog.Value {
+	return redactedLogValue("transportAuthority")
+}
+func (startRequestBinding) Format(state fmt.State, verb rune) {
+	formatRedacted(state, verb, redactedString("startRequestBinding"))
+}
+func (startRequestBinding) MarshalText() ([]byte, error) {
+	return redactedCompositeText("startRequestBinding")
+}
+func (startRequestBinding) LogValue() slog.Value {
+	return redactedLogValue("startRequestBinding")
+}
+func (requestIOAuthorityState) Format(state fmt.State, verb rune) {
+	formatRedacted(state, verb, redactedString("requestIOAuthorityState"))
+}
+func (requestIOAuthorityState) MarshalText() ([]byte, error) {
+	return redactedCompositeText("requestIOAuthorityState")
+}
+func (requestIOAuthorityState) LogValue() slog.Value {
+	return redactedLogValue("requestIOAuthorityState")
+}
+
+func (TransportGateInput) Format(state fmt.State, verb rune) {
+	formatRedacted(state, verb, redactedString("TransportGateInput"))
+}
+func (TransportGateInput) MarshalText() ([]byte, error) {
+	return redactedCompositeText("TransportGateInput")
+}
+func (TransportGateInput) LogValue() slog.Value {
+	return redactedLogValue("TransportGateInput")
+}
+func (TransportGate) Format(state fmt.State, verb rune) {
+	formatRedacted(state, verb, redactedString("TransportGate"))
+}
+func (TransportGate) MarshalText() ([]byte, error) {
+	return redactedCompositeText("TransportGate")
+}
+func (TransportGate) LogValue() slog.Value { return redactedLogValue("TransportGate") }
+func (OperationWireRequest) Format(state fmt.State, verb rune) {
+	formatRedacted(state, verb, redactedString("OperationWireRequest"))
+}
+func (OperationWireRequest) MarshalText() ([]byte, error) {
+	return redactedCompositeText("OperationWireRequest")
+}
+func (OperationWireRequest) LogValue() slog.Value {
+	return redactedLogValue("OperationWireRequest")
+}
+func (EvalSHARequest) Format(state fmt.State, verb rune) {
+	formatRedacted(state, verb, redactedString("EvalSHARequest"))
+}
+func (EvalSHARequest) MarshalText() ([]byte, error) {
+	return redactedCompositeText("EvalSHARequest")
+}
+func (EvalSHARequest) LogValue() slog.Value { return redactedLogValue("EvalSHARequest") }
+
+func (CompatibilityArtifactInput) Format(state fmt.State, verb rune) {
+	formatRedacted(state, verb, redactedString("CompatibilityArtifactInput"))
+}
+func (CompatibilityArtifactInput) MarshalText() ([]byte, error) {
+	return redactedCompositeText("CompatibilityArtifactInput")
+}
+func (CompatibilityArtifactInput) LogValue() slog.Value {
+	return redactedLogValue("CompatibilityArtifactInput")
+}
+func (CompatibilityArtifact) Format(state fmt.State, verb rune) {
+	formatRedacted(state, verb, redactedString("CompatibilityArtifact"))
+}
+func (CompatibilityArtifact) MarshalText() ([]byte, error) {
+	return redactedCompositeText("CompatibilityArtifact")
+}
+func (CompatibilityArtifact) LogValue() slog.Value {
+	return redactedLogValue("CompatibilityArtifact")
+}
+func (CompatibilityMarker) Format(state fmt.State, verb rune) {
+	formatRedacted(state, verb, redactedString("CompatibilityMarker"))
+}
+func (CompatibilityMarker) MarshalText() ([]byte, error) {
+	return redactedCompositeText("CompatibilityMarker")
+}
+func (CompatibilityMarker) LogValue() slog.Value {
+	return redactedLogValue("CompatibilityMarker")
+}
+func (GuardCoreInput) Format(state fmt.State, verb rune) {
+	formatRedacted(state, verb, redactedString("GuardCoreInput"))
+}
+func (GuardCoreInput) MarshalText() ([]byte, error) {
+	return redactedCompositeText("GuardCoreInput")
+}
+func (GuardCoreInput) LogValue() slog.Value { return redactedLogValue("GuardCoreInput") }
+func (GuardCore) Format(state fmt.State, verb rune) {
+	formatRedacted(state, verb, redactedString("GuardCore"))
+}
+func (GuardCore) MarshalText() ([]byte, error) { return redactedCompositeText("GuardCore") }
+func (GuardCore) LogValue() slog.Value         { return redactedLogValue("GuardCore") }
+func (ProvisionalGuardCore) Format(state fmt.State, verb rune) {
+	formatRedacted(state, verb, redactedString("ProvisionalGuardCore"))
+}
+func (ProvisionalGuardCore) MarshalText() ([]byte, error) {
+	return redactedCompositeText("ProvisionalGuardCore")
+}
+func (ProvisionalGuardCore) LogValue() slog.Value {
+	return redactedLogValue("ProvisionalGuardCore")
+}
+func (StoredCommitGuard) Format(state fmt.State, verb rune) {
+	formatRedacted(state, verb, redactedString("StoredCommitGuard"))
+}
+func (StoredCommitGuard) MarshalText() ([]byte, error) {
+	return redactedCompositeText("StoredCommitGuard")
+}
+func (StoredCommitGuard) LogValue() slog.Value {
+	return redactedLogValue("StoredCommitGuard")
+}
+func (LegacyRetirementRecordInput) Format(state fmt.State, verb rune) {
+	formatRedacted(state, verb, redactedString("LegacyRetirementRecordInput"))
+}
+func (LegacyRetirementRecordInput) MarshalText() ([]byte, error) {
+	return redactedCompositeText("LegacyRetirementRecordInput")
+}
+func (LegacyRetirementRecordInput) LogValue() slog.Value {
+	return redactedLogValue("LegacyRetirementRecordInput")
+}
+func (LegacyRetirementRecord) Format(state fmt.State, verb rune) {
+	formatRedacted(state, verb, redactedString("LegacyRetirementRecord"))
+}
+func (LegacyRetirementRecord) MarshalText() ([]byte, error) {
+	return redactedCompositeText("LegacyRetirementRecord")
+}
+func (LegacyRetirementRecord) LogValue() slog.Value {
+	return redactedLogValue("LegacyRetirementRecord")
+}
+func (AdminFreezeRecordInput) Format(state fmt.State, verb rune) {
+	formatRedacted(state, verb, redactedString("AdminFreezeRecordInput"))
+}
+func (AdminFreezeRecordInput) MarshalText() ([]byte, error) {
+	return redactedCompositeText("AdminFreezeRecordInput")
+}
+func (AdminFreezeRecordInput) LogValue() slog.Value {
+	return redactedLogValue("AdminFreezeRecordInput")
+}
+func (AdminFreezeRecord) Format(state fmt.State, verb rune) {
+	formatRedacted(state, verb, redactedString("AdminFreezeRecord"))
+}
+func (AdminFreezeRecord) MarshalText() ([]byte, error) {
+	return redactedCompositeText("AdminFreezeRecord")
+}
+func (AdminFreezeRecord) LogValue() slog.Value {
+	return redactedLogValue("AdminFreezeRecord")
+}
+func (DurabilityRecordInput) Format(state fmt.State, verb rune) {
+	formatRedacted(state, verb, redactedString("DurabilityRecordInput"))
+}
+func (DurabilityRecordInput) MarshalText() ([]byte, error) {
+	return redactedCompositeText("DurabilityRecordInput")
+}
+func (DurabilityRecordInput) LogValue() slog.Value {
+	return redactedLogValue("DurabilityRecordInput")
+}
+func (DurabilityRecord) Format(state fmt.State, verb rune) {
+	formatRedacted(state, verb, redactedString("DurabilityRecord"))
+}
+func (DurabilityRecord) MarshalText() ([]byte, error) {
+	return redactedCompositeText("DurabilityRecord")
+}
+func (DurabilityRecord) LogValue() slog.Value { return redactedLogValue("DurabilityRecord") }
+func (FirstRequestStartEvidence) Format(state fmt.State, verb rune) {
+	formatRedacted(state, verb, redactedString("FirstRequestStartEvidence"))
+}
+func (FirstRequestStartEvidence) MarshalText() ([]byte, error) {
+	return redactedCompositeText("FirstRequestStartEvidence")
+}
+func (FirstRequestStartEvidence) LogValue() slog.Value {
+	return redactedLogValue("FirstRequestStartEvidence")
+}
+func (FinalPageRecord) Format(state fmt.State, verb rune) {
+	formatRedacted(state, verb, redactedString("FinalPageRecord"))
+}
+func (FinalPageRecord) MarshalText() ([]byte, error) {
+	return redactedCompositeText("FinalPageRecord")
+}
+func (FinalPageRecord) LogValue() slog.Value { return redactedLogValue("FinalPageRecord") }
+func (FinalImageRecord) Format(state fmt.State, verb rune) {
+	formatRedacted(state, verb, redactedString("FinalImageRecord"))
+}
+func (FinalImageRecord) MarshalText() ([]byte, error) {
+	return redactedCompositeText("FinalImageRecord")
+}
+func (FinalImageRecord) LogValue() slog.Value { return redactedLogValue("FinalImageRecord") }
+func (ImageManifestRecord) Format(state fmt.State, verb rune) {
+	formatRedacted(state, verb, redactedString("ImageManifestRecord"))
+}
+func (ImageManifestRecord) MarshalText() ([]byte, error) {
+	return redactedCompositeText("ImageManifestRecord")
+}
+func (ImageManifestRecord) LogValue() slog.Value {
+	return redactedLogValue("ImageManifestRecord")
+}

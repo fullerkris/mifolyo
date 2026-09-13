@@ -2,14 +2,23 @@ package crawljobsv2
 
 import (
 	"bytes"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 	"runtime"
 	"testing"
 	"unicode/utf8"
+)
+
+const (
+	fixturePositiveCaseCount = 39
+	fixtureNegativeCaseCount = 139
+	fixtureInventoryDigest   = "56797748de64aa57618104bb5135d0300c9d192f41995e743ddb319219a248df"
 )
 
 type vectorTarget struct {
@@ -34,6 +43,61 @@ type vectorSourceJob struct {
 	GroupID     string `json:"group_id"`
 	RateScopeID string `json:"rate_scope_id"`
 	Decision    string `json:"decision"`
+}
+
+type vectorPolicyGroup struct {
+	GroupID           string `json:"group_id"`
+	RateScopeID       string `json:"rate_scope_id"`
+	RequestStartLimit uint64 `json:"request_start_limit"`
+	Concurrency       uint64 `json:"concurrency"`
+	IntervalMS        uint64 `json:"interval_ms"`
+}
+
+type vectorOutputRequest struct {
+	RequestKind      string `json:"request_kind"`
+	Target           string `json:"target"`
+	StartedAtMS      uint64 `json:"started_at_ms"`
+	JobRequestStarts string `json:"job_request_starts"`
+	RequestOrdinal   string `json:"request_ordinal"`
+}
+
+type vectorOutputContext struct {
+	SourceJobIndex                  int                   `json:"source_job_index"`
+	LeaseRequestStartsBaseline      string                `json:"lease_request_starts_baseline"`
+	TerminalRequestStartsGeneration string                `json:"terminal_request_starts_generation"`
+	Requests                        []vectorOutputRequest `json:"requests"`
+}
+
+func (context *vectorOutputContext) UnmarshalJSON(raw []byte) error {
+	type plainContext vectorOutputContext
+	var decoded plainContext
+	decoder := json.NewDecoder(bytes.NewReader(raw))
+	decoder.DisallowUnknownFields()
+	if err := decoder.Decode(&decoded); err != nil {
+		return err
+	}
+	var object map[string]json.RawMessage
+	if err := json.Unmarshal(raw, &object); err != nil {
+		return err
+	}
+	for _, field := range []string{"source_job_index", "lease_request_starts_baseline", "terminal_request_starts_generation", "requests"} {
+		if value, ok := object[field]; !ok || bytes.Equal(bytes.TrimSpace(value), []byte("null")) {
+			return fmt.Errorf("output_context missing required field %s", field)
+		}
+	}
+	var requests []map[string]json.RawMessage
+	if err := json.Unmarshal(object["requests"], &requests); err != nil {
+		return err
+	}
+	for index, request := range requests {
+		for _, field := range []string{"request_kind", "target", "started_at_ms", "job_request_starts", "request_ordinal"} {
+			if value, ok := request[field]; !ok || bytes.Equal(bytes.TrimSpace(value), []byte("null")) {
+				return fmt.Errorf("output_context request %d missing required field %s", index, field)
+			}
+		}
+	}
+	*context = vectorOutputContext(decoded)
+	return nil
 }
 
 type digestVectorCase struct {
@@ -66,15 +130,9 @@ type digestVectorFixture struct {
 	} `json:"identities"`
 	Targets         map[string]vectorTarget   `json:"targets"`
 	PolicyDecisions map[string]vectorDecision `json:"policy_decisions"`
-	PolicyGroups    []struct {
-		GroupID           string `json:"group_id"`
-		RateScopeID       string `json:"rate_scope_id"`
-		RequestStartLimit uint64 `json:"request_start_limit"`
-		Concurrency       uint64 `json:"concurrency"`
-		IntervalMS        uint64 `json:"interval_ms"`
-	} `json:"policy_groups"`
-	SourceJobs  []vectorSourceJob `json:"source_jobs"`
-	Reservation struct {
+	PolicyGroups    []vectorPolicyGroup       `json:"policy_groups"`
+	SourceJobs      []vectorSourceJob         `json:"source_jobs"`
+	Reservation     struct {
 		RequestOrdinal uint64 `json:"request_ordinal"`
 		Target         string `json:"target"`
 		Decision       string `json:"decision"`
@@ -86,15 +144,8 @@ type digestVectorFixture struct {
 		Target             string `json:"target"`
 		Decision           string `json:"decision"`
 	} `json:"try_claim"`
-	OutputContext struct {
-		SourceJobIndex int `json:"source_job_index"`
-		Requests       []struct {
-			RequestKind string `json:"request_kind"`
-			Target      string `json:"target"`
-			StartedAtMS uint64 `json:"started_at_ms"`
-		} `json:"requests"`
-	} `json:"output_context"`
-	Output struct {
+	OutputContext vectorOutputContext `json:"output_context"`
+	Output        struct {
 		Page struct {
 			NormalizedTarget   string `json:"normalized_target"`
 			HTML               string `json:"html"`
@@ -146,6 +197,16 @@ type digestVectorFixture struct {
 	NegativeVectors []digestVectorNegative `json:"negative_vectors"`
 }
 
+// newTestTransportAuthority is compiled only into this package's tests. Raw
+// arrays remain convenient fixture inputs without restoring an exported
+// production parser or claiming that caller data is transport authority.
+// Each call asserts a fresh local session; replays must reuse the returned value.
+func newTestTransportAuthority() transportAuthority {
+	authority := newTransportAuthority()
+	authority.requestIOSession = &requestIOAuthoritySession{knownUnused: true}
+	return authority
+}
+
 func loadDigestVectorFixture(t *testing.T) digestVectorFixture {
 	t.Helper()
 	_, currentFile, _, ok := runtime.Caller(0)
@@ -157,54 +218,104 @@ func loadDigestVectorFixture(t *testing.T) digestVectorFixture {
 	if err != nil {
 		t.Fatalf("read shared vectors: %v", err)
 	}
-	if !json.Valid(contents) {
-		t.Fatal("shared vector file is not valid JSON")
+	fixture, err := decodeDigestVectorFixtureBytes(contents)
+	if err != nil {
+		t.Fatalf("decode shared vectors: %v", err)
 	}
-	if !utf8.Valid(contents) {
-		t.Fatal("shared vector file is not valid UTF-8")
-	}
+	validateFixturePolicyBindings(t, fixture)
+	return fixture
+}
+
+// decodeDigestVectorFixtureBytes performs a token pass before ordinary
+// unmarshalling so encoding/json's last-key-wins behavior can never conceal a
+// duplicate at any object nesting depth.
+func decodeDigestVectorFixtureBytes(contents []byte) (digestVectorFixture, error) {
 	var fixture digestVectorFixture
+	if !utf8.Valid(contents) {
+		return fixture, errors.New("shared vector file is not valid UTF-8")
+	}
+	if err := validateFixtureJSONDocument(contents); err != nil {
+		return fixture, err
+	}
 	decoder := json.NewDecoder(bytes.NewReader(contents))
 	decoder.DisallowUnknownFields()
 	if err := decoder.Decode(&fixture); err != nil {
-		t.Fatalf("decode shared vectors: %v", err)
+		return fixture, err
 	}
 	if err := requireJSONEOF(decoder); err != nil {
-		t.Fatalf("decode shared vectors: %v", err)
+		return fixture, err
 	}
 	if fixture.FixtureVersion != 2 {
-		t.Fatalf("fixture version = %d, want 2", fixture.FixtureVersion)
+		return fixture, fmt.Errorf("fixture version = %d, want 2", fixture.FixtureVersion)
 	}
 	if fixture.SuiteName != "crawl-jobs-v2-digest-conformance" {
-		t.Fatalf("fixture suite = %q", fixture.SuiteName)
+		return fixture, fmt.Errorf("fixture suite = %q", fixture.SuiteName)
 	}
 	if fixture.BaselineCaseName == "" {
-		t.Fatal("fixture baseline case name is empty")
+		return fixture, errors.New("fixture baseline case name is empty")
 	}
 	if len(fixture.Cases) == 0 || len(fixture.NegativeVectors) == 0 {
-		t.Fatalf("fixture case arrays must be non-empty: positive=%d negative=%d", len(fixture.Cases), len(fixture.NegativeVectors))
+		return fixture, fmt.Errorf("fixture case arrays must be non-empty: positive=%d negative=%d", len(fixture.Cases), len(fixture.NegativeVectors))
 	}
 	seen := map[string]struct{}{fixture.BaselineCaseName: {}}
 	for _, vector := range fixture.Cases {
 		if vector.Kind == "" || !rawJSONObject(vector.Input) || !rawJSONObject(vector.Expected) {
-			t.Fatalf("positive fixture case %q has an invalid kind/input/expected shape", vector.Name)
+			return fixture, fmt.Errorf("positive fixture case %q has an invalid kind/input/expected shape", vector.Name)
 		}
 	}
 	for _, vector := range fixture.NegativeVectors {
 		if vector.Kind == "" || !rawJSONObject(vector.Input) || !validFixtureRejectionClass(vector.ExpectedRejectionClass) {
-			t.Fatalf("negative fixture case %q has an invalid kind/input/rejection shape", vector.Name)
+			return fixture, fmt.Errorf("negative fixture case %q has an invalid kind/input/rejection shape", vector.Name)
 		}
 	}
 	for _, vector := range appendCaseNames(fixture.Cases, fixture.NegativeVectors) {
 		if vector == "" {
-			t.Fatal("fixture contains an empty case name")
+			return fixture, errors.New("fixture contains an empty case name")
 		}
 		if _, duplicate := seen[vector]; duplicate {
-			t.Fatalf("fixture contains duplicate case name %q", vector)
+			return fixture, fmt.Errorf("fixture contains duplicate case name %q", vector)
 		}
 		seen[vector] = struct{}{}
 	}
-	return fixture
+	if len(fixture.Cases) != fixturePositiveCaseCount || len(fixture.NegativeVectors) != fixtureNegativeCaseCount {
+		return fixture, fmt.Errorf(
+			"fixture inventory count changed: positive=%d/%d negative=%d/%d",
+			len(fixture.Cases), fixturePositiveCaseCount, len(fixture.NegativeVectors), fixtureNegativeCaseCount,
+		)
+	}
+	if digest := digestFixtureInventory(fixture); digest != fixtureInventoryDigest {
+		return fixture, fmt.Errorf("fixture inventory digest = %s, want %s", digest, fixtureInventoryDigest)
+	}
+	return fixture, nil
+}
+
+func digestFixtureInventory(fixture digestVectorFixture) string {
+	hash := sha256.New()
+	_, _ = hash.Write([]byte("B\x00" + fixture.BaselineCaseName + "\n"))
+	for _, vector := range fixture.Cases {
+		_, _ = hash.Write([]byte("P\x00" + vector.Name + "\x00" + vector.Kind + "\n"))
+	}
+	for _, vector := range fixture.NegativeVectors {
+		_, _ = hash.Write([]byte(
+			"N\x00" + vector.Name + "\x00" + vector.Kind + "\x00" + vector.ExpectedRejectionClass + "\n",
+		))
+	}
+	return hex.EncodeToString(hash.Sum(nil))
+}
+
+func validateFixtureJSONDocument(contents []byte) error {
+	decoder := json.NewDecoder(bytes.NewReader(contents))
+	decoder.UseNumber()
+	if err := consumeStrictJSONValue(decoder); err != nil {
+		return err
+	}
+	if _, err := decoder.Token(); err != io.EOF {
+		if err == nil {
+			return errors.New("unexpected trailing JSON value")
+		}
+		return err
+	}
+	return nil
 }
 
 func rawJSONObject(raw json.RawMessage) bool {
@@ -247,6 +358,57 @@ func appendCaseNames(cases []digestVectorCase, negatives []digestVectorNegative)
 	return names
 }
 
+func TestDigestVectorFixtureDecoderRejectsDuplicateKeysBeforeUnmarshal(t *testing.T) {
+	_, currentFile, _, ok := runtime.Caller(0)
+	if !ok {
+		t.Fatal("locate fixture test source")
+	}
+	path := filepath.Clean(filepath.Join(filepath.Dir(currentFile), "../../../../../contracts/crawl-jobs-v2/digest-vectors.json"))
+	contents, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	trimmed := bytes.TrimSpace(contents)
+	if len(trimmed) == 0 || trimmed[len(trimmed)-1] != '}' {
+		t.Fatal("shared fixture is not an object")
+	}
+	for _, field := range []string{"cases", "negative_vectors"} {
+		t.Run("trailing_"+field, func(t *testing.T) {
+			mutated := append([]byte(nil), trimmed[:len(trimmed)-1]...)
+			mutated = append(mutated, []byte(",\n\""+field+"\": []\n}")...)
+			if _, err := decodeDigestVectorFixtureBytes(mutated); !errors.Is(err, errFixtureDuplicateJSONKey) {
+				t.Fatalf("duplicate trailing %s error = %v", field, err)
+			}
+		})
+	}
+	t.Run("nested_identity", func(t *testing.T) {
+		needle := []byte("\"fence\": 7,\n    \"rate_scope_id\"")
+		replacement := []byte("\"fence\": 7, \"fence\": 8,\n    \"rate_scope_id\"")
+		if bytes.Count(contents, needle) != 1 {
+			t.Fatal("fixture fence mutation point is not unique")
+		}
+		mutated := bytes.Replace(contents, needle, replacement, 1)
+		if _, err := decodeDigestVectorFixtureBytes(mutated); !errors.Is(err, errFixtureDuplicateJSONKey) {
+			t.Fatalf("nested duplicate error = %v", err)
+		}
+	})
+	t.Run("truncated_case_inventory", func(t *testing.T) {
+		fixture, err := decodeDigestVectorFixtureBytes(contents)
+		if err != nil {
+			t.Fatalf("decode valid fixture: %v", err)
+		}
+		fixture.Cases = fixture.Cases[:1]
+		fixture.NegativeVectors = fixture.NegativeVectors[:1]
+		mutated, err := json.Marshal(fixture)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, err := decodeDigestVectorFixtureBytes(mutated); err == nil {
+			t.Fatal("fixture decoder accepted a one-positive/one-negative replacement inventory")
+		}
+	})
+}
+
 func vectorLease(t *testing.T, fixture digestVectorFixture) LeaseIdentity {
 	t.Helper()
 	runID, err := ParseRunID(fixture.Identities.RunID)
@@ -285,6 +447,42 @@ func vectorTargetValue(t *testing.T, fixture digestVectorFixture, name string) R
 	return RequestTarget{URLID: jobID, CanonicalURL: vector.CanonicalURL}
 }
 
+func vectorPolicyGroupsValue(t testing.TB, fixture digestVectorFixture) []PolicyGroup {
+	t.Helper()
+	groups := make([]PolicyGroup, 0, len(fixture.PolicyGroups))
+	for _, vector := range fixture.PolicyGroups {
+		groupID, err := ParseGroupID(vector.GroupID)
+		if err != nil {
+			t.Fatal(err)
+		}
+		rateScopeID, err := ParseRateScopeID(vector.RateScopeID)
+		if err != nil {
+			t.Fatal(err)
+		}
+		groupScopeID, err := DeriveGroupScopeID(rateScopeID)
+		if err != nil {
+			t.Fatal(err)
+		}
+		groups = append(groups, PolicyGroup{
+			GroupID: groupID, RateScopeID: rateScopeID, GroupScopeID: groupScopeID,
+			RequestStartLimit: vector.RequestStartLimit, Concurrency: vector.Concurrency,
+			IntervalMS: vector.IntervalMS,
+		})
+	}
+	return groups
+}
+
+func vectorRunPolicyAuthority(t *testing.T, fixture digestVectorFixture, renderPolicySHA256 Digest) RunPolicyAuthority {
+	t.Helper()
+	return newAuthenticatedTestRunPolicyAuthority(
+		t,
+		vectorLease(t, fixture).RunID,
+		mustFixtureDigest(t, fixture.Identities.CrawlPolicyDigest),
+		renderPolicySHA256,
+		vectorPolicyGroupsValue(t, fixture),
+	)
+}
+
 func vectorDecisionValue(t *testing.T, fixture digestVectorFixture, name string) PolicyDecision {
 	t.Helper()
 	vector, ok := fixture.PolicyDecisions[name]
@@ -312,6 +510,9 @@ func vectorDecisionValue(t *testing.T, fixture digestVectorFixture, name string)
 	if err != nil {
 		t.Fatal(err)
 	}
+	if err := ValidatePreRunPolicyDecisionGroupBinding(decision, vectorPolicyGroupsValue(t, fixture)); err != nil {
+		t.Fatalf("decision %q does not match the standalone policy-group fixture: %v", name, err)
+	}
 	return decision
 }
 
@@ -334,10 +535,17 @@ func vectorSourceJobValue(t *testing.T, fixture digestVectorFixture, index int) 
 	if err != nil {
 		t.Fatal(err)
 	}
-	return SourceJob{
+	job := SourceJob{
 		JobID: target.URLID, CanonicalURL: target.CanonicalURL, ScoreText: score, Depth: vector.Depth,
 		GroupID: groupID, RateScopeID: rateScopeID, Decision: vectorDecisionValue(t, fixture, vector.Decision),
 	}
+	authority := vectorRunPolicyAuthority(t, fixture, plainSHA256(testDenyAllRenderPolicyArtifact()))
+	if err := ValidateRunPinnedPolicyBindings(authority, RunPinnedPolicyBindings{
+		SourceJobs: []SourceJob{job},
+	}); err != nil {
+		t.Fatalf("source job %d is not bound to the run-pinned policy groups: %v", index, err)
+	}
+	return job
 }
 
 func vectorReservationValue(t *testing.T, fixture digestVectorFixture, claim bool) ReservationIntent {
@@ -368,17 +576,83 @@ func vectorOutputContextWith(t *testing.T, fixture digestVectorFixture, requestC
 	if requestCount < 1 || requestCount > len(fixture.OutputContext.Requests) {
 		t.Fatalf("output-context request count %d out of bounds", requestCount)
 	}
+	if requestCount < len(fixture.OutputContext.Requests) {
+		fixture.OutputContext.Requests = fixture.OutputContext.Requests[:requestCount]
+		fixture.OutputContext.TerminalRequestStartsGeneration = fixture.OutputContext.Requests[requestCount-1].JobRequestStarts
+	}
+	context, err := loadOutputContext(t, fixture, enabledRenderRules, nil)
+	if err != nil {
+		t.Fatalf("construct vector output context: %v", err)
+	}
+	return context
+}
+
+func vectorFinalDocumentProjection(t *testing.T, fixture digestVectorFixture) []string {
+	t.Helper()
+	requests := fixture.OutputContext.Requests
+	for index := len(requests) - 1; index >= 0; index-- {
+		lastDocument := requests[index]
+		if lastDocument.RequestKind != "document" && lastDocument.RequestKind != "redirect" {
+			continue
+		}
+		finalTarget := vectorTargetValue(t, fixture, lastDocument.Target)
+		finalDigest, err := DeriveTargetDigest(finalTarget)
+		if err != nil {
+			t.Fatal(err)
+		}
+		lease := vectorLease(t, fixture)
+		return []string{
+			canonicalDecimal(lastDocument.StartedAtMS), canonicalDecimal(uint64(lease.Fence)),
+			string(finalTarget.URLID), finalTarget.CanonicalURL, string(finalDigest),
+			fixture.OutputContext.TerminalRequestStartsGeneration, canonicalDecimal(requests[len(requests)-1].StartedAtMS),
+			fixture.OutputContext.LeaseRequestStartsBaseline, "leased", string(lease.OwnerID), string(lease.Token),
+			canonicalDecimal(uint64(lease.Fence)), "",
+		}
+	}
+	t.Fatal("fixture transcript has no document-bearing request")
+	return nil
+}
+
+// This loader passes explicit snapshots through the production authority APIs.
+// In particular, a missing start never renumbers later counts or ordinals.
+func loadOutputContext(t *testing.T, fixture digestVectorFixture, enabledRenderRules []string, witnessProjection []string) (OutputContext, error) {
+	t.Helper()
 	lease := vectorLease(t, fixture)
 	source := vectorSourceJobValue(t, fixture, fixture.OutputContext.SourceJobIndex)
 	crawlPolicyDigest, err := ParseDigest(fixture.Identities.CrawlPolicyDigest)
 	if err != nil {
-		t.Fatal(err)
+		return OutputContext{}, err
 	}
+	projection := vectorFinalDocumentProjection(t, fixture)
+	finalTarget := RequestTarget{URLID: JobID(projection[2]), CanonicalURL: projection[3]}
+	var renderPolicyArtifact []byte
+	switch len(enabledRenderRules) {
+	case 0:
+		renderPolicyArtifact = testDenyAllRenderPolicyArtifact()
+	case 1:
+		renderPolicyArtifact = testRenderPolicyArtifactForTarget(t, enabledRenderRules[0], true, finalTarget)
+	default:
+		t.Fatal("fixture output context supports at most one enabled render rule")
+	}
+	renderPolicySHA256 := plainSHA256(renderPolicyArtifact)
+	if len(enabledRenderRules) != 0 {
+		// Historical rendered digest vectors use the crawl-policy canary as a
+		// synthetic render digest and predate checked-in artifact bytes.
+		renderPolicySHA256 = crawlPolicyDigest
+	}
+	runPolicy := vectorRunPolicyAuthority(t, fixture, renderPolicySHA256)
+	authority := newTestTransportAuthority()
+	deliveryAttempts := "1"
+	if fixture.OutputContext.LeaseRequestStartsBaseline != "0" {
+		// Nonzero B in these fixtures represents one prior I/O-bearing lease.
+		deliveryAttempts = "2"
+	}
+
 	var transcript DocumentTranscript
-	for index, vector := range fixture.OutputContext.Requests[:requestCount] {
+	for index, vector := range fixture.OutputContext.Requests {
 		kind, err := ParseRequestKind(vector.RequestKind)
 		if err != nil {
-			t.Fatal(err)
+			return OutputContext{}, err
 		}
 		target := vectorTargetValue(t, fixture, vector.Target)
 		decision, err := NewPolicyDecision(PolicyDecisionInput{
@@ -388,64 +662,62 @@ func vectorOutputContextWith(t *testing.T, fixture digestVectorFixture, requestC
 			OriginConcurrency: source.Decision.OriginConcurrency, OriginIntervalMS: source.Decision.OriginIntervalMS,
 		})
 		if err != nil {
-			t.Fatal(err)
+			return OutputContext{}, err
+		}
+		ordinal, err := parseResponseUint(vector.RequestOrdinal)
+		if err != nil {
+			return OutputContext{}, err
 		}
 		intent := ReservationIntent{
-			Lease: lease, RequestOrdinal: uint64(index + 1), Target: target,
+			Lease: lease, RequestOrdinal: ordinal, Target: target,
 			CrawlPolicyDigest: crawlPolicyDigest, Decision: decision,
 		}
-		reservationID, err := DeriveReservationID(intent)
+		reservationID, err := DeriveReservationID(runPolicy, intent)
 		if err != nil {
-			t.Fatal(err)
+			return OutputContext{}, err
 		}
-		starts := uint64(index + 1)
-		response, err := ParseStartRequestResponse(intent, []string{
+		response, err := authority.parseStartRequestResponse(runPolicy, intent, []string{
 			string(StatusStarted), canonicalDecimal(vector.StartedAtMS), string(reservationID),
-			canonicalDecimal(vector.StartedAtMS), "1", canonicalDecimal(starts),
-			canonicalDecimal(starts), canonicalDecimal(starts), "1",
+			canonicalDecimal(vector.StartedAtMS), deliveryAttempts, vector.JobRequestStarts,
+			vector.JobRequestStarts, vector.JobRequestStarts, "1",
 		})
 		if err != nil {
-			t.Fatal(err)
+			return OutputContext{}, err
 		}
 		permit, err := response.IOPermit()
 		if err != nil {
-			t.Fatal(err)
+			return OutputContext{}, err
 		}
 		evidence, err := NewSuccessfulDocumentRequest(permit)
 		if err != nil {
-			t.Fatal(err)
+			return OutputContext{}, err
 		}
 		if index == 0 {
-			transcript, err = NewDocumentTranscript(source, evidence)
+			transcript, err = NewDocumentTranscript(runPolicy, source, evidence)
 		} else {
-			transcript, err = transcript.AppendRedirect(evidence)
+			transcript, err = transcript.AppendSuccessfulRequest(evidence)
 		}
 		if err != nil {
-			t.Fatal(err)
+			return OutputContext{}, err
 		}
 	}
-	last := fixture.OutputContext.Requests[requestCount-1]
-	finalTarget := vectorTargetValue(t, fixture, last.Target)
-	finalDigest, err := DeriveTargetDigest(finalTarget)
-	if err != nil {
-		t.Fatal(err)
+	if witnessProjection == nil {
+		witnessProjection = projection
 	}
-	witness, err := ParseFinalDocumentWitness(lease, []string{
-		canonicalDecimal(last.StartedAtMS), canonicalDecimal(uint64(lease.Fence)),
-		string(finalTarget.URLID), finalTarget.CanonicalURL, string(finalDigest),
-	})
+	witness, err := authority.parseFinalDocumentWitness(lease, witnessProjection)
 	if err != nil {
-		t.Fatal(err)
+		return OutputContext{}, err
 	}
-	renderPolicy, err := NewRenderPolicyAuthorization(crawlPolicyDigest, crawlPolicyDigest, enabledRenderRules)
+	var renderPolicy RenderPolicyAuthorization
+	if len(enabledRenderRules) == 0 {
+		renderPolicy, err = NewRenderPolicyAuthorization(runPolicy, renderPolicyArtifact)
+	} else {
+		renderPolicy = newNonAuthoritativeDigestVectorRenderProjection(t, runPolicy, renderPolicyArtifact)
+	}
 	if err != nil {
-		t.Fatal(err)
+		return OutputContext{}, err
 	}
-	context, err := NewOutputContext(source, transcript, witness, renderPolicy)
-	if err != nil {
-		t.Fatal(err)
-	}
-	return context
+	return NewOutputContext(runPolicy, source, transcript, witness, renderPolicy)
 }
 
 func vectorOutputValue(t *testing.T, fixture digestVectorFixture) CrawlOutput {
@@ -489,8 +761,34 @@ func vectorOutputValue(t *testing.T, fixture digestVectorFixture) CrawlOutput {
 			Decision: vectorDecisionValue(t, fixture, vector.Decision),
 		})
 	}
-	return CrawlOutput{
+	output := CrawlOutput{
 		Page: page, Outlinks: append([]string(nil), fixture.Output.Outlinks...),
 		Images: images, Discoveries: discoveries,
+	}
+	authority := vectorRunPolicyAuthority(t, fixture, plainSHA256(testDenyAllRenderPolicyArtifact()))
+	if err := ValidateRunPinnedPolicyBindings(authority, RunPinnedPolicyBindings{
+		Discoveries: output.Discoveries,
+	}); err != nil {
+		t.Fatalf("output discoveries are not bound to the run-pinned policy groups: %v", err)
+	}
+	return output
+}
+
+func validateFixturePolicyBindings(t *testing.T, fixture digestVectorFixture) {
+	t.Helper()
+	decisions := make([]PolicyDecision, 0, len(fixture.PolicyDecisions))
+	for name := range fixture.PolicyDecisions {
+		decisions = append(decisions, vectorDecisionValue(t, fixture, name))
+	}
+	sources := make([]SourceJob, 0, len(fixture.SourceJobs))
+	for index := range fixture.SourceJobs {
+		sources = append(sources, vectorSourceJobValue(t, fixture, index))
+	}
+	discoveries := vectorOutputValue(t, fixture).Discoveries
+	authority := vectorRunPolicyAuthority(t, fixture, plainSHA256(testDenyAllRenderPolicyArtifact()))
+	if err := ValidateRunPinnedPolicyBindings(authority, RunPinnedPolicyBindings{
+		Decisions: decisions, SourceJobs: sources, Discoveries: discoveries,
+	}); err != nil {
+		t.Fatalf("fixture policy bindings: %v", err)
 	}
 }

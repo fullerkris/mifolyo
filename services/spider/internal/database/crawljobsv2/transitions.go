@@ -46,7 +46,14 @@ type AbortStageTransitionInput struct {
 	CommitID Digest
 }
 
-func DeriveRejectReadyTransitionID(input RejectReadyTransitionInput) (Digest, error) {
+func DeriveRejectReadyTransitionID(runPolicy RunPolicyAuthority, input RejectReadyTransitionInput) (Digest, error) {
+	binding, err := validateSourceJobsAgainstRunPolicy(runPolicy, []SourceJob{input.Job})
+	if err != nil {
+		return "", err
+	}
+	if input.RunID != binding.runID {
+		return "", ErrPolicyGroupBindingMismatch
+	}
 	if err := ValidateTransitionReason(OperationRejectReady, input.Reason); err != nil {
 		return "", err
 	}
@@ -58,7 +65,18 @@ func DeriveRejectReadyTransitionID(input RejectReadyTransitionInput) (Digest, er
 	return deriveTransitionID(OperationRejectReady, input.RunID, input.Job.JobID, 0, "", input.Reason, payload)
 }
 
-func DeriveTryClaimTransitionID(input TryClaimTransitionInput) (Digest, error) {
+func DeriveTryClaimTransitionID(runPolicy RunPolicyAuthority, input TryClaimTransitionInput) (Digest, error) {
+	binding, err := validateSourceJobsAgainstRunPolicy(runPolicy, []SourceJob{input.Job})
+	if err != nil {
+		return "", err
+	}
+	intentBinding, err := validateReservationIntentAgainstRunPolicy(runPolicy, input.InitialIntent)
+	if err != nil {
+		return "", err
+	}
+	if !sameRunPolicyBinding(binding, intentBinding) || input.Lease.RunID != binding.runID {
+		return "", ErrPolicyGroupBindingMismatch
+	}
 	if err := validateLeaseIdentity(input.Lease); err != nil {
 		return "", err
 	}
@@ -75,6 +93,12 @@ func DeriveTryClaimTransitionID(input TryClaimTransitionInput) (Digest, error) {
 	if input.InitialIntent.Decision.RequestKind != RequestRobots && input.InitialIntent.Decision.RequestKind != RequestDocument {
 		return "", ErrInvalidRequestKind
 	}
+	if input.InitialIntent.Decision.RequestKind == RequestDocument {
+		jobTarget := RequestTarget{URLID: input.Job.JobID, CanonicalURL: input.Job.CanonicalURL}
+		if input.InitialIntent.Target != jobTarget || input.InitialIntent.Decision != input.Job.Decision {
+			return "", ErrDigestInputMismatch
+		}
+	}
 	if input.InitialIntent.Decision.GroupID != input.Job.GroupID ||
 		input.InitialIntent.Decision.RateScopeID != input.Job.RateScopeID ||
 		input.InitialIntent.Decision.GroupScopeID != input.Job.Decision.GroupScopeID ||
@@ -86,7 +110,7 @@ func DeriveTryClaimTransitionID(input TryClaimTransitionInput) (Digest, error) {
 		input.InitialIntent.Decision.OriginIntervalMS != input.Job.Decision.OriginIntervalMS {
 		return "", ErrDigestInputMismatch
 	}
-	intentFields, err := reservationIntentFields(input.InitialIntent)
+	intentFields, err := reservationIntentFields(runPolicy, input.InitialIntent)
 	if err != nil {
 		return "", err
 	}
@@ -136,7 +160,7 @@ func DeriveCompleteNoOutputTransitionID(input CompleteNoOutputTransitionInput) (
 }
 
 func DeriveAbortStageTransitionID(input AbortStageTransitionInput) (Digest, error) {
-	if err := validateDigest(input.CommitID); err != nil {
+	if err := validateNonzeroDigest(input.CommitID); err != nil {
 		return "", err
 	}
 	return deriveLeaseTransitionID(
@@ -195,8 +219,8 @@ func deriveLeaseTransitionID(operation OperationName, lease LeaseIdentity, reaso
 	return deriveTransitionID(operation, lease.RunID, lease.JobID, lease.Fence, lease.Token, reason, payload)
 }
 
-func reservationIntentFields(intent ReservationIntent) (Record, error) {
-	if _, err := DeriveReservationID(intent); err != nil {
+func reservationIntentFields(runPolicy RunPolicyAuthority, intent ReservationIntent) (Record, error) {
+	if _, err := DeriveReservationID(runPolicy, intent); err != nil {
 		return nil, err
 	}
 	decisionDigest, err := DerivePolicyDecisionDigest(intent.Decision)

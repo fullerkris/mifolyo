@@ -3,21 +3,22 @@ FROM python:3.13-slim
 # Set working directory
 WORKDIR /app
 
-# Set NLTK environment so it saves data in a known location
-ENV NLTK_DATA=/usr/local/nltk_data
+ENV PYTHONDONTWRITEBYTECODE=1
 
 # Copy and install dependencies
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Download required NLTK resources ahead of time
-RUN python3 -m nltk.downloader -d /usr/local/nltk_data stopwords punkt punkt_tab
-
 # Copy the rest of the application code
 COPY . .
 
-# Optional: add NLTK path in case your code runs before downloading
-ENV PYTHONPATH=/usr/local/nltk_data
+# Private builds only: redistribution remains blocked by the release workflow.
+RUN python -B -c "import importlib.util; assert importlib.util.find_spec('nltk') is None, 'Full NLTK must not be installed'" \
+    && python -B verify_nlp.py --source-only \
+    && mkdir /tmp/indexer-nlp \
+    && python -B tools/vendor_nlp.py --cache /tmp/indexer-nlp --fetch --provision-data \
+    && python -B verify_nlp.py \
+    && rm -rf /tmp/indexer-nlp
 
 # Run the application
 CMD ["python", "./main.py"]

@@ -4,3 +4,13 @@
 /contracts/render-policy-v1.schema.json text eol=lf
 /contracts/reddit-export-v1.schema.json text eol=lf
 /services/seed-importer/reddit-export-v1.schema.json text eol=lf
+
+# NLP provenance and generated-source fingerprints require stable LF bytes.
+/services/indexer/nlp/** text eol=lf
+/services/indexer/tools/vendor_nlp.py text eol=lf
+/services/indexer/tools/generate_nlp_reference.py text eol=lf
+/services/indexer/tests/fixtures/nlp-v1.json text eol=lf
+# Preserve intentional upstream formatting in these exact, hash-bound copies.
+/services/indexer/nlp/provenance/DATASET-LICENSES.md whitespace=-blank-at-eol
+/services/indexer/nlp/provenance/LICENSE-OVERVIEW.md whitespace=-blank-at-eol
+/services/indexer/nlp/provenance/punkt_tab.xml whitespace=-blank-at-eol

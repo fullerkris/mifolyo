@@ -2,12 +2,12 @@ import re
 import py3langid as langid
 
 from bs4 import BeautifulSoup, SoupStrainer
-from nltk.tokenize import word_tokenize
+from nlp import word_tokenize
 from utils.constants import FILE_TYPES, POPULAR_DOMAINS
 
 from . import nlp_utils
 
-# Initialize NLTK resources
+# Load verified local resources; missing data must never become empty index terms.
 STOP_WORDS = nlp_utils.initialize_nlp()
 stop_words_set = set(STOP_WORDS)
 

@@ -1,0 +1,1368 @@
+{
+  "schema_version": 2,
+  "provenance": {
+    "reference": "NLTK 3.10.3 word_tokenize(text), default English/Punkt, preserve_line=False",
+    "source_commit": "303f6e2ba8e4548a5f54fd65d86bb5c9a949f1db",
+    "data_commit": "550b6625bcef1f2abff2ff770a5a0d272c9c6b2a",
+    "archives": {
+      "nltk-source.tar.gz": {
+        "url": "https://codeload.github.com/nltk/nltk/tar.gz/303f6e2ba8e4548a5f54fd65d86bb5c9a949f1db",
+        "sha256": "b3e1f694b8b83f5dab29669ebeb48d329e571f0b39f2e863f825903985f23972"
+      },
+      "punkt_tab.zip": {
+        "url": "https://raw.githubusercontent.com/nltk/nltk_data/550b6625bcef1f2abff2ff770a5a0d272c9c6b2a/packages/tokenizers/punkt_tab.zip",
+        "sha256": "e57f64187974277726a3417ca6f181ec5403676c717672eef6a748a7b20e0106"
+      },
+      "stopwords.zip": {
+        "url": "https://raw.githubusercontent.com/nltk/nltk_data/550b6625bcef1f2abff2ff770a5a0d272c9c6b2a/packages/corpora/stopwords.zip",
+        "sha256": "48c0e52d8b52546e827f53761fb30300c0ab94f70660d28bd65ba0a86270946b"
+      }
+    },
+    "source_files_sha256": {
+      "nltk/VERSION": "f87966285da0832df96612532e25b6dc834ae86a4b3aa7b82941f65b0a1a6f58",
+      "nltk/__init__.py": "5f53940d5b9fd8c14e6a2cbd5197323e8497c702860044e0928aac4e6231a4ca",
+      "nltk/tokenize/__init__.py": "2820a93987df61fd4f6b224f8a328e938ed0361c49c3b7c1beed02cae3ca342f",
+      "nltk/tokenize/punkt.py": "b85d1b51d1357d8c56d9739cb3d7975837ad12721c3702fae6facb47eb583b48",
+      "nltk/tokenize/destructive.py": "7dfe473eccf8430cd03266039297f59bf7a543e2038b36c0a3929b52b89c42f7",
+      "nltk/tokenize/treebank.py": "0804dfa9d849747c75ed2fa05be0018da409bd7e0bcf5ba42d48645d5c6f4ec2",
+      "nltk/tabdata.py": "65bf48fda65e11ecdcc654f38ec1775858cc7a6b5fe0fd70ac23d75b690e59e2",
+      "nltk/data.py": "cda75896c3639541f3c3b811d647354dc5829774c2f201a7c942896f5cb99dc8",
+      "nltk/corpus/reader/wordlist.py": "7597f9e1f21a257ba4368eb9ca7e9a00d993c4a383181408435357287bba12ba",
+      "LICENSE.txt": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    "data_files_sha256": {
+      "tokenizers/punkt_tab/english/abbrev_types.txt": "92a3e070f43d9b4c5534758ca40ad7343b04e7e29bfe0c2eb658a39445a4f779",
+      "tokenizers/punkt_tab/english/collocations.tab": "8e2da1225e4dd2cc9dba261ee231ccb134859e21b46006e7f472c5ee269af0cf",
+      "tokenizers/punkt_tab/english/ortho_context.tab": "4bbcca25ed3d3f06c02402abf8419b9f033b8adc06e7b482eca4e45f81a5dc4c",
+      "tokenizers/punkt_tab/english/sent_starters.txt": "f3f8535483e1dba487241b764945168123bca3209a9645e59acd1225dc76edac",
+      "corpora/stopwords/english": "f6d005956f407dbc6ea32e5ff0c7e8e6f71488d3239b9023efdc7fc139d6375b"
+    },
+    "generator": "services/indexer/tools/generate_nlp_reference.py",
+    "generator_sha256": "e2745c8f7aeb2b69cb98fedc634afe9c06ff982dab2e8af0c3cdd8d82746a2f0",
+    "tools": {
+      "python": "3.12.7",
+      "unicode_database": "15.0.0",
+      "dependencies": {
+        "defusedxml": "0.7.1",
+        "click": "8.1.8",
+        "joblib": "1.4.2",
+        "regex": "2024.11.6",
+        "tqdm": "4.67.0"
+      }
+    },
+    "isolation": {
+      "network": "socket audit events and subprocess execution denied before NLTK import",
+      "downloads": "nltk.download and Downloader.download blocked",
+      "pickle": "pickle/_pickle load(s) and pickle.find_class blocked",
+      "data_path": "only the verified five English plaintext assets",
+      "application_imports": false
+    },
+    "reference_crosschecks": {
+      "preserve_line_true_differs": [
+        "straight_contractions",
+        "curly_contractions",
+        "abbreviations",
+        "initials_and_titles",
+        "sentence_final_periods",
+        "quotes",
+        "whitespace_and_sentences"
+      ],
+      "treebank_even_with_punkt_differs": [
+        "straight_contractions",
+        "curly_contractions",
+        "sentence_final_periods",
+        "quotes"
+      ]
+    }
+  },
+  "english_stopwords": {
+    "count": 198,
+    "sorted_set_sha256": "5cb3b9dd23c8f9dac2e8ad1bb653c21d2bbaf7bef8790ca4286c54b0398ab3a8",
+    "canonicalization": "UTF-8 of LF-joined sorted unique words, with a final LF",
+    "resource": "corpora/stopwords/english"
+  },
+  "token_cases": [
+    {
+      "id": "empty",
+      "input_parts": [
+        ""
+      ],
+      "raw_tokens": [],
+      "filtered_tokens": []
+    },
+    {
+      "id": "stopwords_only",
+      "input_parts": [
+        "I me my myself we our ours ourselves the AND is to not no nor"
+      ],
+      "raw_tokens": [
+        "I",
+        "me",
+        "my",
+        "myself",
+        "we",
+        "our",
+        "ours",
+        "ourselves",
+        "the",
+        "AND",
+        "is",
+        "to",
+        "not",
+        "no",
+        "nor"
+      ],
+      "filtered_tokens": []
+    },
+    {
+      "id": "duplicate_order_and_case",
+      "input_parts": [
+        "Echo echo ECHO beta Beta alpha echo."
+      ],
+      "raw_tokens": [
+        "Echo",
+        "echo",
+        "ECHO",
+        "beta",
+        "Beta",
+        "alpha",
+        "echo",
+        "."
+      ],
+      "filtered_tokens": [
+        {
+          "token": "echo",
+          "repeat": 3
+        },
+        {
+          "token": "beta",
+          "repeat": 2
+        },
+        "alpha",
+        "echo"
+      ]
+    },
+    {
+      "id": "straight_contractions",
+      "input_parts": [
+        "Can't won't shouldn't isn't I'd I'll we're they've you've don't. Cannot gonna wanna gotta lemme gimme d'ye more'n 'tis 'twas."
+      ],
+      "raw_tokens": [
+        "Ca",
+        "n't",
+        "wo",
+        "n't",
+        "should",
+        "n't",
+        "is",
+        "n't",
+        "I",
+        "'d",
+        "I",
+        "'ll",
+        "we",
+        "'re",
+        "they",
+        "'ve",
+        "you",
+        "'ve",
+        "do",
+        "n't",
+        ".",
+        "Can",
+        "not",
+        "gon",
+        "na",
+        "wan",
+        "na",
+        "got",
+        "ta",
+        "lem",
+        "me",
+        "gim",
+        "me",
+        "d",
+        "'ye",
+        "more",
+        "'n",
+        "'",
+        "tis",
+        "'",
+        "twas",
+        "."
+      ],
+      "filtered_tokens": [
+        "ca",
+        "wo",
+        "gon",
+        "na",
+        "wan",
+        "na",
+        "got",
+        "ta",
+        "lem",
+        "gim",
+        "tis",
+        "twas"
+      ]
+    },
+    {
+      "id": "curly_contractions",
+      "input_parts": [
+        "Can’t won’t shouldn’t isn’t I’d I’ll we’re they’ve you’ve don’t. O’Reilly’s café."
+      ],
+      "raw_tokens": [
+        "Can",
+        "’",
+        "t",
+        "won",
+        "’",
+        "t",
+        "shouldn",
+        "’",
+        "t",
+        "isn",
+        "’",
+        "t",
+        "I",
+        "’",
+        "d",
+        "I",
+        "’",
+        "ll",
+        "we",
+        "’",
+        "re",
+        "they",
+        "’",
+        "ve",
+        "you",
+        "’",
+        "ve",
+        "don",
+        "’",
+        "t",
+        ".",
+        "O",
+        "’",
+        "Reilly",
+        "’",
+        "s",
+        "café",
+        "."
+      ],
+      "filtered_tokens": [
+        "reilly",
+        "café"
+      ]
+    },
+    {
+      "id": "abbreviations",
+      "input_parts": [
+        "Dr. Ada met Prof. Birch at 5 p.m. in the U.S. They spoke. Next sentence ends."
+      ],
+      "raw_tokens": [
+        "Dr.",
+        "Ada",
+        "met",
+        "Prof.",
+        "Birch",
+        "at",
+        "5",
+        "p.m.",
+        "in",
+        "the",
+        "U.S",
+        ".",
+        "They",
+        "spoke",
+        ".",
+        "Next",
+        "sentence",
+        "ends",
+        "."
+      ],
+      "filtered_tokens": [
+        "ada",
+        "met",
+        "birch",
+        "5",
+        "spoke",
+        "next",
+        "sentence",
+        "ends"
+      ]
+    },
+    {
+      "id": "initials_and_titles",
+      "input_parts": [
+        "Mr. J. Smith met Ms. A. Jones. E.g. examples followed, i.e. more words. Jan. 3 was cold."
+      ],
+      "raw_tokens": [
+        "Mr.",
+        "J.",
+        "Smith",
+        "met",
+        "Ms.",
+        "A.",
+        "Jones",
+        ".",
+        "E.g",
+        ".",
+        "examples",
+        "followed",
+        ",",
+        "i.e",
+        ".",
+        "more",
+        "words",
+        ".",
+        "Jan.",
+        "3",
+        "was",
+        "cold",
+        "."
+      ],
+      "filtered_tokens": [
+        "smith",
+        "met",
+        "jones",
+        "examples",
+        "followed",
+        "words",
+        "3",
+        "cold"
+      ]
+    },
+    {
+      "id": "sentence_final_periods",
+      "input_parts": [
+        "First sentence. Second sentence! Third? Tail. ... Wait.. Final."
+      ],
+      "raw_tokens": [
+        "First",
+        "sentence",
+        ".",
+        "Second",
+        "sentence",
+        "!",
+        "Third",
+        "?",
+        "Tail",
+        ".",
+        "...",
+        "Wait",
+        "..",
+        "Final",
+        "."
+      ],
+      "filtered_tokens": [
+        "first",
+        "sentence",
+        "second",
+        "sentence",
+        "third",
+        "tail",
+        "wait",
+        "final"
+      ]
+    },
+    {
+      "id": "numbers",
+      "input_parts": [
+        "Costs $3.88, 1,234.50 or 42; -7 +8 3/4 12:30 50% ½ ² ١٢٣ １２３."
+      ],
+      "raw_tokens": [
+        "Costs",
+        "$",
+        "3.88",
+        ",",
+        "1,234.50",
+        "or",
+        "42",
+        ";",
+        "-7",
+        "+8",
+        "3/4",
+        "12:30",
+        "50",
+        "%",
+        "½",
+        "²",
+        "١٢٣",
+        "１２３",
+        "."
+      ],
+      "filtered_tokens": [
+        "costs",
+        "42",
+        "50",
+        "½",
+        "²",
+        "١٢٣",
+        "１２３"
+      ]
+    },
+    {
+      "id": "quotes",
+      "input_parts": [
+        "He said, \"Hello.\" 'Goodbye,' she said. ‘single’ “double” «bonjour» ``ready''."
+      ],
+      "raw_tokens": [
+        "He",
+        "said",
+        ",",
+        "``",
+        "Hello",
+        ".",
+        "''",
+        "'",
+        "Goodbye",
+        ",",
+        "'",
+        "she",
+        "said",
+        ".",
+        "‘",
+        "single",
+        "’",
+        "“",
+        "double",
+        "”",
+        "«",
+        "bonjour",
+        "»",
+        "``",
+        "ready",
+        "''",
+        "."
+      ],
+      "filtered_tokens": [
+        "said",
+        "hello",
+        "goodbye",
+        "said",
+        "single",
+        "double",
+        "bonjour",
+        "ready"
+      ]
+    },
+    {
+      "id": "punctuation",
+      "input_parts": [
+        "@user #tag & * (round) [square] {brace} a/b a\\b x=y a+b <angle> ... !!! ??? — – …"
+      ],
+      "raw_tokens": [
+        "@",
+        "user",
+        "#",
+        "tag",
+        "&",
+        "*",
+        "(",
+        "round",
+        ")",
+        "[",
+        "square",
+        "]",
+        "{",
+        "brace",
+        "}",
+        "a/b",
+        "a\\b",
+        "x=y",
+        "a+b",
+        "<",
+        "angle",
+        ">",
+        "...",
+        {
+          "token": "!",
+          "repeat": 3
+        },
+        {
+          "token": "?",
+          "repeat": 3
+        },
+        "—",
+        "–",
+        "…"
+      ],
+      "filtered_tokens": [
+        "user",
+        "tag",
+        "round",
+        "square",
+        "brace",
+        "angle"
+      ]
+    },
+    {
+      "id": "hyphens_underscores",
+      "input_parts": [
+        "state-of-the-art foo_bar foo--bar end- -start under_score A-B x_y 10-year-old."
+      ],
+      "raw_tokens": [
+        "state-of-the-art",
+        "foo_bar",
+        "foo",
+        "--",
+        "bar",
+        "end-",
+        "-start",
+        "under_score",
+        "A-B",
+        "x_y",
+        "10-year-old",
+        "."
+      ],
+      "filtered_tokens": [
+        "foo",
+        "bar"
+      ]
+    },
+    {
+      "id": "unicode_normalization",
+      "input_parts": [
+        "Café café CAFÉ Å Å naïve naïve İ İstanbul Straße STRASSE é é."
+      ],
+      "raw_tokens": [
+        "Café",
+        "café",
+        "CAFÉ",
+        "Å",
+        "Å",
+        "naïve",
+        "naïve",
+        "İ",
+        "İstanbul",
+        "Straße",
+        "STRASSE",
+        "é",
+        "é",
+        "."
+      ],
+      "filtered_tokens": [
+        {
+          "token": "café",
+          "repeat": 2
+        },
+        "å",
+        "naïve",
+        "straße",
+        "strasse",
+        "é"
+      ]
+    },
+    {
+      "id": "non_ascii_alnum",
+      "input_parts": [
+        "中文 東京 Москва Ελληνικά العربية हिन्दी 한글 Ⅳ ① 𝔘𝔫𝔦𝔠𝔬𝔡𝔢 abc１２３ emoji🙂."
+      ],
+      "raw_tokens": [
+        "中文",
+        "東京",
+        "Москва",
+        "Ελληνικά",
+        "العربية",
+        "हिन्दी",
+        "한글",
+        "Ⅳ",
+        "①",
+        "𝔘𝔫𝔦𝔠𝔬𝔡𝔢",
+        "abc１２３",
+        "emoji🙂",
+        "."
+      ],
+      "filtered_tokens": [
+        "中文",
+        "東京",
+        "москва",
+        "ελληνικά",
+        "العربية",
+        "한글",
+        "ⅳ",
+        "①",
+        "𝔘𝔫𝔦𝔠𝔬𝔡𝔢",
+        "abc１２３"
+      ]
+    },
+    {
+      "id": "whitespace_and_sentences",
+      "input_parts": [
+        "Amber\tbirch\r\nCedar delta elm.\n\nFir grows. Oak stays."
+      ],
+      "raw_tokens": [
+        "Amber",
+        "birch",
+        "Cedar",
+        "delta",
+        "elm",
+        ".",
+        "Fir",
+        "grows",
+        ".",
+        "Oak",
+        "stays",
+        "."
+      ],
+      "filtered_tokens": [
+        "amber",
+        "birch",
+        "cedar",
+        "delta",
+        "elm",
+        "fir",
+        "grows",
+        "oak",
+        "stays"
+      ]
+    }
+  ],
+  "chunk_cases": [
+    {
+      "id": "empty_chunks",
+      "input_parts": [
+        ""
+      ],
+      "chunk_size": 10000,
+      "character_count": 0,
+      "utf8_byte_count": 0,
+      "raw_tokens": [],
+      "unchunked_tokens": [],
+      "filtered_tokens": []
+    },
+    {
+      "id": "exact_10000_characters",
+      "input_parts": [
+        {
+          "text": " ",
+          "repeat": 9995
+        },
+        "alpha"
+      ],
+      "chunk_size": 10000,
+      "character_count": 10000,
+      "utf8_byte_count": 10000,
+      "raw_tokens": [
+        "alpha"
+      ],
+      "unchunked_tokens": [
+        "alpha"
+      ],
+      "filtered_tokens": [
+        "alpha"
+      ]
+    },
+    {
+      "id": "split_word",
+      "input_parts": [
+        {
+          "text": " ",
+          "repeat": 9997
+        },
+        "alphabet soup."
+      ],
+      "chunk_size": 10000,
+      "character_count": 10011,
+      "utf8_byte_count": 10011,
+      "raw_tokens": [
+        "alp",
+        "habet",
+        "soup",
+        "."
+      ],
+      "unchunked_tokens": [
+        "alphabet",
+        "soup",
+        "."
+      ],
+      "filtered_tokens": [
+        "alp",
+        "habet",
+        "soup"
+      ]
+    },
+    {
+      "id": "split_straight_contraction",
+      "input_parts": [
+        {
+          "text": " ",
+          "repeat": 9997
+        },
+        "can't leave."
+      ],
+      "chunk_size": 10000,
+      "character_count": 10009,
+      "utf8_byte_count": 10009,
+      "raw_tokens": [
+        "can",
+        "'t",
+        "leave",
+        "."
+      ],
+      "unchunked_tokens": [
+        "ca",
+        "n't",
+        "leave",
+        "."
+      ],
+      "filtered_tokens": [
+        "leave"
+      ]
+    },
+    {
+      "id": "split_curly_contraction",
+      "input_parts": [
+        {
+          "text": " ",
+          "repeat": 9997
+        },
+        "can’t leave."
+      ],
+      "chunk_size": 10000,
+      "character_count": 10009,
+      "utf8_byte_count": 10011,
+      "raw_tokens": [
+        "can",
+        "’",
+        "t",
+        "leave",
+        "."
+      ],
+      "unchunked_tokens": [
+        "can",
+        "’",
+        "t",
+        "leave",
+        "."
+      ],
+      "filtered_tokens": [
+        "leave"
+      ]
+    },
+    {
+      "id": "multibyte_character_not_byte_boundary",
+      "input_parts": [
+        {
+          "text": "　",
+          "repeat": 9999
+        },
+        "éclair 世界."
+      ],
+      "chunk_size": 10000,
+      "character_count": 10009,
+      "utf8_byte_count": 30012,
+      "raw_tokens": [
+        "é",
+        "clair",
+        "世界",
+        "."
+      ],
+      "unchunked_tokens": [
+        "éclair",
+        "世界",
+        "."
+      ],
+      "filtered_tokens": [
+        "é",
+        "clair",
+        "世界"
+      ]
+    },
+    {
+      "id": "decomposed_character_boundary",
+      "input_parts": [
+        {
+          "text": " ",
+          "repeat": 9999
+        },
+        "élan café."
+      ],
+      "chunk_size": 10000,
+      "character_count": 10010,
+      "utf8_byte_count": 10012,
+      "raw_tokens": [
+        "e",
+        "́lan",
+        "café",
+        "."
+      ],
+      "unchunked_tokens": [
+        "élan",
+        "café",
+        "."
+      ],
+      "filtered_tokens": [
+        "e",
+        "café"
+      ]
+    },
+    {
+      "id": "abbreviation_on_boundary",
+      "input_parts": [
+        {
+          "text": " ",
+          "repeat": 9997
+        },
+        "Dr. Ada left. Next."
+      ],
+      "chunk_size": 10000,
+      "character_count": 10016,
+      "utf8_byte_count": 10016,
+      "raw_tokens": [
+        "Dr",
+        ".",
+        "Ada",
+        "left",
+        ".",
+        "Next",
+        "."
+      ],
+      "unchunked_tokens": [
+        "Dr.",
+        "Ada",
+        "left",
+        ".",
+        "Next",
+        "."
+      ],
+      "filtered_tokens": [
+        "dr",
+        "ada",
+        "left",
+        "next"
+      ]
+    }
+  ],
+  "html_cases": [
+    {
+      "id": "static_paragraphs",
+      "html_parts": [
+        "<html><head><title>Not metadata</title><meta name=\"title\" content=\"Fallback title\"><meta property=\"og:title\" content=\"Synthetic title\"><meta name=\"description\" content=\"Fallback description\"><meta property=\"og:description\" content=\"Synthetic description\"></head><body><article><p>Teaser echoes.</p></article><main><x-copy>Visible catalog.</x-copy><p>Café café [citation] can't 42.</p><script>script secret</script><style>style secret</style><noscript>noscript secret</noscript><template>template secret</template><svg>svg secret</svg><div hidden>hidden secret</div><div aria-hidden=\"true\">aria secret</div></main><footer><p>Footer echoes.</p></footer></body></html>"
+      ],
+      "rendered": false,
+      "page_text_parts": [
+        "Teaser echoes. Café café  can't 42. Footer echoes."
+      ],
+      "title": "Synthetic title",
+      "description": "Synthetic description",
+      "language": "en",
+      "raw_tokens": [
+        "Teaser",
+        "echoes",
+        ".",
+        "Café",
+        "café",
+        "ca",
+        "n't",
+        "42",
+        ".",
+        "Footer",
+        "echoes",
+        "."
+      ],
+      "expected": {
+        "title": "Synthetic title",
+        "description": "Synthetic description",
+        "summary_parts": [
+          "Teaser ",
+          "echoes. ",
+          "Café ",
+          "café ",
+          "can't ",
+          "42. ",
+          "Footer ",
+          "echoes."
+        ],
+        "text": [
+          "teaser",
+          "echoes",
+          {
+            "token": "café",
+            "repeat": 2
+          },
+          "ca",
+          "42",
+          "footer",
+          "echoes"
+        ],
+        "language": "en"
+      },
+      "language_sample_parts": [
+        "Teaser ",
+        "echoes. ",
+        "Café ",
+        "café ",
+        "can't ",
+        "42. ",
+        "Footer ",
+        "echoes."
+      ]
+    },
+    {
+      "id": "rendered_semantic_and_hidden",
+      "html_parts": [
+        "<html><head><title>Not metadata</title><meta name=\"title\" content=\"Fallback title\"><meta property=\"og:title\" content=\"Synthetic title\"><meta name=\"description\" content=\"Fallback description\"><meta property=\"og:description\" content=\"Synthetic description\"></head><body><article><p>Teaser echoes.</p></article><main><x-copy>Visible catalog.</x-copy><p>Café café [citation] can't 42.</p><script>script secret</script><style>style secret</style><noscript>noscript secret</noscript><template>template secret</template><svg>svg secret</svg><div hidden>hidden secret</div><div aria-hidden=\"true\">aria secret</div></main><footer><p>Footer echoes.</p></footer></body></html>"
+      ],
+      "rendered": true,
+      "page_text_parts": [
+        "Visible catalog. Café café  can't 42."
+      ],
+      "title": "Synthetic title",
+      "description": "Synthetic description",
+      "language": "en",
+      "raw_tokens": [
+        "Visible",
+        "catalog",
+        ".",
+        "Café",
+        "café",
+        "ca",
+        "n't",
+        "42",
+        "."
+      ],
+      "expected": {
+        "title": "Synthetic title",
+        "description": "Synthetic description",
+        "summary_parts": [
+          "Visible ",
+          "catalog. ",
+          "Café ",
+          "café ",
+          "can't ",
+          "42."
+        ],
+        "text": [
+          "visible",
+          "catalog",
+          {
+            "token": "café",
+            "repeat": 2
+          },
+          "ca",
+          "42"
+        ],
+        "language": "en"
+      },
+      "language_sample_parts": [
+        "Visible ",
+        "catalog. ",
+        "Café ",
+        "café ",
+        "can't ",
+        "42."
+      ]
+    },
+    {
+      "id": "summary_499",
+      "html_parts": [
+        "<p>",
+        {
+          "text": "café ",
+          "repeat": 498
+        },
+        "boundary</p>"
+      ],
+      "rendered": false,
+      "page_text_parts": [
+        {
+          "text": "café ",
+          "repeat": 498
+        },
+        "boundary"
+      ],
+      "title": null,
+      "description": null,
+      "language": "en",
+      "raw_tokens": [
+        {
+          "token": "café",
+          "repeat": 498
+        },
+        "boundary"
+      ],
+      "expected": {
+        "title": null,
+        "description": null,
+        "summary_parts": [
+          {
+            "text": "café ",
+            "repeat": 498
+          },
+          "boundary"
+        ],
+        "text": [
+          {
+            "token": "café",
+            "repeat": 498
+          },
+          "boundary"
+        ],
+        "language": "en"
+      },
+      "language_sample_parts": [
+        {
+          "text": "café ",
+          "repeat": 200
+        }
+      ]
+    },
+    {
+      "id": "summary_500",
+      "html_parts": [
+        "<p>",
+        {
+          "text": "café ",
+          "repeat": 499
+        },
+        "boundary</p>"
+      ],
+      "rendered": false,
+      "page_text_parts": [
+        {
+          "text": "café ",
+          "repeat": 499
+        },
+        "boundary"
+      ],
+      "title": null,
+      "description": null,
+      "language": "en",
+      "raw_tokens": [
+        {
+          "token": "café",
+          "repeat": 499
+        },
+        "boundary"
+      ],
+      "expected": {
+        "title": null,
+        "description": null,
+        "summary_parts": [
+          {
+            "text": "café ",
+            "repeat": 499
+          },
+          "boundary"
+        ],
+        "text": [
+          {
+            "token": "café",
+            "repeat": 499
+          },
+          "boundary"
+        ],
+        "language": "en"
+      },
+      "language_sample_parts": [
+        {
+          "text": "café ",
+          "repeat": 200
+        }
+      ]
+    },
+    {
+      "id": "summary_501",
+      "html_parts": [
+        "<p>",
+        {
+          "text": "café ",
+          "repeat": 499
+        },
+        "boundary beyond</p>"
+      ],
+      "rendered": true,
+      "page_text_parts": [
+        {
+          "text": "café ",
+          "repeat": 499
+        },
+        "boundary beyond"
+      ],
+      "title": null,
+      "description": null,
+      "language": "en",
+      "raw_tokens": [
+        {
+          "token": "café",
+          "repeat": 499
+        },
+        "boundary",
+        "beyond"
+      ],
+      "expected": {
+        "title": null,
+        "description": null,
+        "summary_parts": [
+          {
+            "text": "café ",
+            "repeat": 499
+          },
+          "boundary"
+        ],
+        "text": [
+          {
+            "token": "café",
+            "repeat": 499
+          },
+          "boundary",
+          "beyond"
+        ],
+        "language": "en"
+      },
+      "language_sample_parts": [
+        {
+          "text": "café ",
+          "repeat": 200
+        }
+      ]
+    },
+    {
+      "id": "static_without_paragraphs",
+      "html_parts": [
+        "<title>No fallback</title><main>Ignored words.</main>"
+      ],
+      "rendered": false,
+      "page_text_parts": [
+        ""
+      ],
+      "title": null,
+      "description": null,
+      "language": "en",
+      "raw_tokens": [],
+      "expected": {
+        "title": null,
+        "description": null,
+        "summary_parts": [],
+        "text": [],
+        "language": "en"
+      },
+      "language_sample_parts": []
+    },
+    {
+      "id": "stopword_html",
+      "html_parts": [
+        "<p>The and or is to not.</p>"
+      ],
+      "rendered": false,
+      "page_text_parts": [
+        "The and or is to not."
+      ],
+      "title": null,
+      "description": null,
+      "language": "en",
+      "raw_tokens": [
+        "The",
+        "and",
+        "or",
+        "is",
+        "to",
+        "not",
+        "."
+      ],
+      "expected": {
+        "title": null,
+        "description": null,
+        "summary_parts": [
+          "The ",
+          "and ",
+          "or ",
+          "is ",
+          "to ",
+          "not."
+        ],
+        "text": [],
+        "language": "en"
+      },
+      "language_sample_parts": [
+        "The ",
+        "and ",
+        "or ",
+        "is ",
+        "to ",
+        "not."
+      ]
+    },
+    {
+      "id": "non_english_rendered",
+      "html_parts": [
+        "<main>Bonjour café monde.</main>"
+      ],
+      "rendered": true,
+      "page_text_parts": [
+        "Bonjour café monde."
+      ],
+      "title": null,
+      "description": null,
+      "language": "fr",
+      "raw_tokens": [
+        "Bonjour",
+        "café",
+        "monde",
+        "."
+      ],
+      "expected": {
+        "title": null,
+        "description": null,
+        "summary_parts": [
+          "Bonjour ",
+          "café ",
+          "monde."
+        ],
+        "text": [
+          "bonjour",
+          "café",
+          "monde"
+        ],
+        "language": "fr"
+      },
+      "language_sample_parts": [
+        "Bonjour ",
+        "café ",
+        "monde."
+      ]
+    },
+    {
+      "id": "postings_duplicates",
+      "html_parts": [
+        "<p>Echo echo ECHO beta Beta café can't.</p>"
+      ],
+      "rendered": false,
+      "page_text_parts": [
+        "Echo echo ECHO beta Beta café can't."
+      ],
+      "title": null,
+      "description": null,
+      "language": "en",
+      "raw_tokens": [
+        "Echo",
+        "echo",
+        "ECHO",
+        "beta",
+        "Beta",
+        "café",
+        "ca",
+        "n't",
+        "."
+      ],
+      "expected": {
+        "title": null,
+        "description": null,
+        "summary_parts": [
+          "Echo ",
+          "echo ",
+          "ECHO ",
+          "beta ",
+          "Beta ",
+          "café ",
+          "can't."
+        ],
+        "text": [
+          {
+            "token": "echo",
+            "repeat": 3
+          },
+          {
+            "token": "beta",
+            "repeat": 2
+          },
+          "café",
+          "ca"
+        ],
+        "language": "en"
+      },
+      "language_sample_parts": [
+        "Echo ",
+        "echo ",
+        "ECHO ",
+        "beta ",
+        "Beta ",
+        "café ",
+        "can't."
+      ]
+    },
+    {
+      "id": "html_chunk_split_word",
+      "html_parts": [
+        "<p>",
+        {
+          "text": "the ",
+          "repeat": 2499
+        },
+        "alphabet soup.</p>"
+      ],
+      "rendered": false,
+      "page_text_parts": [
+        {
+          "text": "the ",
+          "repeat": 2499
+        },
+        "alphabet soup."
+      ],
+      "title": null,
+      "description": null,
+      "language": "en",
+      "raw_tokens": [
+        {
+          "token": "the",
+          "repeat": 2499
+        },
+        "alph",
+        "abet",
+        "soup",
+        "."
+      ],
+      "expected": {
+        "title": null,
+        "description": null,
+        "summary_parts": [
+          {
+            "text": "the ",
+            "repeat": 499
+          },
+          "the"
+        ],
+        "text": [
+          "alph",
+          "abet",
+          "soup"
+        ],
+        "language": "en"
+      },
+      "language_sample_parts": [
+        {
+          "text": "the ",
+          "repeat": 250
+        }
+      ]
+    }
+  ],
+  "postings_cases": [
+    {
+      "id": "repeated_url_boosts",
+      "html_case": "postings_duplicates",
+      "url": "https://echo.example.org/echo/echo/new/new",
+      "url_tokens": [
+        "https",
+        "echo",
+        "example",
+        "echo",
+        "echo",
+        "new",
+        "new"
+      ],
+      "keywords": {
+        "echo": 375000,
+        "beta": 2,
+        "café": 1,
+        "ca": 1,
+        "https": 10,
+        "example": 10,
+        "new": 500
+      }
+    }
+  ]
+}

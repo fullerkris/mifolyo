@@ -4,5 +4,4 @@ requests
 pymongo
 pillow
 redis
-nltk
 lxml

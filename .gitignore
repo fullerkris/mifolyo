@@ -41,6 +41,8 @@ __pycache__
 # Large local datasets
 /data/*
 !/data/.gitkeep
+# NLP data redistribution rights remain unclarified; never commit corpus bytes.
+/services/indexer/nlp/data/
 
 # Rust
 debug/

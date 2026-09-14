@@ -1,0 +1,427 @@
+{
+  "adaptations": [
+    "Preserve exact upstream file legal headers; add prominent local modification notice.",
+    "Select only listed AST nodes using original source slices, including decorators; no AST unparse or regex rewrites.",
+    "Replace broad module/class overview docstrings with inference-only descriptions; remove unused standalone attribute docstrings.",
+    "Replace imports with only re/string/defaultdict/Iterator/Match; remove TokenizerI base classes.",
+    "PunktBaseClass.__init__(params) sets only _params, default PunktLanguageVars and PunktToken; remove training-capable sentence constructor.",
+    "NLTKWordTokenizer.tokenize accepts only text; remove return_str warning and convert_parentheses branches/constant and replace their docstring; default executable statements unchanged.",
+    "Remove dead commented-out dump, optional-parenthesis and CONTRACTIONS4 code from retained function bodies.",
+    "Keep second-pass REASON constants still referenced by unchanged inference return statements; remove the unused debug default reason.",
+    "Local wrapper implements fixed, checksum-verified UTF-8/LF tables instead of nltk.data/tabdata; no arbitrary-file loader retained.",
+    "Local orthographic dict.__missing__ returns zero without inserting user words; observationally identical read-only inference lookups to defaultdict(int)."
+  ],
+  "advisory_disposition": {
+    "ids": [
+      "PYSEC-2026-3740",
+      "GHSA-8mgp-746c-j5xp",
+      "CVE-2026-81726"
+    ],
+    "limitation": "Not an upstream patch or blanket vulnerability-free claim. pip-audit does not scan this source; run unchanged dependency audit AND independent source verifier.",
+    "rationale": "Their complete parser/tagger/classifier modules are absent. Adjacent Punkt model file load/save/dump and legacy pickle APIs also absent. Only fixed bundled paths are read by local wrapper.",
+    "reference": "https://github.com/nltk/nltk/security/advisories/GHSA-8mgp-746c-j5xp",
+    "removed_affected_apis": [
+      "TransitionParser.train",
+      "TransitionParser.parse",
+      "AveragedPerceptron.save",
+      "AveragedPerceptron.load",
+      "PerceptronTagger.save_to_json",
+      "save_maxent_params"
+    ],
+    "status": "affected_code_not_present"
+  },
+  "data_license": "NOASSERTION",
+  "data_policy": {
+    "approved_scope": "private build/test provisioning and offline runtime",
+    "corpus_bytes_in_git": false,
+    "data_and_image_distribution": "blocked_pending_licensing_review",
+    "legal_clearance": false,
+    "private_provisioning": "approved_by_project_owner",
+    "redistribution_review": "unresolved"
+  },
+  "distribution_approved": false,
+  "files": {
+    "NOTICE": {
+      "bytes": 2700,
+      "sha256": "465bf048fb1c105b4bece074ce09eb06c3cbdfe25cde01f085c126fc9acdbf66"
+    },
+    "README.md": {
+      "bytes": 14228,
+      "sha256": "b8f160c59bb2134d19b03972b000e734c20f463a703ff4d1a72c198d2e263fe5"
+    },
+    "__init__.py": {
+      "bytes": 5450,
+      "sha256": "017ab86ea362a793e92d12a34a947199f82466179c9560a53148a0ddb526c311"
+    },
+    "_asset_hashes.py": {
+      "bytes": 1114,
+      "sha256": "cf6e1ccc2a9dc61a0beea866ae1669e1d338c4c2bc4f37aab4b29d6bb09173a8"
+    },
+    "_destructive.py": {
+      "bytes": 4083,
+      "sha256": "96f7249eff23b35215be9efb3636308914fd0b419bda09cf6b6b4359149b10db"
+    },
+    "_punkt.py": {
+      "bytes": 24182,
+      "sha256": "66e3efe118c93135ec0a8f562211e60220cc17093714463546aa4d3b2cc0958c"
+    },
+    "licenses/LICENSE.NLTK": {
+      "bytes": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    "licenses/LICENSE.nltk_data": {
+      "bytes": 11320,
+      "sha256": "8d030ab5afc58f0b6a1f4207c12fd9553de6da2294efede65a0c58f9a6495fcc"
+    },
+    "provenance/DATASET-LICENSES.md": {
+      "bytes": 9910,
+      "sha256": "4285f61badbbdc755811f1f5a61e3dd341a516ff2343490819b019fd8f674ff9"
+    },
+    "provenance/LICENSE-OVERVIEW.md": {
+      "bytes": 3365,
+      "sha256": "8115f9aadc98ec981082621265a88a05c8b132c82c458b32d52e541129d61ecf"
+    },
+    "provenance/data-index.json": {
+      "bytes": 2332,
+      "sha256": "0aa4413de55cf0892e3a7958cf3060f2e922a5427cad0cb83ac1c59f3910e432"
+    },
+    "provenance/punkt_tab.xml": {
+      "bytes": 313,
+      "sha256": "d8ad712174bbd31a3c1dc424d92d232919e5453c7e520616affbcce4b66e3401"
+    },
+    "provenance/stopwords.xml": {
+      "bytes": 191,
+      "sha256": "25e36f0dbd1307814bda2af5b56c24d06a4d6592d769a6476b70ebb778edab0d"
+    }
+  },
+  "inventory_anchor": "component.json SHA-256 is pinned independently in ../verify_nlp.py; the inventory does not self-hash.",
+  "kind": "in-repository source subset; NOT a PyPI package or full nltk",
+  "license_status": "UNRESOLVED: punkt_tab and stopwords redistribution rights; private provisioning is project-owner approved, NOT legal clearance",
+  "maintenance": {
+    "obligations": [
+      "Project owner approved private build/test provisioning only, not legal clearance. Keep corpus bytes OUT of Git and data-bearing images/artifacts private.",
+      "Obtain documented redistribution rights for the exact English model and augmented stopwords before distribution; require --distribution before registry login/push. Never infer dataset licenses from source license.",
+      "Monitor upstream inference security advisories and releases; re-review this retained call graph and wrapper on changes.",
+      "Keep dependency audit unchanged; separately run the fail-closed source/asset verifier.",
+      "Regenerate deterministically from immutable pins, review diffs, update verifier anchor only after review.",
+      "Require independent offline reference parity on supported Python versions, including caller filtering/chunking, Unicode, demographic names/pronouns/dialects and adversarial input.",
+      "No runtime network, dynamic model paths, training, persistence, text logging, or cache growth from unseen input words."
+    ],
+    "owner": "mifolyo Indexer maintainers"
+  },
+  "maintenance_tool": {
+    "bytes": 42200,
+    "path": "../tools/vendor_nlp.py",
+    "sha256": "0f60ca6d7af99be7674d9bed6c9a9574d269265a1f8eac74d61292d591cd8516"
+  },
+  "name": "mifolyo-indexer-english-inference",
+  "public_data_index": {
+    "bytes": 78939,
+    "commit": "550b6625bcef1f2abff2ff770a5a0d272c9c6b2a",
+    "git_blob_sha1": "65370112729759a945832b368c6411da7a657c87",
+    "inventory_file": "provenance/data-index.json",
+    "path": "index.xml",
+    "repository": "https://github.com/nltk/nltk_data",
+    "sha256": "97dce5e72320cd9850b7c20130196006710c18f9c03134c822a37da330198bf6",
+    "url": "https://raw.githubusercontent.com/nltk/nltk_data/550b6625bcef1f2abff2ff770a5a0d272c9c6b2a/index.xml"
+  },
+  "removed": {
+    "destructive.py": [
+      "TokenizerI",
+      "align_tokens",
+      "warnings",
+      "unused typing imports",
+      "MacIntyreContractions.CONTRACTIONS4",
+      "NLTKWordTokenizer.span_tokenize",
+      "NLTKWordTokenizer.CONVERT_PARENTHESES",
+      "convert_parentheses/return_str optional branches"
+    ],
+    "not_vendored": [
+      "All other NLTK modules, including data/downloader/pathsec/picklesec, parsing, tagging, classification, probability, trainers, tab encoders/decoders and persistence frameworks."
+    ],
+    "punkt.py": [
+      "_PUNKT_ALLOWED_GLOBALS",
+      "punkt_pickle_load",
+      "PunktTrainer (entire class)",
+      "PunktLanguageVars.__getstate__/__setstate__/internal_punctuation",
+      "PunktParameters.clear_*/add_ortho_context/_debug_ortho_context",
+      "PunktToken.first_case/is_number/is_alpha/is_non_punct/__repr__/__str__ and unused regexes",
+      "_ORTHO_MAP",
+      "_re_non_punct",
+      "REASON_DEFAULT_DECISION",
+      "PunktSentenceTokenizer.__init__/train/debug_decisions/sentences_from_text_legacy/sentences_from_tokens/_build_sentence_list/dump",
+      "PunktTokenizer (entire class)",
+      "load_punkt_params",
+      "save_punkt_params",
+      "DEBUG_DECISION_FMT",
+      "format_debug_decision",
+      "demo"
+    ],
+    "rationale": "Not reachable from default fixed-English inference; remove model-controlled/caller-selected file I/O, deserialization, training and unrelated APIs rather than merely hiding exports."
+  },
+  "required_assets": {
+    "data/english_stopwords.txt": {
+      "archive": "stopwords.zip",
+      "bytes": 1048,
+      "checked_into_git": false,
+      "commit": "550b6625bcef1f2abff2ff770a5a0d272c9c6b2a",
+      "license": "NOASSERTION",
+      "member": "stopwords/english",
+      "provisioning": "explicit_private_build_or_test_only",
+      "redistribution": "blocked_pending_licensing_review",
+      "rows": 198,
+      "sha256": "f6d005956f407dbc6ea32e5ff0c7e8e6f71488d3239b9023efdc7fc139d6375b"
+    },
+    "data/punkt_tab/english/abbrev_types.txt": {
+      "archive": "punkt_tab.zip",
+      "bytes": 619,
+      "checked_into_git": false,
+      "commit": "550b6625bcef1f2abff2ff770a5a0d272c9c6b2a",
+      "license": "NOASSERTION",
+      "member": "punkt_tab/english/abbrev_types.txt",
+      "provisioning": "explicit_private_build_or_test_only",
+      "redistribution": "blocked_pending_licensing_review",
+      "rows": 156,
+      "sha256": "92a3e070f43d9b4c5534758ca40ad7343b04e7e29bfe0c2eb658a39445a4f779"
+    },
+    "data/punkt_tab/english/collocations.tab": {
+      "archive": "punkt_tab.zip",
+      "bytes": 594,
+      "checked_into_git": false,
+      "commit": "550b6625bcef1f2abff2ff770a5a0d272c9c6b2a",
+      "license": "NOASSERTION",
+      "member": "punkt_tab/english/collocations.tab",
+      "provisioning": "explicit_private_build_or_test_only",
+      "redistribution": "blocked_pending_licensing_review",
+      "rows": 37,
+      "sha256": "8e2da1225e4dd2cc9dba261ee231ccb134859e21b46006e7f472c5ee269af0cf"
+    },
+    "data/punkt_tab/english/ortho_context.tab": {
+      "archive": "punkt_tab.zip",
+      "bytes": 236303,
+      "checked_into_git": false,
+      "commit": "550b6625bcef1f2abff2ff770a5a0d272c9c6b2a",
+      "license": "NOASSERTION",
+      "member": "punkt_tab/english/ortho_context.tab",
+      "provisioning": "explicit_private_build_or_test_only",
+      "redistribution": "blocked_pending_licensing_review",
+      "rows": 20366,
+      "sha256": "4bbcca25ed3d3f06c02402abf8419b9f033b8adc06e7b482eca4e45f81a5dc4c"
+    },
+    "data/punkt_tab/english/sent_starters.txt": {
+      "archive": "punkt_tab.zip",
+      "bytes": 241,
+      "checked_into_git": false,
+      "commit": "550b6625bcef1f2abff2ff770a5a0d272c9c6b2a",
+      "license": "NOASSERTION",
+      "member": "punkt_tab/english/sent_starters.txt",
+      "provisioning": "explicit_private_build_or_test_only",
+      "redistribution": "blocked_pending_licensing_review",
+      "rows": 39,
+      "sha256": "f3f8535483e1dba487241b764945168123bca3209a9645e59acd1225dc76edac"
+    }
+  },
+  "retained": {
+    "destructive.py": {
+      "classes": {
+        "MacIntyreContractions": [
+          "CONTRACTIONS2",
+          "CONTRACTIONS3"
+        ],
+        "NLTKWordTokenizer": [
+          "STARTING_QUOTES",
+          "ENDING_QUOTES",
+          "PUNCTUATION",
+          "PARENS_BRACKETS",
+          "DOUBLE_DASHES",
+          "_contractions",
+          "CONTRACTIONS2",
+          "CONTRACTIONS3",
+          "tokenize"
+        ]
+      }
+    },
+    "punkt.py": {
+      "classes": {
+        "PunktBaseClass": [
+          "__init__",
+          "_tokenize_words",
+          "_annotate_first_pass",
+          "_first_pass_annotation"
+        ],
+        "PunktLanguageVars": [
+          "__slots__",
+          "sent_end_chars",
+          "_re_sent_end_chars",
+          "re_boundary_realignment",
+          "_re_word_start",
+          "_re_non_word_chars",
+          "_re_multi_char_punct",
+          "_word_tokenize_fmt",
+          "_word_tokenizer_re",
+          "word_tokenize",
+          "_period_context_fmt",
+          "period_context_re"
+        ],
+        "PunktParameters": [
+          "__init__"
+        ],
+        "PunktSentenceTokenizer": [
+          "tokenize",
+          "span_tokenize",
+          "sentences_from_text",
+          "_get_last_whitespace_index",
+          "_match_potential_end_contexts",
+          "_slices_from_text",
+          "_realign_boundaries",
+          "text_contains_sentbreak",
+          "_annotate_tokens",
+          "PUNCTUATION",
+          "_annotate_second_pass",
+          "_second_pass_annotation",
+          "_ortho_heuristic"
+        ],
+        "PunktToken": [
+          "_properties",
+          "__slots__",
+          "__init__",
+          "_RE_ELLIPSIS",
+          "_RE_NUMERIC",
+          "_RE_INITIAL",
+          "_get_type",
+          "type_no_period",
+          "type_no_sentperiod",
+          "first_upper",
+          "first_lower",
+          "is_ellipsis",
+          "is_initial"
+        ]
+      },
+      "globals": [
+        "_ORTHO_BEG_UC",
+        "_ORTHO_MID_UC",
+        "_ORTHO_UNK_UC",
+        "_ORTHO_BEG_LC",
+        "_ORTHO_MID_LC",
+        "_ORTHO_UNK_LC",
+        "_ORTHO_UC",
+        "_ORTHO_LC",
+        "REASON_KNOWN_COLLOCATION",
+        "REASON_ABBR_WITH_ORTHOGRAPHIC_HEURISTIC",
+        "REASON_ABBR_WITH_SENTENCE_STARTER",
+        "REASON_INITIAL_WITH_ORTHOGRAPHIC_HEURISTIC",
+        "REASON_NUMBER_WITH_ORTHOGRAPHIC_HEURISTIC",
+        "REASON_INITIAL_WITH_SPECIAL_ORTHOGRAPHIC_HEURISTIC",
+        "_pair_iter"
+      ]
+    }
+  },
+  "schema_version": 2,
+  "source_license": "Apache-2.0",
+  "upstream": {
+    "nltk_commit": "303f6e2ba8e4548a5f54fd65d86bb5c9a949f1db",
+    "nltk_data_commit": "550b6625bcef1f2abff2ff770a5a0d272c9c6b2a",
+    "nltk_version": "3.10.3"
+  },
+  "upstream_inputs": {
+    "DATA-LICENSE": {
+      "bytes": 11320,
+      "commit": "550b6625bcef1f2abff2ff770a5a0d272c9c6b2a",
+      "git_blob_sha1": "cdec0628108cd794df64b265a9ab0544b4833557",
+      "path": "LICENSE",
+      "repository": "https://github.com/nltk/nltk_data",
+      "sha256": "8d030ab5afc58f0b6a1f4207c12fd9553de6da2294efede65a0c58f9a6495fcc",
+      "url": "https://raw.githubusercontent.com/nltk/nltk_data/550b6625bcef1f2abff2ff770a5a0d272c9c6b2a/LICENSE"
+    },
+    "DATASET-LICENSES.md": {
+      "bytes": 9910,
+      "commit": "550b6625bcef1f2abff2ff770a5a0d272c9c6b2a",
+      "git_blob_sha1": "978a24ba488cd8fa1d02dc4014106ba63301b670",
+      "path": "DATASET-LICENSES.md",
+      "repository": "https://github.com/nltk/nltk_data",
+      "sha256": "4285f61badbbdc755811f1f5a61e3dd341a516ff2343490819b019fd8f674ff9",
+      "url": "https://raw.githubusercontent.com/nltk/nltk_data/550b6625bcef1f2abff2ff770a5a0d272c9c6b2a/DATASET-LICENSES.md"
+    },
+    "LICENSE-OVERVIEW.md": {
+      "bytes": 3365,
+      "commit": "550b6625bcef1f2abff2ff770a5a0d272c9c6b2a",
+      "git_blob_sha1": "30d163d3aef25c99f6e505bffec77a0f5ea4094b",
+      "path": "LICENSE-OVERVIEW.md",
+      "repository": "https://github.com/nltk/nltk_data",
+      "sha256": "8115f9aadc98ec981082621265a88a05c8b132c82c458b32d52e541129d61ecf",
+      "url": "https://raw.githubusercontent.com/nltk/nltk_data/550b6625bcef1f2abff2ff770a5a0d272c9c6b2a/LICENSE-OVERVIEW.md"
+    },
+    "NLTK-LICENSE.txt": {
+      "bytes": 11358,
+      "commit": "303f6e2ba8e4548a5f54fd65d86bb5c9a949f1db",
+      "git_blob_sha1": "d645695673349e3947e8e5ae42332d0ac3164cd7",
+      "path": "LICENSE.txt",
+      "repository": "https://github.com/nltk/nltk",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "url": "https://raw.githubusercontent.com/nltk/nltk/303f6e2ba8e4548a5f54fd65d86bb5c9a949f1db/LICENSE.txt"
+    },
+    "data-index.xml": {
+      "bytes": 78939,
+      "commit": "550b6625bcef1f2abff2ff770a5a0d272c9c6b2a",
+      "git_blob_sha1": "65370112729759a945832b368c6411da7a657c87",
+      "path": "index.xml",
+      "repository": "https://github.com/nltk/nltk_data",
+      "sha256": "97dce5e72320cd9850b7c20130196006710c18f9c03134c822a37da330198bf6",
+      "url": "https://raw.githubusercontent.com/nltk/nltk_data/550b6625bcef1f2abff2ff770a5a0d272c9c6b2a/index.xml"
+    },
+    "destructive.py": {
+      "bytes": 9486,
+      "commit": "303f6e2ba8e4548a5f54fd65d86bb5c9a949f1db",
+      "git_blob_sha1": "afd0e4d26b73b7618ae13ad7b339ef62c287c5c0",
+      "path": "nltk/tokenize/destructive.py",
+      "repository": "https://github.com/nltk/nltk",
+      "sha256": "7dfe473eccf8430cd03266039297f59bf7a543e2038b36c0a3929b52b89c42f7",
+      "url": "https://raw.githubusercontent.com/nltk/nltk/303f6e2ba8e4548a5f54fd65d86bb5c9a949f1db/nltk/tokenize/destructive.py"
+    },
+    "punkt.py": {
+      "bytes": 71650,
+      "commit": "303f6e2ba8e4548a5f54fd65d86bb5c9a949f1db",
+      "git_blob_sha1": "48496d2448c009221d2452c8e928699027b20ebe",
+      "path": "nltk/tokenize/punkt.py",
+      "repository": "https://github.com/nltk/nltk",
+      "sha256": "b85d1b51d1357d8c56d9739cb3d7975837ad12721c3702fae6facb47eb583b48",
+      "url": "https://raw.githubusercontent.com/nltk/nltk/303f6e2ba8e4548a5f54fd65d86bb5c9a949f1db/nltk/tokenize/punkt.py"
+    },
+    "punkt_tab.xml": {
+      "bytes": 313,
+      "commit": "550b6625bcef1f2abff2ff770a5a0d272c9c6b2a",
+      "git_blob_sha1": "feba7a3c2b4efff6c6962a3af6d975631c3b9437",
+      "path": "packages/tokenizers/punkt_tab.xml",
+      "repository": "https://github.com/nltk/nltk_data",
+      "sha256": "d8ad712174bbd31a3c1dc424d92d232919e5453c7e520616affbcce4b66e3401",
+      "url": "https://raw.githubusercontent.com/nltk/nltk_data/550b6625bcef1f2abff2ff770a5a0d272c9c6b2a/packages/tokenizers/punkt_tab.xml"
+    },
+    "punkt_tab.zip": {
+      "bytes": 4319076,
+      "commit": "550b6625bcef1f2abff2ff770a5a0d272c9c6b2a",
+      "git_blob_sha1": "5e5ff6137d5ee6025e400d1c3a7b21914c48b635",
+      "path": "packages/tokenizers/punkt_tab.zip",
+      "repository": "https://github.com/nltk/nltk_data",
+      "sha256": "e57f64187974277726a3417ca6f181ec5403676c717672eef6a748a7b20e0106",
+      "url": "https://raw.githubusercontent.com/nltk/nltk_data/550b6625bcef1f2abff2ff770a5a0d272c9c6b2a/packages/tokenizers/punkt_tab.zip"
+    },
+    "stopwords.xml": {
+      "bytes": 191,
+      "commit": "550b6625bcef1f2abff2ff770a5a0d272c9c6b2a",
+      "git_blob_sha1": "fabee4755322d053d2b86d3a7426c3e3c3510766",
+      "path": "packages/corpora/stopwords.xml",
+      "repository": "https://github.com/nltk/nltk_data",
+      "sha256": "25e36f0dbd1307814bda2af5b56c24d06a4d6592d769a6476b70ebb778edab0d",
+      "url": "https://raw.githubusercontent.com/nltk/nltk_data/550b6625bcef1f2abff2ff770a5a0d272c9c6b2a/packages/corpora/stopwords.xml"
+    },
+    "stopwords.zip": {
+      "bytes": 37733,
+      "commit": "550b6625bcef1f2abff2ff770a5a0d272c9c6b2a",
+      "git_blob_sha1": "56d35b5d204d64480f71edc0f5f82aebce6730b6",
+      "path": "packages/corpora/stopwords.zip",
+      "repository": "https://github.com/nltk/nltk_data",
+      "sha256": "48c0e52d8b52546e827f53761fb30300c0ab94f70660d28bd65ba0a86270946b",
+      "url": "https://raw.githubusercontent.com/nltk/nltk_data/550b6625bcef1f2abff2ff770a5a0d272c9c6b2a/packages/corpora/stopwords.zip"
+    }
+  }
+}

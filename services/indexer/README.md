@@ -79,6 +79,58 @@ with an absent or malformed page hash is also quarantined and cannot modify
 canonical Mongo state. Only a successfully decoded page that explicitly parses
 as non-indexable may remove prior searchable state.
 
+## English NLP security boundary
+
+Indexer uses a reviewed, inference-only subset of NLTK 3.10.3 rather than the
+full `nltk` dependency. The vulnerable model training/load/save APIs named by
+`GHSA-8mgp-746c-j5xp` / `PYSEC-2026-3740` are physically absent. This is code
+removal, not an upstream patch or an audit exception. Source provenance,
+licenses, retained methods, adaptations, hashes, and maintenance ownership are
+recorded in [`nlp/README.md`](nlp/README.md) and `nlp/component.json`.
+
+Default English Punkt sentence splitting and `NLTKWordTokenizer` behavior are
+preserved against the pinned reference. Lowercase/stopword/alphanumeric filtering,
+10,000-character chunks, summaries, keyword frequencies, URL boosts, and claim
+handling are unchanged. Missing or corrupt NLP data raises an error; it must
+never become an empty successful result that deletes searchable state.
+
+**Private builds/tests only; data-bearing image distribution is blocked.**
+Upstream marks the English model/stopword packages' redistribution rights as
+unclarified. Owner-approved private provisioning is not legal clearance. Corpus
+bytes stay out of Git and Docker contexts; explicit setup fetches two immutable,
+size/hash-verified archives and installs only five fixed plaintext files. Runtime
+does not download, search user caches, fall back to installed NLTK, or load pickles.
+
+From `services/indexer`, inside a development virtual environment:
+
+```sh
+NLP_CACHE="$(mktemp -d "${TMPDIR:-/tmp}/mifolyo-nlp.XXXXXX")"
+python -B tools/vendor_nlp.py --cache "$NLP_CACHE" --fetch --provision-data
+python -B verify_nlp.py
+python -I -B -m unittest discover -s tests -p test_nlp_compatibility.py -v
+```
+
+The same cache can provision offline by omitting `--fetch`. Keep it private and
+outside the repository. A clean checkout needs provisioning before NLP imports.
+Use `-B` for native commands: source verification rejects unexpected bytecode.
+Docker performs this setup during its private build, not at consumer startup.
+
+The protected Indexer job keeps its dependency audit unchanged and additionally
+requires source/data verification, negative security checks, and independent
+offline compatibility tests. `pip-audit` does not inspect vendored code; these
+are separate evidence layers. The release workflow runs
+`python3 services/indexer/verify_nlp.py --source-only --distribution` before
+Indexer registry login or push. That command must fail until data rights are
+resolved and the distribution decision is separately reviewed.
+
+Local worktree validation on 2026-09-14 passed all 54 Indexer tests with zero
+skips using disposable Redis 7/MongoDB 8, plus 25 verifier mutation checks and
+96 component/provisioning checks. The 34-case reference fixture protects tokens,
+chunk boundaries, HTML extraction, and postings; it contains hashes and synthetic
+examples, not corpus bytes. Reference regeneration and repeated offline parity
+passed. The unmodified dependency audit reported no known vulnerabilities. These
+results do not constitute protected-PR acceptance or deployment/crawl authority.
+
 ## Setup
 
 The service-level Compose file is a deployment artifact and requires the exact

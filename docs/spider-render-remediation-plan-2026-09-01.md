@@ -2,7 +2,7 @@
 
 **Original review date:** 2026-09-01
 
-**Last updated:** 2026-09-11
+**Last updated:** 2026-09-14
 
 **Reviewed baseline:** `main` / `44d8b09a364a1f60032e1f4faccf160813f4dd04`
 
@@ -109,9 +109,9 @@ retained Mongo records still incorrectly say `enabled: true`.
 |---|---|---|
 | F1 seed reconciliation | Not started | Retained evidence remains 70 enabled records; execute only during the matched freeze/backup/reset sequence |
 | F2 disposable Redis reset | Not started | Retained V1 state remains historical post-test evidence and must not be reused or selectively repaired |
-| F3 durable Crawl Jobs V2 | M1 passes locally; M2 pending; Lua blocked | Owner-approved transcript amendment, aggregate verification, and three scoped independent GO reviews completed; no checkpoint publication or activation authorized; see [`crawl-jobs-v2-plan.md`](crawl-jobs-v2-plan.md) |
+| F3 durable Crawl Jobs V2 | M1 passes locally; M2 pushed and verified; Lua not started | Reviewed foundation checkpoint `0989001d15c9a84a00464fd55ddd857650eda85e` is remote-verified; no Lua or runtime activation authorized; see [`crawl-jobs-v2-plan.md`](crawl-jobs-v2-plan.md) |
 | F4 exact crawl scope | Not started | No crawl-policy V2 schema or approved exact-URL policy is present |
-| F5 backlink persistence | Implemented locally and locally verified; acceptance pending | The idempotency repair passed 31 unit and 7 disposable datastore integration tests; a protected `required-tests` PR result is still required |
+| F5 backlink persistence | Implemented locally and locally verified; acceptance pending | The repair passed 46 unit, 7 disposable datastore integration, and 6 Monitoring tests on 2026-09-14; a protected `required-tests` PR result is still required |
 | F6 JavaScript-shell indexing | Not started | No static-extraction policy schema or approved metadata-fallback configuration is present |
 | Render Stages 0, 1, and 2a | Implemented; disabled | Hermetic inline and brokered rendering exists, but the checked-in render policy remains deny-all and public rendering is unauthorized |
 | Render Stage 3 | Not approved | Requires a reviewed protocol extension, shadow evidence, exact policy, and all F3/F4/F6 activation gates |
@@ -256,8 +256,9 @@ wire grammar, limits, transitions, records, Redis configuration, and evidence.
 - The digest-bound protocol, shared fixture, independent Go/Python verifier, and
   dormant Go foundation exist on `feature/crawl-jobs-v2-foundation`.
 - The initial WIP checkpoint is commit
-  `e4372a66201b8767bcca4d7476c30c5b7999922c`; later authority and conformance
-  remediation is still uncommitted.
+  `e4372a66201b8767bcca4d7476c30c5b7999922c`. The reviewed amendment and foundation
+  remediation are preserved in remote-verified checkpoint
+  `0989001d15c9a84a00464fd55ddd857650eda85e`.
 - The project owner explicitly approved the 2026-09-11 preactivation
   transcript/stage protocol amendment and dormant implementation. The amended
   contract specifies authenticated genesis/terminal generation, atomic BEGIN
@@ -271,9 +272,12 @@ wire grammar, limits, transitions, records, Redis configuration, and evidence.
   test-oracle findings were fixed and independently replayed. Final correctness,
   conformance, and defensive reviews each returned scoped GO, with no outstanding
   findings from those reviews.
-- M1 passes locally. M2 remains pending; commit/push/PR publication was not
-  requested. Lua remains blocked and unauthorized. Pure Go validators and
-  constructor tests do not establish the future Lua/Redis atomicity gates.
+- M1 passes locally and M2 is complete following the requested scoped push and
+  remote verification. That checkpoint request excluded PR creation and Lua.
+  The owner separately authorized scoped reliability commit/push and draft-PR
+  checks on 2026-09-14; publication is in progress, with no merge or activation
+  authorized. Pure Go validators and constructor tests do not establish the
+  future Lua/Redis atomicity gates.
 - No authoritative Lua, runtime integration, retained datastore mutation, service start,
   migration, deployment, candidate marker, or crawl has occurred.
 
@@ -409,7 +413,9 @@ protected acceptance:
    KiB of encoded URL data. Reject members above the canonical 2,048-byte URL
    limit and preflight the resulting MongoDB document below a 12 MiB operational
    ceiling, leaving rejected or oversized work in Redis with a stable alert
-   reason.
+   reason. Partial pages and retry snapshots share an 8 MiB raw-member budget;
+   reserve a full admissible page before scanning and use interruptible
+   backpressure while buffered work drains. This is not a total-RSS bound.
 4. Persist a new target with an insert-only exact document, or update an
    existing target with one exact-document-CAS `$addToSet: {$each: [...]}`
    operation. Require an acknowledged result in either case.
@@ -459,6 +465,42 @@ Primary implementation areas are `services/backlinks-processor/main.py`,
   skipped Backlinks Processor integration tests. The same suite is part of the
   branch-protected `required-tests` context. A passing protected PR run is still
   required before this acceptance gate is complete.
+
+### Local follow-up verification (2026-09-14)
+
+- Closed the aggregate retry-buffer memory gap and bounded Monitoring to at
+  most one SCAN and 100 accounted keys per tick. Monitoring drains accepted
+  pages of up to 1,024 keys across ticks and never publishes a partial or failed
+  scan as zero. Both paths retain their cursors on rejected oversized replies.
+- Integration tests now require Redis DB15 before connecting and process only
+  UUID-namespaced target keys. A sentinel proves unrelated backlink work stays
+  untouched. The multi-page test forces hashtable encoding and checks a nonzero
+  SSCAN cursor instead of assuming COUNT is a hard bound.
+- All **53 Backlinks Processor tests passed with zero skips**: 46 unit tests and
+  7 real-datastore tests. The integration/isolation module also passed five
+  sequential repeats and two concurrent runs. Coverage includes applied writes
+  with lost replies, unacknowledged writes, write-concern failures, bounded
+  outage/recovery buffering, and completion of an already-started shutdown ACK.
+- Tests ran on Linux/arm64 with Python 3.13.14, pymongo 4.18.1, redis-py 8.1.0,
+  and idna 3.18. The non-root, read-only test runner had a 384 MiB memory limit.
+  Redis 7 and MongoDB 8 used a new internal network, no published ports, and
+  tmpfs-only datastore storage. Test keys/databases were checked empty after
+  cleanup; the test containers and network were removed.
+- Redis image: `redis@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf`.
+- MongoDB image: `mongo@sha256:81a1c8842a09589fc8d5f285266f3340bf4abdf66700ba22988f14cc9b2b3118`.
+- Monitoring passed six tests, `cargo fmt --check`, and
+  `cargo clippy --locked -- -D warnings` using Rust 1.85.1. Its tests now run in
+  both the general unit workflow and protected `required-tests`; backlink CI
+  continues to reject skipped tests. Changed workflows passed actionlint.
+- Independent scoped correctness and security reviews found no actionable
+  findings. These are local worktree checks, not a full-history secret audit,
+  protected-PR result, merge approval, or runtime authorization.
+
+Docker startup was observed with the retained baseline Backlinks Processor
+already running. With explicit owner approval, only that processor was stopped;
+its restart policy and the other existing containers were left unchanged. No
+retained datastore queries, reconciliation, or reset were performed, so this
+pass does not attest that historical datastore contents remained unchanged.
 
 ### Rollback
 

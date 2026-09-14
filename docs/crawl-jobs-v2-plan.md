@@ -2,20 +2,22 @@
 
 **Finding:** F3 - durable crawl-job leases and recovery
 
-**Last updated:** 2026-09-11
+**Last updated:** 2026-09-14
 
 **Working branch:** `feature/crawl-jobs-v2-foundation`
 
 **Initial checkpoint:** `e4372a66201b8767bcca4d7476c30c5b7999922c`
 
 **Status:** WIP/no-merge; M1 passes locally after the approved transcript amendment
-and independent re-review; M2 checkpoint publication is in progress
+and independent re-review; M2 checkpoint is pushed and remote-verified
 
-**Current next gate:** Complete the explicitly requested scoped M2 commit/push
-and verify local/remote identity. The transcript/stage protocol blocker and
-subsequent review findings are closed for the dormant foundation. Checkpoint
-publication is now authorized; PR creation, authoritative Lua, and operational
-activation remain outside this request.
+**Current next gate:** M3 requires a separate authoritative-Lua work decision.
+The scoped M2 foundation checkpoint is preserved as
+`0989001d15c9a84a00464fd55ddd857650eda85e`; local HEAD and the remote feature-branch
+ref were verified identical after push. That checkpoint request excluded PR
+creation. On 2026-09-14 the owner separately authorized scoped reliability
+commit/push and a draft PR with protected checks. Publication is in progress;
+authoritative Lua and operational activation remain unauthorized.
 
 **Activation status:** Blocked; no authoritative Lua, runtime integration,
 migration, deployment, or crawl has occurred or is authorized by this plan
@@ -127,7 +129,7 @@ real reconnect/I/O behavior, and full stage reread acceptance remain M3-M5 work.
 | Script sources | No authoritative `.lua` files exist; production cannot construct an executable `ScriptBindingSet` until embedded reviewed sources provide the private sealed bundle |
 | Runtime behavior | No operational/retained datastore mutation, service start, migration, deployment, candidate marker, rendering activation, or crawl has occurred |
 | Review status | Final independent correctness, conformance, and defensive reviews returned scoped GO on 2026-09-11; no outstanding BLOCKER/HIGH/MEDIUM findings from those reviews |
-| Git state | Initial WIP checkpoint is pushed; later review remediation remains unstaged and uncommitted |
+| Git state | Reviewed foundation checkpoint `0989001d15c9a84a00464fd55ddd857650eda85e` is pushed and remote-verified; unrelated worktree changes remain local |
 
 ## Latest local verification
 
@@ -187,8 +189,8 @@ The final matrix and final independent reviews used pinned Go 1.25.13 and passed
 |---|---|---|
 | M0: Protocol and dormant foundation | Complete | Normative contract, fixture, Go package, Python verifier, and initial WIP checkpoint exist |
 | M1: Foundation release gate | Complete locally | Approved amendment, final aggregate verification, and three scoped independent GO reviews; no outstanding review findings |
-| M2: Reviewed foundation checkpoint | In progress; commit/push authorized | Final remediation is secret-scanned, scoped, committed, pushed, and reverified |
-| M3: Authoritative Lua transitions | Blocked by M2; not authorized | All 43 exact sources and sealed bindings pass Go/Python/Lua conformance without runtime activation |
+| M2: Reviewed foundation checkpoint | Complete | Scoped 66-file checkpoint secret-scanned, tested from the index export, committed, pushed, and remote identity verified |
+| M3: Authoritative Lua transitions | Not started; separate authorization required | All 43 exact sources and sealed bindings pass Go/Python/Lua conformance without runtime activation |
 | M4: Real Redis 7 acceptance | Blocked by M3 | Idempotency, fencing, crash, AOF, memory, and latency evidence passes on disposable infrastructure |
 | M5: Runtime and consumer integration | Blocked by M4 and F4-F6 | Spider, feeder, consumers, Monitoring, Compose, and crawl-admin use only the accepted V2 protocol |
 | M6: Migration, runbooks, and rollback | Blocked by M5 | Stopped migration and rollback rehearsal pass; active docs contain tested V2 commands and no active V1 path |
@@ -230,9 +232,9 @@ The final matrix and final independent reviews used pinned Go 1.25.13 and passed
 - [x] Complete the scoped credential-signature and sensitive-surface review;
   repeat the scan on the exact M2 checkpoint scope before publication.
 - [x] Obtain explicit commit/push authorization for the M2 checkpoint.
-- [ ] Stage only the F3 normative contract, fixture, verifier, plan/status consolidation,
+- [x] Stage only the F3 normative contract, fixture, verifier, plan/status consolidation,
   and `crawljobsv2` files; leave unrelated worktree changes untouched.
-- [ ] Commit and push the reviewed foundation remediation checkpoint.
+- [x] Commit and push the reviewed foundation remediation checkpoint.
 - [ ] Begin dormant authoritative Lua source work only after M1 and M2 pass.
 
 ## M1: Final foundation release gate
@@ -279,21 +281,55 @@ The final matrix and final independent reviews used pinned Go 1.25.13 and passed
 ## M2: Foundation checkpoint preservation
 
 The owner explicitly requested committing and pushing the reviewed checkpoint.
-M2 publication is in progress; it is not complete until the remote identity is
-verified. PR creation and Lua work have not been requested. Repeat scoped
-verification and review any further source changes before checkpointing.
+M2 completed on 2026-09-12: checkpoint
+`0989001d15c9a84a00464fd55ddd857650eda85e` was pushed to
+`origin/feature/crawl-jobs-v2-foundation`, and `git ls-remote` returned the same
+full identity as local HEAD. That request did not include PR creation or Lua
+work. The later 2026-09-14 request authorizes draft-PR publication only, not Lua
+or activation. Repeat scoped verification and review any further source changes
+before another checkpoint.
+
+The exact staged snapshot passed the full Spider module tests, foundation race
+tests, Go vet, and independent Python verifier using cached Go 1.25.13. The
+66-file staged allowlist and filename-only credential scan passed. This is a
+local checkpoint gate, not protected-main CI or container-build acceptance.
 
 The checkpoint includes the complete parent plan and archive as supporting
 planning documents. Other application, frontend, agent, and operational-doc
 changes remain outside the commit. The root README is staged only for the F3
 warning and checkpoint paragraph.
 
-Known verification limit: the existing service-only Spider Docker build context
-does not contain the root-level F3 fixtures and normative document required by
-its test step. This inherited packaging issue is not repaired by the checkpoint.
-Container-build/CI readiness remains unverified and must be resolved before
-claiming protected-main or release acceptance. A feature-branch push does not
-itself trigger the currently configured main/legacy-branch push workflows.
+Checkpoint packaging limit, resolved locally on 2026-09-14: Spider now builds
+from a narrowly allowlisted repository-root context with repository-relative
+builder paths. Both Compose build definitions, release CI, renderer-integration
+CI, and protected `required-build` use the same Dockerfile/context. The builder
+includes the exact F3 fixture/document, shared URL fixture, and manual seed
+catalog; none enters the runtime image.
+
+The builder and final image built successfully on Linux/arm64 with Go 1.25.13.
+The full Dockerfile Go suite passed, including F3 conformance and the seed-policy
+test previously skipped in service-only builds. Only the existing opt-in V1
+Redis and Chromium integration tests skipped; neither was activated for this
+packaging pass. Networkless shell-only image checks verified builder inputs,
+credential-file exclusion, runtime-only contents, CA certificates, and the
+unchanged `65534:65534` runtime user. `docker build --check` passed without
+warnings. Local normal/race module tests, shuffled F3 tests, vet, the independent
+Python digest verifier, Compose resolution, release-Compose static validation,
+and actionlint also passed. The normative protocol, F3 fixture, dormant package,
+and existing V1 Redis client remain unchanged.
+
+These are local worktree results, not protected-main or release acceptance.
+No commit, push, or PR was created by that validation pass. A feature-branch
+push does not itself trigger the configured main/legacy-branch push workflows;
+the exact reviewed revision still needs protected PR checks.
+
+The following allowlist records the completed M2 foundation checkpoint scope.
+The separately authorized 2026-09-14 reliability publication adds F5 code/tests,
+bounded Monitoring, paired URL fixtures, Spider build packaging and callers,
+required CI coverage, and related documentation hunks only. Frontend, agent,
+generated-output, and unrelated operational-document changes remain local.
+Exact-revision check results belong in the draft PR; none is claimed by this
+pre-publication snapshot. The draft must remain WIP/no-merge.
 
 1. Inspect scoped status and diff without resetting or cleaning the worktree.
 2. Remove only generated artifacts created by this work, if any.
@@ -508,8 +544,8 @@ separate M8 decision.
 | Render rollout gate | JavaScript execution requires separate policy, image, sandbox, terms, robots, and authorization evidence |
 
 F3 foundation remediation may proceed while F1, F2, F4, and F6 remain
-operationally blocked. M1 now passes locally; Lua remains blocked by M2 and has
-not been authorized. M5 hermetic code/consumer integration waits for M4 and
+operationally blocked. M1 passes locally and M2 is remote-verified; Lua has not
+been authorized or started. M5 hermetic code/consumer integration waits for M4 and
 F4-F6. In the parent plan, compatible code and runbooks precede the F1/F2
 operational reset so retained evidence is preserved and the environment is reset
 once. Migration rehearsal and candidate promotion require that accepted fresh
@@ -531,7 +567,7 @@ Rendering remains disabled unless its separate activation requirements pass.
 | 2026-09-11 | Final review remediation | BEGIN derives metadata from real output; exact source/witness, retained freeze, strict expiry, prior-delivery claim admission, and exact count/size-error controls fixed and counterexamples replayed |
 | 2026-09-11 | Final independent correctness, conformance, and defensive reviews | Three scoped GO verdicts on the dormant foundation; every reported HIGH and MEDIUM closed; no runtime/Redis atomic acceptance claimed |
 | 2026-09-11 | Final pinned-toolchain aggregate | Go 1.25.13 normal x10, race x3, shuffle x10, full module, vet, build, Python verifier/syntax, formatting, and scoped diff checks pass; package coverage 79.0%; 39 named positives plus baseline and 139 negatives |
-| Pending | Scoped remediation commit and remote verification | Required for M2 |
+| 2026-09-12 | M2 scoped checkpoint publication | `0989001d15c9a84a00464fd55ddd857650eda85e`; 66 intended files; exact staged snapshot tests and secrets gate passed; push succeeded and local/remote identity matched |
 
 ## Definition of done
 

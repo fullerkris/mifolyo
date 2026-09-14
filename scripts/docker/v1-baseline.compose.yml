@@ -265,7 +265,8 @@ services:
   spider:
     profiles: [crawl]
     build:
-      context: ../../services/spider
+      context: ../..
+      dockerfile: services/spider/Dockerfile
     command: [./spider, --validate-policy, --validate-baseline-policy]
     <<: *restricted-runtime
     user: "65534:65534"

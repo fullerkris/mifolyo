@@ -1,16 +1,21 @@
 FROM golang:1.25.13-alpine AS builder
 
 # Set the working directory
-WORKDIR /app
+WORKDIR /app/services/spider
 
 # Copy Go modules and files
-COPY go.mod go.sum ./
+COPY services/spider/go.mod services/spider/go.sum ./
 
 # Download dependencies
 RUN go mod download
 
 # Copy the application
-COPY . .
+COPY services/spider/ ./
+# Preserve repository-relative paths used by the conformance tests.
+COPY contracts/crawl-jobs-v2/digest-vectors.json /app/contracts/crawl-jobs-v2/digest-vectors.json
+COPY contracts/url-canonicalization/v1.json /app/contracts/url-canonicalization/v1.json
+COPY docs/crawl-jobs-v2.md /app/docs/crawl-jobs-v2.md
+COPY seeds/manual-seeds.csv /app/seeds/manual-seeds.csv
 
 # Build the application
 RUN go build -o spider ./cmd/spider/main.go
@@ -29,8 +34,8 @@ RUN apk add --no-cache ca-certificates \
 WORKDIR /app
 
 # Copy the built binary from the builder stage
-COPY --from=builder /app/spider .
-COPY --from=builder /app/config ./config
+COPY --from=builder /app/services/spider/spider .
+COPY --from=builder /app/services/spider/config ./config
 
 USER 65534:65534
 

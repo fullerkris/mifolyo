@@ -6,6 +6,8 @@ use std::process::Command;
 use std::{thread, time};
 
 const DEFAULT_CRAWL_QUEUE_KEY: &str = "mifolyo:crawl:v1:queue";
+const BACKLINKS_SCAN_LIMIT: usize = 100;
+const BACKLINKS_SCAN_RESPONSE_LIMIT: usize = 1024;
 
 fn main() {
     // Get environment variable
@@ -56,6 +58,7 @@ fn main() {
         5 // Default to 5
     };
 
+    let mut backlinks_scan = BacklinksScan::default();
     loop {
         // Check for termination signal
         if let Ok(Some(message)) = con.rpop::<_, Option<String>>("terminator_queue", None) {
@@ -74,7 +77,21 @@ fn main() {
         let indexer_queue_length: usize =
             con.llen("pages_queue").expect("Failed to get queue length");
         // Get the count of backlinks keys
-        let backlinks_count: usize = get_backlinks_count(&mut con);
+        let backlinks_count = match get_backlinks_count(&mut backlinks_scan, |cursor| {
+            redis::cmd("SCAN")
+                .cursor_arg(cursor)
+                .arg("MATCH")
+                .arg("backlinks:*")
+                .arg("COUNT")
+                .arg(BACKLINKS_SCAN_LIMIT)
+                .query(&mut con)
+        }) {
+            Ok(count) => count,
+            Err(error) => {
+                eprintln!("Backlinks scan failed; retaining scan progress: {}", error);
+                None
+            }
+        };
 
         // Print the queue lengths and backlinks count
         println!("|--------------------------------------|");
@@ -83,7 +100,11 @@ fn main() {
             crawl_queue_key, url_queue_length
         );
         println!("| Current indexer_queue length: {}", indexer_queue_length);
-        println!("| Current backlinks count: {}", backlinks_count);
+        if let Some(count) = backlinks_count {
+            println!("| Current backlinks count: {}", count);
+        } else {
+            println!("| Backlinks count pending/unavailable; scaling unchanged");
+        }
         println!("|--------------------------------------|");
 
         // Scale spiders
@@ -120,18 +141,20 @@ fn main() {
         scale_indexers(desired_indexers);
 
         // Scale backlinks processors
-        let desired_backlinks_processors =
-            calculate_desired_backlinks_processors(backlinks_count, max_backlinks_processors);
-        let current_backlinks_processors = get_current_backlinks_processors();
-        println!(
-            "| Current backlinks processors: {}",
-            current_backlinks_processors
-        );
-        println!(
-            "|\tDesired backlinks processors count: {}",
-            desired_backlinks_processors
-        );
-        scale_backlinks_processors(desired_backlinks_processors);
+        if let Some(count) = backlinks_count {
+            let desired_backlinks_processors =
+                calculate_desired_backlinks_processors(count, max_backlinks_processors);
+            let current_backlinks_processors = get_current_backlinks_processors();
+            println!(
+                "| Current backlinks processors: {}",
+                current_backlinks_processors
+            );
+            println!(
+                "|\tDesired backlinks processors count: {}",
+                desired_backlinks_processors
+            );
+            scale_backlinks_processors(desired_backlinks_processors);
+        }
 
         println!("|--------------------------------------|");
         println!();
@@ -150,15 +173,40 @@ fn main() {
     }
 }
 
-fn get_backlinks_count(con: &mut redis::Connection) -> usize {
-    // Use KEYS command to get all keys matching the pattern "backlinks:*"
-    // Note: In production, SCAN should be used instead of KEYS for large databases
-    let keys: Vec<String> = redis::cmd("KEYS")
-        .arg("backlinks:*")
-        .query(con)
-        .unwrap_or_else(|_| Vec::new());
+#[derive(Default)]
+struct BacklinksScan {
+    cursor: u64,
+    count: usize,
+    pending_keys: usize,
+}
 
-    keys.len()
+fn get_backlinks_count(
+    state: &mut BacklinksScan,
+    scan_page: impl FnOnce(u64) -> redis::RedisResult<(u64, Vec<Vec<u8>>)>,
+) -> redis::RedisResult<Option<usize>> {
+    if state.pending_keys == 0 {
+        let (next_cursor, keys) = scan_page(state.cursor)?;
+        if keys.len() > BACKLINKS_SCAN_RESPONSE_LIMIT {
+            return Err((
+                redis::ErrorKind::ClientError,
+                "backlinks_scan_response_too_large",
+            )
+                .into());
+        }
+        state.pending_keys = keys.len();
+        state.cursor = next_cursor;
+    }
+
+    let accounted = state.pending_keys.min(BACKLINKS_SCAN_LIMIT);
+    state.count = state.count.saturating_add(accounted);
+    state.pending_keys -= accounted;
+    if state.pending_keys == 0 && state.cursor == 0 {
+        let count = state.count;
+        state.count = 0;
+        Ok(Some(count))
+    } else {
+        Ok(None)
+    }
 }
 
 fn calculate_desired_backlinks_processors(backlinks_count: usize, max_processors: usize) -> usize {
@@ -316,4 +364,188 @@ fn get_current_indexers() -> usize {
         .split('\n')
         .filter(|line| line.contains("indexer-service"))
         .count()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn scan_advances_one_bounded_page_per_tick() {
+        let mut state = BacklinksScan::default();
+        let mut calls = 0;
+        let count = get_backlinks_count(&mut state, |cursor| {
+            calls += 1;
+            assert_eq!(cursor, 0);
+            Ok((7, vec![vec![]; 100]))
+        })
+        .unwrap();
+        assert_eq!(calls, 1);
+        assert_eq!(count, None);
+        assert_eq!((state.cursor, state.count), (7, 100));
+
+        let count = get_backlinks_count(&mut state, |cursor| {
+            calls += 1;
+            assert_eq!(cursor, 7);
+            Ok((0, vec![vec![]; 100]))
+        })
+        .unwrap();
+        assert_eq!(calls, 2);
+        assert_eq!(count, Some(200));
+        assert_eq!((state.cursor, state.count), (0, 0));
+    }
+
+    #[test]
+    fn accepted_large_pages_drain_before_scanning_or_publishing() {
+        for page_size in [101, 1024] {
+            for next_cursor in [0, 7] {
+                let mut state = BacklinksScan::default();
+                assert_eq!(
+                    get_backlinks_count(&mut state, |cursor| {
+                        assert_eq!(cursor, 0);
+                        Ok((next_cursor, vec![vec![]; page_size]))
+                    })
+                    .unwrap(),
+                    None
+                );
+                assert_eq!(state.cursor, next_cursor);
+                assert_eq!(state.count, 100);
+                assert_eq!(state.pending_keys, page_size - 100);
+
+                let mut accounted = 100;
+                while accounted < page_size {
+                    let count = get_backlinks_count(&mut state, |_| {
+                        panic!("SCAN called while draining pending keys")
+                    })
+                    .unwrap();
+                    accounted = (accounted + 100).min(page_size);
+                    assert_eq!(state.cursor, next_cursor);
+                    assert_eq!(state.pending_keys, page_size - accounted);
+                    if accounted == page_size && next_cursor == 0 {
+                        assert_eq!(count, Some(page_size));
+                        assert_eq!(state.count, 0);
+                    } else {
+                        assert_eq!(count, None);
+                        assert_eq!(state.count, accounted);
+                    }
+                }
+                assert_eq!(
+                    get_backlinks_count(&mut state, |cursor| {
+                        assert_eq!(cursor, next_cursor);
+                        Ok((0, vec![]))
+                    })
+                    .unwrap(),
+                    Some(if next_cursor == 0 { 0 } else { page_size })
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn empty_nonterminal_pages_do_not_publish_zero() {
+        let mut state = BacklinksScan::default();
+        for (expected_cursor, next_cursor) in [(0, 7), (7, 9)] {
+            let count = get_backlinks_count(&mut state, |cursor| {
+                assert_eq!(cursor, expected_cursor);
+                Ok((next_cursor, vec![]))
+            })
+            .unwrap();
+            assert_eq!(count, None);
+            assert_eq!((state.cursor, state.count), (next_cursor, 0));
+        }
+        assert_eq!(
+            get_backlinks_count(&mut state, |cursor| {
+                assert_eq!(cursor, 9);
+                Ok((0, vec![vec![]]))
+            })
+            .unwrap(),
+            Some(1)
+        );
+    }
+
+    #[test]
+    fn completed_passes_reset_the_approximate_count() {
+        let mut state = BacklinksScan::default();
+        for _ in 0..2 {
+            assert_eq!(
+                get_backlinks_count(&mut state, |cursor| {
+                    assert_eq!(cursor, 0);
+                    Ok((0, vec![b"backlinks:duplicate".to_vec(); 2]))
+                })
+                .unwrap(),
+                Some(2)
+            );
+            assert_eq!((state.cursor, state.count), (0, 0));
+        }
+        assert_eq!(
+            get_backlinks_count(&mut state, |_| Ok((0, vec![]))).unwrap(),
+            Some(0)
+        );
+    }
+
+    #[test]
+    fn scan_failures_preserve_progress_for_retry() {
+        for (cursor, count) in [(0, 0), (7, 10)] {
+            let mut state = BacklinksScan {
+                cursor,
+                count,
+                pending_keys: 0,
+            };
+            for _ in 0..2 {
+                let error = get_backlinks_count(&mut state, |requested_cursor| {
+                    assert_eq!(requested_cursor, cursor);
+                    Err((redis::ErrorKind::IoError, "test scan failure").into())
+                })
+                .unwrap_err();
+                assert_eq!(error.kind(), redis::ErrorKind::IoError);
+                assert_eq!(
+                    (state.cursor, state.count, state.pending_keys),
+                    (cursor, count, 0)
+                );
+            }
+            assert_eq!(
+                get_backlinks_count(&mut state, |requested_cursor| {
+                    assert_eq!(requested_cursor, cursor);
+                    Ok((0, vec![vec![]]))
+                })
+                .unwrap(),
+                Some(count + 1)
+            );
+        }
+    }
+
+    #[test]
+    fn oversized_pages_are_rejected_without_advancing_or_counting() {
+        for (cursor, count) in [(0, 0), (7, 10)] {
+            for next_cursor in [0, 11] {
+                let mut state = BacklinksScan {
+                    cursor,
+                    count,
+                    pending_keys: 0,
+                };
+                for _ in 0..2 {
+                    let error = get_backlinks_count(&mut state, |requested_cursor| {
+                        assert_eq!(requested_cursor, cursor);
+                        Ok((next_cursor, vec![vec![]; 1025]))
+                    })
+                    .unwrap_err();
+                    assert!(error
+                        .to_string()
+                        .contains("backlinks_scan_response_too_large"));
+                    assert_eq!(
+                        (state.cursor, state.count, state.pending_keys),
+                        (cursor, count, 0)
+                    );
+                }
+                assert_eq!(
+                    get_backlinks_count(&mut state, |requested_cursor| {
+                        assert_eq!(requested_cursor, cursor);
+                        Ok((0, vec![vec![]]))
+                    })
+                    .unwrap(),
+                    Some(count + 1)
+                );
+            }
+        }
+    }
 }

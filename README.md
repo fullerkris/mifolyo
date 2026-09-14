@@ -37,7 +37,7 @@ shared deployments.
 > crawling are also not authorized.
 
 F3 checkpoint: M1 passes locally after the approved transcript amendment and
-independent re-review. M2 commit/push is authorized and in progress. See the
+independent re-review. M2 is pushed and remote-verified at `0989001`. See the
 [Crawl Jobs V2 plan](docs/crawl-jobs-v2-plan.md) for the remaining gates.
 Historical V1 commands below do not authorize another crawl.
 

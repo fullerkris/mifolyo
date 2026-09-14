@@ -57,10 +57,17 @@ jobs:
             exit 1
           fi
           image="ghcr.io/${repository}/${SERVICE}:${RELEASE_TAG}"
+          context="."
+          dockerfile="Dockerfile"
+          if [[ "${SERVICE}" == "spider" ]]; then
+            context="${GITHUB_WORKSPACE}"
+            dockerfile="${GITHUB_WORKSPACE}/services/spider/Dockerfile"
+          fi
           docker build \
             --label "org.opencontainers.image.revision=${GITHUB_SHA}" \
             --label "org.opencontainers.image.version=${RELEASE_TAG}" \
-            --tag "${image}" .
+            --file "${dockerfile}" \
+            --tag "${image}" "${context}"
           docker push "${image}"
 
           digest="$(docker buildx imagetools inspect "${image}" --format '{{.Manifest.Digest}}')"

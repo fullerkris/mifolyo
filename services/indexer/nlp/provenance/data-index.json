@@ -1,0 +1,46 @@
+{
+  "index": {
+    "bytes": 78939,
+    "commit": "550b6625bcef1f2abff2ff770a5a0d272c9c6b2a",
+    "git_blob_sha1": "65370112729759a945832b368c6411da7a657c87",
+    "path": "index.xml",
+    "repository": "https://github.com/nltk/nltk_data",
+    "sha256": "97dce5e72320cd9850b7c20130196006710c18f9c03134c822a37da330198bf6",
+    "url": "https://raw.githubusercontent.com/nltk/nltk_data/550b6625bcef1f2abff2ff770a5a0d272c9c6b2a/index.xml"
+  },
+  "packages": {
+    "punkt_tab": {
+      "immutable_download_url": "https://raw.githubusercontent.com/nltk/nltk_data/550b6625bcef1f2abff2ff770a5a0d272c9c6b2a/packages/tokenizers/punkt_tab.zip",
+      "note": "The index's advertised gh-pages URL is recorded as provenance only; it is NEVER fetched.",
+      "upstream_attributes": {
+        "author": "Jan Strunk",
+        "checksum": "27ea9ee08fe27fe4484e4c5585cce748",
+        "id": "punkt_tab",
+        "languages": "Czech, Danish, Dutch, English, Estonian, Finnish, French, German, Greek, Italian, Malayalam, Norwegian, Polish, Portuguese, Russian, Slovene, Spanish, Swedish, Turkish",
+        "name": "Punkt Tokenizer Models",
+        "sha256_checksum": "e57f64187974277726a3417ca6f181ec5403676c717672eef6a748a7b20e0106",
+        "size": "4319076",
+        "subdir": "tokenizers",
+        "unzip": "1",
+        "unzipped_size": "10885330",
+        "url": "https://raw.githubusercontent.com/nltk/nltk_data/gh-pages/packages/tokenizers/punkt_tab.zip"
+      }
+    },
+    "stopwords": {
+      "immutable_download_url": "https://raw.githubusercontent.com/nltk/nltk_data/550b6625bcef1f2abff2ff770a5a0d272c9c6b2a/packages/corpora/stopwords.zip",
+      "note": "The index's advertised gh-pages URL is recorded as provenance only; it is NEVER fetched.",
+      "upstream_attributes": {
+        "checksum": "16da2726eaacf9c9982f68b054445604",
+        "id": "stopwords",
+        "name": "Stopwords Corpus",
+        "sha256_checksum": "48c0e52d8b52546e827f53761fb30300c0ab94f70660d28bd65ba0a86270946b",
+        "size": "37733",
+        "subdir": "corpora",
+        "unzip": "1",
+        "unzipped_size": "89446",
+        "url": "https://raw.githubusercontent.com/nltk/nltk_data/gh-pages/packages/corpora/stopwords.zip",
+        "webpage": "ftp://ftp.cs.cornell.edu/pub/smart/english.stop and http://snowball.tartarus.org/ and others"
+      }
+    }
+  }
+}

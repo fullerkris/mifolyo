@@ -1,0 +1,43 @@
+Inference-only English tokenizer derived from the Natural Language Toolkit.
+NLTK source ancestry: v3.10.3, commit
+303f6e2ba8e4548a5f54fd65d86bb5c9a949f1db.
+
+Copyright (C) 2001-2026 NLTK Project
+
+The exact upstream copyright, author, algorithm and license-reference comments
+are preserved at the top of each extracted source file. The pinned source
+distribution has LICENSE.txt and no separate NOTICE file. Its Apache License
+2.0 is copied without modification to licenses/LICENSE.NLTK. The historical
+LICENSE.TXT references in the unchanged source headers refer to that copy.
+
+MODIFICATIONS: mifolyo's Indexer maintainers selected inference-only source,
+removed unused APIs and imports, removed TokenizerI inheritance, fixed the Punkt
+constructor to supplied parameters and default English language/token classes,
+and retained only the default NLTKWordTokenizer execution path. No inference
+regex or decision rule was rewritten. The fixed-path verified loader and public
+wrapper are local code; its zero-on-miss orthographic table does not retain new
+words encountered in input. The extraction selections and adaptations are in
+tools/vendor_nlp.py (relative to services/indexer) and component.json.
+
+DATA NOT CHECKED INTO GIT: English punkt_tab and stopwords data are from nltk_data
+commit 550b6625bcef1f2abff2ff770a5a0d272c9c6b2a. Their redistribution license
+is NOT established. Both are explicitly listed as unclarified/unknown in the
+pinned upstream DATASET-LICENSES.md. No data license is invented or inferred
+from NLTK's Apache license or the mifolyo repository's MIT license.
+
+The project owner explicitly approved pinned/hash-verified private build/test
+provisioning and offline runtime, with corpus bytes kept OUT of Git. That project
+workflow approval is NOT legal clearance or permission to publish data/images.
+Data-bearing images/artifacts must remain private. Redistribution review remains
+unresolved; the separate --distribution verifier gate blocks publication even
+when all source/asset integrity checks pass. The public data index identity and
+its two relevant package metadata records are pinned in provenance/data-index.json.
+
+The pinned nltk_data repository license is retained in licenses/LICENSE.nltk_data
+for its licensing documentation copied under provenance/. That repository-wide
+license does NOT resolve the individual data package licenses. See the exact
+upstream provenance/LICENSE-OVERVIEW.md and provenance/DATASET-LICENSES.md.
+
+This is not a full NLTK distribution, an upstream security release, or a package
+that pip-audit inspects. Keep the normal dependency audit unchanged, and review
+this separately maintained source component and upstream advisories as well.

@@ -18,6 +18,28 @@ jobs:
   required-tests:
     name: required-tests
     runs-on: ubuntu-latest
+    services:
+      mongo:
+        image: mongo:8
+        ports:
+          - 127.0.0.1:27017:27017
+        options: >-
+          --health-cmd "mongosh --quiet --eval 'quit(db.adminCommand({ ping: 1 }).ok ? 0 : 1)'"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 127.0.0.1:6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 20
+    env:
+      BACKLINKS_MONGO_INTEGRATION_URI: mongodb://127.0.0.1:27017
+      BACKLINKS_REDIS_INTEGRATION_ADDR: 127.0.0.1:6379
     defaults:
       run:
         working-directory: services/forum-engine
@@ -43,6 +65,47 @@ jobs:
 
       - name: Run test suite
         run: php artisan test
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: services/backlinks-processor/requirements.txt
+
+      - name: Install Backlinks Processor dependencies
+        working-directory: services/backlinks-processor
+        run: python -m pip install --requirement requirements.txt
+
+      - name: Verify independent Crawl Jobs V2 digest vectors
+        working-directory: .
+        run: python -B scripts/verify-crawl-jobs-v2-digests.py
+
+      - name: Run required Backlinks Processor tests
+        working-directory: services/backlinks-processor
+        run: |
+          python - <<'PY'
+          import unittest
+
+          suite = unittest.defaultTestLoader.discover("tests")
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          if result.skipped:
+              print(f"Refusing skipped tests: {result.skipped}")
+              raise SystemExit(1)
+          if not result.wasSuccessful():
+              raise SystemExit(1)
+          PY
+
+      - name: Set up Rust 1.85.1
+        uses: dtolnay/rust-toolchain@85c23e28f7ccc75a9a153d45d385d94a85464876 # 1.85.1
+        with:
+          components: rustfmt
+
+      - name: Run required Monitoring scan tests
+        working-directory: services/monitoring
+        run: |
+          cargo fmt --check
+          cargo test --locked
 
   required-build:
     name: required-build
@@ -117,6 +180,9 @@ jobs:
               exit 1
             fi
           done
+
+      - name: Build Spider with repository conformance inputs
+        run: docker build --tag mifolyo-spider:required --file services/spider/Dockerfile .
 
       - name: Build and smoke networkless renderer
         run: |

@@ -152,6 +152,12 @@ third-party resources remain unsupported. See
 for the remaining rollout gates. No checked-in policy or this implementation
 authorizes a public rendered crawl.
 
+The
+[Spider and Render Worker remediation plan](../../docs/spider-render-remediation-plan-2026-09-01.md)
+blocks another crawl until its acceptance gates pass. The
+[F3 implementation plan](../../docs/crawl-jobs-v2-plan.md) owns durable-job
+status and sequencing.
+
 ## Configuration
 
 ```env
@@ -181,7 +187,7 @@ CIDRs to deny.
 ## Build and test
 
 Go 1.25.13 or newer is required by the patched standard-library and networking
-dependency set.
+dependency set. Run native Go commands from `services/spider` in a full checkout.
 
 ```bash
 go test ./...
@@ -190,11 +196,18 @@ go vet ./...
 go build -o spider ./cmd/spider
 ```
 
-The runtime image includes CA certificates and runs as `65534:65534`. A
-network-free image validation is:
+Docker builds use the **repository root** as their context. The Dockerfile-specific
+allowlist admits only Spider and its root-level conformance inputs; fixtures,
+the normative document, and the seed catalog remain builder-only. The full Go
+suite runs during the build, including the root-fixture and seed-policy checks.
+The protected `required-build` job builds this same image.
+
+The runtime image includes CA certificates and runs as `65534:65534`. From the
+repository root, build the image and then validate its policy without networking
+(the build itself may download dependencies):
 
 ```bash
-docker build -t mifolyo-spider .
+docker build -t mifolyo-spider --file services/spider/Dockerfile .
 docker run --rm --network none --read-only mifolyo-spider \
   ./spider --validate-policy --validate-baseline-policy \
   --crawl-policy-file /app/config/crawl-policy-v1.baseline.json

@@ -241,6 +241,11 @@
       "name": "bidi-invalid punycode hostname",
       "input": "https://xn--a-0hc.example/",
       "error": "invalid_host"
+    },
+    {
+      "name": "scoped IPv6 hostname",
+      "input": "https://[fe80::1%25eth0]/",
+      "error": "invalid_host"
     }
   ]
 }

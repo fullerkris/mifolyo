@@ -36,6 +36,10 @@ jobs:
           MIFOLYO_RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: bash scripts/validate-release-compose.sh --static "${MIFOLYO_RELEASE_TAG}"
 
+      - name: Require Indexer NLP data redistribution clearance
+        if: matrix.service == 'indexer'
+        run: python3 services/indexer/verify_nlp.py --source-only --distribution
+
       - name: Log into registry ghcr.io
         uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
         with:
@@ -57,10 +61,17 @@ jobs:
             exit 1
           fi
           image="ghcr.io/${repository}/${SERVICE}:${RELEASE_TAG}"
+          context="."
+          dockerfile="Dockerfile"
+          if [[ "${SERVICE}" == "spider" ]]; then
+            context="${GITHUB_WORKSPACE}"
+            dockerfile="${GITHUB_WORKSPACE}/services/spider/Dockerfile"
+          fi
           docker build \
             --label "org.opencontainers.image.revision=${GITHUB_SHA}" \
             --label "org.opencontainers.image.version=${RELEASE_TAG}" \
-            --tag "${image}" .
+            --file "${dockerfile}" \
+            --tag "${image}" "${context}"
           docker push "${image}"
 
           digest="$(docker buildx imagetools inspect "${image}" --format '{{.Manifest.Digest}}')"

@@ -94,7 +94,9 @@ services:
       - app
 
   spider:
-    build: ./services/spider
+    build:
+      context: .
+      dockerfile: services/spider/Dockerfile
     image: mifolyo-spider
     profiles: ["crawl"]
     command: ["./spider", "--validate-policy", "--validate-baseline-policy"]

@@ -17,3 +17,5 @@ variables.env
 **/.pytest_cache
 .venv
 venv
+# Private model data are provisioned from pinned upstream archives during build.
+nlp/data

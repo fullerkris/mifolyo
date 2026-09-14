@@ -1,6 +1,20 @@
-import json
-from typing import Dict, Any, Set
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
+from typing import Any, Dict, Set, Tuple
+
+
+@dataclass(frozen=True)
+class BacklinkMember:
+    raw: bytes
+    url: str
+
+
+@dataclass(frozen=True)
+class BacklinkBatch:
+    redis_key: bytes
+    target_url: str
+    members: Tuple[BacklinkMember, ...]
+    encoded_url_bytes: int
+
 
 @dataclass
 class Backlinks:

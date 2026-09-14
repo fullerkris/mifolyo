@@ -1,15 +1,10 @@
 import sys
-import types
 import unittest
 from pathlib import Path
 
 
 SERVICE_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(SERVICE_ROOT))
-
-fake_nlp_utils = types.ModuleType("utils.nlp_utils")
-fake_nlp_utils.initialize_nlp = lambda: []
-sys.modules["utils.nlp_utils"] = fake_nlp_utils
 
 from bs4 import BeautifulSoup  # noqa: E402
 from utils.utils import extract_page_text  # noqa: E402

@@ -414,23 +414,38 @@
       "name": "contract-current-document-empty-lua",
       "kind": "contract_digest",
       "input": {
-        "document": {"kind": "path", "value": "docs/crawl-jobs-v2.md"},
+        "document": {
+          "kind": "path",
+          "value": "docs/crawl-jobs-v2.md"
+        },
         "lua_sources": []
       },
       "expected": {
         "lua_source_order": [],
-        "contract_sha256": "1996c4519c93c8fc6da6c78eacc74afbc8eeb4506ff23bad3deaa887e5d43987"
+        "contract_sha256": "f5c26a676e538e9d5635229f32964f454fe2e496ae8bdb39b6b3df78940dc198"
       }
     },
     {
       "name": "contract-synthetic-ascii-source-order",
       "kind": "contract_digest",
       "input": {
-        "document": {"kind": "path", "value": "docs/crawl-jobs-v2.md"},
+        "document": {
+          "kind": "path",
+          "value": "docs/crawl-jobs-v2.md"
+        },
         "lua_sources": [
-          {"source_name": "z.lua", "source_text": "return 'z'\n"},
-          {"source_name": "a.lua", "source_text": "return 'π'\n"},
-          {"source_name": "A.lua", "source_text": "return 'A'\n"}
+          {
+            "source_name": "z.lua",
+            "source_text": "return 'z'\n"
+          },
+          {
+            "source_name": "a.lua",
+            "source_text": "return 'π'\n"
+          },
+          {
+            "source_name": "A.lua",
+            "source_text": "return 'A'\n"
+          }
         ]
       },
       "expected": {
@@ -439,7 +454,7 @@
           "a.lua",
           "z.lua"
         ],
-        "contract_sha256": "149e294bc47a760a68f0726976d41bc727cd3429f748fdee313c17af34b6dd9b"
+        "contract_sha256": "f491831b61c5c09be4b5f1fa0a58d171ba97bddefb5bb1a7a939f69ae2467241"
       }
     },
     {
@@ -483,11 +498,415 @@
       }
     },
     {
+      "name": "canonical-lua-bundle",
+      "kind": "canonical_lua_bundle",
+      "input": {
+        "document_path": "docs/crawl-jobs-v2.md",
+        "lua_directory": "services/spider/internal/database/crawljobsv2/lua"
+      },
+      "expected": {
+        "entries": [
+          {
+            "index": 0,
+            "operation": "CJ2_APPROVE_BOOT",
+            "source_name": "cj2_approve_boot.lua",
+            "source_bytes": 9218,
+            "redis_sha1": "04c7743f73baf9a1ec452b9f3dbefe2ad96c2039",
+            "source_sha256": "5582ad554f4bdf5b44ef5f0cae3abe51b5e4c7bb9d350c8647d0ceb356415fe5"
+          },
+          {
+            "index": 1,
+            "operation": "CJ2_INSTALL_CANDIDATE_MARKERS",
+            "source_name": "cj2_install_candidate_markers.lua",
+            "source_bytes": 209365,
+            "redis_sha1": "5fdbf9707c070ef7dc190e63bd1f7b6979d417e5",
+            "source_sha256": "c2fee1de9e8d32af700f12bce5c5db464f61facb353c77b823038b3283511411"
+          },
+          {
+            "index": 2,
+            "operation": "CJ2_RETIRE_LEGACY_KEYS",
+            "source_name": "cj2_retire_legacy_keys.lua",
+            "source_bytes": 278142,
+            "redis_sha1": "309ed223afad732ce9d392413274fbb66aa4564a",
+            "source_sha256": "702b096b843d80cd1c85186cf79fafa29c08766ea22c599af29877e1e8013fc7"
+          },
+          {
+            "index": 3,
+            "operation": "CJ2_PROMOTE_CANDIDATE_CONTRACTS",
+            "source_name": "cj2_promote_candidate_contracts.lua",
+            "source_bytes": 278151,
+            "redis_sha1": "4d9e4a717129a6bd4c92c06544b249faa1463f69",
+            "source_sha256": "cb7ccb47dacb17058a20fdf0990242e79c486999df5dacd4677f21c4be00ca92"
+          },
+          {
+            "index": 4,
+            "operation": "CJ2_MARK_PLANNED_SHUTDOWN",
+            "source_name": "cj2_mark_planned_shutdown.lua",
+            "source_bytes": 278143,
+            "redis_sha1": "aff3cd297f014a7d9545be3b6c5e3fee69d362fe",
+            "source_sha256": "a401163390a105babd6ee8849c3b5e4ee490c1b6df7420b3b497d6c2891fc6ba"
+          },
+          {
+            "index": 5,
+            "operation": "CJ2_CREATE_RUN",
+            "source_name": "cj2_create_run.lua",
+            "source_bytes": 267905,
+            "redis_sha1": "e9e60605a05bc6d683d9e6a1fec0d617c5add8d7",
+            "source_sha256": "b308e4764f976606daa8e62b2c0fce8641918786745c58fe47763f64434e821c"
+          },
+          {
+            "index": 6,
+            "operation": "CJ2_ENQUEUE_BATCH",
+            "source_name": "cj2_enqueue_batch.lua",
+            "source_bytes": 624139,
+            "redis_sha1": "b7685a05d699937fee277cdec6cb96e72b148437",
+            "source_sha256": "930363503c0c1660b2364b853e420df4d99998a64c0a434e8c7b5fc579783e26"
+          },
+          {
+            "index": 7,
+            "operation": "CJ2_BEGIN_RUN_AUDIT",
+            "source_name": "cj2_begin_run_audit.lua",
+            "source_bytes": 262596,
+            "redis_sha1": "c224116bd582d673a9350e6b623b05a3955b3a4a",
+            "source_sha256": "7d54a589e01ea473b1469f525226ec8686d54e27463e3d9892c7d141f58cb3b6"
+          },
+          {
+            "index": 8,
+            "operation": "CJ2_AUDIT_RUN_BATCH",
+            "source_name": "cj2_audit_run_batch.lua",
+            "source_bytes": 626509,
+            "redis_sha1": "3869e3b061daf642d0729c63001769ac9a4b8b76",
+            "source_sha256": "7ef8d831162c583c186b0b58cc17ed6385a9e9fd6f3213462f8b2d902db44de7"
+          },
+          {
+            "index": 9,
+            "operation": "CJ2_SEAL_RUN",
+            "source_name": "cj2_seal_run.lua",
+            "source_bytes": 262917,
+            "redis_sha1": "8da35fe1518240e262caca7cba47c92133e0108c",
+            "source_sha256": "c476472c7434f0a727cad414f0ef2178c83bd2b4519bccb9081a2bf41c35c4dc"
+          },
+          {
+            "index": 10,
+            "operation": "CJ2_ACTIVATE_RUN",
+            "source_name": "cj2_activate_run.lua",
+            "source_bytes": 263584,
+            "redis_sha1": "0b40a591cfe639eb3b63f8537ad5fced8562e81c",
+            "source_sha256": "583572eab3fa4959dd3a6aaa632a533ada57d5eca30f5e5bb17958667f37459e"
+          },
+          {
+            "index": 11,
+            "operation": "CJ2_REJECT_READY",
+            "source_name": "cj2_reject_ready.lua",
+            "source_bytes": 827393,
+            "redis_sha1": "bfa4d98e34bb383240e4387fa8c9bb5fcb665c5c",
+            "source_sha256": "774d34fff36e62356d94cfea2128d7677da8c8089c845f1c2da213d88943efe3"
+          },
+          {
+            "index": 12,
+            "operation": "CJ2_TRY_CLAIM",
+            "source_name": "cj2_try_claim.lua",
+            "source_bytes": 827392,
+            "redis_sha1": "c13609c959677edd6ab2cdbd525b77689a6a05de",
+            "source_sha256": "6587f88b1476081881c46fec23867b75294f34568e62aa93ecda6b8b63ed8fec"
+          },
+          {
+            "index": 13,
+            "operation": "CJ2_RENEW_LEASE",
+            "source_name": "cj2_renew_lease.lua",
+            "source_bytes": 827396,
+            "redis_sha1": "9b1facfd8083e0be9b37313a21074d438d42d108",
+            "source_sha256": "8ca4926d7f5d5a230a31c21fad0c21bc67f4f303e417c23da926915e5079d4d4"
+          },
+          {
+            "index": 14,
+            "operation": "CJ2_RESERVE_REQUEST",
+            "source_name": "cj2_reserve_request.lua",
+            "source_bytes": 827406,
+            "redis_sha1": "1dca96666af1193d71164b839963e9af50f5b0df",
+            "source_sha256": "f6017525fad5bd874f0a01830f418c9b216c769cb698127e5cad01fe6d4c9543"
+          },
+          {
+            "index": 15,
+            "operation": "CJ2_START_REQUEST",
+            "source_name": "cj2_start_request.lua",
+            "source_bytes": 827400,
+            "redis_sha1": "ecc128a287a90d41c96ae336af86d281c0f9591d",
+            "source_sha256": "4294f96880cf92970855c2848a2852ddf4bd2052eeb3573c24e2d35aa8d7dbb9"
+          },
+          {
+            "index": 16,
+            "operation": "CJ2_FINISH_REQUEST",
+            "source_name": "cj2_finish_request.lua",
+            "source_bytes": 827405,
+            "redis_sha1": "97be2772a35cc6a79b09d136590175460823319d",
+            "source_sha256": "98ed75748901dc0059383e3a25101bceca43d7cf24f2e992f1821f5ba2ca5691"
+          },
+          {
+            "index": 17,
+            "operation": "CJ2_CANCEL_RESERVATION",
+            "source_name": "cj2_cancel_reservation.lua",
+            "source_bytes": 827413,
+            "redis_sha1": "3830bbd5bf0e5e21924fda4ec44ea3253bbaa022",
+            "source_sha256": "b049f917a347414d85e2372be4867db35f7a9ee7a986e58935406d9182c019bf"
+          },
+          {
+            "index": 18,
+            "operation": "CJ2_RELEASE_BEFORE_IO",
+            "source_name": "cj2_release_before_io.lua",
+            "source_bytes": 827403,
+            "redis_sha1": "8cc301d978e11715a8ef52baf368b015621cc25f",
+            "source_sha256": "517994522df0ec61755af83d6582cff6e7e822c1aaae4f0add6fa0fdaf6b5273"
+          },
+          {
+            "index": 19,
+            "operation": "CJ2_RETRY",
+            "source_name": "cj2_retry.lua",
+            "source_bytes": 827379,
+            "redis_sha1": "24e772c155d631a1c4f9ade6e692c315322889d2",
+            "source_sha256": "26917f76deb5cbedc5843950765544ba4eccd45e19049bf9b26b42ff208f133d"
+          },
+          {
+            "index": 20,
+            "operation": "CJ2_DEAD",
+            "source_name": "cj2_dead.lua",
+            "source_bytes": 827377,
+            "redis_sha1": "5ccd60de489ff0a9609f015135ce73f4640f6196",
+            "source_sha256": "72680cbf674adf7d9ad894b7d4f6f4545d68bb7b7dfccbc40540e66bb9e89f5d"
+          },
+          {
+            "index": 21,
+            "operation": "CJ2_CANCEL_JOB",
+            "source_name": "cj2_cancel_job.lua",
+            "source_bytes": 827389,
+            "redis_sha1": "85b1ac8528326b1cea9994dfd6ee34475beeb1bf",
+            "source_sha256": "0b0845aca099afff71883b6047f8e241da17c8eadc683a9805500785a45b1561"
+          },
+          {
+            "index": 22,
+            "operation": "CJ2_COMPLETE_NO_OUTPUT",
+            "source_name": "cj2_complete_no_output.lua",
+            "source_bytes": 827405,
+            "redis_sha1": "ce0335a4491aa872001b35152a7f139f72f4af42",
+            "source_sha256": "bdc0d74578a399c2f3361342cfe14333aa7d94e84487e6b0ec2d3e3981af2aa0"
+          },
+          {
+            "index": 23,
+            "operation": "CJ2_BEGIN_STAGE",
+            "source_name": "cj2_begin_stage.lua",
+            "source_bytes": 827093,
+            "redis_sha1": "10b8ec42c3c31893b2797fceb8b1dfea12225e22",
+            "source_sha256": "9b132c580ba07473ebceb1e26927048f864e07867d4e2a1eb05aa007af058742"
+          },
+          {
+            "index": 24,
+            "operation": "CJ2_STAGE_PAGE_FIELDS",
+            "source_name": "cj2_stage_page_fields.lua",
+            "source_bytes": 827098,
+            "redis_sha1": "eb3b1fb6ded76c82fa9e93fe20940d2bb0ba0c8c",
+            "source_sha256": "ece694ad9ae49c6a3021efe8cfd6fcbc2cc80e1536cd5e24407d5480f06d0b2a"
+          },
+          {
+            "index": 25,
+            "operation": "CJ2_STAGE_PAGE_BLOB",
+            "source_name": "cj2_stage_page_blob.lua",
+            "source_bytes": 827084,
+            "redis_sha1": "d6d49d263b781f250053da61a2b5f8bd2edc5cce",
+            "source_sha256": "374a28965da8b1568dfb37f0a6d3850ea7e8b55367c1e016fb7f7d8144b0e6eb"
+          },
+          {
+            "index": 26,
+            "operation": "CJ2_STAGE_OUTLINKS_BATCH",
+            "source_name": "cj2_stage_outlinks_batch.lua",
+            "source_bytes": 827093,
+            "redis_sha1": "f78e2cde3bc928227afb3ba17b0d3e1c7af31697",
+            "source_sha256": "975cab8b6070826266fd72417176c7848ed5da989901f2be9c254dcb8280ab0b"
+          },
+          {
+            "index": 27,
+            "operation": "CJ2_STAGE_DISCOVERIES_BATCH",
+            "source_name": "cj2_stage_discoveries_batch.lua",
+            "source_bytes": 827104,
+            "redis_sha1": "7d6aa5fc65a0cfb33b960bed3769474a3ec4e4db",
+            "source_sha256": "e4dfd0e8f3984f1b3805b1fd258903a459214a479d55212ac7b202930074b775"
+          },
+          {
+            "index": 28,
+            "operation": "CJ2_STAGE_ALIASES_BATCH",
+            "source_name": "cj2_stage_aliases_batch.lua",
+            "source_bytes": 827100,
+            "redis_sha1": "cd801b0679f4a63e478746217d49eb5a9aacb4ad",
+            "source_sha256": "6fd81bc324c9fcc169f29420e9556675445c13b9c421c9cf0a4a7f5596669803"
+          },
+          {
+            "index": 29,
+            "operation": "CJ2_STAGE_IMAGES_BATCH",
+            "source_name": "cj2_stage_images_batch.lua",
+            "source_bytes": 827090,
+            "redis_sha1": "3aa873b5186af789dbf9aa412b79b934a708abae",
+            "source_sha256": "5e53cf203dec5257c5560f340c8503a808cbf42a335400d3897cb629bc5d01dc"
+          },
+          {
+            "index": 30,
+            "operation": "CJ2_STAGE_IMAGE_MANIFEST",
+            "source_name": "cj2_stage_image_manifest.lua",
+            "source_bytes": 827099,
+            "redis_sha1": "d40904231bde7483f2320200c87ed9f569ce6f01",
+            "source_sha256": "5aae49beb6e3ec8802ecc6910558b09f6466df36596a06e68f51116766cef717"
+          },
+          {
+            "index": 31,
+            "operation": "CJ2_ABORT_STAGE",
+            "source_name": "cj2_abort_stage.lua",
+            "source_bytes": 827092,
+            "redis_sha1": "f4b8960613fd477123b6e88a338dcf3f2001f773",
+            "source_sha256": "c0641701c14c4ae64bb06bad866294de07e3673dd0ea8253342c1734936981fa"
+          },
+          {
+            "index": 32,
+            "operation": "CJ2_SEAL_STAGE",
+            "source_name": "cj2_seal_stage.lua",
+            "source_bytes": 827091,
+            "redis_sha1": "95c340946456554439a5d288d62b0647d77a1db8",
+            "source_sha256": "8882be472642b0f939e13300d38230136135cf8e2f525d809bcc24ab9463b5d3"
+          },
+          {
+            "index": 33,
+            "operation": "CJ2_COMMIT",
+            "source_name": "cj2_commit.lua",
+            "source_bytes": 827166,
+            "redis_sha1": "d187ed1bda07f50f6e15ffc7fa5e515bf3bfe9fa",
+            "source_sha256": "e6d9f14ccc566cff43148790af96f1b2d65e890a2a4e7b33e3bb475c1427d4fe"
+          },
+          {
+            "index": 34,
+            "operation": "CJ2_PROMOTE_DUE",
+            "source_name": "cj2_promote_due.lua",
+            "source_bytes": 866335,
+            "redis_sha1": "427c7f36b8102895d3075faccc34a0aa84d4bff7",
+            "source_sha256": "9db6477d5388ce8644441bd7e82ee43cca087cd70ea3a2f364ce90a1a8602804"
+          },
+          {
+            "index": 35,
+            "operation": "CJ2_RECOVER_EXPIRED",
+            "source_name": "cj2_recover_expired.lua",
+            "source_bytes": 866343,
+            "redis_sha1": "0f1e80f9f1aa00dc49661c8f09b25fb6277b6b32",
+            "source_sha256": "430c7b9d3b5cfe734652755ad74e431312cfae619aef517a7ae2dc1e9c21954a"
+          },
+          {
+            "index": 36,
+            "operation": "CJ2_CANCEL_RUN",
+            "source_name": "cj2_cancel_run.lua",
+            "source_bytes": 263438,
+            "redis_sha1": "cecdc680f14b2ada001b3fc147707bd636a000f6",
+            "source_sha256": "12f89cab604085c521d141b66d1be323a1adaa299884d489987f02243859404d"
+          },
+          {
+            "index": 37,
+            "operation": "CJ2_CANCEL_BATCH",
+            "source_name": "cj2_cancel_batch.lua",
+            "source_bytes": 866336,
+            "redis_sha1": "e129b2a8c4a688e9a9325ee08513462a49e6d978",
+            "source_sha256": "06700f9fd2f6ac228d95970e629ef034e51cd8eec67a0fd4b8711fd17fb485f7"
+          },
+          {
+            "index": 38,
+            "operation": "CJ2_FINALIZE_RUN",
+            "source_name": "cj2_finalize_run.lua",
+            "source_bytes": 264464,
+            "redis_sha1": "7cfba8086843a2239253cf61d628fec372bdcca5",
+            "source_sha256": "a273a60dd1d097915f9e61a941a43295279c7c15dbc418393f9a22fc2b7fc83b"
+          },
+          {
+            "index": 39,
+            "operation": "CJ2_ARCHIVE_RUN",
+            "source_name": "cj2_archive_run.lua",
+            "source_bytes": 265060,
+            "redis_sha1": "270e24f013f439af2d38881eaaf4ce19a30c510f",
+            "source_sha256": "2a9b0bc0ba976a376b15fdc9ee0fd434195427a2721d8d2efbf8360160d47cef"
+          },
+          {
+            "index": 40,
+            "operation": "CJ2_PURGE_RUN_BATCH",
+            "source_name": "cj2_purge_run_batch.lua",
+            "source_bytes": 866341,
+            "redis_sha1": "b73621f80a7add66a6bf75521e6c2a60f1b8c725",
+            "source_sha256": "4040f9c1ef2499ed8fa707a56bd65c8b044440bc7b258079d80231bdc217d149"
+          },
+          {
+            "index": 41,
+            "operation": "CJ2_CLEAN_STAGE",
+            "source_name": "cj2_clean_stage.lua",
+            "source_bytes": 866333,
+            "redis_sha1": "d9be1295c592389f32e51a2883c6feec31e7c8b1",
+            "source_sha256": "220ff429516340604adc3914004b0a207bde491faf7d4d50342fdc525313345e"
+          },
+          {
+            "index": 42,
+            "operation": "CJ2_MAINTAIN_RATE_SCOPES",
+            "source_name": "cj2_maintain_rate_scopes.lua",
+            "source_bytes": 866350,
+            "redis_sha1": "00ce3177597cb98138292d88631da13856722c9c",
+            "source_sha256": "97aec3d6bf98d422fe3f890064ad387eefeb34e0575ce85323e7e057d711c8bf"
+          }
+        ],
+        "lua_source_order": [
+          "cj2_abort_stage.lua",
+          "cj2_activate_run.lua",
+          "cj2_approve_boot.lua",
+          "cj2_archive_run.lua",
+          "cj2_audit_run_batch.lua",
+          "cj2_begin_run_audit.lua",
+          "cj2_begin_stage.lua",
+          "cj2_cancel_batch.lua",
+          "cj2_cancel_job.lua",
+          "cj2_cancel_reservation.lua",
+          "cj2_cancel_run.lua",
+          "cj2_clean_stage.lua",
+          "cj2_commit.lua",
+          "cj2_complete_no_output.lua",
+          "cj2_create_run.lua",
+          "cj2_dead.lua",
+          "cj2_enqueue_batch.lua",
+          "cj2_finalize_run.lua",
+          "cj2_finish_request.lua",
+          "cj2_install_candidate_markers.lua",
+          "cj2_maintain_rate_scopes.lua",
+          "cj2_mark_planned_shutdown.lua",
+          "cj2_promote_candidate_contracts.lua",
+          "cj2_promote_due.lua",
+          "cj2_purge_run_batch.lua",
+          "cj2_recover_expired.lua",
+          "cj2_reject_ready.lua",
+          "cj2_release_before_io.lua",
+          "cj2_renew_lease.lua",
+          "cj2_reserve_request.lua",
+          "cj2_retire_legacy_keys.lua",
+          "cj2_retry.lua",
+          "cj2_seal_run.lua",
+          "cj2_seal_stage.lua",
+          "cj2_stage_aliases_batch.lua",
+          "cj2_stage_discoveries_batch.lua",
+          "cj2_stage_image_manifest.lua",
+          "cj2_stage_images_batch.lua",
+          "cj2_stage_outlinks_batch.lua",
+          "cj2_stage_page_blob.lua",
+          "cj2_stage_page_fields.lua",
+          "cj2_start_request.lua",
+          "cj2_try_claim.lua"
+        ],
+        "source_set_sha256": "10a4f753395a6d1bccc587194ef2af6346ca3c03f8a8faf71081abc800ac13b8",
+        "contract_sha256": "df171381f4f1bb6d8daec60b9173254f8ae77cfc24907d0a69b279cab89fa562",
+        "bundle_seal_sha256": "7ec16509119c44a02eafa8c342fe777dfa6b769937c1681efbabb2fc36823614"
+      }
+    },
+    {
       "name": "acyclic-guard-compatibility-stored-relation",
       "kind": "guard_chain",
       "input": {
         "guard_mode": "production",
-        "contract_case": "contract-current-document-empty-lua",
+        "contract_case": "canonical-lua-bundle",
         "guard_core": {
           "redis_version": "7.2.5",
           "redis_config_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
@@ -512,10 +931,10 @@
         "approved_at_ms": 1788266100000
       },
       "expected": {
-        "guard_core_sha256": "eddff7de156c99faea418ccd711e822e6c0e9c0c0c51976c50626fcc574ad04b",
-        "compatibility_manifest_sha256": "72a4eaf56f5d0a139860444deeae0028e6f3796f2869471ad06467d653305574",
-        "compatibility_marker_sha256": "6cf2dc6a3713f0cc13b6fc1b917aa7b9a1a4d9774a7ad3c9e71bf1b550486884",
-        "stored_guard_sha256": "02b8e2d00c1a6d7a4ff6a4de782620f5baecb6719e94ea09b00e5ba2352e29bd"
+        "guard_core_sha256": "3dcbad291ac6c634e7d1d2c334e747c0062c2d4b7715f29e08f4bc9b227632b8",
+        "compatibility_manifest_sha256": "dd3dc5e046d5de4ce7686fec535d2a429a1ab2766fc86b871c0b15267e1dba77",
+        "compatibility_marker_sha256": "2961460d899ecffb8bb31989a1c0bdebded70f6973bb4133b4aa4ea8623e9b64",
+        "stored_guard_sha256": "0a1bf568530efddd35b770a9aea702ed9cb7bbcc42d1be09460fb87fac3df5eb"
       }
     },
     {
@@ -523,7 +942,7 @@
       "kind": "guard_core",
       "input": {
         "guard_mode": "provisional_fixture",
-        "contract_case": "contract-current-document-empty-lua",
+        "contract_case": "canonical-lua-bundle",
         "guard_core": {
           "redis_version": "7.2.5",
           "redis_config_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
@@ -536,8 +955,8 @@
         }
       },
       "expected": {
-        "guard_core_sha256": "16b7ca9b046bd9ca2ed2266f3c66b68a5bb49fa4ecab85949618c9320c66ba45",
-        "record_hex": "000000000000000b000000000000001070726f746f636f6c5f76657273696f6e000000000000000132000000000000000f636f6e74726163745f736861323536000000000000004031393936633435313963393363386663366461366337386561636337346166626338656562343530366666323362616433646561613838376535643433393837000000000000000d72656469735f76657273696f6e0000000000000005372e322e35000000000000001372656469735f636f6e6669675f73686132353600000000000000403131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313100000000000000146d6178696d756d5f73686170655f73686132353600000000000000403030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303000000000000000156d656d6f72795f666978747572655f73686132353600000000000000403333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333300000000000000146c75615f62656e63686d61726b5f7368613235360000000000000040343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434340000000000000019616f665f63726173685f65766964656e63655f736861323536000000000000004035353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535000000000000000c6375746f7665725f6d6f646500000000000000056672657368000000000000001063616e6469646174655f72756e5f696400000000000000000000000000000008617070726f766564000000000000000131"
+        "guard_core_sha256": "938794979ff048460dac97f02b7cdd0e617be94d8a32ea245e97620522e7992c",
+        "record_hex": "000000000000000b000000000000001070726f746f636f6c5f76657273696f6e000000000000000132000000000000000f636f6e74726163745f736861323536000000000000004064663137313338316634663162623664386461656336306239313733323534663861653737636663323439303764306136396232373963616238396661353632000000000000000d72656469735f76657273696f6e0000000000000005372e322e35000000000000001372656469735f636f6e6669675f73686132353600000000000000403131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313100000000000000146d6178696d756d5f73686170655f73686132353600000000000000403030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303000000000000000156d656d6f72795f666978747572655f73686132353600000000000000403333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333300000000000000146c75615f62656e63686d61726b5f7368613235360000000000000040343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434340000000000000019616f665f63726173685f65766964656e63655f736861323536000000000000004035353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535353535000000000000000c6375746f7665725f6d6f646500000000000000056672657368000000000000001063616e6469646174655f72756e5f696400000000000000000000000000000008617070726f766564000000000000000131"
       }
     },
     {
@@ -1339,6 +1758,168 @@
     {"name": "transcript rejects active terminal reservation", "kind": "transcript_binding_mutation", "input": {"base_case": "transcript-nonzero-baseline-ordinal-gaps", "mutation": "witness_active_reservation"}, "expected_rejection_class": "TRANSCRIPT_BINDING_MISMATCH"},
     {"name": "transcript rejects final document timestamp mismatch", "kind": "transcript_binding_mutation", "input": {"base_case": "transcript-nonzero-baseline-ordinal-gaps", "mutation": "witness_document_timestamp"}, "expected_rejection_class": "TRANSCRIPT_BINDING_MISMATCH"},
     {"name": "commit replay rejects stale generation binding", "kind": "transcript_binding_mutation", "input": {"base_case": "transcript-nonzero-baseline-ordinal-gaps", "mutation": "stale_generation_binding"}, "expected_rejection_class": "IMMUTABLE_MISMATCH"},
-    {"name": "commit replay rejects stale baseline binding", "kind": "transcript_binding_mutation", "input": {"base_case": "transcript-nonzero-baseline-ordinal-gaps", "mutation": "stale_baseline_binding"}, "expected_rejection_class": "IMMUTABLE_MISMATCH"}
+    {"name": "commit replay rejects stale baseline binding", "kind": "transcript_binding_mutation", "input": {"base_case": "transcript-nonzero-baseline-ordinal-gaps", "mutation": "stale_baseline_binding"}, "expected_rejection_class": "IMMUTABLE_MISMATCH"},
+    {
+      "name": "canonical-bundle-missing-source",
+      "kind": "canonical_lua_bundle_mutation",
+      "input": {
+        "base_case": "canonical-lua-bundle",
+        "mutation": "missing_source"
+      },
+      "expected_rejection_class": "BUNDLE_INVENTORY"
+    },
+    {
+      "name": "canonical-bundle-extra-source",
+      "kind": "canonical_lua_bundle_mutation",
+      "input": {
+        "base_case": "canonical-lua-bundle",
+        "mutation": "extra_source"
+      },
+      "expected_rejection_class": "BUNDLE_INVENTORY"
+    },
+    {
+      "name": "canonical-bundle-swapped-sources",
+      "kind": "canonical_lua_bundle_mutation",
+      "input": {
+        "base_case": "canonical-lua-bundle",
+        "mutation": "swapped_sources"
+      },
+      "expected_rejection_class": "BUNDLE_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "canonical-bundle-duplicate-sources",
+      "kind": "canonical_lua_bundle_mutation",
+      "input": {
+        "base_case": "canonical-lua-bundle",
+        "mutation": "duplicate_sources"
+      },
+      "expected_rejection_class": "BUNDLE_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "canonical-bundle-duplicate-entry",
+      "kind": "canonical_lua_bundle_mutation",
+      "input": {
+        "base_case": "canonical-lua-bundle",
+        "mutation": "duplicate_entry"
+      },
+      "expected_rejection_class": "BUNDLE_INVENTORY"
+    },
+    {
+      "name": "canonical-bundle-swapped-entries",
+      "kind": "canonical_lua_bundle_mutation",
+      "input": {
+        "base_case": "canonical-lua-bundle",
+        "mutation": "swapped_entries"
+      },
+      "expected_rejection_class": "BUNDLE_INVENTORY"
+    },
+    {
+      "name": "canonical-bundle-source-alias-path",
+      "kind": "canonical_lua_bundle_mutation",
+      "input": {
+        "base_case": "canonical-lua-bundle",
+        "mutation": "source_alias_path"
+      },
+      "expected_rejection_class": "BUNDLE_INVENTORY"
+    },
+    {
+      "name": "canonical-bundle-invalid-utf8",
+      "kind": "canonical_lua_bundle_mutation",
+      "input": {
+        "base_case": "canonical-lua-bundle",
+        "mutation": "invalid_utf8"
+      },
+      "expected_rejection_class": "BUNDLE_SOURCE_BYTES"
+    },
+    {
+      "name": "canonical-bundle-missing-newline",
+      "kind": "canonical_lua_bundle_mutation",
+      "input": {
+        "base_case": "canonical-lua-bundle",
+        "mutation": "missing_newline"
+      },
+      "expected_rejection_class": "BUNDLE_SOURCE_BYTES"
+    },
+    {
+      "name": "canonical-bundle-one-byte-drift",
+      "kind": "canonical_lua_bundle_mutation",
+      "input": {
+        "base_case": "canonical-lua-bundle",
+        "mutation": "one_byte_drift"
+      },
+      "expected_rejection_class": "BUNDLE_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "canonical-bundle-stale-redis-sha1",
+      "kind": "canonical_lua_bundle_mutation",
+      "input": {
+        "base_case": "canonical-lua-bundle",
+        "mutation": "stale_redis_sha1"
+      },
+      "expected_rejection_class": "BUNDLE_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "canonical-bundle-stale-source-sha256",
+      "kind": "canonical_lua_bundle_mutation",
+      "input": {
+        "base_case": "canonical-lua-bundle",
+        "mutation": "stale_source_sha256"
+      },
+      "expected_rejection_class": "BUNDLE_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "canonical-bundle-source-set-substitution",
+      "kind": "canonical_lua_bundle_mutation",
+      "input": {
+        "base_case": "canonical-lua-bundle",
+        "mutation": "source_set_substitution"
+      },
+      "expected_rejection_class": "BUNDLE_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "canonical-bundle-bundle-seal-substitution",
+      "kind": "canonical_lua_bundle_mutation",
+      "input": {
+        "base_case": "canonical-lua-bundle",
+        "mutation": "bundle_seal_substitution"
+      },
+      "expected_rejection_class": "BUNDLE_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "canonical-bundle-contract-substitution",
+      "kind": "canonical_lua_bundle_mutation",
+      "input": {
+        "base_case": "canonical-lua-bundle",
+        "mutation": "contract_substitution"
+      },
+      "expected_rejection_class": "BUNDLE_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "canonical-bundle-contract-resealed",
+      "kind": "canonical_lua_bundle_mutation",
+      "input": {
+        "base_case": "canonical-lua-bundle",
+        "mutation": "contract_resealed"
+      },
+      "expected_rejection_class": "BUNDLE_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "canonical-bundle-document-one-byte-drift",
+      "kind": "canonical_lua_bundle_mutation",
+      "input": {
+        "base_case": "canonical-lua-bundle",
+        "mutation": "document_one_byte_drift"
+      },
+      "expected_rejection_class": "BUNDLE_IDENTITY_MISMATCH"
+    },
+    {
+      "name": "canonical-bundle-source-resealed",
+      "kind": "canonical_lua_bundle_mutation",
+      "input": {
+        "base_case": "canonical-lua-bundle",
+        "mutation": "source_resealed"
+      },
+      "expected_rejection_class": "BUNDLE_IDENTITY_MISMATCH"
+    }
   ]
 }

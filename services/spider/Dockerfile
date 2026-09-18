@@ -8,6 +8,7 @@ COPY services/spider/go.mod services/spider/go.sum ./
 
 # Download dependencies
 RUN go mod download
+RUN apk add --no-cache python3
 
 # Copy the application
 COPY services/spider/ ./
@@ -16,12 +17,15 @@ COPY contracts/crawl-jobs-v2/digest-vectors.json /app/contracts/crawl-jobs-v2/di
 COPY contracts/url-canonicalization/v1.json /app/contracts/url-canonicalization/v1.json
 COPY docs/crawl-jobs-v2.md /app/docs/crawl-jobs-v2.md
 COPY seeds/manual-seeds.csv /app/seeds/manual-seeds.csv
+COPY scripts/verify-crawl-jobs-v2-digests.py scripts/crawl_jobs_v2_url.py scripts/generate-crawl-jobs-v2-lua.py /app/scripts/
+COPY scripts/generate-crawl-jobs-v2-bundle.py /app/scripts/generate-crawl-jobs-v2-bundle.py
+COPY scripts/tests/test_crawl_jobs_v2_url.py /app/scripts/tests/test_crawl_jobs_v2_url.py
 
 # Build the application
 RUN go build -o spider ./cmd/spider/main.go
 
 # Run tests
-RUN go test -v ./...
+RUN go test -timeout 30m -v ./...
 
 # Use a smaller base image
 FROM alpine:3.24.1

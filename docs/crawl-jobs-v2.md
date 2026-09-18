@@ -2191,8 +2191,9 @@ with any such observed path MUST NOT receive a commit guard or active marker.
 
 Scripts MUST NOT use `KEYS`, unbounded `SCAN`, unbounded collection reads,
 client timestamps, random Lua values, or user-provided retry delays. `KEYS[]`
-must contain only fixed control/run/stage keys; dynamic output keys are derived
-from validated bounded stage data because Redis Cluster is unsupported.
+MUST have the exact operation-specific layout in section 10.1.1; dynamic output
+keys are derived from validated bounded stage data because Redis Cluster is
+unsupported.
 
 The reviewed Lua sources include one bounded SHA-256 implementation and MUST
 recompute every control identity whose complete bounded input is available to a
@@ -2226,6 +2227,158 @@ image as compromise of the ledger. Making script-only mutation a hostile-client
 security boundary would require a separately authenticated transition gateway
 and a new architecture decision; this release does not pretend the ACL supplies
 that property.
+
+#### 10.1.1 Closed KEYS/ARGV wire layout
+
+This table makes the existing reviewed Go constructor layout explicit. It adds
+no operation, key family, argument, or response shape. It does not change the
+section 5.1 or 17.7 fixture/bootstrap/ACL gates or authorize any bypass; real-Redis
+fixture and administrative acceptance questions remain separately review-gated.
+The ordered lists are wire positions, not permission to read or mutate a key
+outside an operation's existing rules. Absent keys retain their wire positions.
+
+For the following named ordered key blocks, `P=mifolyo:crawl:v2`,
+`B=P:run:R`, and `T=P:stage:C`. `R`, `J`, `S`, `Q`, and `C` have their section 6
+meanings; `C` is `expected_commit_id` for cleanup. Whitespace separates keys or
+blocks, and `+` concatenates blocks without sorting or deduplication. All names
+expand to the exact existing key families in sections 5, 6, and 13.
+
+```text
+BOOT = P:durability
+AUTH = P:durability mifolyo:contracts:active P:contract mifolyo:contracts:candidate P:contract:candidate P:commit_guard P:legacy_retirement P:admin_freeze
+RUNS = P:runs P:active_runs P:unarchived_runs
+LIVE = RUNS P:first_request_start P:active_leases P:stage_expiry P:stage_slots P:rate_scopes
+RUN = B B:jobs B:job_order B:ready B:ready_at B:leased B:leased_at B:delayed B:commit_backpressure B:completed B:dead B:cancelled B:group_limits B:group_rate_scope_ids B:group_scope_ids B:group_concurrency B:group_interval_ms B:group_started B:group_pending B:group_active_started B:group_open_jobs B:audit_group_counts B:retry_reason_counts B:recovery_outcome_counts B:disposition_reason_counts B:visited_depth B:visited_urls
+JOB = B:job:J
+RATE(S) = P:rate:S P:rate:S:active P:rate:S:pending P:rate:S:started
+STAGE = T:meta T:keys T:page T:outlinks T:discoveries T:discovery_records T:discovery_depths T:aliases T:image_manifest T:image:{0..63}
+LEGACY = mifolyo:crawl:v1:queue mifolyo:crawl:v1:urls mifolyo:crawl:v1:depths spider_queue signal_queue
+OWNERS = pages_queue:indexer_owner image_indexer_queue:owner
+DOWNSTREAM = pages_queue pages_queue:processing pages_queue:dead image_indexer_queue image_indexer_queue:processing image_indexer_queue:dead OWNERS
+WORK = AUTH LIVE RUN JOB
+REQUEST = WORK P:reservation:Q RATE(global_scope_id) RATE(group_scope_id) RATE(origin_scope_id)
+MAINT = AUTH RUNS P:active_leases P:stage_expiry P:stage_slots P:rate_scopes RUN
+SHUTDOWN_RUN = B B:leased
+```
+
+`RUN` has 27 keys, `AUTH` 8, `LIVE` 8, `WORK` 44, `REQUEST` 57, and `MAINT` 42.
+`STAGE` has exactly 73 keys: its nine named keys followed by all 64 image keys
+in numeric order `0` through `63` (canonical decimal, not byte-sorted), even for
+an empty image set. Each `RATE(S)` has four keys. `REQUEST` uses the validated
+reservation's three scopes in **global, group, origin** order, not digest order;
+`Q` is derived from the complete intent for claim/reserve and agrees with the
+submitted reservation ID for start/finish/cancel. No scope IDs are additional
+ARGV fields on those latter three operations.
+
+The conditional/repeated key blocks below mean exactly:
+
+- `RUN*m`: `m=0` for fresh promotion (empty candidate run ID), `m=1` for
+  migration promotion (its candidate run ID supplies `R`).
+- `JOB*n`: one job key for each enqueue/audit source record in submitted job-ID
+  byte order, using that record's `job_id` for `J`; `n=record_count`.
+- `JOB*e`: `e=0` when purge's `expected_first_job_id_or_empty` is empty;
+  otherwise `e=1` and that expected ID supplies `J`.
+- `SHUTDOWN_RUN*a`: one run-hash/leased-index pair per submitted active run ID,
+  in strictly increasing run-ID byte order, with `a=active_run_count` (0..16).
+  The same ordered IDs form the shutdown ARGV tail; they are not caller-ordered.
+
+Candidate and active run-data variants use the same key layout. In particular,
+purge never appends `LEGACY`: `AUTH` always includes the `legacy_retirement`
+key, including when its optional transport-record slot is empty in the reviewed
+candidate-before-retirement variant. Active purge requires the exact legacy
+record. This does not add a candidate-after-retirement purge variant.
+
+Let `g=0` for `CJ2_APPROVE_BOOT` and `g=7` for every other operation. ARGV is
+exactly the section 9.1 gate prefix, then the `s` semantic scalar **values** in
+the operation's section 10 field order, then its typed tail below. Scalar names
+are not separate arguments. `ARGV` count is `g+s+t`, where `t=0` for `none`,
+`t=a` for `run_ids`, and `t=n` for a record tail. For create, `n` is
+`policy_group_count`; for all source/chunk tails it is `record_count`. Counts
+remain canonical decimal scalar values, not binary U64 arguments.
+
+| Operation | Ordered KEYS | KEYS count | s | ARGV tail |
+|---|---|---|---|---|
+| `CJ2_APPROVE_BOOT` | `BOOT` | `1` | 8 | `none` |
+| `CJ2_INSTALL_CANDIDATE_MARKERS` | `AUTH` | `8` | 24 | `none` |
+| `CJ2_RETIRE_LEGACY_KEYS` | `AUTH + RUNS + LEGACY` | `16` | 16 | `none` |
+| `CJ2_PROMOTE_CANDIDATE_CONTRACTS` | `AUTH + LIVE + LEGACY + DOWNSTREAM + RUN*m` | `29+27*m` | 13 | `none` |
+| `CJ2_MARK_PLANNED_SHUTDOWN` | `AUTH + P:active_runs + P:active_leases + P:stage_slots + P:stage_expiry + P:rate_scopes + RATE(global_scope_id) + OWNERS + SHUTDOWN_RUN*a` | `19+2*a` | 3 | `run_ids` |
+| `CJ2_CREATE_RUN` | `AUTH + RUNS + RUN` | `38` | 19 | `groups` |
+| `CJ2_ENQUEUE_BATCH` | `AUTH + RUNS + RUN + JOB*n` | `38+n` | 2 | `source` |
+| `CJ2_BEGIN_RUN_AUDIT` | `AUTH + RUNS + RUN` | `38` | 1 | `none` |
+| `CJ2_AUDIT_RUN_BATCH` | `AUTH + RUNS + RUN + JOB*n` | `38+n` | 4 | `source` |
+| `CJ2_SEAL_RUN` | `AUTH + RUNS + RUN` | `38` | 3 | `none` |
+| `CJ2_ACTIVATE_RUN` | `AUTH + RUNS + RUN + LEGACY` | `43` | 6 | `none` |
+| `CJ2_REJECT_READY` | `WORK` | `44` | 12 | `none` |
+| `CJ2_TRY_CLAIM` | `REQUEST` | `57` | 33 | `none` |
+| `CJ2_RENEW_LEASE` | `WORK` | `44` | 5 | `none` |
+| `CJ2_RESERVE_REQUEST` | `REQUEST` | `57` | 23 | `none` |
+| `CJ2_START_REQUEST` | `REQUEST` | `57` | 6 | `none` |
+| `CJ2_FINISH_REQUEST` | `REQUEST` | `57` | 6 | `none` |
+| `CJ2_CANCEL_RESERVATION` | `REQUEST` | `57` | 6 | `none` |
+| `CJ2_RELEASE_BEFORE_IO` | `WORK` | `44` | 6 | `none` |
+| `CJ2_RETRY` | `WORK` | `44` | 7 | `none` |
+| `CJ2_DEAD` | `WORK` | `44` | 7 | `none` |
+| `CJ2_CANCEL_JOB` | `WORK` | `44` | 7 | `none` |
+| `CJ2_COMPLETE_NO_OUTPUT` | `WORK` | `44` | 7 | `none` |
+| `CJ2_BEGIN_STAGE` | `WORK + STAGE` | `117` | 15 | `none` |
+| `CJ2_STAGE_PAGE_FIELDS` | `WORK + STAGE` | `117` | 10 | `page_fields` |
+| `CJ2_STAGE_PAGE_BLOB` | `WORK + STAGE` | `117` | 10 | `blob` |
+| `CJ2_STAGE_OUTLINKS_BATCH` | `WORK + STAGE` | `117` | 10 | `outlinks` |
+| `CJ2_STAGE_DISCOVERIES_BATCH` | `WORK + STAGE` | `117` | 10 | `discoveries` |
+| `CJ2_STAGE_ALIASES_BATCH` | `WORK + STAGE` | `117` | 10 | `aliases` |
+| `CJ2_STAGE_IMAGES_BATCH` | `WORK + STAGE` | `117` | 10 | `images` |
+| `CJ2_STAGE_IMAGE_MANIFEST` | `WORK + STAGE` | `117` | 10 | `image_manifest` |
+| `CJ2_ABORT_STAGE` | `WORK + STAGE` | `117` | 7 | `none` |
+| `CJ2_SEAL_STAGE` | `WORK + STAGE` | `117` | 8 | `none` |
+| `CJ2_COMMIT` | `WORK + STAGE + pages_queue` | `118` | 6 | `none` |
+| `CJ2_PROMOTE_DUE` | `MAINT` | `42` | 1 | `none` |
+| `CJ2_RECOVER_EXPIRED` | `MAINT` | `42` | 1 | `none` |
+| `CJ2_CANCEL_RUN` | `AUTH + RUNS + RUN` | `38` | 2 | `none` |
+| `CJ2_CANCEL_BATCH` | `MAINT` | `42` | 1 | `none` |
+| `CJ2_FINALIZE_RUN` | `MAINT` | `42` | 1 | `none` |
+| `CJ2_ARCHIVE_RUN` | `AUTH + RUNS + P:active_leases + P:stage_expiry + P:stage_slots + RUN + DOWNSTREAM` | `49` | 3 | `none` |
+| `CJ2_PURGE_RUN_BATCH` | `AUTH + RUNS + P:first_request_start + P:active_leases + P:stage_expiry + P:stage_slots + RUN + JOB*e` | `42+e` | 3 | `none` |
+| `CJ2_CLEAN_STAGE` | `AUTH + P:stage_expiry + P:stage_slots + STAGE` | `83` | 2 | `none` |
+| `CJ2_MAINTAIN_RATE_SCOPES` | `AUTH + P:rate_scopes` | `9` | 1 | `none` |
+
+Every group, source, or chunk tail record is **one binary Redis bulk argument**:
+`RECORD(fields...) = U64(field_count) || F(name_1) || F(value_1) || ...`, exactly
+as in section 4. It is not flattened into scalar fields, wrapped in an additional
+`F` or `SECTION`, JSON-encoded, hex-encoded, or base64-encoded on the wire. Lua
+MUST boundedly decode each complete record and require the exact field names,
+order, count, lengths, and no trailing bytes. Binary framing is an exception to
+the default UTF-8 argument rule; individual field values retain their specified
+validation, including HTML validation for blob `field_bytes`.
+
+| Tail | Exact ordered RECORD fields | Record count |
+|---|---|---|
+| `groups` | `group_id rate_scope_id group_scope_id request_start_limit concurrency interval_ms` | `1..64` |
+| `source` | `job_id canonical_url score_text depth group_id rate_scope_id group_scope_id initial_origin_scope_id policy_decision_sha256` | `1..500` enqueue; `0..100` audit |
+| `page_fields` | `normalized_url content_type status_code last_crawled rendered render_policy_rule render_policy_sha256 publication_id` | `1` |
+| `blob` | `field_name field_bytes` | `1` |
+| `outlinks` | `target_url` | `1..64` |
+| `discoveries` | `job_id canonical_url depth score_text group_id rate_scope_id group_scope_id initial_origin_scope_id policy_decision_sha256` | `1..64` |
+| `aliases` | `url_id canonical_url depth` | `1..5` |
+| `images` | `normalized_source_url alt` | `1..64` |
+| `image_manifest` | `contract_version publication_id normalized_url image_count image_keys` | `1` |
+
+Tail records retain the canonical ordering of their operations. In particular,
+source and discovery tails carry all nine fields (with their distinct
+score/depth orders); the seven-field digest projections are not wire records.
+`run_ids` is the sole repeated scalar tail: one ASCII run ID per bulk, without
+`RECORD` framing. `none` has no tail at all.
+
+The gate exceptions remain exact: APPROVE has only its eight scalar arguments
+and durability key, no prefix or marker records; INSTALL has the seven-field
+`boot_only` prefix followed by its 24 scalar values, including the individually
+ordered compatibility marker values. PROMOTE similarly sends its guard-core
+values as semantic scalars, not another binary tail. Each nonempty gate artifact
+record is one binary bulk under section 9.1; an absent artifact is a zero-byte
+bulk, not an encoded zero-field record. No gate slot is omitted. Gate modes and
+post-state replay exceptions remain those already specified in sections 9.1
+and 10.2. START and stage-data success/replay responses each have **nine** bulk
+scalars including status and Redis time; the maximum response arity remains 9.
 
 ### 10.2 Administrative and run preparation transitions
 
@@ -2586,7 +2739,15 @@ global active-lease score to the same deadline. If one reservation is active, it
 reservation and, for each of its three scopes, the
 `:active` score and exact matching `:pending` or `:started` secondary score to
 the same expiry. It
-never shortens a deadline. Budget exhaustion does not prevent renewal.
+never shortens a deadline. Before any mutation, it MUST compare the prescribed
+deadline (`now+60000`, or `min(now+60000, stage_expires_at_ms)` with an active
+stage) against every matching existing deadline it would set: the job lease,
+run leased score, global active-lease score, and any active reservation's expiry
+and three scopes' matching active/secondary scores. If the prescribed deadline
+is less than any of them, renewal MUST return `INVALID_STATE` without mutation,
+including no counter or timestamp update. It MUST NOT substitute a maximum with
+an existing deadline or otherwise change the successful formula. Equality is not
+shortening. Budget exhaustion does not prevent renewal.
 Authorization expiry or run cancellation returns the corresponding definitive
 status and does not renew.
 An exact aborted-stage terminal reservation makes renewal `INVALID_STATE`; only

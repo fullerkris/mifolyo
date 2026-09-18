@@ -7,6 +7,7 @@ import (
 	"errors"
 	"strconv"
 	"strings"
+	"unicode/utf8"
 )
 
 var (
@@ -113,7 +114,7 @@ func (set ScriptBindingSet) validate() error {
 	for index, operation := range operationWireOrder {
 		binding := set.bindings[index]
 		if binding.operation != operation || binding.sourceName != canonicalScriptSourceName(operation) ||
-			len(binding.source) == 0 || !isLowerHex(binding.redisSHA1, 40) || !validScriptBundleDigest(binding.sourceSHA256) {
+			len(binding.source) == 0 || !utf8.ValidString(binding.source) || !isLowerHex(binding.redisSHA1, 40) || !validScriptBundleDigest(binding.sourceSHA256) {
 			return ErrInvalidScriptBindingSet
 		}
 		if _, duplicate := seenNames[binding.sourceName]; duplicate {

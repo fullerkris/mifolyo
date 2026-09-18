@@ -135,7 +135,9 @@ jobs:
           --crawl-policy-file ./config/crawl-policy-v1.baseline.json
       - name: Test
         working-directory: ./services/spider
-        run: go test -race -v ./...
+        # Exhaustive Lua/Unicode conformance is slow under Go's race instrumentation.
+        # This does not change Redis's separate maximum-shape latency limit.
+        run: go test -race -timeout 90m -v ./...
       - name: Scan Go dependencies and call paths
         working-directory: ./services/spider
         run: |

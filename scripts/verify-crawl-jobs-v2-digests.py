@@ -8,15 +8,27 @@ import base64
 import copy
 import datetime as dt
 import hashlib
-import ipaddress
+import importlib.util
 import json
 import math
 import re
+import stat
 import struct
 import sys
 import unicodedata
 from pathlib import Path
-from urllib.parse import urlsplit
+
+
+# Fixed sibling import also works under runpy and from a non-repository cwd.
+# Neither a fixture path nor PYTHONPATH chooses the URL implementation/data.
+_url_spec = importlib.util.spec_from_file_location(
+    "_crawl_jobs_v2_url_pinned", Path(__file__).resolve().with_name("crawl_jobs_v2_url.py")
+)
+if _url_spec is None or _url_spec.loader is None:
+    raise ImportError("pinned Crawl Jobs V2 URL helper unavailable")
+_url_helper = importlib.util.module_from_spec(_url_spec)
+sys.modules[_url_spec.name] = _url_helper
+_url_spec.loader.exec_module(_url_helper)
 
 
 MAX_U64 = (1 << 64) - 1
@@ -38,9 +50,9 @@ MAX_NON_BLOB_CHUNK_RECORDS = 64
 MAX_IMAGE_MANIFEST_BYTES = 393_216
 MAX_REQUEST_STARTS = 10
 MAX_REQUEST_ORDINAL = 100
-FIXTURE_POSITIVE_CASE_COUNT = 39
-FIXTURE_NEGATIVE_CASE_COUNT = 139
-FIXTURE_INVENTORY_SHA256 = "56797748de64aa57618104bb5135d0300c9d192f41995e743ddb319219a248df"
+FIXTURE_POSITIVE_CASE_COUNT = 40
+FIXTURE_NEGATIVE_CASE_COUNT = 157
+FIXTURE_INVENTORY_SHA256 = "8c360cf46c283ec1111e9c4a4e9896a2424afc10824566e174bdfcbabc6c15f8"
 
 SCORE_RE = re.compile(
     r"^(?:0|-?(?:[1-9][0-9]*(?:\.[0-9]{0,5}[1-9])?|0\.[0-9]{0,5}[1-9]))$"
@@ -515,6 +527,8 @@ def validate_case_schema(case: object, path: str) -> None:
         expect_keys(expected, {"lua_source_order", "contract_sha256"}, f"{path}.expected")
         schema_string_list(expected["lua_source_order"], f"{path}.expected.lua_source_order")
         expect_hex(expected["contract_sha256"], 64, f"{path}.expected.contract_sha256")
+    elif kind == "canonical_lua_bundle":
+        schema_canonical_lua_bundle(case_input, expected, path)
     elif kind == "policy_group_boundary":
         generator = expect_keys(
             case_input,
@@ -746,6 +760,7 @@ NEGATIVE_INPUT_KEYS: dict[str, set[str]] = {
     "guard_core_mutation": {"base_case", "mutation"},
     "guard_chain_mutation": {"base_case", "mutation"},
     "transcript_binding_mutation": {"base_case", "mutation"},
+    "canonical_lua_bundle_mutation": {"base_case", "mutation"},
 }
 
 
@@ -782,6 +797,7 @@ def validate_negative_schema(case: object, path: str) -> None:
         "guard_core_mutation": ("base_case", "mutation"),
         "guard_chain_mutation": ("base_case", "mutation"),
         "transcript_binding_mutation": ("base_case", "mutation"),
+        "canonical_lua_bundle_mutation": ("base_case", "mutation"),
     }
     for field in text_fields.get(kind, ()):
         expect_text(case_input[field], f"{path}.input.{field}", utf8=kind != "json_text")
@@ -1050,6 +1066,7 @@ def validate_fixture_schema(data: object) -> dict[str, object]:
         raise FixtureError(
             f"fixture inventory digest {inventory.hexdigest()} != pinned {FIXTURE_INVENTORY_SHA256}"
         )
+    validate_canonical_bundle_fixture_extension(top)
     return top
 
 
@@ -1177,164 +1194,26 @@ def validate_wire_utf8(value: bytes) -> str:
         reject("INVALID_UTF8")
 
 
-def _has_raw_control_or_edge_space(value: str) -> bool:
-    if value != value.strip():
-        return True
-    return any(unicodedata.category(character) == "Cc" for character in value)
-
-
-def _validate_percent_escapes(value: str) -> None:
-    index = 0
-    while index < len(value):
-        if value[index] != "%":
-            index += 1
-            continue
-        if index + 2 >= len(value) or re.fullmatch(r"[0-9A-Fa-f]{2}", value[index + 1:index + 3]) is None:
-            reject("CANONICAL_URL_NOT_CANONICAL")
-        byte = int(value[index + 1:index + 3], 16)
-        if byte < 0x20 or byte == 0x7F:
-            reject("CANONICAL_URL_NOT_CANONICAL")
-        if byte == 0xC2 and index + 5 < len(value) and value[index + 3] == "%":
-            next_pair = value[index + 4:index + 6]
-            if re.fullmatch(r"[0-9A-Fa-f]{2}", next_pair):
-                following = int(next_pair, 16)
-                if 0x80 <= following <= 0x9F:
-                    reject("CANONICAL_URL_NOT_CANONICAL")
-        index += 3
-
-
-def _encode_component_v1(value: str, safe: str) -> str:
-    raw = value.encode("utf-8", "strict")
-    output: list[str] = []
-    index = 0
-    while index < len(raw):
-        byte = raw[index]
-        if byte == ord("%") and index + 2 < len(raw) and all(
-            chr(part) in "0123456789abcdefABCDEF" for part in raw[index + 1:index + 3]
-        ):
-            output.append("%" + bytes(raw[index + 1:index + 3]).decode("ascii").upper())
-            index += 3
-            continue
-        character = chr(byte)
-        if (byte < 128 and character.isalnum()) or character in safe:
-            output.append(character)
-        else:
-            output.append(f"%{byte:02X}")
-        index += 1
-    return "".join(output)
-
-
 def _valid_idna_alabel(label: str) -> bool:
-    payload = label[4:]
+    # Compatibility entry point, no host-Python Unicode/IDNA heuristic.
+    return _url_helper.valid_alabel(label)
+
+
+def canonical_url_v1(value: object) -> tuple[str, str | None]:
+    """Identity-only fixed point. IP identities have no request origin."""
     try:
-        decoded = payload.encode("ascii").decode("punycode")
-        round_trip = decoded.encode("punycode").decode("ascii").lower()
-    except UnicodeError:
-        return False
-    if not decoded or decoded.isascii() or round_trip != payload or unicodedata.normalize("NFC", decoded) != decoded:
-        return False
-    for character in decoded:
-        category = unicodedata.category(character)
-        if character != "-" and category[0] not in {"L", "M", "N"}:
-            return False
-    if unicodedata.combining(decoded[0]):
-        return False
-    bidi = [unicodedata.bidirectional(character) for character in decoded]
-    significant_last = next((value for value in reversed(bidi) if value != "NSM"), "")
-    if bidi[0] in {"R", "AL"}:
-        if any(value == "L" for value in bidi) or significant_last not in {"R", "AL", "EN", "AN"}:
-            return False
-        if "EN" in bidi and "AN" in bidi:
-            return False
-    elif bidi[0] == "L":
-        if any(value in {"R", "AL", "AN"} for value in bidi) or significant_last not in {"L", "EN"}:
-            return False
-    else:
-        return False
-    return True
+        result = _url_helper.validate_identity(model_text(value))
+    except _url_helper.URLValidationError as error:
+        reject(error.code)
+    return result.canonical_url, result.origin
 
 
-def _valid_dns_host(host: str) -> bool:
-    if not host or len(host) > 253 or host.endswith("."):
-        return False
-    for label in host.split("."):
-        if not 1 <= len(label) <= 63:
-            return False
-        if re.fullmatch(r"[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", label) is None:
-            return False
-        if label.startswith("xn--"):
-            if not _valid_idna_alabel(label):
-                return False
-    return True
-
-
-def canonical_url_v1(value: object) -> tuple[str, str]:
-    canonical = model_text(value)
-    raw = canonical.encode("utf-8", "strict")
-    if len(raw) > MAX_CANONICAL_URL_BYTES:
-        reject("URL_TOO_LONG")
-    if not canonical or _has_raw_control_or_edge_space(canonical) or "\\" in canonical:
-        reject("CANONICAL_URL_NOT_CANONICAL")
-    _validate_percent_escapes(canonical)
-    if "#" in canonical:
-        reject("URL_FRAGMENT_FORBIDDEN")
+def canonical_origin_v1(value: object) -> str:
+    """Request/source/discovery policy layer: canonical identity PLUS no IP."""
     try:
-        parsed = urlsplit(canonical, allow_fragments=True)
-    except ValueError:
-        reject("CANONICAL_URL_NOT_CANONICAL")
-    if parsed.scheme not in {"http", "https"} or not parsed.netloc:
-        reject("CANONICAL_URL_NOT_CANONICAL")
-    if "@" in parsed.netloc or parsed.username is not None or parsed.password is not None:
-        reject("URL_USERINFO_FORBIDDEN")
-    try:
-        host = parsed.hostname
-        port = parsed.port
-    except ValueError:
-        reject("CANONICAL_URL_NOT_CANONICAL")
-    if host is None or not host.isascii():
-        reject("CANONICAL_URL_NOT_CANONICAL")
-    host = host.lower()
-    try:
-        ipaddress.ip_address(host)
-    except ValueError:
-        labels = host.split(".")
-        if len(labels) == 4 and all(label and label.isdecimal() for label in labels):
-            reject("CANONICAL_URL_NOT_CANONICAL")
-        if not _valid_dns_host(host):
-            reject("CANONICAL_URL_NOT_CANONICAL")
-    else:
-        reject("URL_IP_LITERAL_FORBIDDEN")
-
-    authority = parsed.netloc
-    if authority.startswith("[") or authority.count(":") > 1:
-        reject("URL_IP_LITERAL_FORBIDDEN")
-    explicit_port = ":" in authority
-    if explicit_port:
-        raw_host, raw_port = authority.rsplit(":", 1)
-        if not raw_port or not raw_port.isdecimal():
-            reject("CANONICAL_URL_NOT_CANONICAL")
-        parsed_port = int(raw_port, 10)
-        if parsed_port < 1 or parsed_port > 65_535 or str(parsed_port) != raw_port:
-            reject("CANONICAL_URL_NOT_CANONICAL")
-        if (parsed.scheme == "http" and parsed_port == 80) or (parsed.scheme == "https" and parsed_port == 443):
-            reject("URL_DEFAULT_PORT_FORBIDDEN")
-        if raw_host.lower() != host:
-            reject("CANONICAL_URL_NOT_CANONICAL")
-    if port is not None and not explicit_port:
-        reject("CANONICAL_URL_NOT_CANONICAL")
-
-    path = parsed.path or "/"
-    encoded_path = _encode_component_v1(path, "/:@!$&'()*+,;=-._~")
-    encoded_query = _encode_component_v1(parsed.query, "/?:@!$&'()*+,;=-._~")
-    rebuilt_authority = host + (f":{port}" if port is not None else "")
-    rebuilt = f"{parsed.scheme}://{rebuilt_authority}{encoded_path}"
-    before_fragment = canonical.split("#", 1)[0]
-    if "?" in before_fragment:
-        rebuilt += "?" + encoded_query
-    if rebuilt != canonical:
-        reject("CANONICAL_URL_NOT_CANONICAL")
-    effective_port = port if port is not None else (80 if parsed.scheme == "http" else 443)
-    return canonical, f"{parsed.scheme}://{host}:{effective_port}"
+        return _url_helper.derive_origin(model_text(value))
+    except _url_helper.URLValidationError as error:
+        reject(error.code)
 
 
 def url_id(canonical_url: str) -> str:
@@ -1412,7 +1291,7 @@ def group_scope(rate_scope_id: str) -> str:
 
 
 def origin_scope(canonical_url: str) -> str:
-    _, origin = canonical_url_v1(canonical_url)
+    origin = canonical_origin_v1(canonical_url)
     return digest_framed("mifolyo:rate:origin:v2", origin)
 
 
@@ -1480,6 +1359,9 @@ def validate_document_binding(
     if target_name not in targets:
         reject("UNKNOWN_TARGET")
     validate_target(targets[target_name])
+    # Matches Go validateDocumentPolicyBinding's explicit origin derivation;
+    # validating/hashing an identity alone does not admit a source/discovery.
+    canonical_origin_v1(targets[target_name]["canonical_url"])
 
 
 def source_job_fields(
@@ -1726,6 +1608,9 @@ def output_transcript(
         if target_name not in targets:
             reject("OUTPUT_CONTEXT_MISMATCH")
         validate_target(expect_object(targets[target_name], "request target"))
+        # Every actual request kind (including robots/render resources) has a
+        # policy origin. Keep IP rejection here, not in general URL identity.
+        canonical_origin_v1(targets[target_name]["canonical_url"])
         kind = model_text(item["request_kind"])
         if kind == "document":
             if has_document or target_name != source["target"]:
@@ -3080,6 +2965,228 @@ def contract_case_result(case_input: dict[str, object], root: Path) -> dict[str,
     return {"lua_source_order": [name for name, _ in named_sources], "contract_sha256": digest}
 
 
+# Canonical bundle extension. This independent literal order is not imported
+# from Go, the assembler/generator, or fixture expectations. Fixture path/source
+# text can never select the files being hashed by this verifier.
+CANONICAL_LUA_OPERATIONS = (
+    "CJ2_APPROVE_BOOT", "CJ2_INSTALL_CANDIDATE_MARKERS", "CJ2_RETIRE_LEGACY_KEYS",
+    "CJ2_PROMOTE_CANDIDATE_CONTRACTS", "CJ2_MARK_PLANNED_SHUTDOWN", "CJ2_CREATE_RUN",
+    "CJ2_ENQUEUE_BATCH", "CJ2_BEGIN_RUN_AUDIT", "CJ2_AUDIT_RUN_BATCH", "CJ2_SEAL_RUN",
+    "CJ2_ACTIVATE_RUN", "CJ2_REJECT_READY", "CJ2_TRY_CLAIM", "CJ2_RENEW_LEASE",
+    "CJ2_RESERVE_REQUEST", "CJ2_START_REQUEST", "CJ2_FINISH_REQUEST", "CJ2_CANCEL_RESERVATION",
+    "CJ2_RELEASE_BEFORE_IO", "CJ2_RETRY", "CJ2_DEAD", "CJ2_CANCEL_JOB", "CJ2_COMPLETE_NO_OUTPUT",
+    "CJ2_BEGIN_STAGE", "CJ2_STAGE_PAGE_FIELDS", "CJ2_STAGE_PAGE_BLOB", "CJ2_STAGE_OUTLINKS_BATCH",
+    "CJ2_STAGE_DISCOVERIES_BATCH", "CJ2_STAGE_ALIASES_BATCH", "CJ2_STAGE_IMAGES_BATCH",
+    "CJ2_STAGE_IMAGE_MANIFEST", "CJ2_ABORT_STAGE", "CJ2_SEAL_STAGE", "CJ2_COMMIT",
+    "CJ2_PROMOTE_DUE", "CJ2_RECOVER_EXPIRED", "CJ2_CANCEL_RUN", "CJ2_CANCEL_BATCH",
+    "CJ2_FINALIZE_RUN", "CJ2_ARCHIVE_RUN", "CJ2_PURGE_RUN_BATCH", "CJ2_CLEAN_STAGE",
+    "CJ2_MAINTAIN_RATE_SCOPES",
+)
+CANONICAL_LUA_DIRECTORY = "services/spider/internal/database/crawljobsv2/lua"
+CANONICAL_DOCUMENT_PATH = "docs/crawl-jobs-v2.md"
+CANONICAL_LUA_CASE = "canonical-lua-bundle"
+
+
+def validate_canonical_bundle_fixture_extension(data: dict[str, object]) -> None:
+    # Preserve the original 39/139 identity/rejection inventory independently of
+    # the new suite pin. Only the new canonical cases may be filtered out.
+    legacy_positive = [case for case in data["cases"] if case["name"] != CANONICAL_LUA_CASE]
+    legacy_negative = [case for case in data["negative_vectors"] if case["kind"] != "canonical_lua_bundle_mutation"]
+    inventory = hashlib.sha256(f"B\0{data['baseline_case_name']}\n".encode("utf-8"))
+    for case in legacy_positive:
+        inventory.update(f"P\0{case['name']}\0{case['kind']}\n".encode("utf-8"))
+    for case in legacy_negative:
+        inventory.update(f"N\0{case['name']}\0{case['kind']}\0{case['expected_rejection_class']}\n".encode("utf-8"))
+    if (len(legacy_positive) != 39 or len(legacy_negative) != 139
+            or inventory.hexdigest() != "56797748de64aa57618104bb5135d0300c9d192f41995e743ddb319219a248df"):
+        raise FixtureError("canonical extension did not preserve the foundation 39/139 inventory")
+    for case in data["cases"]:
+        if case["kind"] in {"guard_core", "guard_chain"} and case["input"]["contract_case"] != CANONICAL_LUA_CASE:
+            raise FixtureError("current guard/compatibility chain must bind the real canonical bundle independently")
+
+
+def _canonical_bundle_input(case_input: object) -> None:
+    obj = expect_keys(case_input, {"document_path", "lua_directory"}, "canonical bundle input")
+    if obj != {"document_path": CANONICAL_DOCUMENT_PATH, "lua_directory": CANONICAL_LUA_DIRECTORY}:
+        raise FixtureError("canonical bundle requires exact closed repository paths, not caller sources")
+
+
+def schema_canonical_lua_bundle(case_input: object, expected: object, path: str) -> None:
+    _canonical_bundle_input(case_input)
+    obj = expect_keys(expected, {"entries", "lua_source_order", "source_set_sha256", "contract_sha256", "bundle_seal_sha256"},
+                      f"{path}.expected")
+    for field in ("source_set_sha256", "contract_sha256", "bundle_seal_sha256"):
+        expect_hex(obj[field], 64, f"{path}.expected.{field}")
+    names = [op.lower() + ".lua" for op in CANONICAL_LUA_OPERATIONS]
+    if obj["lua_source_order"] != sorted(names, key=lambda name: name.encode("ascii")):
+        raise FixtureError("canonical contract source order is not the exact ASCII filename order")
+    entries = expect_list(obj["entries"], f"{path}.expected.entries")
+    if len(entries) != 43:
+        raise FixtureError("canonical fixture must pin all 43 source identities")
+    for index, (op, raw_entry) in enumerate(zip(CANONICAL_LUA_OPERATIONS, entries)):
+        entry = expect_keys(raw_entry, {"index", "operation", "source_name", "source_bytes", "redis_sha1", "source_sha256"},
+                            f"{path}.expected.entries[{index}]")
+        if (expect_integer(entry["index"], "bundle index") != index or entry["operation"] != op
+                or entry["source_name"] != names[index]):
+            raise FixtureError("canonical fixture entry identity/order differs from literal inventory")
+        if expect_integer(entry["source_bytes"], "bundle source length") <= 0:
+            raise FixtureError("canonical source byte count must be positive")
+        if re.fullmatch(r"[0-9a-f]{40}", expect_text(entry["redis_sha1"], "Redis SHA-1")) is None:
+            raise FixtureError("invalid canonical Redis SHA-1")
+        expect_hex(entry["source_sha256"], 64, "source SHA-256")
+
+
+def _canonical_closed_path(root: Path, relative: str) -> Path:
+    path = root
+    parts = relative.split("/")
+    for index, part in enumerate(parts):
+        if part in {"", ".", ".."}:
+            reject("BUNDLE_INVENTORY")
+        path = path / part
+        mode = path.lstat().st_mode
+        if stat.S_ISLNK(mode) or (index < len(parts) - 1 and not stat.S_ISDIR(mode)):
+            reject("BUNDLE_INVENTORY")
+    return path
+
+
+def _canonical_read_text(path: Path) -> bytes:
+    if not stat.S_ISREG(path.lstat().st_mode):
+        reject("BUNDLE_INVENTORY")
+    raw = path.read_bytes()
+    _canonical_validate_text(raw)
+    return raw
+
+
+def _canonical_validate_text(raw: bytes) -> None:
+    if type(raw) is not bytes or not raw or not raw.endswith(b"\n"):
+        reject("BUNDLE_SOURCE_BYTES")
+    try:
+        raw.decode("utf-8", "strict")
+    except UnicodeDecodeError:
+        reject("BUNDLE_SOURCE_BYTES")
+
+
+def _canonical_read_bundle(root: Path) -> tuple[bytes, list[dict[str, object]]]:
+    # root is an internal test seam only. The public fixture evaluator below
+    # ALWAYS chooses the repository containing this verifier, not its caller.
+    if len(CANONICAL_LUA_OPERATIONS) != 43 or len(set(CANONICAL_LUA_OPERATIONS)) != 43:
+        raise FixtureError("invalid independent canonical operation inventory")
+    try:
+        directory = _canonical_closed_path(root, CANONICAL_LUA_DIRECTORY)
+        if not stat.S_ISDIR(directory.lstat().st_mode):
+            reject("BUNDLE_INVENTORY")
+        files = list(directory.iterdir())  # Include hidden files and subdirectories.
+        names = [op.lower() + ".lua" for op in CANONICAL_LUA_OPERATIONS]
+        if len(files) != 43 or {p.name for p in files} != set(names):
+            reject("BUNDLE_INVENTORY")
+        entries = []
+        for index, op in enumerate(CANONICAL_LUA_OPERATIONS):
+            source = _canonical_read_text(_canonical_closed_path(root, CANONICAL_LUA_DIRECTORY + "/" + names[index]))
+            entries.append({"index": index, "operation": op, "source_name": names[index], "source": source,
+                            "redis_sha1": hashlib.sha1(source).hexdigest(), "source_sha256": plain_sha256(source)})
+        document = _canonical_read_text(_canonical_closed_path(root, CANONICAL_DOCUMENT_PATH))
+        return document, entries
+    except OSError:
+        reject("BUNDLE_INVENTORY")
+
+
+def _canonical_bundle_compute(document: bytes, entries: list[dict[str, object]]) -> dict[str, object]:
+    if len(entries) != 43:
+        reject("BUNDLE_INVENTORY")
+    _canonical_validate_text(document)
+    identities = []
+    sources = []
+    seen_sha1: set[str] = set()
+    seen_sha256: set[str] = set()
+    source_set = hashlib.sha256(frame("mifolyo:crawl-jobs-v2:lua-source-set:v1") + frame("43"))
+    for index, (operation, entry) in enumerate(zip(CANONICAL_LUA_OPERATIONS, entries)):
+        name = operation.lower() + ".lua"
+        if type(entry["index"]) is not int or entry["index"] != index or entry["operation"] != operation or entry["source_name"] != name:
+            reject("BUNDLE_INVENTORY")
+        source = entry["source"]
+        _canonical_validate_text(source)
+        redis_sha1 = hashlib.sha1(source).hexdigest()
+        source_sha256 = plain_sha256(source)
+        if (entry["redis_sha1"] != redis_sha1 or entry["source_sha256"] != source_sha256
+                or redis_sha1 in seen_sha1 or source_sha256 in seen_sha256):
+            reject("BUNDLE_IDENTITY_MISMATCH")
+        seen_sha1.add(redis_sha1)
+        seen_sha256.add(source_sha256)
+        for value in (str(index), operation, name, source, redis_sha1, source_sha256):
+            source_set.update(frame(value))
+        sources.append((name, source))
+        identities.append({"index": index, "operation": operation, "source_name": name, "source_bytes": len(source),
+                           "redis_sha1": redis_sha1, "source_sha256": source_sha256})
+    ordered = sorted(sources, key=lambda source: source[0].encode("ascii"))
+    contract = digest_sections("mifolyo:crawl-contract:v2", section("document", [[("document_bytes", document)]]),
+                               section("lua", [[("source_name", name), ("source_bytes", source)] for name, source in ordered]))
+    source_digest = source_set.hexdigest()
+    seal = digest_framed("mifolyo:crawl-jobs-v2:lua-bundle-seal:v1", source_digest, contract)
+    return {"entries": identities, "lua_source_order": [name for name, _ in ordered], "source_set_sha256": source_digest,
+            "contract_sha256": contract, "bundle_seal_sha256": seal}
+
+
+def canonical_lua_bundle_result(case_input: dict[str, object]) -> dict[str, object]:
+    _canonical_bundle_input(case_input)
+    return _canonical_bundle_compute(*_canonical_read_bundle(Path(__file__).resolve().parents[1]))
+
+
+def run_canonical_lua_bundle_mutation(case_input: dict[str, object], data: dict[str, object]) -> None:
+    if case_input["base_case"] != CANONICAL_LUA_CASE:
+        raise FixtureError("canonical bundle mutation requires the real bundle case")
+    base = next((case for case in data["cases"] if case["name"] == CANONICAL_LUA_CASE), None)
+    if base is None or base["kind"] != "canonical_lua_bundle":
+        raise FixtureError("canonical bundle case missing")
+    _canonical_bundle_input(base["input"])
+    document, entries = _canonical_read_bundle(Path(__file__).resolve().parents[1])
+    # Expected fixture values are deliberately NOT mutation authority. Recompute
+    # a baseline from real repository files and independently check the mutant.
+    baseline = _canonical_bundle_compute(document, entries)
+    changed = copy.deepcopy(baseline)
+    mutation = case_input["mutation"]
+    if mutation == "missing_source":
+        entries.pop()
+    elif mutation == "extra_source":
+        entries.append(copy.deepcopy(entries[0]))
+    elif mutation == "swapped_sources":
+        entries[0]["source"], entries[1]["source"] = entries[1]["source"], entries[0]["source"]
+    elif mutation == "duplicate_sources":
+        entries[1]["source"] = entries[0]["source"]
+    elif mutation == "duplicate_entry":
+        entries[1] = copy.deepcopy(entries[0])
+    elif mutation == "swapped_entries":
+        entries[0], entries[1] = entries[1], entries[0]
+    elif mutation == "source_alias_path":
+        entries[0]["source_name"] = "../lua/" + entries[0]["source_name"]
+    elif mutation == "invalid_utf8":
+        entries[0]["source"] = b"\xff" + entries[0]["source"][1:]
+    elif mutation == "missing_newline":
+        entries[0]["source"] = entries[0]["source"][:-1]
+    elif mutation in {"one_byte_drift", "source_resealed"}:
+        entries[0]["source"] = bytes([entries[0]["source"][0] ^ 1]) + entries[0]["source"][1:]
+        if mutation == "source_resealed":
+            entries[0]["redis_sha1"] = hashlib.sha1(entries[0]["source"]).hexdigest()
+            entries[0]["source_sha256"] = plain_sha256(entries[0]["source"])
+    elif mutation == "stale_redis_sha1":
+        entries[0]["redis_sha1"] = "1" * 40
+    elif mutation == "stale_source_sha256":
+        entries[0]["source_sha256"] = "1" * 64
+    elif mutation == "document_one_byte_drift":
+        document = bytes([document[0] ^ 1]) + document[1:]
+    elif mutation in {"source_set_substitution", "bundle_seal_substitution", "contract_substitution", "contract_resealed"}:
+        field = {"source_set_substitution": "source_set_sha256", "bundle_seal_substitution": "bundle_seal_sha256",
+                 "contract_substitution": "contract_sha256", "contract_resealed": "contract_sha256"}[mutation]
+        changed[field] = "1" * 64
+        if mutation == "contract_resealed":
+            changed["bundle_seal_sha256"] = digest_framed("mifolyo:crawl-jobs-v2:lua-bundle-seal:v1",
+                                                         changed["source_set_sha256"], changed["contract_sha256"])
+    else:
+        raise FixtureError("unknown canonical bundle mutation: " + str(mutation))
+    actual = _canonical_bundle_compute(document, entries)
+    if actual != baseline or changed != baseline:
+        reject("BUNDLE_IDENTITY_MISMATCH")
+
+
 def _valid_nonzero_digest(value: object) -> str:
     digest = model_text(value)
     if HEX_64_RE.fullmatch(digest) is None or digest == "0" * 64:
@@ -3552,6 +3659,8 @@ def evaluate_cases(cases: list[object], data: dict[str, object], root: Path) -> 
             actual = {"ordered_values": ordered, "section_sha256": plain_sha256(encoded)}
         elif kind == "contract_digest":
             actual = contract_case_result(case_input, root)
+        elif kind == "canonical_lua_bundle":
+            actual = canonical_lua_bundle_result(case_input)
         elif kind == "policy_group_boundary":
             groups = generated_policy_groups_boundary(case_input)
             group_records = validate_policy_groups(groups)
@@ -4003,13 +4112,18 @@ def run_negative_case(
         elif kind == "redis_score":
             validate_redis_score(case_input["score_text"], case_input["redis_value"])
         elif kind == "canonical_url":
-            canonical_url_v1(case_input["value"])
+            # This existing vector kind includes request-origin IP rejection,
+            # exactly like Go fixtureCanonicalURLRejection. Output identities
+            # are covered separately; no fixture expectations/names change.
+            canonical_origin_v1(case_input["value"])
         elif kind == "reservation_target":
             changed = copy.deepcopy(data["reservation"])
             changed["target"] = case_input["value"]  # type: ignore[index]
             reservation_id(data, changed)  # type: ignore[arg-type]
         elif kind == "output_mutation":
             run_output_mutation(model_text(case_input["mutation"]), data)
+        elif kind == "canonical_lua_bundle_mutation":
+            run_canonical_lua_bundle_mutation(case_input, data)
         elif kind == "transcript_binding_mutation":
             run_transcript_binding_mutation(case_input, data)
         elif kind == "source_shape":

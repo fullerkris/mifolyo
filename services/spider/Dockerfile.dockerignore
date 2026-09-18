@@ -12,6 +12,13 @@
 !docs/crawl-jobs-v2.md
 !seeds/
 !seeds/manual-seeds.csv
+!scripts/
+!scripts/verify-crawl-jobs-v2-digests.py
+!scripts/crawl_jobs_v2_url.py
+!scripts/generate-crawl-jobs-v2-lua.py
+!scripts/generate-crawl-jobs-v2-bundle.py
+!scripts/tests/
+!scripts/tests/test_crawl_jobs_v2_url.py
 
 **/*.env
 **/.env*

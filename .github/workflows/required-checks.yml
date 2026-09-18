@@ -79,7 +79,9 @@ jobs:
 
       - name: Verify independent Crawl Jobs V2 digest vectors
         working-directory: .
-        run: python -B scripts/verify-crawl-jobs-v2-digests.py
+        run: |
+          python -B scripts/verify-crawl-jobs-v2-digests.py
+          python -B -m unittest discover -s scripts/tests -v
 
       - name: Run required Backlinks Processor tests
         working-directory: services/backlinks-processor

@@ -58,6 +58,9 @@ func TestSharedFixtureV2PositiveCases(t *testing.T) {
 			case "contract_digest":
 				result := verifyContractDigestCase(t, vector)
 				harness.contractCases[vector.Name] = result
+			case "canonical_lua_bundle":
+				result := verifyCanonicalLuaBundleCase(t, vector)
+				harness.contractCases[vector.Name] = contractCaseResult{result.LuaSourceOrder, result.ContractSHA256}
 			case "policy_group_boundary":
 				verifyPolicyGroupBoundaryCase(t, vector)
 			case "guard_chain":
@@ -271,7 +274,7 @@ func fixturePolicyGroupsFromGenerator(t testing.TB, generator fixturePolicyGroup
 	return groups
 }
 
-func verifyContractDigestCase(t *testing.T, vector digestVectorCase) contractCaseResult {
+func verifyContractDigestCase(t testing.TB, vector digestVectorCase) contractCaseResult {
 	t.Helper()
 	input := decodeVectorPart[struct {
 		Document struct {

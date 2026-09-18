@@ -2,7 +2,7 @@
 
 **Original review date:** 2026-09-01
 
-**Last updated:** 2026-09-14
+**Last updated:** 2026-09-18 (UTC; F3 roll-up)
 
 **Reviewed baseline:** `main` / `44d8b09a364a1f60032e1f4faccf160813f4dd04`
 
@@ -109,7 +109,7 @@ retained Mongo records still incorrectly say `enabled: true`.
 |---|---|---|
 | F1 seed reconciliation | Not started | Retained evidence remains 70 enabled records; execute only during the matched freeze/backup/reset sequence |
 | F2 disposable Redis reset | Not started | Retained V1 state remains historical post-test evidence and must not be reused or selectively repaired |
-| F3 durable Crawl Jobs V2 | M1 passes locally; M2 pushed and verified; Lua not started | Reviewed foundation checkpoint `0989001d15c9a84a00464fd55ddd857650eda85e` is remote-verified; no Lua or runtime activation authorized; see [`crawl-jobs-v2-plan.md`](crawl-jobs-v2-plan.md) |
+| F3 durable Crawl Jobs V2 | M1/M2 merged; M3 source implementation and local verification complete (43/43), including full-module race and Docker normal tests | Scoped checkpoint publication authorized; still dormant; M4 requires real-Redis protocol/fixture clarifications and explicit approval; current evidence lives in [`crawl-jobs-v2-plan.md`](crawl-jobs-v2-plan.md) |
 | F4 exact crawl scope | Not started | No crawl-policy V2 schema or approved exact-URL policy is present |
 | F5 backlink persistence | Implemented locally and locally verified; acceptance pending | The repair passed 46 unit, 7 disposable datastore integration, and 6 Monitoring tests on 2026-09-14; a protected `required-tests` PR result is still required |
 | F6 JavaScript-shell indexing | Not started | No static-extraction policy schema or approved metadata-fallback configuration is present |
@@ -254,7 +254,9 @@ wire grammar, limits, transitions, records, Redis configuration, and evidence.
 ### Current roll-up
 
 - The digest-bound protocol, shared fixture, independent Go/Python verifier, and
-  dormant Go foundation exist on `feature/crawl-jobs-v2-foundation`.
+  dormant Go foundation were merged through PR #9 as `d914a93`. Current M3 work
+  uses `feature/crawl-jobs-v2-lua`; the owner authorized its scoped checkpoint
+  commit/push on 2026-09-18, not an M3 PR, merge or activation.
 - The initial WIP checkpoint is commit
   `e4372a66201b8767bcca4d7476c30c5b7999922c`. The reviewed amendment and foundation
   remediation are preserved in remote-verified checkpoint
@@ -264,29 +266,43 @@ wire grammar, limits, transitions, records, Redis configuration, and evidence.
   contract specifies authenticated genesis/terminal generation, atomic BEGIN
   freeze, and exact seal/commit/replay binding without changing downstream
   semantic output/publication grammar.
-- The final pinned-Go-1.25.13 aggregate passed normal, race, shuffled, full
-  Spider, vet, build, Python fixture/syntax, formatting, and scoped diff checks.
-  Statement coverage is 79.0%; shared evidence contains 39 named positives plus
-  baseline and 139 negatives. Evidence-type limits are recorded in the F3 plan.
-- Subsequent BEGIN output-preparation, exact-witness, abort/expiry/delivery, and
+- The **2026-09-11 historical foundation** pinned-Go-1.25.13 aggregate passed
+  normal, race, shuffled, full Spider, vet, build, Python fixture/syntax,
+  formatting and scoped diff checks. Its coverage was 79.0%, with 39 named
+  positives plus baseline and 139 negatives; these are not current M3 counts or
+  coverage. Evidence-type limits remain in the F3 plan.
+- Foundation BEGIN output-preparation, exact-witness, abort/expiry/delivery, and
   test-oracle findings were fixed and independently replayed. Final correctness,
   conformance, and defensive reviews each returned scoped GO, with no outstanding
   findings from those reviews.
-- M1 passes locally and M2 is complete following the requested scoped push and
-  remote verification. That checkpoint request excluded PR creation and Lua.
-  The owner separately authorized scoped reliability commit/push and draft-PR
-  checks on 2026-09-14; publication is in progress, with no merge or activation
-  authorized. Pure Go validators and constructor tests do not establish the
-  future Lua/Redis atomicity gates.
-- No authoritative Lua, runtime integration, retained datastore mutation, service start,
-  migration, deployment, candidate marker, or crawl has occurred.
+- M1/M2 passed protected PR #9 checks and merged. On 2026-09-15 the owner
+  authorized dormant M3 implementation and the narrow existing-wire/renewal-clock
+  clarification. That date's initial BOOT-only slice (1/43), pure primitives and
+  private reload helpers passed scoped tests and code/protocol review; the dated
+  evidence is retained in the F3 plan, not presented as current completion.
+- **Current M3:** All 43 canonical sources and the complete sealed, zero-argument
+  `AuthoritativeScriptBindingSet()` factory are implemented locally. Normal
+  acceptance, including the latest full normal Docker suite, passes. Independent
+  code review returns scoped in-memory GO for canonical/fragment chains, and
+  final-byte security review clears bundle freshness. **The final current-tree
+  full-module race suite passes, with no skipped V2 tests.** The fresh Docker
+  normal suite also passes after the final harness changes. See the primary plan
+  for identities, test evidence, log limits and the earlier failed race attempt.
+- Activation is blocked by the remaining gates, not an absent bundle. M4 needs
+  real-Redis protocol/fixture clarifications and explicit approval; provisional
+  zero-evidence compatibility rules are not waived. No M4 acceptance, runtime
+  integration, retained datastore mutation, application/service activation,
+  migration, deployment, candidate marker or crawl is part of this M3 work.
 
 ### Parent-plan acceptance gate
 
-- [ ] The final independent foundation review permits dormant authoritative Lua
+- [x] The final independent foundation review permits dormant authoritative Lua
   authoring.
-- [ ] The exact Lua transitions and sealed source bundle pass shared Go, Python,
-  and real Redis 7 conformance.
+- [x] All 43 canonical Lua sources and the sealed zero-argument factory are
+  implemented locally and pass normal in-memory acceptance.
+- [x] Record the final current-tree full-module M3 race pass.
+- [ ] The exact Lua transitions and sealed source bundle pass real Redis 7
+  conformance after protocol/fixture clarification and explicit M4 approval.
 - [ ] Lease, retry, staging, commit, crash, AOF, memory, and maximum-shape gates
   pass with recorded evidence.
 - [ ] Spider, feeder, downstream consumers, Monitoring, Compose, migration, and
@@ -297,7 +313,8 @@ wire grammar, limits, transitions, records, Redis configuration, and evidence.
 ### Rollback boundary
 
 Before the first successful `CJ2_START_REQUEST`, restore the matched V1
-snapshot, old release, and old credential set. That request-start transition,
+snapshot, old release, and old credential set only while all writers are stopped.
+That request-start transition,
 recorded before DNS, is the irreversible boundary for ordinary rollback. Never
 point a V1 Spider at V2 keys or run both generations.
 

@@ -2,25 +2,33 @@
 
 **Finding:** F3 - durable crawl-job leases and recovery
 
-**Last updated:** 2026-09-14
+**Last updated:** 2026-09-18 (UTC)
 
-**Working branch:** `feature/crawl-jobs-v2-foundation`
+**Working branch:** `feature/crawl-jobs-v2-lua`
 
 **Initial checkpoint:** `e4372a66201b8767bcca4d7476c30c5b7999922c`
 
-**Status:** WIP/no-merge; M1 passes locally after the approved transcript amendment
-and independent re-review; M2 checkpoint is pushed and remote-verified
+**Status:** M1/M2 foundation merged through PR #9; all 43 canonical M3 operations
+and the complete sealed, zero-argument `AuthoritativeScriptBindingSet()` factory
+are implemented locally and dormant. M3 source implementation and local
+verification are complete, including the full Spider module race suite.
 
-**Current next gate:** M3 requires a separate authoritative-Lua work decision.
-The scoped M2 foundation checkpoint is preserved as
-`0989001d15c9a84a00464fd55ddd857650eda85e`; local HEAD and the remote feature-branch
-ref were verified identical after push. That checkpoint request excluded PR
-creation. On 2026-09-14 the owner separately authorized scoped reliability
-commit/push and a draft PR with protected checks. Publication is in progress;
-authoritative Lua and operational activation remain unauthorized.
+**Current next gate:** M4 needs reviewed real-Redis protocol/fixture
+clarifications and explicit approval. Local M3 completion does not satisfy those
+gates or protected-PR acceptance.
 
-**Activation status:** Blocked; no authoritative Lua, runtime integration,
-migration, deployment, or crawl has occurred or is authorized by this plan
+PR #9 passed all 14 protected checks and merged as
+`d914a93f9ade5b63182ecf02092c1a1e74633713`. On 2026-09-15 the owner authorized
+dormant M3 implementation and the narrow wire/renewal clarification below.
+The working branch starts from that merged tree; unrelated local changes are
+retained. On 2026-09-18 the owner authorized a scoped M3 commit and push to
+`feature/crawl-jobs-v2-lua`. Publication does not authorize a PR, merge, M4
+execution or activation; the exact published identity belongs in Git history
+and the verified remote branch, not a self-referential document hash.
+
+**Activation status:** Blocked by M4 real-Redis acceptance and the later
+integration/release gates, not by an absent source bundle. No runtime
+integration, migration, deployment, or crawl is authorized.
 
 ## Document ownership
 
@@ -112,26 +120,61 @@ checks. There is no legacy-shape fallback, new operation, or new key family.
 The Go foundation now makes BEGIN derive all digests and counts from actual
 validated output, retains exact source/witness evidence, and shares one bounded
 I/O-permit registry across separately parsed replies in a lease session. These
-are dormant construction and prevalidation checks. Atomic Redis enforcement,
-real reconnect/I/O behavior, and full stage reread acceptance remain M3-M5 work.
+are dormant construction and prevalidation checks. Real-Redis enforcement,
+real reconnect/I/O behavior, and full stage reread acceptance remain M4/M5 work.
+
+## Approved M3 clarification
+
+On 2026-09-15 the owner approved documenting the existing reviewed Go KEYS/ARGV
+layout, including one binary RECORD argument per group/source/chunk record, and
+clarifying renewal under a backward Redis clock. The prescribed successful
+deadline formulas remain unchanged; any proposed shortening of a matching stored
+deadline requires `INVALID_STATE` and no writes, including counters/timestamps.
+No new operation, key family, field identity, response shape, or permission was
+added. The document matrix is checked against the independent literal Go oracle.
+
+The owner approved in-memory Lua conformance for this implementation slice.
+Sections 5.1/17.7's real-Redis fixture restrictions were not relaxed or bypassed.
+At that checkpoint, the current-document/empty-Lua vector and its dependent
+guard chain were regenerated after the approved document change. That vector
+remains FOUNDATION framing only, not source authority. The current fixture
+retains it as a primitive case; guard cases now explicitly bind the complete
+`canonical-lua-bundle` case instead.
 
 ## Current checkpoint
 
 | Area | Current state |
 |---|---|
-| Normative protocol | Approved preactivation transcript amendment; exact-document/empty-Lua contract SHA-256 `1996c4519c93c8fc6da6c78eacc74afbc8eeb4506ff23bad3deaa887e5d43987` |
-| Shared conformance | Fixture v2 with one baseline, 39 named positive cases, and 139 negative cases; independent Go and Python consumers pass |
+| Normative protocol | Approved transcript amendment plus 2026-09-15 wire/renewal clarification; the current contract binds the exact document and all 43 canonical sources, with identities recorded below |
+| Shared conformance | Fixture v2 with one baseline, 40 named positive cases and 157 negative cases; independent Go/Python verification and scoped in-memory Lua conformance pass; the foundation inventory remains preserved |
 | Dormant Go package | Implemented under `services/spider/internal/database/crawljobsv2`; no runtime import or activation wiring |
 | Operation wire family | All 43 operations and 52 gate variants have closed constructors and independent inventory coverage |
 | Schemas and constants | All 16 record schemas, every allowed response/status schema, and all 63 protocol constants are independently pinned |
 | Authority model | Authenticated transcript genesis/terminal witness, output-derived BEGIN metadata, full lease/source/stage binding, replay-shared one-use permits, run-policy authority, and fail-closed redaction are implemented and reviewed |
-| Ledger validation | Baseline/delivery/fence history, post-abort freeze, exact retained witnesses, strict worker expiry, completed replay, prior retry/backpressure/reason fixes, and zero-sentinel checks pass the final aggregate and counterexample replays |
-| Script sources | No authoritative `.lua` files exist; production cannot construct an executable `ScriptBindingSet` until embedded reviewed sources provide the private sealed bundle |
-| Runtime behavior | No operational/retained datastore mutation, service start, migration, deployment, candidate marker, rendering activation, or crawl has occurred |
-| Review status | Final independent correctness, conformance, and defensive reviews returned scoped GO on 2026-09-11; no outstanding BLOCKER/HIGH/MEDIUM findings from those reviews |
-| Git state | Reviewed foundation checkpoint `0989001d15c9a84a00464fd55ddd857650eda85e` is pushed and remote-verified; unrelated worktree changes remain local |
+| Ledger validation | Baseline/delivery/fence history, post-abort freeze, exact retained witnesses, strict worker expiry, completed replay, prior retry/backpressure/reason fixes and zero-sentinel checks pass local normal conformance and reviewed counterexample replays |
+| Script sources | All 43 canonical operations are implemented: unchanged BOOT passthrough plus 42 exact generated sources; both strict source/bundle generator checks pass |
+| Authoritative bundle | Complete zero-argument `AuthoritativeScriptBindingSet()` validates embedded sources against fixed generated pins and returns fresh private sealed bindings; no caller-supplied sources, hashes or paths |
+| Local acceptance | Full Spider race suite, fresh Docker full normal suite, vet, strict generators, Python tests/verifier, formatting and workflow lint pass; no protected-PR or real-Redis acceptance is claimed |
+| Runtime behavior | No M4 real-Redis acceptance run, operational/retained datastore mutation, application/service activation, migration, deployment, candidate marker, rendering activation, or crawl is part of this M3 work |
+| Review status | Independent code review returns scoped in-memory GO for canonical sources and fragments, including multi-operation chains; final-byte security review returns GO after clearing bundle freshness; neither is M4 acceptance |
+| Git state | Based on PR #9 merge `d914a93`; scoped M3 checkpoint publication authorized on `feature/crawl-jobs-v2-lua`; no M3 PR or merge authorization |
 
-## Latest local verification
+### Current source and fixture identities (verified 2026-09-18)
+
+| Identity | SHA-256 |
+|---|---|
+| Canonical `contract_sha256` | `df171381f4f1bb6d8daec60b9173254f8ae77cfc24907d0a69b279cab89fa562` |
+| Ordered `source_set_sha256` | `10a4f753395a6d1bccc587194ef2af6346ca3c03f8a8faf71081abc800ac13b8` |
+| `bundle_seal_sha256` | `7ec16509119c44a02eafa8c342fe777dfa6b769937c1681efbabb2fc36823614` |
+| Fixture inventory: 40 named positives, 157 negatives, plus baseline | `8c360cf46c283ec1111e9c4a4e9896a2424afc10824566e174bdfcbabc6c15f8` |
+| Retained `contract-current-document-empty-lua` primitive, not canonical authority | `f5c26a676e538e9d5635229f32964f454fe2e496ae8bdb39b6b3df78940dc198` |
+
+Current guard-core/guard-chain fixtures explicitly reference the canonical
+bundle. The empty-Lua case remains a foundation framing control, not a fallback
+contract or guard authority. These fixed local pins establish source identity,
+not commit-guard approval, operational evidence or runtime activation.
+
+## Historical foundation verification (2026-09-11)
 
 The final amended source/fixture tree passed the following matrix on 2026-09-11.
 Go commands ran from `services/spider` with `GOPROXY=off` and the cached pinned
@@ -153,7 +196,8 @@ gofmt -d ./internal/database/crawljobsv2
 git diff --check -- docs/crawl-jobs-v2.md contracts/crawl-jobs-v2/digest-vectors.json scripts/verify-crawl-jobs-v2-digests.py services/spider/internal/database/crawljobsv2
 ```
 
-Final package statement coverage is **79.0%**. Normal and shuffled package runs
+Package statement coverage at this **2026-09-11 foundation checkpoint** was
+**79.0%**, not a current M3 coverage measurement. Normal and shuffled package runs
 each passed ten repetitions; the race run passed three. Full Spider module
 tests, vet, package build, Python verification/syntax, and formatting passed
 without excluded failing tests.
@@ -188,10 +232,10 @@ The final matrix and final independent reviews used pinned Go 1.25.13 and passed
 | Milestone | Status | Exit condition |
 |---|---|---|
 | M0: Protocol and dormant foundation | Complete | Normative contract, fixture, Go package, Python verifier, and initial WIP checkpoint exist |
-| M1: Foundation release gate | Complete locally | Approved amendment, final aggregate verification, and three scoped independent GO reviews; no outstanding review findings |
+| M1: Foundation release gate | Complete and merged | Approved amendment, independent GO reviews, and passing protected PR #9 checks before merge |
 | M2: Reviewed foundation checkpoint | Complete | Scoped 66-file checkpoint secret-scanned, tested from the index export, committed, pushed, and remote identity verified |
-| M3: Authoritative Lua transitions | Not started; separate authorization required | All 43 exact sources and sealed bindings pass Go/Python/Lua conformance without runtime activation |
-| M4: Real Redis 7 acceptance | Blocked by M3 | Idempotency, fencing, crash, AOF, memory, and latency evidence passes on disposable infrastructure |
+| M3: Authoritative Lua transitions | Complete locally: 43/43 sources, sealed factory, source conformance and full-module race verification; checkpoint publication authorized, still dormant | Complete source/pin and in-memory Go/Python/Lua checks plus the final current-tree race result, without runtime activation |
+| M4: Real Redis 7 acceptance | Not started; blocked by protocol/fixture clarifications and explicit approval | Idempotency, fencing, crash, AOF, memory, and latency evidence passes on disposable infrastructure |
 | M5: Runtime and consumer integration | Blocked by M4 and F4-F6 | Spider, feeder, consumers, Monitoring, Compose, and crawl-admin use only the accepted V2 protocol |
 | M6: Migration, runbooks, and rollback | Blocked by M5 | Stopped migration and rollback rehearsal pass; active docs contain tested V2 commands and no active V1 path |
 | M7: Immutable release gate | Blocked by M6 | Final digests, manifests, images, backups, CI, and authorization/report templates are reviewed |
@@ -208,8 +252,8 @@ The final matrix and final independent reviews used pinned Go 1.25.13 and passed
   reservation, transcript, response, and wire consumer.
 - [x] Reject `ZERO_SHA256` at every production authority boundary while
   preserving only the exact provisional fixture exception.
-- [x] Pass the latest aggregate normal, race, shuffled, full-module, vet, build,
-  Python, formatting, and diff checks.
+- [x] Pass the 2026-09-11 foundation aggregate normal, race, shuffled, full-module,
+  vet, build, Python, formatting, and diff checks.
 - [x] Obtain the 2026-09-11 independent correctness, conformance, and defensive
   Lua-start verdict; it returned NO-GO.
 - [x] Locally remediate the five implementation-level HIGH findings: exact retry
@@ -226,16 +270,25 @@ The final matrix and final independent reviews used pinned Go 1.25.13 and passed
 - [x] Record the NO-GO review result and current local verification evidence in
   this plan.
 - [x] Run the complete normal, race, shuffled, full-module, vet, build, Python,
-  formatting, and diff matrix against the combined final tree.
+  formatting, and diff matrix against the combined final foundation tree.
 - [x] Obtain a new independent GO/NO-GO review after the protocol blocker and
   every implementation finding are closed.
 - [x] Complete the scoped credential-signature and sensitive-surface review;
   repeat the scan on the exact M2 checkpoint scope before publication.
 - [x] Obtain explicit commit/push authorization for the M2 checkpoint.
-- [x] Stage only the F3 normative contract, fixture, verifier, plan/status consolidation,
-  and `crawljobsv2` files; leave unrelated worktree changes untouched.
+- [x] For the completed M2 checkpoint, stage only the F3 normative contract,
+  fixture, verifier, plan/status consolidation and `crawljobsv2` files; leave
+  unrelated worktree changes untouched.
 - [x] Commit and push the reviewed foundation remediation checkpoint.
-- [ ] Begin dormant authoritative Lua source work only after M1 and M2 pass.
+- [x] Begin dormant Lua source work after M1/M2 and explicit M3 authorization.
+- [x] Implement all 43 canonical transitions and the complete sealed,
+  zero-argument authoritative-bundle factory with independently verified pins.
+- [x] Pass local normal source conformance and the latest full normal Docker
+  suite; obtain scoped code and final-byte security GO reviews.
+- [x] Record the final current-tree full Spider module race pass and duration;
+  do not reuse historical race passes as current evidence.
+- [ ] Resolve the real-Redis protocol/fixture decisions below and obtain explicit
+  M4 approval before starting a disposable Redis acceptance fixture.
 
 ## M1: Final foundation release gate
 
@@ -353,6 +406,165 @@ pre-publication snapshot. The draft must remain WIP/no-merge.
 
 ## M3: Authoritative Lua transitions
 
+### Current local implementation (2026-09-17)
+
+All 43 operations in the existing [implementation groups](#implementation-groups)
+are implemented. This includes BOOT plus four other administrative operations;
+ENQUEUE_BATCH/AUDIT_RUN_BATCH plus the 13 other operations across the Run
+lifecycle and Maintenance rows; all 12 worker/request operations; and all 11
+stage/commit operations. Support chunks are not additional canonical operations.
+
+- Shared core revision 4 supplies clocked decoding, private read receipts,
+  authenticated derived-key grants, inert descriptor planning, memory admission
+  and ACL sealing. Run/Job/Request/Stage/Admin/Maintenance modules implement the
+  operation-specific state and replay predicates. Recovery accounting preserves
+  the distinction between the immutable job source group and the reservation's
+  charged request group.
+- Reviewed fixes cover historical blocked-after-I/O RETRY reasons after
+  availability returns, dedicated backpressure timestamps without inventing
+  unrelated Job/Run timestamp updates, and post-abort bounds based on actual
+  descriptor G, including retained retry-history replacement costs. In-memory
+  tests exercise the real planners and canonical/fragment multi-operation chains.
+- `scripts/generate-crawl-jobs-v2-lua.py` assembles 42 exact sources and preserves
+  BOOT as an unchanged passthrough. `scripts/generate-crawl-jobs-v2-bundle.py`
+  independently requires the literal 43-file inventory and exact normative
+  document bytes, then pins source names, Redis SHA-1, source SHA-256, ordered
+  source-set digest, contract digest and bundle seal. Missing/extra/stale sources
+  or pins fail closed; there are no placeholder operations.
+- `AuthoritativeScriptBindingSet()` constructs the complete sealed Go binding
+  set only from embedded bytes checked against those fixed pins. The private
+  SCRIPT LOAD preparation/reply helpers retain the same sealed source/retry
+  identity but do not perform I/O or fresh connection/boot/marker checks.
+  Dispatch remains unwired.
+
+From the repository root, both read-only checks pass:
+
+```bash
+python3 -B scripts/generate-crawl-jobs-v2-lua.py --check --require-complete
+python3 -B scripts/generate-crawl-jobs-v2-bundle.py --check
+```
+
+The [shared Lua core guide](../services/spider/internal/database/crawljobsv2/lua_src/README.md)
+records the cumulative API and module responsibilities. Complete source identity
+and local normal acceptance do not authorize runtime activation or satisfy M4.
+
+### Current local verification (2026-09-18)
+
+This is local dormant-worktree evidence, not protected-PR or real-Redis
+acceptance. The current full-module race run passed independently of the
+historical foundation/initial-slice results.
+
+| Check | Recorded result and scope |
+|---|---|
+| Python tests | PASS: 13/13 |
+| Independent digest verifier | PASS: 40 named positives, 157 negatives and one baseline; guards explicitly bind the canonical bundle |
+| Strict generators | PASS: exact 43-source assembly inventory and fixed bundle pins; read-only commands above |
+| Formatting and workflow lint | PASS: scoped whitespace, `gofmt -d` and actionlint checks |
+| Earlier full normal Spider suite | PASS: 687.941 s, before the parallel/context test revision; not the latest revised-tree result |
+| Latest Docker full normal Go suite | PASS, freshly executed after the final harness changes: `go test -timeout 30m -v ./...`; test step 391.9 s, total build 404.31 s |
+| Docker static build check | PASS: `docker build --check`, no warnings |
+| Local Docker image | `sha256:f7c6a77769fcdb67fbf0c8918a0792ca4496db3f2f54e63511fc84f650a153a6`; `linux/arm64`; runtime user `65534:65534` |
+| Scoped Gitleaks scans | PASS: Gitleaks 8.24.3 over current V2 source/tests, scripts, both changed workflows and this plan; zero findings, not a repository-history scan |
+| Independent code review | Scoped in-memory GO for both canonical sources and fragments, including multi-operation chains |
+| Independent security review | Final-byte GO; bundle-freshness finding cleared |
+| Final current-tree full Spider race suite | PASS: `go test -mod=readonly -json -race -timeout 90m ./... -count=1`; `crawljobsv2` 2571.353 s (42 min 51 s); all 12 packages with tests passed, no race reports |
+| Final full-module vet | PASS: `go vet -mod=readonly ./...` |
+
+The earlier full race attempt failed a worker VM's 15-second context and then
+reached the 60-minute package timeout while most Lua tests still ran serially.
+A focused profile attributed less than 1% of CPU time to compilation; execution
+and race-instrumentation costs dominated, so no compilation/result cache or
+replacement validator was introduced.
+
+All 306 new Lua top-level tests now run in parallel with isolated VMs/fixtures;
+state-sharing subtests remain sequential. The shared `luaTestContext` uses
+`t.Context()`, the Go test deadline when present, and cleanup cancellation instead
+of independent short VM deadlines. External Python/native-Lua process timeouts
+remain unchanged. The former failing capacity-recovery case passed twice with
+two CPUs under the race detector (71.31 s and 74.58 s), followed by the full
+module pass. CI retains every package/test under `-race` with a 90-minute package
+budget, and required checks now also run all 13 independent Python unit tests.
+No payload, assertion, exhaustive case or race instrumentation was removed.
+These are harness changes, not a relaxation or measurement of the real-Redis
+maximum-shape p99 requirement of strictly less than 100 ms.
+
+The retained local race JSON records zero skipped `crawljobsv2` tests. Only the
+existing opt-in V1 Redis and Chromium integration tests skipped elsewhere in
+the module; both integration environment variables were explicitly unset.
+The two helper packages without test files are not missing conformance cases.
+
+The Docker log is clipped at 2 MiB, so it does not provide a complete per-test
+count or skip inventory. Opt-in Redis V1 and LuaJIT skips were observed.
+Render Worker opt-in skips are also expected when not enabled, but are not
+claimed as observed in that clipped log. The build starts no application,
+service or real Redis instance, and ignored NLTK data did not enter the build
+allowlist. The image is local build evidence, not an approved release image or
+permission to run it.
+
+**Local M3 result:** Source implementation and in-memory verification are
+complete. Verification does not itself grant publication, protected-PR
+acceptance, M4 approval or operational acceptance. The separate checkpoint
+publication authorization is recorded above. No application/service was started.
+
+### Initial local slice (2026-09-15)
+
+Historical evidence for the initial 1/43 slice, not the current source inventory
+or current race result. Implemented and independently reviewed at that checkpoint:
+
+- Proposed `CJ2_APPROVE_BOOT` Lua: exact initial/planned/unclean approval and
+  replay, actual server identity, evidence age and nonce validation, bounded
+  complete durability reads, one TIME call, ACL preflight, and one fully prebuilt
+  HSET. It reads/mutates no other datastore key. Its in-memory test facade
+  explicitly checks no mutation on rejection and does not assume rollback after
+  an unexpected mutation error.
+- Side-effect-free Lua numeric/TIME decoding, UTF-8 checking, U64/F/RECORD/SECTION
+  framing and bounded SHA-256 primitives. Tests compare actual Lua with Go
+  codecs, Go SHA-256, and shared fixture values. This support file is not an
+  additional operation or a runtime module loader; URL/IDNA semantics are not
+  implemented by these primitives.
+- Private Go SCRIPT LOAD preparation and exact returned-SHA verification bound
+  to the complete originating bundle seal, with defensive retry copies and
+  redaction. Invalid UTF-8 script sources are rejected. These helpers perform no
+  I/O and do not prove fresh connection/boot/marker rechecks; actual dispatch
+  remains unwired.
+
+The slice passes the pinned Go 1.25.13 full package and full Spider module
+tests, a full package race run, three shuffled package runs, full-module vet,
+package build, formatting, and scoped whitespace checks. The independent Python
+digest verifier passes. The BOOT, primitive, and loader tests execute in memory;
+no real Redis instance or acceptance fixture was started. Existing synthetic Go
+bundle factories are still test-only identity controls, not source acceptance.
+
+**At the 2026-09-15 checkpoint, M3 was not complete.** There was no production
+authoritative bundle/accessor or generated complete 43-source manifest/seal,
+and there were no placeholders for missing operations. The proposed BOOT file
+was embedded only by tests. The remaining transitions, URL/IDNA validation,
+shared memory/ledger planners, canonical-source Go/Python/Lua execution coverage
+and complete bundle digests still needed implementation. Those historical tests
+did not establish the then-missing gates; the current implementation and final
+race pass are recorded above.
+
+### Deferred real-Redis fixture decisions
+
+Resolve these through reviewed protocol/fixture clarification and obtain
+explicit M4 approval before starting real-Redis acceptance. Complete M3 sources
+and scoped in-memory GO reviews change none of the permissions/bootstrap rules:
+
+- Active gate validation checks candidate-key absence, but the current fixture
+  credential wording prohibits candidate-key access. Required read-only absence
+  checks versus prohibited writes need a reviewed clarification.
+- The harness owns its setup manifest, while unchanged Lua has no manifest
+  input or fixture mode. Clarify responsibility for manifest-key enforcement
+  without adding a Lua bypass.
+- The provisional harness forbids candidate installation/retirement/promotion,
+  while administrative source acceptance needs a noncircular isolated test
+  procedure before final release evidence exists. No alternate administrative
+  fixture or synthetic final production approval is authorized here.
+- The provisional zero-evidence GuardCore exception does not waive compatibility
+  validation or production `ZERO_SHA256` rejection. Resolve the fixture's
+  compatibility/bootstrap path explicitly; do not manufacture final evidence or
+  weaken normal authority checks to make the harness run.
+
 ### Source and trust-anchor rules
 
 - Add exactly one canonical reviewed source for each of the 43 operations.
@@ -371,6 +583,9 @@ pre-publication snapshot. The draft must remain WIP/no-merge.
 
 ### Implementation groups
 
+Every operation in this unchanged 43-operation inventory is implemented locally;
+the required behaviors remain subject to the separate M4 real-Redis gates.
+
 | Group | Operations | Required behavior |
 |---|---|---|
 | Administrative and candidate | `CJ2_APPROVE_BOOT`, `CJ2_INSTALL_CANDIDATE_MARKERS`, `CJ2_RETIRE_LEGACY_KEYS`, `CJ2_PROMOTE_CANDIDATE_CONTRACTS`, `CJ2_MARK_PLANNED_SHUTDOWN` | Exact boot, freeze, compatibility, retirement, promotion, and nonce authority |
@@ -381,18 +596,38 @@ pre-publication snapshot. The draft must remain WIP/no-merge.
 
 ### Lua acceptance checklist
 
-- [ ] Every script validates its exact key count, key grammar, ARGV grammar,
-  transport gate, record shape, constants, and bounds before mutation.
-- [ ] Every mutating script uses Redis `TIME` and never caller wall time.
-- [ ] Active and candidate mode behavior matches the closed operation matrix.
-- [ ] Every idempotent replay compares the full immutable request identity.
-- [ ] Every failure path performs no partial mutation.
-- [ ] Every response matches one allowed operation/status schema exactly.
-- [ ] Go, Python, and Lua agree on every positive and negative vector.
-- [ ] The contract digest is regenerated from the exact protocol bytes and
-  complete ASCII-sorted Lua source set.
+Checked items record implemented behavior and proven local in-memory checks,
+not real-Redis timing, allocator, durability or operational acceptance.
+
+- [x] Implement exact key counts/grammar, ARGV grammar, transport gates, record
+  shapes, constants and bounds before mutation across all 43 scripts; exercise
+  them through normal in-memory source conformance and independent review.
+- [x] Use Redis `TIME`, not caller wall time, in mutating scripts; verify clock
+  handling in memory without claiming actual Redis script/PTTL timing evidence.
+- [x] Implement and test the closed active/candidate operation matrix.
+- [x] Implement full immutable replay identity checks and test operation replays
+  and canonical/fragment multi-operation chains.
+- [x] Expected validation/preflight rejections perform zero writes. Tests also
+  verify that an unexpected execution fault propagates without rolling back
+  earlier writes; this is not a blanket no-partial-mutation guarantee.
+- [x] Implement and check the closed operation/status response schemas.
+- [x] Independently verify the baseline, 40 named positive and 157 negative
+  fixture cases in Go/Python; pass scoped Lua primitive/operation differential
+  and source-chain checks. This is not a claim of real-Redis vector execution.
+- [x] Regenerate and check the exact-document, complete ASCII-sorted Lua contract
+  digest, ordered source-set identity, fixed Go pins and sealed zero-argument
+  factory; retain the empty-Lua primitive without using it as guard authority.
+- [x] Obtain scoped in-memory code GO and final-byte security GO reviews; pass
+  local normal acceptance, including the latest full normal Docker Go suite.
+- [x] Record a passing result and duration for the final current-tree full
+  Spider module race command, with no skipped Crawl Jobs V2 tests.
 
 ## M4: Disposable Redis 7 acceptance
+
+**Not started or approved.** M4 waits for the
+[real-Redis fixture decisions](#deferred-real-redis-fixture-decisions) above and
+explicit approval. Neither local M3 completion nor the successful local image
+build waives those requirements or the provisional compatibility boundary.
 
 Use newly created, isolated, non-production infrastructure with no public route,
 production data, production credential, or reusable volume.
@@ -544,9 +779,11 @@ separate M8 decision.
 | Render rollout gate | JavaScript execution requires separate policy, image, sandbox, terms, robots, and authorization evidence |
 
 F3 foundation remediation may proceed while F1, F2, F4, and F6 remain
-operationally blocked. M1 passes locally and M2 is remote-verified; Lua has not
-been authorized or started. M5 hermetic code/consumer integration waits for M4 and
-F4-F6. In the parent plan, compatible code and runbooks precede the F1/F2
+operationally blocked. M1/M2 are merged; all 43 dormant M3 sources and the sealed
+factory are implemented and verified locally, including the final full-module
+race pass. M4 still requires protocol/fixture
+clarification and explicit approval. M5 hermetic code/consumer integration waits
+for M4 and F4-F6. In the parent plan, compatible code and runbooks precede the F1/F2
 operational reset so retained evidence is preserved and the environment is reset
 once. Migration rehearsal and candidate promotion require that accepted fresh
 state; release readiness and any crawl still require all applicable gates.
@@ -568,6 +805,14 @@ Rendering remains disabled unless its separate activation requirements pass.
 | 2026-09-11 | Final independent correctness, conformance, and defensive reviews | Three scoped GO verdicts on the dormant foundation; every reported HIGH and MEDIUM closed; no runtime/Redis atomic acceptance claimed |
 | 2026-09-11 | Final pinned-toolchain aggregate | Go 1.25.13 normal x10, race x3, shuffle x10, full module, vet, build, Python verifier/syntax, formatting, and scoped diff checks pass; package coverage 79.0%; 39 named positives plus baseline and 139 negatives |
 | 2026-09-12 | M2 scoped checkpoint publication | `0989001d15c9a84a00464fd55ddd857650eda85e`; 66 intended files; exact staged snapshot tests and secrets gate passed; push succeeded and local/remote identity matched |
+| 2026-09-14 | PR #9 protected acceptance and merge | All 14 protected checks passed at `bb70fb4`; merged as `d914a93f9ade5b63182ecf02092c1a1e74633713`; no runtime activation implied |
+| 2026-09-15 | Explicit M3 and narrow protocol-clarification approval | Existing wire layout documented; renewal shortening fails without writes; in-memory Lua conformance allowed, real-Redis fixture decisions still gated |
+| 2026-09-15 | Initial M3 implementation and independent review | BOOT (1/43), pure Lua primitives, and private source-bound reload helpers pass combined normal/race/shuffle/full-module/vet/build/Python checks; code/protocol scoped GO; no complete bundle, Redis acceptance, commit, or push |
+| 2026-09-17 | Complete local M3 source implementation and sealed bundle | All 43 canonical operations and zero-argument `AuthoritativeScriptBindingSet()` implemented; strict generators and canonical guard-bound 40-positive/157-negative fixture verification pass; empty-Lua foundation primitive retained |
+| 2026-09-17 | Local normal acceptance and independent re-review | Earlier full normal Spider pass recorded; canonical/fragment multi-operation code review and final-byte security review return scoped GO; superseded by the September 18 final verification matrix, not real-Redis acceptance or runtime activation |
+| 2026-09-17 | Initial full-module M3 race attempt | Worker VM deadline failure and 60-minute package timeout exposed harness scheduling/budget limits; not acceptance evidence; later profiled and corrected without dropping tests |
+| 2026-09-18 | Final local M3 verification | Full Spider race suite passes (`crawljobsv2` 2571.353 s, zero skipped V2 tests); fresh Docker normal suite passes (391.9 s); vet, Python 13/13, digest/assembly checks, formatting and workflow lint pass; no M3 staging, commit, push, PR or activation |
+| 2026-09-18 | Scoped M3 checkpoint publication authorization | Owner requested committing and pushing the verified M3 changes; unrelated worktree changes remain outside the checkpoint; no PR, merge, M4 execution or activation authorization |
 
 ## Definition of done
 

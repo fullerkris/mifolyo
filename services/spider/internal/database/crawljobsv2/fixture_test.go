@@ -16,9 +16,9 @@ import (
 )
 
 const (
-	fixturePositiveCaseCount = 39
-	fixtureNegativeCaseCount = 139
-	fixtureInventoryDigest   = "56797748de64aa57618104bb5135d0300c9d192f41995e743ddb319219a248df"
+	fixturePositiveCaseCount = 40
+	fixtureNegativeCaseCount = 157
+	fixtureInventoryDigest   = "8c360cf46c283ec1111e9c4a4e9896a2424afc10824566e174bdfcbabc6c15f8"
 )
 
 type vectorTarget struct {

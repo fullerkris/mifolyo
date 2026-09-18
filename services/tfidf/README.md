@@ -1,6 +1,18 @@
 # TF-IDF Processor
 
-The TF-IDF Processor is a core service in the Moogle search engine pipeline. Its job is to compute TF-IDF (Term Frequency-Inverse Document Frequency) after the Indexer has processed the crawled web pages. The TF-IDF Processor takes the indexed data from MongoDB, calculates the TF-IDF scores for each term in the documents, and stores the results back in MongoDB for fast retrieval by other services. This is essential for ranking search results based on the relevance of terms in the context of the entire collection of documents.
+> [!IMPORTANT]
+> **Status — current V1 offline postprocessor; outside F3.** TF-IDF is a
+> MongoDB-only batch job, not a Crawl Jobs V2 producer or consumer. It is not in
+> the F3 implementation path and must receive neither Crawl Jobs Redis
+> credentials nor network access to that Redis instance. The commands below do
+> not authorize V2 operation. See the
+> [parent remediation plan](../../docs/spider-render-remediation-plan-2026-09-01.md)
+> and [F3 implementation plan](../../docs/crawl-jobs-v2-plan.md).
+
+The TF-IDF Processor computes TF-IDF (Term Frequency-Inverse Document
+Frequency) after the Indexer has processed crawled pages. It reads indexed data
+from MongoDB, calculates scores for each term and document, and writes the
+results to MongoDB for query-time ranking.
 
 ## Setup
 
@@ -14,10 +26,6 @@ The recommended way to run the TF-IDF Processor is with Docker. This ensures all
 2. **Configure Environment Variables**:  
    Create a `variables.env` file in the `services/tfidf` directory with the following content (adjust as needed):
    ```env
-   REDIS_HOST=<your_redis_host>
-   REDIS_PORT=<your_redis_port>         # default: 6379
-   REDIS_PASSWORD=<your_redis_password> # default: empty
-   REDIS_DB=<your_redis_db>             # default: 0
    MONGO_HOST=<your_mongo_host>
    MONGO_PORT=<your_mongo_port>         # default: 27017
    MONGO_DB=<your_mongo_db>             # default: test
@@ -28,8 +36,8 @@ The recommended way to run the TF-IDF Processor is with Docker. This ensures all
 3. **Build and Run**:  
    In the `services/tfidf` directory, run the following commands:
    ```bash
-   docker-compose build
-   docker-compose up
+   docker compose build
+   docker compose up
    ```
 
 ### Without Docker
@@ -42,9 +50,11 @@ If you prefer not to use Docker, you can run the TF-IDF Processor directly on yo
    pip install -r requirements.txt
    ```
 2. **Configure Environment Variables**:  
-   Set up the environment variables in your shell or create a `.env` file in the `services/tfidf` directory.
+   Export the required variables in the process environment before startup. The
+   Python service does not load a `.env` file by itself; source one explicitly
+   in your shell only if it contains isolated development values.
 3. **Run the TF-IDF Processor**:  
    Execute the TF-IDF Processor script:
    ```bash
-   python tfidf_processor.py
+   python main.py
    ```

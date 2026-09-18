@@ -1,5 +1,13 @@
 # Render Worker
 
+> [!IMPORTANT]
+> **Status — implemented V1 render capability, disabled.** Stages 0, 1, and 2a
+> are implemented; Stage 3 is not approved. The crawl runtime remains V1, and
+> `IPC V2` below names only the renderer transport. It is not Crawl Jobs V2
+> wiring or authorization. See the
+> [parent remediation plan](../../docs/spider-render-remediation-plan-2026-09-01.md)
+> and [F3 implementation plan](../../docs/crawl-jobs-v2-plan.md).
+
 The render worker executes policy-approved JavaScript in Headless Chromium and
 returns the frozen DOM to the Go spider over a Unix socket. The worker remains a
 separate, networkless service with no host port, crawler credentials, or policy
@@ -131,3 +139,16 @@ broker. A public brokered crawl still requires an enabled exact-host/path
 policy, recorded policy and promoted image digests, site authorization,
 deployment-host sandbox validation, and a fresh crawl approval. Enabling the
 Compose `render` profile alone does not authorize any page or resource.
+
+The
+[Spider and Render Worker remediation plan](../../docs/spider-render-remediation-plan-2026-09-01.md)
+is an additional activation gate. In particular, durable Spider job recovery,
+exact crawl scope, and the approved JavaScript-shell indexing disposition must
+be complete before public rendering is considered.
+
+For a future V2 release, the reviewed compatibility manifest must keep the
+Render Worker disabled unless it names the approved exact image digest. The
+canonical contract and F3 plan own every image field and contract, Lua
+source-set, guard-core, and commit-guard artifact in the exact release set. The
+first successful `CJ2_START_REQUEST` is the V2 ordinary rollback boundary;
+crossing it does not grant rendering authority.

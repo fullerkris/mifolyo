@@ -26,7 +26,7 @@ var (
 // production constructor. In particular, caller-provided review data can never
 // become execution authority.
 //
-// Deprecated: authoritative scripts will be represented by ScriptBindingSet.
+// Deprecated: use ScriptBindingSet from AuthoritativeScriptBindingSet.
 type ScriptBindingReview struct {
 	sealed bool
 }
@@ -56,17 +56,17 @@ type scriptBindingSetSeal struct {
 }
 
 // ScriptBindingSet is the opaque, immutable complete authoritative Lua bundle.
-// Its zero value is invalid and all representation fields are private. There is
-// intentionally no production constructor yet: the future generated source
-// file must embed the reviewed Lua bytes, list exactly one binding per operation
-// in operationWireOrder, pin both per-source hashes, pin the ordered source-set
-// digest and approved contract digest, and provide the matching private seal.
-// Source bytes must be compile-time embedded, and the generator must emit the
-// pinned identities and seal as package-private literals; production
-// initialization must not derive authority from runtime input. This file
-// intentionally declares neither a bundle value nor an approved contract digest.
-// Until the generated file exists, production code has no way to obtain a valid
-// bundle and BuildEvalSHARequest fails closed.
+// Its zero value is invalid and all representation fields are private.
+// AuthoritativeScriptBindingSet is the closed, zero-argument production factory:
+// it validates all 43 compile-time embedded sources against package-private
+// generated pins and returns fresh private bindings and a matching seal. The
+// pins cover protocol order, operation/source names, Redis SHA-1, source SHA-256,
+// ordered source-set SHA-256, approved contract SHA-256, and the bundle seal.
+// Callers cannot supply sources, hashes, paths, reviews, or transport inputs.
+//
+// This establishes source identity only. It does not approve a commit guard,
+// accept Lua behavior or M4 evidence, authorize network I/O, or activate runtime
+// integration or the V1 client.
 type ScriptBindingSet struct {
 	bindings               []scriptBinding
 	sourceSetSHA256        Digest

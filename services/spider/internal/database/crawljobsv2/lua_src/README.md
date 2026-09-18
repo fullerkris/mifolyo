@@ -567,13 +567,26 @@ must compare numeric scores to independently validated canonical score_text.
 
 ### Extended planner and narrow safety admission
 
-Whitelist: HSET, SET, UNLINK(single key), HDEL, SADD, SREM, ZADD(no options),
-ZREM, RENAME(distinct keys, **absent destination only**), PERSIST. No PEXPIREAT,
-stage/commit reserve or arbitrary command/coverage hooks. `Plan.add` validates
-and copies a complete logical command (<=1002 bulk arguments, <=2 MiB), rejects
-duplicate fields/members, and splits multi-element commands into descriptors
-of at most 258 arguments. It never truncates a 500-element batch. At most 4096
-descriptors: 500 jobs * five writes = 2500 plus bounded shared updates.
+Revision-2 whitelist: HSET, SET, UNLINK(single key), HDEL, SADD, SREM,
+ZADD(no options), ZREM, RENAME(distinct keys, **absent destination only**),
+PERSIST. See the rev4 command and memory-policy extensions above for later APIs.
+
+`Plan.add` validates and copies each complete logical command before splitting:
+at most 1002 string arguments, including the command and key, with
+`sum(#argv[i]) <= 5373952` bytes for `CJ2_STAGE_PAGE_BLOB` and
+`sum(#argv[i]) <= 2097152` bytes for every other operation. These existing
+descriptor bounds count raw argument bytes, not serialized RESP bytes or total
+plan bytes. `Wire.request_size` counts the complete serialized EVALSHA request:
+command, SHA, key count, all KEYS/ARGV, and RESP framing. `Wire.decode` separately
+limits those serialized bytes to 5373952 for `CJ2_STAGE_PAGE_BLOB`, 524288 for
+non-blob STAGE data calls, 65536 for `CJ2_COMMIT`, and 2097152 for other shared-wire
+operations. Neither bound replaces the other or the field/blob limits; this
+documents the implementation, not a change to protocol limits.
+
+`Plan.add` rejects duplicate fields/members (LPUSH retains duplicates) and splits
+multi-element commands into descriptors of at most 258 arguments. It never
+truncates a 500-element batch. At most 4096 descriptors per plan: 500 jobs * five
+writes = 2500 plus bounded shared updates.
 
 Accounting uses original and call-position projected **private** receipts.
 Selected field/member coverage is required; a cardinality alone cannot prove
@@ -632,11 +645,14 @@ the separate real-Redis, image and operational acceptance gates.
 
 ## Assembly
 
-From repository root, check assembly and bundle pins without writing:
+Use Python 3.10+ for the maintenance workflow below (CI tests the verifier with
+3.13). From repository root, check assembly, bundle pins, and shared vectors
+without writing repository files:
 
 ```bash
-python3 scripts/generate-crawl-jobs-v2-lua.py --check --require-complete
-python3 scripts/generate-crawl-jobs-v2-bundle.py --check
+python3 -B scripts/generate-crawl-jobs-v2-lua.py --check --require-complete
+python3 -B scripts/generate-crawl-jobs-v2-bundle.py --check
+python3 -B scripts/verify-crawl-jobs-v2-digests.py
 ```
 
 The Lua check compares all 42 assembled sources byte-for-byte with their explicit
@@ -644,11 +660,14 @@ recipes and validates the BOOT passthrough. It reports
 `COMPLETE SOURCE INVENTORY: 43/43`; `--require-complete` makes missing recipes
 fatal rather than merely reporting incompleteness. BOOT is never rewritten.
 
-The bundle check independently requires exactly the literal 43 canonical files
-and the exact bytes of `docs/crawl-jobs-v2.md`. It verifies generated Go pins,
-the canonical digest fixture and dependent guard identities. Pins cover each
-operation/source name, Redis SHA-1, source SHA-256, ordered source-set SHA-256,
-contract SHA-256 and bundle seal. `AuthoritativeScriptBindingSet()` in
+Bundle identity uses exactly the literal 43 canonical files and the exact bytes
+of `docs/crawl-jobs-v2.md`. The bundle tool also requires the existing
+[`contracts/crawl-jobs-v2/digest-vectors.json`](../../../../../../contracts/crawl-jobs-v2/digest-vectors.json)
+as input; it does not generate the whole fixture from scratch. Its check verifies
+generated Go pins, canonical/document digest cases, and dependent guard
+identities. Pins cover each operation/source name, Redis SHA-1, source SHA-256,
+ordered source-set SHA-256, contract SHA-256 and bundle seal.
+`AuthoritativeScriptBindingSet()` in
 `../script_bundle.go` validates the embedded inventory against these fixed
 literals and returns fresh private bindings/seal; callers supply no sources,
 hashes or paths. `ContractSHA256()` validates that bundle and returns the fixed
@@ -656,16 +675,78 @@ contract pin, not a runtime document hash. Private SCRIPT LOAD helpers retain
 the same sealed source/retry identity but perform no I/O or fresh transport
 checks; dispatch remains unwired.
 
-For reviewed source changes, regeneration runs the Lua generator first, then
-the bundle generator without `--check`. The former writes only the 42 assembled
-sources; the latter updates `../script_bundle_generated.go` and the canonical
-and dependent cases in `contracts/crawl-jobs-v2/digest-vectors.json`.
+The verifier reads inputs and writes no fixtures or pins. Its `--print-computed`
+mode emits diagnostic JSON but skips the normal final expected-result comparison;
+do not use it as a passing verification run or as fixture regeneration.
+
+For approved changes that require regeneration, use this order: Unicode first
+**only if an approved pin/data change requires it** (see below), then Lua, then
+bundle pins and fixtures. After any required Unicode work, run from repository
+root without `--check`:
+
+```bash
+python3 -B scripts/generate-crawl-jobs-v2-lua.py --require-complete
+python3 -B scripts/generate-crawl-jobs-v2-bundle.py
+```
+
+The Lua generator writes only the 42 assembled sources, never BOOT. The bundle
+generator writes stale Go pins to `../script_bundle_generated.go`, updates
+selected canonical/document digest and dependent guard cases in the existing
+fixture, and adds missing canonical-bundle negative cases. It preserves unrelated
+fixture cases and formatting; it does not write Lua or the normative document.
 Hashes cover the entire canonical source, including comments; no timestamps,
 environment values, or filesystem enumeration determine source identity.
 Recipes and tests, not merely files in a directory, define assembly. URL and
 Unicode support stay in their own chunks; INSTALL has no URL dependency and
 does not inline them. These checks establish source identity, not M4 acceptance
 or runtime activation.
+
+## Unicode and Python maintenance
+
+The independent [`scripts/crawl_jobs_v2_url.py`](../../../../../../scripts/crawl_jobs_v2_url.py)
+helper validates already-canonical V1 URL identities for dormant Crawl Jobs V2
+conformance. It is not the active
+[Seed Importer normalizer](../../../../../../services/seed-importer/url_identity.py)
+and does not authorize network requests. You need Python **3.10+** because the
+helper uses `dataclass(slots=True)`; the verifier and Python unit suite use only
+the standard library and checked-in inputs.
+[Required-checks CI](../../../../../../.github/workflows/required-checks.yml)
+tests them with Python **3.13**.
+
+[`unicode-provenance.json`](unicode-provenance.json) records the exact pins:
+**Go 1.25.13**, **golang.org/x/net v0.58.0**, **golang.org/x/text v0.41.0**, and
+**Unicode 15.0.0**. Retain the upstream notices in [`licenses/`](licenses/).
+The Python helper reads [`unicode_data.lua`](unicode_data.lua) from one fixed
+repository path relative to the helper, verifies its full-file SHA-256 and size,
+and parses five literal tables. It never executes the Lua trailer or falls back
+to host Unicode tables, Python's IDNA codec, or executable Lua. Missing or changed
+data fails closed, even for an ASCII-only verification run.
+
+[`tools/generate-unicode/main.go`](../tools/generate-unicode/main.go) checks or
+regenerates the data and provenance. Put the Go 1.25.13 binary on `PATH` first:
+`GOTOOLCHAIN=local` deliberately disables automatic toolchain selection. With
+the pinned modules already cached, run from `services/spider`; set
+`UNICODE_WORK_DIR` to an existing private temporary parent directory first:
+
+```bash
+GOTOOLCHAIN=local GOPROXY=off GOSUMDB=off GOWORK=off go run -mod=readonly \
+  ./internal/database/crawljobsv2/tools/generate-unicode \
+  -work "$UNICODE_WORK_DIR" -check
+```
+
+`-check` compares outputs without writing repository files; it still creates
+private temporary files and may populate the Go build cache. Only for an
+approved regeneration, omit `-check` to write `unicode_data.lua`,
+`unicode-provenance.json`, `licenses/Go-BSD-3-Clause.txt`, and
+`licenses/Go-PATENTS.txt`. `-oracle <path>` also writes a raw oracle file, even
+with `-check`. `-acquire-licenses` is a separate explicit network/write mode,
+not part of offline checking or normal regeneration.
+
+The generator hashes its own source, including comments, into provenance.
+Keep documentation-only edits here rather than in that file. Unicode generation
+does not update the Python helper's identity/hash/inventory pins: review those
+together with any approved data change, then follow the Lua -> bundle/fixture
+order in [Assembly](#assembly). Do not repin unexpected drift to make checks pass.
 
 ## Contract and conventions
 
@@ -772,9 +853,11 @@ reads the five legacy data keys.
 
 * `Plan.new(ctx) -> plan/code` returns an opaque handle.
 * `Plan.add(plan,argv,coverage) -> true/code` copies and, if needed, splits the
-  logical descriptor according to the revision-2 whitelist/bounds above.
-  Keys must be in the validated wire set. No arbitrary numeric G/free coverage;
-  `cancel_run` is the only extra, narrowly validated reserve mode.
+  logical descriptor under the [planner bounds](#extended-planner-and-narrow-safety-admission)
+  above, including the blob-specific summed-argument limit and rev4 extensions.
+  Keys need validated wire or authenticated derived-write grants. No arbitrary
+  numeric G/free coverage; use the documented rev4 policy/unit rules or the
+  narrowly validated `cancel_run` mode.
 * `Plan.assess(ctx,plan) -> assessment/code` simulates those commands in order
   from complete or explicitly selected private receipts. Missing facts/wrong types fail.
   Identical values cost zero; changed values cost the **full replacement**;

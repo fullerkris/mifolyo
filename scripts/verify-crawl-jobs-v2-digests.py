@@ -1,5 +1,24 @@
 #!/usr/bin/env python3
-"""Strict offline verifier for the Crawl Jobs V2 shared conformance vectors."""
+"""Strict offline verifier for the Crawl Jobs V2 shared conformance vectors.
+
+Requires Python 3.10+ (the pinned URL helper uses dataclass(slots=True)); CI
+tests with Python 3.13. Only the standard library and checked-in inputs are
+needed, with no Go/Lua runtime, network access, or running services.
+Run from repository root: python3 -B scripts/verify-crawl-jobs-v2-digests.py
+
+The optional fixture path defaults to contracts/crawl-jobs-v2/digest-vectors.json
+under the repository containing this script, not the current directory.
+This verifier reads inputs; it never rewrites fixtures or pins. --print-computed
+prints diagnostic JSON after schema validation, computation, and negative
+checks, but skips the normal final comparison with stored expected results.
+It is not fixture regeneration or a substitute for a normal verification run.
+
+URL checks use the fixed sibling crawl_jobs_v2_url.py and its hash-checked
+Unicode literals, not the active Seed Importer normalizer. These are dormant
+conformance checks, not crawl admission or operational acceptance. See
+services/spider/internal/database/crawljobsv2/lua_src/README.md for Unicode and
+Python maintenance, exact Go/module pins, and regeneration order.
+"""
 
 from __future__ import annotations
 

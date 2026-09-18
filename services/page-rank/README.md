@@ -1,5 +1,12 @@
 # PageRank
 
+> [!IMPORTANT]
+> **Status — current V1 offline ranking job; outside F3.** PageRank is not a
+> Crawl Jobs V2 producer or consumer and is not in the F3 implementation path.
+> Its commands and image do not authorize a V2 run. See the
+> [parent remediation plan](../../docs/spider-render-remediation-plan-2026-09-01.md)
+> and [F3 implementation plan](../../docs/crawl-jobs-v2-plan.md).
+
 The PageRank service computes authority scores for searchable pages in MongoDB.
 It is a one-shot batch job, not a long-running or horizontally scaled service.
 
@@ -16,7 +23,13 @@ The algorithm uses damping `0.85`, uniform initialization, an L1 convergence
 tolerance of `1e-12`, and a maximum of 1000 iterations. Empty or malformed
 input and non-convergence fail without changing active results.
 
-## Publication
+## V1 publication capability (currently blocked)
+
+> [!CAUTION]
+> Do not publish against the retained evidence or under the current F3 gates.
+> The mutating command below documents V1 capability only and requires a
+> separately reviewed, isolated V1 change with graph producers stopped and
+> durably flushed; this README does not grant that approval.
 
 Running the binary without flags is read-only. It validates the graph,
 calculates ranks, and prints a deterministic graph SHA-256 and summary as JSON.
@@ -64,16 +77,26 @@ environment. The root and V1 baseline Compose files make this local-only
 exception explicit because their data stores are localhost-bound or isolated
 on internal networks.
 
-The service-level Compose file is a deployment artifact. From the repository
-root, validate the reviewed release digest metadata before pulling or running
-it:
+The service-level Compose file is a current V1 deployment artifact. The
+PageRank image remains digest-pinned, but its validation alongside the legacy
+page/image pipeline does not make PageRank a Crawl Jobs V2 participant. The
+[legacy cutover runbook](../../docs/immutable-pipeline-release-cutover.md)
+records the retired V1 procedure for historical interpretation only; it is not
+current deployment or publication authorization.
+
+A future V2 release must use one exact reviewed compatibility manifest plus
+every image field and contract, Lua source-set, guard-core, and commit-guard
+artifact required by the
+[Crawl Jobs V2 contract](../../docs/crawl-jobs-v2.md) and F3 plan. Those
+authorities determine exact membership; do not derive it from this README. The
+future ordinary rollback boundary is the first successful
+`CJ2_START_REQUEST`, recorded before DNS.
+
+The historical V1 release procedure pulled the exact PageRank image with its
+reviewed digest environment file. This command is retained as history and must
+not be used as current release instruction:
 
 ```bash
-bash scripts/validate-release-compose.sh \
-  --env-file services/spider/release-image.env \
-  --env-file services/indexer/release-image.env \
-  --env-file services/image-indexer/release-image.env \
-  --env-file services/page-rank/release-image.env v2026.08.26
 docker compose --env-file services/page-rank/release-image.env \
   --file services/page-rank/docker-compose.yml pull
 ```
@@ -82,10 +105,12 @@ docker compose --env-file services/page-rank/release-image.env \
 `ghcr.io/fullerkris/mifolyo/page-rank` by a lowercase SHA-256 digest. Tags,
 alternate repositories, wrong services, and malformed digests are rejected.
 
-## Isolated baseline run
+## Historical V1 isolated baseline run
 
-Follow `docs/v1-baseline-crawl-test-checklist.md`. The approved local path uses
-the isolated Compose project's `ranking` profile:
+The following command is retained as V1 protocol context from
+`docs/v1-baseline-crawl-test-checklist.md`; it is not authorization to rerun the
+failed baseline. The old local path used the isolated Compose project's
+`ranking` profile:
 
 ```bash
 docker compose --project-name mifolyo-v1-baseline-test \
@@ -93,8 +118,9 @@ docker compose --project-name mifolyo-v1-baseline-test \
   --profile ranking run --rm page-rank
 ```
 
-Capture `graph_sha256`, then run the explicit publication command shown in the
-checklist. The validation command does not create or update `pagerank`.
+The historical procedure captured `graph_sha256` before running the explicit
+publication command. Its validation command did not create or update
+`pagerank`.
 
 ## Development
 

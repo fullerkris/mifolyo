@@ -1,5 +1,13 @@
 # Query Engine
 
+> [!IMPORTANT]
+> **Status — current V1 search application; outside F3.** The Query Engine is
+> not a Crawl Jobs V2 producer or consumer and is not in the F3 implementation
+> path. F6 API/UI provenance work has not started. The procedures below do not
+> authorize V2 operation. See the
+> [parent remediation plan](../../docs/spider-render-remediation-plan-2026-09-01.md)
+> and [F3 implementation plan](../../docs/crawl-jobs-v2-plan.md).
+
 The Query Engine is the main API and web interface for the Moogle search engine. It provides endpoints and web pages for searching web pages and images, retrieving page metadata, exploring page connections (outlinks and backlinks), and viewing search statistics. The Query Engine is built with Laravel and serves as the bridge between users and the indexed data stored in MongoDB.
 
 ## Features
@@ -21,32 +29,14 @@ The recommended way to run the Query Engine is with Docker. This ensures all dep
 1. **Install Docker**:  
    Follow the instructions for your OS on the [Docker website](https://docs.docker.com/get-docker/).
 
-2. **Configure Environment Variables**:  
-   Create a `.env` file in the `services/query-engine` directory using `.env.example` as the starting point. The local Docker setup uses PostgreSQL for MiFolyo application data and MongoDB for Moogle index/search data:
-   ```env
-   APP_NAME=MiFolyo
-   APP_KEY=base64:your_app_key_here
-   APP_ENV=local
-   APP_DEBUG=true
-   APP_URL=http://localhost
-
-   DB_CONNECTION=pgsql
-   DB_HOST=postgres
-   DB_PORT=5432
-   DB_DATABASE=mifolyo
-   DB_USERNAME=mifolyo
-   DB_PASSWORD=mifolyo
-
-   MONGODB_URI=mongodb://mongo:27017
-   MONGODB_DATABASE=mifolyo_index
-
-   CACHE_STORE=redis
-   QUEUE_CONNECTION=redis
-   REDIS_CLIENT=predis
-   REDIS_HOST=redis
-   REDIS_PASSWORD=null
-   REDIS_PORT=6379
-   ```
+2. **Review Local Configuration**:
+   The service-local `docker-compose.yml` hardcodes its local development
+   Laravel, PostgreSQL, MongoDB, and Redis values. It does not load
+   `services/query-engine/.env`, so creating or editing that file does not
+   configure this Compose stack. Use the root Compose definition for the
+   integrated repository environment; any configurable service-level setup
+   needs an explicit reviewed Compose override rather than undocumented `.env`
+   assumptions. Never use the local hardcoded values in production.
 
 3. **Build and Run**:  
    In the `services/query-engine` directory, run:
@@ -62,28 +52,37 @@ Docker is a bit more involved, as it requires setting up the environment
 manually. For now, refer to the official Laravel documentation for setting up a
 Laravel application locally: [Laravel Installation](https://laravel.com/docs/installation).
 
-## Legacy search-term retirement
+## Historical V1 legacy search-term retirement (do not execute)
 
-Raw search-term telemetry is retired. The one-time cleanup is an explicit,
-idempotent operator action:
+Raw search-term telemetry is retired. The historical one-time cleanup was an
+explicit, idempotent operator action:
 
 ```bash
 php artisan security:purge-legacy-search-terms
 ```
 
-Run it only from the release checklist in
-`../../docs/immutable-pipeline-release-cutover.md`; it is never run by startup,
-migrations, scheduling, or deployment. It deletes only logical `top_searches`
-through Laravel's configured prefixed Redis connection, preserves
-`total_searches`, and reports no stored content. Never use Redis `FLUSHDB` or
-`FLUSHALL` for this cleanup.
+The command is retained only to interpret the
+[legacy release checklist](../../docs/immutable-pipeline-release-cutover.md),
+which is not executable current guidance. Any future cleanup needs a new,
+reviewed operator plan; startup, migrations, scheduling, and deployment never
+run it automatically. That checklist does not define Crawl Jobs V2 release
+membership or its rollback boundary. A future V2 release must use one exact
+reviewed compatibility manifest plus every image field and contract, Lua
+source-set, guard-core, and commit-guard artifact required by the canonical
+contract and F3 plan. Those authorities own exact membership; do not infer it
+from this README. The first successful `CJ2_START_REQUEST`, recorded before DNS,
+is the future V2 ordinary rollback boundary.
+
+The command deletes only logical `top_searches` through Laravel's configured
+prefixed Redis connection, preserves `total_searches`, and reports no stored
+content. Never use Redis `FLUSHDB` or `FLUSHALL` for this cleanup.
 
 ## Frontend Dependency Security
 
 The query image uses `npm ci` so `package-lock.json` is the deterministic input
 to every frontend build. Do not replace it with `npm install` in the Dockerfile
 or regenerate the lockfile without rerunning the audit and production build.
-The Docker context excludes `.env` and every `.env.*` file except
+The Docker context excludes `.env` and every `.env.*` file, including
 `.env.example`; environment-specific credentials and endpoints must enter at
 runtime, never through an image layer.
 

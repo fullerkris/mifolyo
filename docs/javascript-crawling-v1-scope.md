@@ -1,16 +1,25 @@
 # JavaScript Crawling V1 Scope
 
-**Status:** Stages 0, 1, and 2a are implemented and disabled by default. The
-networkless worker can execute inline JavaScript and Go-brokered external
+> [!IMPORTANT]
+> **Status - current V1 render capability.** Stages 0, 1, and 2a are
+> implemented and disabled; Stage 3 is not approved. The crawl runtime remains
+> V1. `IPC V2` below is the renderer transport version, not Crawl Jobs V2
+> runtime wiring or authorization. See the
+> [parent remediation plan](spider-render-remediation-plan-2026-09-01.md) and
+> [F3 implementation plan](crawl-jobs-v2-plan.md) for current gates.
+
+The networkless worker can execute inline JavaScript and Go-brokered external
 scripts and stylesheets. No public rendered crawl or baseline rendering is
 authorized by this document.
 
 ## Motivation
 
 The static crawler can fetch a JavaScript application shell without seeing the
-content created after script execution. The first baseline run demonstrated
+content created after script execution. The failed
+[2026-08-18 baseline run](v1-baseline-crawl-test-report-2026-08-18.md) demonstrated
 this with Google Fonts: the response contained metadata and an empty
-`<gf-root>`, but no paragraph text for the indexer.
+`<gf-root>`, but no paragraph text for the indexer. Later renderer implementation
+does not change that report's strict **FAIL** or authorize another run.
 
 The Sitebulb guide, [How to Crawl JavaScript Websites](https://sitebulb.com/resources/guides/how-to-crawl-javascript-websites/),
 describes the relevant workflow: use an HTML crawler for server-rendered sites,
@@ -168,9 +177,12 @@ Stage 2a is implemented:
 
 ### Stage 3: reviewed data requests
 
-- Extend the contract in a reviewed V2 before adding same-origin GET `fetch`
-  support for exact approved paths. Render-policy V1 cannot authorize data
-  requests.
+Stage 3 is proposed, not approved. The requirements below do not authorize
+implementation, shadow runs, or public activation.
+
+- Extend the render-policy contract in a reviewed V2 before adding same-origin
+  GET `fetch` support for exact approved paths. This is a render-policy version,
+  not Crawl Jobs V2; render-policy V1 cannot authorize data requests.
 - Keep workers, service workers, beacon requests, state-changing methods,
   images, fonts, media, and third-party APIs denied.
 - Run in shadow mode and compare response versus render output before allowing
@@ -276,3 +288,14 @@ for that site's resources pass hermetic tests, the renderer image is pinned and
 scanned, a new render policy is reviewed, its digest is recorded, and the
 site's robots and usage terms authorize the crawl. Rendering is a content
 capability, not an authorization bypass.
+
+The F3 durable-job, F4 exact-scope, and F6 JavaScript-shell acceptance gates in
+the
+[Spider and Render Worker remediation plan](spider-render-remediation-plan-2026-09-01.md)
+must also pass before any public rendered crawl. A metadata-only indexing
+fallback does not authorize browser execution or brokered resources.
+
+Every other parent-plan gate and a new explicit site/run authorization under
+F3 M8 also apply. M1/M2 and F5 code acceptance and the locally verified, dormant
+M3 bundle do not authorize V2 runtime wiring or rendering activation; the
+[primary F3 plan](crawl-jobs-v2-plan.md) owns those remaining gates.

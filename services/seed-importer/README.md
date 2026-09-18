@@ -1,5 +1,19 @@
 # Seed Importer
 
+> [!IMPORTANT]
+> **Status — current V1 tooling.** This service targets the V1 seed catalog and
+> three-key queue only. F1 and F2 have not started, and no V2 feeder or
+> source/audit runtime is wired. Do not use this README as Crawl Jobs V2
+> migration, feed, or crawl authorization. See the
+> [parent remediation plan](../../docs/spider-render-remediation-plan-2026-09-01.md)
+> and [F3 implementation plan](../../docs/crawl-jobs-v2-plan.md).
+
+> [!CAUTION]
+> Under the current F3 gates, do not run non-dry-run bootstrap, rebuild,
+> or feed commands and do not start this service. The mutation examples below
+> are retained only for separately approved, isolated V1 development. Dry-run
+> validation and tests do not grant permission to mutate retained evidence.
+
 Python utilities for the V1 crawl seed catalog. URL identity follows the
 shared vectors in `contracts/url-canonicalization/v1.json`; MongoDB records
 follow `contracts/crawl-seed-v1.schema.json` with BSON dates.
@@ -14,8 +28,10 @@ docker compose run --rm seed-importer \
 ```
 
 Create or tighten `mifolyo_index.crawl_seeds`, ensure its indexes, and merge
-the 70 direct `manual` CSV rows. The resulting catalog contains 67 enabled
-records and three disabled records: BBC News, Khan Academy, and PolitiFact.
+the 70 direct `manual` CSV rows. A new empty catalog uses the checked-in target
+of 67 enabled records and three disabled records: BBC News, Khan Academy, and
+PolitiFact. An existing compatible catalog preserves its operator-controlled
+states; only the guarded rebuild necessarily applies the 67/3 target.
 
 ```bash
 docker compose run --rm seed-importer python crawl_seeds.py bootstrap
@@ -95,7 +111,7 @@ JSON, and `old` JSON variants. `/r/games/` becomes `/r/games.json`, not
 `/r/games/.json`. Expansion does not authorize a fetch; the matching
 `reddit-crawler` policy group remains disabled pending approved access.
 
-## Redis V1 feeder
+## Current V1 Redis feeder (currently blocked)
 
 `feed.py` queues enabled MongoDB seed records and atomically removes explicitly
 disabled catalog IDs from all three Redis crawl structures. In one atomic Lua

@@ -1,5 +1,12 @@
 # Seed Sources
 
+> [!IMPORTANT]
+> **Status - current V1 source reference.** These sources describe discovery
+> inputs for the V1 seed catalog; listing a source does not enqueue or authorize
+> a URL and does not define a Crawl Jobs V2 run. See the
+> [parent remediation plan](spider-render-remediation-plan-2026-09-01.md) and
+> [F3 implementation plan](crawl-jobs-v2-plan.md) for current gates.
+
 MiFolyo should use curated seed sources rather than broad web crawling. The goal is to start from high-signal entry points and let controlled outlink discovery expand the index.
 
 ## Manual Seeds
@@ -8,15 +15,22 @@ Tracked file: `seeds/manual-seeds.csv`
 
 Use this for founder-selected domains and topic-specific communities. Manual seeds should stay small enough to review by hand.
 
-Current disabled manual targets:
+Checked-in target-disabled manual seeds:
 - `https://www.bbc.com/news`
 - `https://www.khanacademy.org/`
 - `https://www.politifact.com/`
 
-The records remain in the catalog with `enabled: false` for provenance. Their
-hosts are assigned to the crawl policy's disabled `disabled-sites` group, so
-they are also denied at scheduler admission before DNS. Re-enabling a catalog
-record alone is insufficient; both controls require a new review.
+The checked-in F1 target definition retains these records with `enabled: false`
+for provenance. F1 has not run, so the retained inspected datastore still has
+70 enabled records; do not treat the 67-enabled/3-disabled target as deployed
+state. The checked-in crawl policy independently assigns these hosts to the
+disabled `disabled-sites` group and denies scheduler admission before DNS; that
+policy definition does not reconcile the retained catalog. Re-enabling a
+catalog record alone is insufficient; both controls require a new review.
+
+The [2026-08-18 report](v1-baseline-crawl-test-report-2026-08-18.md) records the
+70-enabled run and remains strict **FAIL**. The later 67/3 source definition is
+not evidence of a fresh accepted baseline or permission to replay the feeder.
 
 ## Curlie
 
@@ -70,7 +84,7 @@ Notes:
 
 Old Reddit base: `https://old.reddit.com`
 
-Current status (checked 2026-08-19):
+Recorded access check (2026-08-19; not a fresh authorization):
 - Both `https://www.reddit.com/robots.txt` and
   `https://old.reddit.com/robots.txt` declare `User-agent: *` and
   `Disallow: /`.

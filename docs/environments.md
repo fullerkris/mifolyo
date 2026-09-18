@@ -3,10 +3,26 @@
 MiFolyo has three intentionally separate operating environments. Never reuse
 Compose projects, volumes, credentials, or database endpoints between them.
 
+> [!IMPORTANT]
+> V1 remains the current runtime. Crawl Jobs V2 is dormant implementation work;
+> its completed M3 source bundle does not authorize runtime wiring, migration,
+> deployment, candidate promotion, rendering activation, or crawling.
+
+F3 M1/M2 and the F5 code repair passed protected PR #9 checks and merged as
+`d914a93`. M3 implements all 43 canonical Lua sources and the sealed,
+zero-argument `AuthoritativeScriptBindingSet()` factory. It is locally verified,
+committed, and pushed as `81028ca` on `feature/crawl-jobs-v2-lua`, not accepted
+through an M3 PR or protected CI. M4 still requires real-Redis fixture, ACL, and
+bootstrap clarifications plus explicit approval. F1, F2, F4, and F6 are not
+started. Render Stages 0, 1, and 2a remain implemented but disabled; Stage 3 is
+not approved. See the
+[parent remediation plan](spider-render-remediation-plan-2026-09-01.md) and
+[primary Crawl Jobs V2 plan](crawl-jobs-v2-plan.md) for evidence and current gates.
+
 | Environment | Definition | Access | Data policy |
 |---|---|---|---|
 | Development local | Root `docker-compose.yml` | Developer workstation | Long-lived developer state; not a cleanup target for baseline tests |
-| Isolated test local | `scripts/docker/v1-baseline.compose.yml`, project `mifolyo-v1-baseline-test` | Caddy only, on loopback port `18080` by default | Disposable, project-scoped state |
+| Isolated test local | `scripts/docker/v1-baseline.compose.yml`, project `mifolyo-v1-baseline-test` | Caddy only, on loopback port `18080` by default | Project-scoped test state; preserve retained evidence until a separately approved, backup/restore-tested reset |
 | Production | Tailscale-only host | `https://srv1459482.tail11b93a.ts.net` | Durable production state with backups; never reused by local Compose |
 
 ## Development local
@@ -20,10 +36,13 @@ Redis flush commands.
 The current root file publishes its MongoDB, Redis, and PostgreSQL ports. Do
 not run a root-stack spider while those publications exist; use a reviewed
 portless configuration so the running pipeline can still reach its stores.
-Before an isolated V1 crawl, stop those root services or prove the active root
-configuration is portless as required below.
+The historical isolated V1 procedure required those root services to be stopped
+or proven portless. That preflight remains useful defense-in-depth evidence, but
+it does not authorize a crawl.
 
-Development commands continue to use the root file, for example:
+The following root-project examples are development reference, not current
+startup authorization. Do not use them to prepare a crawl or activate optional
+pipeline, crawl, batch, image-pipeline, or render profiles:
 
 ```bash
 docker compose config --quiet
@@ -31,7 +50,14 @@ docker compose up -d
 docker compose ps
 ```
 
-## Isolated test local
+## Isolated test local (historical V1 procedure; blocked)
+
+> [!CAUTION]
+> The environment description remains useful for inspecting the current V1
+> runtime, but the build, mutation, feed, consumer, crawl, ranking, and cleanup
+> commands below are a historical V1 procedure. Do not execute them as a current
+> runbook. Parent-plan Phase 6, aligned with F3 milestone M6, must replace them
+> with tested V2 instructions before a future authorized run.
 
 The V1 baseline environment is search-only: it contains MongoDB 8, Redis 7,
 PostgreSQL 16, the Laravel query engine, Caddy, and opt-in crawl tooling. It has
@@ -106,8 +132,9 @@ The spider now implements DNS-pinned address authorization, numeric-address
 dialing, remote-endpoint checks, TLS verification, redirect revalidation, and
 fail-closed baseline robots policy. These application controls do not make the
 host-publication check optional: NAT, host routing, or operator-configured
-networks remain outside the process's complete visibility. Do not crawl until
-the host inventory and every remaining checklist preflight have passed.
+networks remain outside the process's complete visibility. Passing the host
+inventory and historical checklist preflights cannot authorize a crawl or
+reactivate the V1 procedure.
 
 Inspect the root development services. If any are running with published
 ports, stop them; this does not remove their containers or volumes:
@@ -125,8 +152,12 @@ baseline data stores themselves have no published ports.
 
 ### Configure, build, and start
 
-Run commands from the repository root. Validate all profiles before creating
-anything:
+> [!CAUTION]
+> This is a historical V1 execution sequence, not current startup authority. Do
+> not run these commands as preparation for a crawl or V2 cutover.
+
+The historical procedure ran commands from the repository root and validated
+all profiles before creating anything:
 
 ```bash
 docker compose \
@@ -136,11 +167,11 @@ docker compose \
   --profile image-pipeline --profile render config --quiet
 ```
 
-Repeat the command without `--quiet` when reviewing the fully resolved port,
+It repeated the command without `--quiet` to review the fully resolved port,
 network, volume, command, and environment model before a test run.
 
-Build the images required by a bounded baseline crawl. The deferred image
-indexer is deliberately excluded:
+It built the images required by a bounded baseline crawl and deliberately
+excluded the deferred image indexer:
 
 ```bash
 docker compose \
@@ -166,12 +197,18 @@ docker run --rm --network none --read-only \
   'test -s /etc/ssl/certs/ca-certificates.crt && test "$(id -u):$(id -g)" = "65534:65534"'
 ```
 
-The required runtime user is `65534:65534`; policy validation must report SHA-256
+The V1 image requires runtime user `65534:65534`. The later checked-in baseline
+policy pins SHA-256
 `50648954d0264f7ac4fdda174178db488e86e335a0b63fdcc448da7bc218bae3`.
 The policy includes 67 enabled host rules plus disabled `disabled-sites` and
-`reddit-crawler` groups. Stage 1 JavaScript rendering is implemented under the
-separate `render` profile, but the baseline policy file has no render rules and
-the worker must remain stopped for this environment's static crawl.
+`reddit-crawler` groups. This is a post-run target pin, not the policy executed
+by the [2026-08-18 run](v1-baseline-crawl-test-report-2026-08-18.md), which began
+with 70 enabled seeds. That report remains strict **FAIL**; neither the later
+pin nor the 67-enabled/3-disabled target establishes a fresh accepted baseline.
+
+Render Stages 0, 1, and 2a are implemented but disabled; Stage 3 is not approved.
+The render policy has no rules, the worker must remain stopped, and no rendering
+activation is authorized.
 
 The query-engine Dockerfile installs frontend dependencies with `npm ci`, not
 `npm install`. The lockfile is therefore the exact dependency input to the
@@ -197,8 +234,8 @@ current single-stage image retains its frontend toolchain. The remediation
 baseline and resolved package versions are recorded in
 `services/query-engine/README.md`.
 
-Start only the core search application. Profiled tooling and the spider do not
-start here:
+The historical sequence started only the core search application, not profiled
+tooling or the spider:
 
 ```bash
 docker compose \
@@ -303,7 +340,14 @@ why the direct checks above remain mandatory.
 
 ### Seed catalog, feed, and bounded crawl
 
-First inspect the rebuild plan; this does not mutate MongoDB:
+> [!CAUTION]
+> The commands in this section describe the blocked V1 queue path. Parent-plan
+> Phase 6 and F3 milestone M6 must replace them with accepted V2 keys, policy,
+> preflight, compatibility-manifest, and rollback commands. Do not execute the
+> V1 feed, consumer, or crawl path.
+
+The historical sequence first inspected the rebuild plan without mutating
+MongoDB:
 
 ```bash
 docker compose \
@@ -328,7 +372,7 @@ docker compose \
   --confirm-rebuild mongo:27017/mifolyo_index/crawl_seeds
 ```
 
-Preview and then feed the isolated V1 queue:
+The historical sequence previewed and then fed the isolated V1 queue:
 
 ```bash
 docker compose \
@@ -344,7 +388,11 @@ docker compose \
   python feed.py --limit 1000
 ```
 
-Start only the two approved long-running downstream consumers:
+The Backlinks Processor's acknowledged, idempotent snapshot-removal repair
+passed F5 code acceptance through protected PR #9 and merged as `d914a93`, as
+recorded in the [parent plan](spider-render-remediation-plan-2026-09-01.md).
+That acceptance does not reconcile retained data or authorize consumer startup.
+The command below remains V1 history, not permission to start it or any producer:
 
 ```bash
 docker compose \
@@ -355,25 +403,26 @@ docker compose \
 ```
 
 PageRank is a separate one-shot batch behind the `ranking` profile. It must not
-run concurrently with the spider or indexer. After the crawl, confirm
-`pages_queue` is stably empty, stop the indexer only after its final flush, and
-follow section 8A of `docs/v1-baseline-crawl-test-checklist.md`. The first
-PageRank invocation is read-only validation; publication requires its exact
-reported graph SHA-256.
+run concurrently with the spider or indexer. Historical step 8A of
+`docs/v1-baseline-crawl-test-checklist.md` required a stably empty `pages_queue`
+and a successful final Indexer flush before ranking. Its first invocation is
+read-only validation; publication requires the exact reported graph SHA-256.
+Neither invocation is authorized by this historical procedure.
 
 `image-indexer` is isolated behind the separate `image-pipeline` profile and
-must not be started for the V1 baseline. It fetches externally supplied image
-URLs; that behavior is deferred until an SSRF-hardened fetch path implements
-DNS/IP validation, redirect revalidation, and private/host address blocking.
-The spider may enqueue image references during this test, but no service may
-fetch them.
+was not started for the historical V1 baseline. The historical procedure also
+excluded external image fetching. The current Image Indexer performs no HTTP
+requests or image-byte decoding; it reconciles Spider-authorized metadata only.
+That current behavior does not reactivate this blocked baseline procedure or
+authorize V2 Image Indexer startup.
 
 The stack defines no implicit starting URL. Do not add an ad hoc target to a
 baseline run; it must consume only the reviewed V1 queue. This environment
-guide does not authorize or invoke a crawl. Complete the post-catalog
-verification below, then use section 7 of
-`docs/v1-baseline-crawl-test-checklist.md` only after a fresh authorization is
-recorded. A normal `pipeline` start cannot launch the spider, and a `crawl`
+guide does not authorize or invoke a crawl. Section 7 of
+`docs/v1-baseline-crawl-test-checklist.md` is a historical V1 step and must not
+be executed, even with a new authorization. A future run requires the tested V2
+replacement produced in parent-plan Phase 6 after all implementation gates
+pass. A normal `pipeline` start cannot launch the V1 spider, and a `crawl`
 profile start without an explicit override performs validation only.
 
 ### Post-catalog read-only data verification
@@ -409,8 +458,16 @@ return {
 
 ### Project-restricted cleanup
 
-Preserve required logs and counts first. Then confirm `ps --all` lists only
-the fixed V1 test project. The only approved full reset is:
+> [!CAUTION]
+> This destructive command is historical. F1 and F2 have not started; preserve
+> the retained evidence and do not clean these volumes outside the parent
+> plan's future matched writer freeze, backup, restore-test, and reset sequence.
+> Backups must remain outside project volumes, and execution requires explicit
+> future approval; the command's project restriction is not that approval.
+
+The historical procedure preserved required logs and counts, then confirmed
+that `ps --all` listed only the fixed V1 test project. Its full-reset command
+was:
 
 ```bash
 docker compose \
@@ -447,9 +504,25 @@ firewall rule.
 The local V1 Compose file is not a production deployment definition. Before a
 production change, require durable backups and restore tests, health and error
 rate monitoring, actionable alerts, secret-managed credentials, and an
-automated rollback to the last known-good application image.
+explicit rollback plan that respects the protocol boundary below. Restarting
+an old image alone does not restore compatible datastore state.
 
-The incompatible immutable page/image publication protocol additionally
-requires the atomic stop/drain/backup/deploy procedure and post-producer
-rollback boundary in `docs/immutable-pipeline-release-cutover.md`. A normal
-rolling deployment is prohibited for Spider, Indexer, and Image Indexer.
+The legacy three/four-image digest-env procedure in
+[`immutable-pipeline-release-cutover.md`](immutable-pipeline-release-cutover.md)
+is preserved as historical V1 context, not current release policy. A future V2
+release must use one reviewed exact-byte compatibility-manifest artifact that
+binds all required protocol, policy, publication, IPC, configuration, and guard
+fields to the protocol-defined image field for every named participant; a tag
+or hand-counted image set is insufficient. Parent-plan Phase 6 and F3
+milestones M6-M7 own the replacement, and no deployment is authorized. The
+future V2 ordinary rollback boundary is the first successful
+`CJ2_START_REQUEST` before DNS, not Spider startup or first page publication.
+
+The current [release workflow](../.github/workflows/build-docker-images.yml)
+starts build/push jobs on `release.published`, including prereleases. The
+[Indexer NLP redistribution gate](../services/indexer/nlp/README.md#offline-verification-and-distribution-gate)
+blocks that image before registry login/push, but other matrix images may still
+publish. Prereleases skip only the server-copy job; that job copies Compose and
+digest files, not a V2 cutover. See the
+[current automation warning](immutable-pipeline-release-cutover.md#current-release-automation-warning).
+Publishing a release or prerelease is not a dry run and is not authorized here.

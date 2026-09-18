@@ -1,11 +1,26 @@
 #!/usr/bin/env python3
 """Pin the complete, dormant Crawl Jobs V2 canonical Lua bundle at build time.
 
-Only the fixed 43 existing canonical files and exact normative document bytes
-are inputs. This is NOT an assembler, source-behavior review, commit-guard
-approval, or runtime loader. Missing sources are fatal, never synthesized.
-Run again after an explicitly reviewed canonical regeneration; --check writes
-nothing and rejects stale Go pins, fixture identities, and dependent guards.
+Bundle identity inputs are only the fixed 43 existing canonical Lua files and
+the exact docs/crawl-jobs-v2.md bytes. The existing
+contracts/crawl-jobs-v2/digest-vectors.json is also required input: this tool
+updates selected canonical/document digest and dependent guard cases and adds
+missing canonical-bundle negative cases, not a wholly regenerated fixture.
+
+Use Python 3.10+ for this maintenance workflow (CI tests the companion verifier
+with 3.13; its URL helper requires dataclass(slots=True)). From repository root:
+python3 -B scripts/generate-crawl-jobs-v2-bundle.py --check
+
+--check writes nothing and rejects stale Go pins, fixture identities, and
+dependent guards. Without --check, this tool writes stale outputs to
+services/spider/internal/database/crawljobsv2/script_bundle_generated.go and
+the existing fixture. It never writes Lua sources or the normative document.
+For approved changes, regenerate Unicode first only if required by an approved
+pin/data change, then assemble Lua, then run this tool without --check. See
+services/spider/internal/database/crawljobsv2/lua_src/README.md for maintenance.
+
+This is NOT an assembler, source-behavior review, commit-guard approval, or
+runtime loader. Missing sources are fatal, never synthesized.
 """
 
 from __future__ import annotations

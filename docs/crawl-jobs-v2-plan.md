@@ -10,8 +10,9 @@
 
 **Status:** M1/M2 foundation merged through PR #9; all 43 canonical M3 operations
 and the complete sealed, zero-argument `AuthoritativeScriptBindingSet()` factory
-are implemented locally and dormant. M3 source implementation and local
-verification are complete, including the full Spider module race suite.
+are implemented and dormant. M3 source implementation and local verification
+are complete, including the full Spider module race suite, and the checkpoint
+is committed and pushed as `81028ca`.
 
 **Current next gate:** M4 needs reviewed real-Redis protocol/fixture
 clarifications and explicit approval. Local M3 completion does not satisfy those
@@ -22,9 +23,10 @@ PR #9 passed all 14 protected checks and merged as
 dormant M3 implementation and the narrow wire/renewal clarification below.
 The working branch starts from that merged tree; unrelated local changes are
 retained. On 2026-09-18 the owner authorized a scoped M3 commit and push to
-`feature/crawl-jobs-v2-lua`. Publication does not authorize a PR, merge, M4
-execution or activation; the exact published identity belongs in Git history
-and the verified remote branch, not a self-referential document hash.
+`feature/crawl-jobs-v2-lua`. Publication completed at
+`81028ca12a1763d46df72fc54759d99a0ea3b561`; local HEAD and the remote branch were
+verified identical. No M3 PR was created, and publication did not authorize
+merge, M4 execution or activation.
 
 **Activation status:** Blocked by M4 real-Redis acceptance and the later
 integration/release gates, not by an absent source bundle. No runtime
@@ -157,7 +159,7 @@ retains it as a primitive case; guard cases now explicitly bind the complete
 | Local acceptance | Full Spider race suite, fresh Docker full normal suite, vet, strict generators, Python tests/verifier, formatting and workflow lint pass; no protected-PR or real-Redis acceptance is claimed |
 | Runtime behavior | No M4 real-Redis acceptance run, operational/retained datastore mutation, application/service activation, migration, deployment, candidate marker, rendering activation, or crawl is part of this M3 work |
 | Review status | Independent code review returns scoped in-memory GO for canonical sources and fragments, including multi-operation chains; final-byte security review returns GO after clearing bundle freshness; neither is M4 acceptance |
-| Git state | Based on PR #9 merge `d914a93`; scoped M3 checkpoint publication authorized on `feature/crawl-jobs-v2-lua`; no M3 PR or merge authorization |
+| Git state | M3 checkpoint `81028ca12a1763d46df72fc54759d99a0ea3b561` is committed, pushed and remote-verified on `feature/crawl-jobs-v2-lua`, based on PR #9 merge `d914a93`; no M3 PR or merge authorization |
 
 ### Current source and fixture identities (verified 2026-09-18)
 
@@ -234,7 +236,7 @@ The final matrix and final independent reviews used pinned Go 1.25.13 and passed
 | M0: Protocol and dormant foundation | Complete | Normative contract, fixture, Go package, Python verifier, and initial WIP checkpoint exist |
 | M1: Foundation release gate | Complete and merged | Approved amendment, independent GO reviews, and passing protected PR #9 checks before merge |
 | M2: Reviewed foundation checkpoint | Complete | Scoped 66-file checkpoint secret-scanned, tested from the index export, committed, pushed, and remote identity verified |
-| M3: Authoritative Lua transitions | Complete locally: 43/43 sources, sealed factory, source conformance and full-module race verification; checkpoint publication authorized, still dormant | Complete source/pin and in-memory Go/Python/Lua checks plus the final current-tree race result, without runtime activation |
+| M3: Authoritative Lua transitions | Complete locally: 43/43 sources, sealed factory, source conformance and full-module race verification; checkpoint `81028ca` pushed, still dormant | Complete source/pin and in-memory Go/Python/Lua checks plus the final current-tree race result, without runtime activation |
 | M4: Real Redis 7 acceptance | Not started; blocked by protocol/fixture clarifications and explicit approval | Idempotency, fencing, crash, AOF, memory, and latency evidence passes on disposable infrastructure |
 | M5: Runtime and consumer integration | Blocked by M4 and F4-F6 | Spider, feeder, consumers, Monitoring, Compose, and crawl-admin use only the accepted V2 protocol |
 | M6: Migration, runbooks, and rollback | Blocked by M5 | Stopped migration and rollback rehearsal pass; active docs contain tested V2 commands and no active V1 path |
@@ -287,6 +289,8 @@ The final matrix and final independent reviews used pinned Go 1.25.13 and passed
   suite; obtain scoped code and final-byte security GO reviews.
 - [x] Record the final current-tree full Spider module race pass and duration;
   do not reuse historical race passes as current evidence.
+- [x] Commit and push the scoped M3 checkpoint, verifying the exact staged
+  snapshot and matching local/remote commit identity at `81028ca`.
 - [ ] Resolve the real-Redis protocol/fixture decisions below and obtain explicit
   M4 approval before starting a disposable Redis acceptance fixture.
 
@@ -774,7 +778,7 @@ separate M8 decision.
 | F1 retained catalog reconciliation | A run cannot be authorized from the stale 70-enabled catalog |
 | F2 disposable datastore reset | The retained post-test queue is evidence, not a fresh V2 baseline |
 | F4 exact URL and redirect policy | Durable execution cannot make broad scope acceptable |
-| F5 acknowledged backlink persistence | The idempotent acknowledged-before-removal repair is implemented and locally verified; runtime integration still waits for a passing protected `required-tests` PR run |
+| F5 acknowledged backlink persistence | The repair passed protected PR #9 checks and merged; V2 consumer integration and retained-state work remain separate gates |
 | F6 JavaScript-shell disposition | The bounded static baseline needs an approved indexing outcome without enabling rendering by default |
 | Render rollout gate | JavaScript execution requires separate policy, image, sandbox, terms, robots, and authorization evidence |
 
@@ -813,6 +817,7 @@ Rendering remains disabled unless its separate activation requirements pass.
 | 2026-09-17 | Initial full-module M3 race attempt | Worker VM deadline failure and 60-minute package timeout exposed harness scheduling/budget limits; not acceptance evidence; later profiled and corrected without dropping tests |
 | 2026-09-18 | Final local M3 verification | Full Spider race suite passes (`crawljobsv2` 2571.353 s, zero skipped V2 tests); fresh Docker normal suite passes (391.9 s); vet, Python 13/13, digest/assembly checks, formatting and workflow lint pass; no M3 staging, commit, push, PR or activation |
 | 2026-09-18 | Scoped M3 checkpoint publication authorization | Owner requested committing and pushing the verified M3 changes; unrelated worktree changes remain outside the checkpoint; no PR, merge, M4 execution or activation authorization |
+| 2026-09-18 | M3 checkpoint publication completed | `81028ca12a1763d46df72fc54759d99a0ea3b561`, 151 scoped files; exact-index normal Spider tests, vet, Python tests and generator/digest checks passed; credential scan detections were triaged as four unchanged synthetic fixture values; local and remote branch identities match; no PR or activation |
 
 ## Definition of done
 

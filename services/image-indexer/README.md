@@ -1,5 +1,12 @@
 # Image Indexer
 
+> [!IMPORTANT]
+> **Status — current V1 downstream consumer.** The publication and deployment
+> procedures below describe V1 only. F3 runtime/consumer integration has not
+> started, and this README does not authorize Crawl Jobs V2 operation. See the
+> [parent remediation plan](../../docs/spider-render-remediation-plan-2026-09-01.md)
+> and [F3 implementation plan](../../docs/crawl-jobs-v2-plan.md).
+
 The image indexer reconciles image-search state from spider-authorized metadata.
 It performs **no HTTP requests and no image-byte decoding**. Each Mongo image
 `_id` is a deterministic SHA-256 page/source association and the actual source
@@ -7,7 +14,7 @@ is stored as `source_url`; query mapping preserves the public result shape
 `{_id, page_url, alt, filename}` by returning `source_url` as public `_id`.
 `filename` is derived locally from the normalized source URL.
 
-## Publication contract
+## Current V1 publication contract
 
 For each page publication the spider stores:
 
@@ -51,12 +58,22 @@ so standalone Mongo is supported.
 
 ## Configuration
 
-The service-level Compose file is a deployment artifact and requires the exact
-approved `MIFOLYO_IMAGE_INDEXER_IMAGE` GHCR digest reference from the reviewed
-release artifact. Deploy it only with the matching Spider and Indexer digests
-using the atomic stop/drain/backup procedure in
-`../../docs/immutable-pipeline-release-cutover.md`. Use root Compose for local source
-builds; never mix old and new queue consumers.
+The service-level Compose file is a current V1 deployment artifact and requires
+the exact `MIFOLYO_IMAGE_INDEXER_IMAGE` GHCR digest reference from the reviewed
+release artifact. The
+[legacy stop/drain/backup procedure](../../docs/immutable-pipeline-release-cutover.md)
+is retained for historical V1 interpretation only and is not current cutover
+authorization. Use root Compose for local source builds; never mix old and new
+queue consumers.
+
+A future V2 release must use one exact reviewed compatibility manifest plus
+every image field and contract, Lua source-set, guard-core, and commit-guard
+artifact required by the
+[Crawl Jobs V2 contract](../../docs/crawl-jobs-v2.md) and F3 plan. Those
+authorities own exact membership; do not infer it from the V1 procedure. Its
+ordinary rollback boundary is the first successful `CJ2_START_REQUEST`,
+recorded before DNS. No V2 Image Indexer startup or acknowledgment procedure is
+implemented here.
 
 ```env
 REDIS_HOST=<host>
@@ -76,13 +93,27 @@ and write bounds. Missing datastore authentication fails startup. Only the
 tracked, local-only Compose stacks opt in to unauthenticated stores with the
 exact value `ALLOW_INSECURE_DATASTORES=true`.
 
-Run tests, including real Redis DB15 lifecycle tests:
+## Tests
+
+> [!CAUTION]
+> **The Redis lifecycle tests erase the entire selected database.**
+> [`tests/test_redis_integration.py`](tests/test_redis_integration.py) calls
+> `FLUSHDB` before and after each test. Use fresh disposable infrastructure
+> only; never the retained baseline, root-development stack, shared datastores,
+> or production. A `host:port` shorthand selects DB15. A full Redis URI is passed
+> unchanged to `Redis.from_url` and uses its selected database; DB15 is not
+> enforced for URIs.
+
+After installing dependencies, run from `services/image-indexer`. Replace the
+example address with your fresh disposable Redis instance's address; a loopback
+address alone does not prove isolation:
 
 ```bash
 IMAGE_INDEXER_REDIS_INTEGRATION_ADDR=127.0.0.1:6379 \
   python -m unittest discover -s tests -v
 ```
 
-Set `IMAGE_INDEXER_MONGO_INTEGRATION_URI=mongodb://127.0.0.1:27017` to include
-the standalone-Mongo association, empty-recrawl, legacy, and ownership-race
-suite. The page indexer equivalent is `INDEXER_MONGO_INTEGRATION_URI`.
+Set `IMAGE_INDEXER_MONGO_INTEGRATION_URI` to a fresh disposable MongoDB instance
+to include the standalone-Mongo association, empty-recrawl, legacy, and
+ownership-race suite. The page indexer equivalent is
+`INDEXER_MONGO_INTEGRATION_URI`; the same infrastructure restriction applies.

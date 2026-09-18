@@ -2,7 +2,7 @@
 
 **Original review date:** 2026-09-01
 
-**Last updated:** 2026-09-18 (UTC; F3 roll-up)
+**Last updated:** 2026-09-18 (UTC; F3 publication and F5 code acceptance)
 
 **Reviewed baseline:** `main` / `44d8b09a364a1f60032e1f4faccf160813f4dd04`
 
@@ -100,7 +100,7 @@ retained Mongo records still incorrectly say `enabled: true`.
 | F2 | Retained Redis state is a post-test queue, not a fresh baseline | High | Disposable project reset required before feeding |
 | F3 | Spider claims have no durable lease, retry, or dead-letter recovery | Blocker | Crawl-job protocol change required before another crawl |
 | F4 | Enabled host and path scope is broader than the reviewed seed list | Blocker | Narrowed policy contract and review required before another crawl |
-| F5 | Historical Backlinks Processor delete-first persistence was retry-unsafe | Blocker | Idempotency repair is implemented and locally verified; protected `required-tests` PR acceptance remains pending |
+| F5 | Historical Backlinks Processor delete-first persistence was retry-unsafe | Blocker | Code repair passed protected PR #9 checks and merged; retained-state repair and V2 integration remain separately gated |
 | F6 | Static paragraph-only extraction cannot index JavaScript application shells | High | Metadata fallback, replacement seed, or separately authorized rendering decision required |
 
 ## Current status
@@ -109,9 +109,9 @@ retained Mongo records still incorrectly say `enabled: true`.
 |---|---|---|
 | F1 seed reconciliation | Not started | Retained evidence remains 70 enabled records; execute only during the matched freeze/backup/reset sequence |
 | F2 disposable Redis reset | Not started | Retained V1 state remains historical post-test evidence and must not be reused or selectively repaired |
-| F3 durable Crawl Jobs V2 | M1/M2 merged; M3 source implementation and local verification complete (43/43), including full-module race and Docker normal tests | Scoped checkpoint publication authorized; still dormant; M4 requires real-Redis protocol/fixture clarifications and explicit approval; current evidence lives in [`crawl-jobs-v2-plan.md`](crawl-jobs-v2-plan.md) |
+| F3 durable Crawl Jobs V2 | M1/M2 merged; M3 source implementation and local verification complete (43/43), including full-module race and Docker normal tests | Checkpoint `81028ca` committed, pushed and remote-verified; still dormant; M4 requires real-Redis protocol/fixture clarifications and explicit approval; current evidence lives in [`crawl-jobs-v2-plan.md`](crawl-jobs-v2-plan.md) |
 | F4 exact crawl scope | Not started | No crawl-policy V2 schema or approved exact-URL policy is present |
-| F5 backlink persistence | Implemented locally and locally verified; acceptance pending | The repair passed 46 unit, 7 disposable datastore integration, and 6 Monitoring tests on 2026-09-14; a protected `required-tests` PR result is still required |
+| F5 backlink persistence | Code acceptance passed and merged | PR #9 passed protected checks and merged as `d914a93`; no retained datastore reconciliation or V2 consumer activation is implied |
 | F6 JavaScript-shell indexing | Not started | No static-extraction policy schema or approved metadata-fallback configuration is present |
 | Render Stages 0, 1, and 2a | Implemented; disabled | Hermetic inline and brokered rendering exists, but the checked-in render policy remains deny-all and public rendering is unauthorized |
 | Render Stage 3 | Not approved | Requires a reviewed protocol extension, shadow evidence, exact policy, and all F3/F4/F6 activation gates |
@@ -255,8 +255,9 @@ wire grammar, limits, transitions, records, Redis configuration, and evidence.
 
 - The digest-bound protocol, shared fixture, independent Go/Python verifier, and
   dormant Go foundation were merged through PR #9 as `d914a93`. Current M3 work
-  uses `feature/crawl-jobs-v2-lua`; the owner authorized its scoped checkpoint
-  commit/push on 2026-09-18, not an M3 PR, merge or activation.
+  uses `feature/crawl-jobs-v2-lua`; its scoped checkpoint was committed and pushed
+  as `81028ca12a1763d46df72fc54759d99a0ea3b561` on 2026-09-18, with matching
+  local/remote identity. No M3 PR was created or merge/activation authorized.
 - The initial WIP checkpoint is commit
   `e4372a66201b8767bcca4d7476c30c5b7999922c`. The reviewed amendment and foundation
   remediation are preserved in remote-verified checkpoint
@@ -314,8 +315,8 @@ wire grammar, limits, transitions, records, Redis configuration, and evidence.
 
 Before the first successful `CJ2_START_REQUEST`, restore the matched V1
 snapshot, old release, and old credential set only while all writers are stopped.
-That request-start transition,
-recorded before DNS, is the irreversible boundary for ordinary rollback. Never
+That request-start transition, recorded before DNS, is the irreversible boundary
+for ordinary rollback. Never
 point a V1 Spider at V2 keys or run both generations.
 
 ## F4: Narrow host, path, redirect, and discovery scope
@@ -403,10 +404,10 @@ the service had no behavioral test suite in CI.
 
 ### Current implementation status
 
-The idempotency repair described below is implemented locally and locally
-verified. Acceptance remains pending a passing protected `required-tests` PR
-run; the local evidence does not complete that gate or authorize pipeline
-startup.
+The idempotency repair described below passed protected PR #9 checks and merged
+as `d914a93`. This is code acceptance, not retained-data reconciliation, V2
+consumer integration, or permission to start the pipeline. The dated local
+evidence below preserves the earlier checkpoint status.
 
 ### Target state
 
@@ -416,8 +417,9 @@ Concurrent additions remain pending.
 
 ### Implemented repair design
 
-The local implementation follows these requirements, which remain subject to
-protected acceptance:
+The repair's code and automated tests passed protected PR #9 acceptance. The
+requirements below also include operational prerequisites and retained-data
+reconciliation, which have not been executed or accepted by that code merge:
 
 1. Stop the current Backlinks Processor before any producer resumes.
 2. Replace every `KEYS backlinks:*` path, including Monitoring, with `SCAN`.
@@ -458,15 +460,19 @@ Primary implementation areas are `services/backlinks-processor/main.py`,
 
 ### Acceptance gate
 
-- [ ] MongoDB failure removes zero Redis members.
-- [ ] A crash after MongoDB acknowledgment creates no duplicate edge.
-- [ ] A member added concurrently after the snapshot remains in Redis.
-- [ ] No production path issues `DEL` for `backlinks:*`.
+Checked items record the merged PR #9 code and automated-test evidence, not
+acceptance of unrelated local edits or retained-state reconciliation. The dated
+local results below preserve their original, pre-merge scope.
+
+- [x] MongoDB failure removes zero Redis members.
+- [x] A crash after MongoDB acknowledgment creates no duplicate edge.
+- [x] A member added concurrently after the snapshot remains in Redis.
+- [x] No production path issues `DEL` for `backlinks:*`.
 - [ ] Every current outlink edge has the expected reverse backlink after
   additive reconciliation; extra historical backlinks are permitted and
   reported.
-- [ ] Key, member, byte, and MongoDB document bounds are enforced and tested.
-- [ ] Behavioral tests are required by protected CI.
+- [x] Key, member, byte, and MongoDB document bounds are enforced and tested.
+- [x] Behavioral tests are required by protected CI.
 
 ### Local implementation evidence (2026-09-04)
 
@@ -609,7 +615,7 @@ recrawl or restore, not ad hoc Redis deletion.
 | Phase | Work | Findings | Exit condition |
 |---|---|---|---|
 | 0 | Preserve the read-only historical evidence and keep all execution blocked | F1, F2 | The failed baseline remains reproducible without running a crawl |
-| 1 | Accept the locally implemented and verified Backlinks Processor repair | F5 | Delete-first behavior remains absent and the protected `required-tests` PR run passes |
+| 1 | Backlinks Processor code repair accepted through PR #9 | F5 | Complete for code/CI: merged as `d914a93` after protected checks; retained-data reconciliation and V2 integration remain gated |
 | 2 | Complete Crawl Jobs V2 milestones M1 through M4 | F3 | Foundation, Lua, and disposable Redis lease/retry/dead-letter/crash gates pass without runtime integration or migration |
 | 3 | Specify and implement exact host/path policy V2 | F4 | All 67 seeds pass and broader hosts/paths fail before DNS |
 | 4 | Implement exact-URL metadata fallback | F6 | Hermetic app-shell acceptance tests pass without rendering |
@@ -619,9 +625,10 @@ recrawl or restore, not ad hoc Redis deletion.
 | 8 | Run final hermetic, crash-injection, protected-CI, and immutable release gates | F3-F6 | Every required test and promoted artifact passes against the same reviewed commit |
 | 9 | Obtain new site and run authorization for one bounded static batch | All | Every rewritten V2 checklist gate passes in a new dated report |
 
-F5 protected-PR acceptance can proceed in parallel with F3 milestones M1
-through M4. F4 and the hermetic part of F6 can also proceed before runtime
-integration. F1 and F2 execute only after compatible code and runbooks are ready
+F5 code acceptance and F3 M1/M2 passed through PR #9. M3 is implemented,
+locally verified and pushed; M4 remains blocked by its clarification and approval
+gates. F4 and the hermetic part of F6 can proceed before runtime integration.
+F1 and F2 execute only after compatible code and runbooks are ready
 so the disposable environment is reset once. Crawl Jobs V2 milestones M5
 through M7 align with parent phases 5 through 8 and wait for the stated F4
 through F6 dependencies.

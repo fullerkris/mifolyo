@@ -1,9 +1,15 @@
 """Offline URL verifier regressions; Go differential driver is in lua_url_test.go.
 
-Run: python3 -B -m unittest discover -s scripts/tests -v
-The --go-oracle mode only consumes expectations computed by the unchanged Go
+Prerequisites: Python 3.10+ (the URL helper uses dataclass(slots=True)), the
+standard library, and checked-in pinned Unicode data. CI tests with Python 3.13.
+Run from repository root: python3 -B -m unittest discover -s scripts/tests -v
+
+The --go-oracle mode only consumes expectations computed by the pinned Go
 authorities. It never starts Go/Lua, generates Unicode data, or uses Lua as an
-oracle. The normal unit suite requires only Python's standard library.
+oracle. The normal Python unit suite needs no installed Go/Lua runtime. The
+separate Go differential driver requires the exact Go/module pins documented in
+services/spider/internal/database/crawljobsv2/lua_src/README.md under Unicode
+and Python maintenance.
 """
 
 from __future__ import annotations

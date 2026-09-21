@@ -174,9 +174,7 @@ jobs:
         working-directory: ./services/spider
         # V2 is covered in full by the verified race shards above. Every other
         # package still runs here, including the opt-in V1 Redis integration.
-        run: |
-          packages="$(go list ./... | python3 -c 'import sys; print(" ".join(p.strip() for p in sys.stdin if p.strip() != "github.com/IonelPopJara/search-engine/services/spider/internal/database/crawljobsv2")))"
-          go test -race -timeout 90m -v $packages
+        run: python3 -B ../../scripts/test-crawl-jobs-v2-shard.py others
       - name: Scan Go dependencies and call paths
         working-directory: ./services/spider
         run: |

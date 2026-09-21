@@ -22,6 +22,7 @@ SPIDER = ROOT / "services/spider"
 PACKAGE = "./internal/database/crawljobsv2"
 COUNT = 8
 OPTIONAL_SKIPS = {"TestJobLuaNativeFactoryParity"}
+FULL_PACKAGE = "github.com/IonelPopJara/search-engine/services/spider/internal/database/crawljobsv2"
 
 
 def partition(names, count=COUNT):
@@ -82,9 +83,22 @@ def verify_reports(reports):
     return len(names)
 
 
+def other_packages():
+    listed = subprocess.run(["go", "list", "./..."], cwd=SPIDER, capture_output=True,
+                            text=True, timeout=180, check=True).stdout.splitlines()
+    if listed.count(FULL_PACKAGE) != 1 or len(set(listed)) != len(listed):
+        raise ValueError("unexpected Spider package inventory")
+    selected = [name for name in listed if name != FULL_PACKAGE]
+    if not selected or any(not name.startswith("github.com/IonelPopJara/search-engine/services/spider/") for name in selected):
+        raise ValueError("unexpected non-V2 package")
+    return subprocess.run(["go", "test", "-mod=readonly", "-race", "-timeout", "90m", "-v", *selected],
+                          cwd=SPIDER, timeout=5500).returncode
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="mode", required=True)
+    sub.add_parser("others", help="Race-test every Spider package except the separately verified V2 package")
     run = sub.add_parser("run")
     run.add_argument("--shard", type=int, choices=range(COUNT), required=True)
     run.add_argument("--report-dir", type=Path, required=True)
@@ -92,6 +106,8 @@ def main():
     verify = sub.add_parser("verify")
     verify.add_argument("--report-dir", type=Path, required=True)
     args = parser.parse_args()
+    if args.mode == "others":
+        return other_packages()
     if args.mode == "verify":
         paths = sorted(args.report_dir.glob("shard-*.json"))
         count = verify_reports([json.loads(path.read_text()) for path in paths])

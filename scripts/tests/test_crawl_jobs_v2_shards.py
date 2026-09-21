@@ -75,6 +75,28 @@ class RaceShardTests(unittest.TestCase):
             report["skipped"] = [name for name in report["selected"] if name == "TestJobLuaNativeFactoryParity"]
         self.assertEqual(driver["verify_reports"](reports), len(names))
 
+    def test_remaining_package_command_uses_exact_argument_list_without_shell(self):
+        prefix = "github.com/IonelPopJara/search-engine/services/spider/"
+        packages = [prefix + "cmd/spider", driver["FULL_PACKAGE"], prefix + "internal/database",
+                    prefix + "internal/database/crawljobsv2/tools/generate-unicode"]
+        scope = driver["other_packages"].__globals__
+        with patch.object(scope["subprocess"], "run", side_effect=[
+            SimpleNamespace(stdout="\n".join(packages)), SimpleNamespace(returncode=0)
+        ]) as called:
+            self.assertEqual(driver["other_packages"](), 0)
+        command = called.call_args_list[1].args[0]
+        self.assertNotIn(driver["FULL_PACKAGE"], command)
+        self.assertEqual(command[7:], [p for p in packages if p != driver["FULL_PACKAGE"]])
+        self.assertIn("-race", command)
+
+    def test_changed_package_inventory_cannot_silently_omit_v2(self):
+        scope = driver["other_packages"].__globals__
+        for value in ("", "other/module", driver["FULL_PACKAGE"] + "\n" + driver["FULL_PACKAGE"]):
+            with patch.object(scope["subprocess"], "run", return_value=SimpleNamespace(stdout=value)) as called:
+                with self.assertRaises(ValueError):
+                    driver["other_packages"]()
+                self.assertEqual(called.call_count, 1)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -82,6 +82,7 @@ jobs:
         run: |
           python -B scripts/verify-crawl-jobs-v2-digests.py
           python -B -m unittest discover -s scripts/tests -v
+          python -B -m unittest discover -s tests/crawl-jobs-v2-redis -v
 
       - name: Run required Backlinks Processor tests
         working-directory: services/backlinks-processor
@@ -185,6 +186,25 @@ jobs:
 
       - name: Build Spider with repository conformance inputs
         run: docker build --tag mifolyo-spider:required --file services/spider/Dockerfile .
+
+      - name: Build and validate immutable M4 test image without Redis execution
+        run: |
+          docker build --network none --tag mifolyo-cj2-m4:required --file tests/crawl-jobs-v2-redis/Dockerfile.execution .
+          docker pull docker.io/library/redis@sha256:c6eabf748fc7a61dbb5a705c78bcf3d6377b1127a97d0ce965c11c44ba46896f
+          harness_image="$(docker image inspect mifolyo-cj2-m4:required --format '{{.Id}}')"
+          redis_image="$(docker image inspect docker.io/library/redis@sha256:c6eabf748fc7a61dbb5a705c78bcf3d6377b1127a97d0ce965c11c44ba46896f --format '{{.Id}}')"
+          mkdir -p "${RUNNER_TEMP}/m4-image-validation"
+          python3 -B scripts/prepare-crawl-jobs-v2-images.py \
+            --harness-image "$harness_image" --redis-image "$redis_image" \
+            --architecture amd64 --output-dir "${RUNNER_TEMP}/m4-image-validation"
+
+      - name: Retain M4 image validation evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: m4-image-validation-amd64
+          path: ${{ runner.temp }}/m4-image-validation/image-validation.json
+          if-no-files-found: warn
 
       - name: Build and smoke networkless renderer
         run: |

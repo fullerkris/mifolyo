@@ -2,7 +2,7 @@
 
 **Original review date:** 2026-09-01
 
-**Last updated:** 2026-09-18 (UTC; F3 publication and F5 code acceptance)
+**Last updated:** 2026-09-21 (UTC; M4 images validated and scoped publication authorized)
 
 **Reviewed baseline:** `main` / `44d8b09a364a1f60032e1f4faccf160813f4dd04`
 
@@ -109,7 +109,7 @@ retained Mongo records still incorrectly say `enabled: true`.
 |---|---|---|
 | F1 seed reconciliation | Not started | Retained evidence remains 70 enabled records; execute only during the matched freeze/backup/reset sequence |
 | F2 disposable Redis reset | Not started | Retained V1 state remains historical post-test evidence and must not be reused or selectively repaired |
-| F3 durable Crawl Jobs V2 | M1/M2 merged; M3 source implementation and local verification complete (43/43), including full-module race and Docker normal tests | Checkpoint `81028ca` committed, pushed and remote-verified; still dormant; M4 requires real-Redis protocol/fixture clarifications and explicit approval; current evidence lives in [`crawl-jobs-v2-plan.md`](crawl-jobs-v2-plan.md) |
+| F3 durable Crawl Jobs V2 | M1/M2 merged; M3 checkpoint `81028ca` pushed, still dormant; M4 images now validated with scoped publication GO | 45 harness tests, 19 script tests and immutable image checks pass; owner authorized scoped checkpoint/draft PR #10 update; exact-revision CI and execution approval pending; evidence lives in [`crawl-jobs-v2-plan.md`](crawl-jobs-v2-plan.md) |
 | F4 exact crawl scope | Not started | No crawl-policy V2 schema or approved exact-URL policy is present |
 | F5 backlink persistence | Code acceptance passed and merged | PR #9 passed protected checks and merged as `d914a93`; no retained datastore reconciliation or V2 consumer activation is implied |
 | F6 JavaScript-shell indexing | Not started | No static-extraction policy schema or approved metadata-fallback configuration is present |
@@ -289,9 +289,14 @@ wire grammar, limits, transitions, records, Redis configuration, and evidence.
   full-module race suite passes, with no skipped V2 tests.** The fresh Docker
   normal suite also passes after the final harness changes. See the primary plan
   for identities, test evidence, log limits and the earlier failed race attempt.
-- Activation is blocked by the remaining gates, not an absent bundle. M4 needs
-  real-Redis protocol/fixture clarifications and explicit approval; provisional
-  zero-evidence compatibility rules are not waived. No M4 acceptance, runtime
+- Activation is blocked by the remaining gates, not an absent bundle. M4's four
+  fixture proposals were approved September 21; the normative amendment and
+  offline compiler/tests and first ledger-smoke executor are implemented locally.
+  The original four findings and a closed-peer follow-up are now corrected.
+  Independent final correctness/security re-review returns GO for image
+  preparation only. Subsequent immutable image validation passes; protected CI
+  and explicit real-Redis execution approval remain pending.
+  No M4 acceptance, runtime
   integration, retained datastore mutation, application/service activation,
   migration, deployment, candidate marker or crawl is part of this M3 work.
 
@@ -303,7 +308,7 @@ wire grammar, limits, transitions, records, Redis configuration, and evidence.
   implemented locally and pass normal in-memory acceptance.
 - [x] Record the final current-tree full-module M3 race pass.
 - [ ] The exact Lua transitions and sealed source bundle pass real Redis 7
-  conformance after protocol/fixture clarification and explicit M4 approval.
+  conformance after reviewed execution-harness completion and explicit M4 approval.
 - [ ] Lease, retry, staging, commit, crash, AOF, memory, and maximum-shape gates
   pass with recorded evidence.
 - [ ] Spider, feeder, downstream consumers, Monitoring, Compose, migration, and
@@ -626,8 +631,11 @@ recrawl or restore, not ad hoc Redis deletion.
 | 9 | Obtain new site and run authorization for one bounded static batch | All | Every rewritten V2 checklist gate passes in a new dated report |
 
 F5 code acceptance and F3 M1/M2 passed through PR #9. M3 is implemented,
-locally verified and pushed; M4 remains blocked by its clarification and approval
-gates. F4 and the hermetic part of F6 can proceed before runtime integration.
+locally verified and pushed. M4's approved amendment/offline layer is implemented
+locally, including the first ledger-smoke execution slice. Its independent review
+and remediation are complete locally, with independent GO for image preparation
+only. Image validation now passes; protected-CI and execution-approval gates remain.
+F4 and the hermetic part of F6 can proceed before runtime integration.
 F1 and F2 execute only after compatible code and runbooks are ready
 so the disposable environment is reset once. Crawl Jobs V2 milestones M5
 through M7 align with parent phases 5 through 8 and wait for the stated F4

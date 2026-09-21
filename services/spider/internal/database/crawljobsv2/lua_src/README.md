@@ -19,9 +19,14 @@ it returns a sealed binding set from embedded sources checked against fixed
 build-time pins. See [Assembly](#assembly) for source and bundle checks.
 
 This remains **dormant, in-memory source conformance only**, not real-Redis or
-operational acceptance. M4's fixture decisions remain unresolved: candidate-key
-absence reads versus ACL restrictions, setup-manifest enforcement, and a
-noncircular administrative acceptance/bootstrap procedure. Real-Redis clock,
+operational acceptance. M4's fixture amendment is owner-approved: command-scoped
+absence checks, harness-owned setup manifests, isolated administrative tests and
+nonzero test-input descriptors. The offline compiler is implemented under
+`tests/crawl-jobs-v2-redis/` at repository root, alongside a locally tested first
+ledger-smoke executor. Its findings and closed-peer follow-up are fixed; final
+independent correctness/security re-review returns GO for image preparation
+only. Image validation now passes; protected CI and execution approval remain
+pending. Real-Redis clock,
 allocator, maximum-shape latency, ACL and crash/AOF evidence remain separate
 gates. Source completeness and bundle sealing do not approve a commit guard,
 authorize I/O, or activate runtime integration or the V1 client.

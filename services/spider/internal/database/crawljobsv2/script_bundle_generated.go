@@ -10,8 +10,8 @@ import "embed"
 var authoritativeLuaFS embed.FS
 
 const canonicalSourceSetSHA256 Digest = "10a4f753395a6d1bccc587194ef2af6346ca3c03f8a8faf71081abc800ac13b8"
-const canonicalContractSHA256 Digest = "df171381f4f1bb6d8daec60b9173254f8ae77cfc24907d0a69b279cab89fa562"
-const canonicalBundleSealSHA256 Digest = "7ec16509119c44a02eafa8c342fe777dfa6b769937c1681efbabb2fc36823614"
+const canonicalContractSHA256 Digest = "394d4bdbd9c800e167cd20a6ccb5435b2a170cded207d3856810ab5e038151e0"
+const canonicalBundleSealSHA256 Digest = "c19086df95454484f00b1865f5bafcdecde3907eeea1a937d546de94f79f9309"
 
 // A fresh literal array, never a mutable package-level manifest.
 func canonicalScriptBindingPins() [43]scriptBinding {

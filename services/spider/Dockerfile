@@ -20,6 +20,8 @@ COPY seeds/manual-seeds.csv /app/seeds/manual-seeds.csv
 COPY scripts/verify-crawl-jobs-v2-digests.py scripts/crawl_jobs_v2_url.py scripts/generate-crawl-jobs-v2-lua.py /app/scripts/
 COPY scripts/generate-crawl-jobs-v2-bundle.py /app/scripts/generate-crawl-jobs-v2-bundle.py
 COPY scripts/tests/test_crawl_jobs_v2_url.py /app/scripts/tests/test_crawl_jobs_v2_url.py
+COPY tests/crawl-jobs-v2-redis/harness.py tests/crawl-jobs-v2-redis/test_harness.py tests/crawl-jobs-v2-redis/redis.conf /app/tests/crawl-jobs-v2-redis/
+COPY tests/crawl-jobs-v2-redis/runtime_case.py tests/crawl-jobs-v2-redis/resp.py /app/tests/crawl-jobs-v2-redis/
 
 # Build the application
 RUN go build -o spider ./cmd/spider/main.go

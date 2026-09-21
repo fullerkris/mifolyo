@@ -95,6 +95,24 @@ def sha256(raw: bytes) -> str:
     return hashlib.sha256(raw).hexdigest()
 
 
+def contract_digest(document: bytes, ordered: list[tuple[str, bytes]]) -> str:
+    # Identical normative SECTION/RECORD bytes, streamed one bounded record at a
+    # time. Avoid retaining multiple copies of the ~29 MiB canonical bundle in
+    # the 128 MiB acceptance-image bootstrap validator.
+    state = hashlib.sha256(frame("mifolyo:crawl-contract:v2"))
+    for label, records in (
+        ("document", [[("document_bytes", document)]]),
+        ("lua", [[("source_name", name), ("source_bytes", raw)] for name, raw in ordered]),
+    ):
+        state.update(frame(label))
+        state.update(struct.pack(">Q", len(records)))
+        for fields in records:
+            encoded = record(fields)
+            state.update(struct.pack(">Q", len(encoded)))
+            state.update(encoded)
+    return state.hexdigest()
+
+
 def closed_path(root: Path, relative: str, *, optional: bool = False) -> Path:
     path = root
     parts = relative.split("/")
@@ -136,21 +154,21 @@ def bundle(root: Path) -> tuple[bytes, list[tuple[str, bytes]], dict]:
     sources = [(name, read_text(closed_path(root, PACKAGE + "/lua/" + name))) for name in names]
     document = read_text(closed_path(root, DOCUMENT))
     identities = []
-    encoded = frame("mifolyo:crawl-jobs-v2:lua-source-set:v1") + frame("43")
+    source_state = hashlib.sha256(frame("mifolyo:crawl-jobs-v2:lua-source-set:v1") + frame("43"))
     for index, (op, (name, source)) in enumerate(zip(OPERATIONS, sources)):
         redis_sha1 = hashlib.sha1(source).hexdigest()  # Redis identity, not security authority.
         source_sha256 = sha256(source)
         identities.append({"index": index, "operation": op, "source_name": name,
                            "source_bytes": len(source), "redis_sha1": redis_sha1,
                            "source_sha256": source_sha256})
-        encoded += b"".join(frame(v) for v in (str(index), op, name, source, redis_sha1, source_sha256))
+        for value in (str(index), op, name, source, redis_sha1, source_sha256):
+            source_state.update(frame(value))
     for field in ("redis_sha1", "source_sha256"):
         if len({entry[field] for entry in identities}) != 43:
             raise ValueError("duplicate/aliased canonical Lua sources")
-    source_set = sha256(encoded)
+    source_set = source_state.hexdigest()
     ordered = sorted(sources, key=lambda item: item[0].encode("ascii"))
-    contract = sha256(frame("mifolyo:crawl-contract:v2") + section("document", [[("document_bytes", document)]])
-                      + section("lua", [[("source_name", name), ("source_bytes", raw)] for name, raw in ordered]))
+    contract = contract_digest(document, ordered)
     seal = sha256(frame("mifolyo:crawl-jobs-v2:lua-bundle-seal:v1") + frame(source_set) + frame(contract))
     for digest in (source_set, contract, seal):
         if any(digest.encode("ascii") in raw for raw in [document, *(source for _, source in sources)]):

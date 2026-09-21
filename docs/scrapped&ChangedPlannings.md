@@ -172,6 +172,26 @@ Use these sources instead:
   appear promotable. Final assembly must replace every sentinel with a nonzero
   evidence digest after fixture teardown.
 
+### Zero-sentinel executable acceptance bootstrap
+
+- **Archive date:** 2026-09-21
+- **Superseded direction:** The September 10 entry above retained a disposable
+  zero-evidence bootstrap exception. The old normative sections 5.1/17.7 required
+  unchanged Lua to accept that guard while forbidding all fixture candidate
+  administration and assigning setup-manifest enforcement to Lua.
+- **Specific reason:** Normal Go stored-guard/transport and Lua validators reject
+  zero evidence; Lua has no setup-manifest input; active gates require candidate
+  absence reads; administrative source acceptance needs isolated candidate tests.
+- **Replacement:** The owner-approved amendment in
+  [normative section 5.1](crawl-jobs-v2.md#51-non-authoritative-acceptance-fixture-bootstrap)
+  uses reviewed nonzero test-input descriptors, harness-owned setup scope,
+  command-scoped ACLs and separate ledger/administrative profiles. Zero-sentinel
+  vectors survive only as non-executable serialization/rejection controls.
+  Production admission positively requires final evidence/image provenance.
+- **Disposition:** The amendment and offline preparation layer are implemented
+  locally. Real-Redis execution and acceptance remain separately gated in the
+  [F3 plan](crawl-jobs-v2-plan.md#m4-readiness-decision-package-2026-09-21).
+
 ### Generic caller-selected script-source construction
 
 - **Archive date:** 2026-09-10

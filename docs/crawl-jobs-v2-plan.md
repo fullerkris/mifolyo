@@ -2,7 +2,7 @@
 
 **Finding:** F3 - durable crawl-job leases and recovery
 
-**Last updated:** 2026-09-18 (UTC)
+**Last updated:** 2026-09-21 (UTC; immutable images validated, scoped publication authorized)
 
 **Working branch:** `feature/crawl-jobs-v2-lua`
 
@@ -14,9 +14,26 @@ are implemented and dormant. M3 source implementation and local verification
 are complete, including the full Spider module race suite, and the checkpoint
 is committed and pushed as `81028ca`.
 
-**Current next gate:** M4 needs reviewed real-Redis protocol/fixture
-clarifications and explicit approval. Local M3 completion does not satisfy those
-gates or protected-PR acceptance.
+**Current next gate:** Immutable Linux/arm64 harness and Redis images are prepared
+and validated. Target-discovered packaging/network/memory corrections and CI
+sharding have scoped independent publication GO. The owner authorized a scoped
+commit/push and draft update of PR #10. Complete protected CI on that revision,
+then obtain separate exact-artifact execution approval. No real-Redis fixture
+has run. See the [image-preparation report](crawl-jobs-v2-m4-image-preparation-2026-09-21.md),
+[re-review report](crawl-jobs-v2-m4-rereview-2026-09-21.md); the
+[original NO-GO report](crawl-jobs-v2-m4-review-2026-09-21.md) remains historical evidence.
+
+**Preparation update (2026-09-21):** The owner requested work on M4 readiness and
+then explicitly approved all four proposals, permitting continued implementation.
+The [M4 readiness decision package](#m4-readiness-decision-package-2026-09-21)
+below records the decision and implementation sequence. Approval covers the
+protocol amendment and offline harness; starting Redis acceptance remains a
+separate decision after verification.
+
+The owner subsequently requested first-case implementation, independent review,
+then correction of all four findings with regression tests and independent
+re-review. That remediation is locally complete; its scoped final GO does not
+grant publication or real-Redis execution authority.
 
 PR #9 passed all 14 protected checks and merged as
 `d914a93f9ade5b63182ecf02092c1a1e74633713`. On 2026-09-15 the owner authorized
@@ -79,8 +96,9 @@ resource pressure. Mixed V1/V2 operation is forbidden.
   behavior unchanged during the dormant foundation and Lua phases.
 - Keep the Render Worker disabled under the checked-in deny-all render policy.
 - Reject `ZERO_SHA256` in every production/runtime authority path. Its only
-  permitted use is the isolated non-authoritative fixture GuardCore exception
-  defined by normative section 5.1.
+  permitted use is the historical non-executable GuardCore serialization control
+  defined by normative section 5.1. Executable test guards also require nonzero
+  digests; their test provenance cannot become release authority.
 - Use Redis `TIME` for authoritative timestamps and deadlines.
 - Require standalone Redis 7, AOF, `appendfsync always`,
   `aof-load-truncated no`, `noeviction`, bounded sizing, and fail-closed restart
@@ -147,7 +165,7 @@ retains it as a primitive case; guard cases now explicitly bind the complete
 
 | Area | Current state |
 |---|---|
-| Normative protocol | Approved transcript amendment plus 2026-09-15 wire/renewal clarification; the current contract binds the exact document and all 43 canonical sources, with identities recorded below |
+| Normative protocol | Includes the owner-approved 2026-09-21 M4 bootstrap/ACL/manifest/administrative amendment; current contract and bundle pins regenerated; Lua sources unchanged |
 | Shared conformance | Fixture v2 with one baseline, 40 named positive cases and 157 negative cases; independent Go/Python verification and scoped in-memory Lua conformance pass; the foundation inventory remains preserved |
 | Dormant Go package | Implemented under `services/spider/internal/database/crawljobsv2`; no runtime import or activation wiring |
 | Operation wire family | All 43 operations and 52 gate variants have closed constructors and independent inventory coverage |
@@ -156,20 +174,29 @@ retains it as a primitive case; guard cases now explicitly bind the complete
 | Ledger validation | Baseline/delivery/fence history, post-abort freeze, exact retained witnesses, strict worker expiry, completed replay, prior retry/backpressure/reason fixes and zero-sentinel checks pass local normal conformance and reviewed counterexample replays |
 | Script sources | All 43 canonical operations are implemented: unchanged BOOT passthrough plus 42 exact generated sources; both strict source/bundle generator checks pass |
 | Authoritative bundle | Complete zero-argument `AuthoritativeScriptBindingSet()` validates embedded sources against fixed generated pins and returns fresh private sealed bindings; no caller-supplied sources, hashes or paths |
-| Local acceptance | Full Spider race suite, fresh Docker full normal suite, vet, strict generators, Python tests/verifier, formatting and workflow lint pass; no protected-PR or real-Redis acceptance is claimed |
+| Local acceptance | September 18 M3 full race/Docker results remain dated evidence; September 21 amendment/offline verification is recorded below; no protected-PR or real-Redis acceptance is claimed |
 | Runtime behavior | No M4 real-Redis acceptance run, operational/retained datastore mutation, application/service activation, migration, deployment, candidate marker, rendering activation, or crawl is part of this M3 work |
-| Review status | Independent code review returns scoped in-memory GO for canonical sources and fragments, including multi-operation chains; final-byte security review returns GO after clearing bundle freshness; neither is M4 acceptance |
+| M4 preparation | Offline compiler and corrected first executor under `tests/crawl-jobs-v2-redis/`; 43 Python tests plus independent Go wire/race checks pass; target image/isolation/ACL/BOOT/teardown evidence pending |
+| Review status | September 18 M3 reviews remain scoped GO. September 21 remediation closes COR-1/COR-2, SEC-1/SEC-2 and the closed-peer follow-up; independent correctness/security re-review is GO for image preparation only |
 | Git state | M3 checkpoint `81028ca12a1763d46df72fc54759d99a0ea3b561` is committed, pushed and remote-verified on `feature/crawl-jobs-v2-lua`, based on PR #9 merge `d914a93`; no M3 PR or merge authorization |
 
-### Current source and fixture identities (verified 2026-09-18)
+### Current source and fixture identities (regenerated 2026-09-21)
 
 | Identity | SHA-256 |
 |---|---|
-| Canonical `contract_sha256` | `df171381f4f1bb6d8daec60b9173254f8ae77cfc24907d0a69b279cab89fa562` |
+| Canonical `contract_sha256` | `394d4bdbd9c800e167cd20a6ccb5435b2a170cded207d3856810ab5e038151e0` |
 | Ordered `source_set_sha256` | `10a4f753395a6d1bccc587194ef2af6346ca3c03f8a8faf71081abc800ac13b8` |
-| `bundle_seal_sha256` | `7ec16509119c44a02eafa8c342fe777dfa6b769937c1681efbabb2fc36823614` |
+| `bundle_seal_sha256` | `c19086df95454484f00b1865f5bafcdecde3907eeea1a937d546de94f79f9309` |
 | Fixture inventory: 40 named positives, 157 negatives, plus baseline | `8c360cf46c283ec1111e9c4a4e9896a2424afc10824566e174bdfcbabc6c15f8` |
-| Retained `contract-current-document-empty-lua` primitive, not canonical authority | `f5c26a676e538e9d5635229f32964f454fe2e496ae8bdb39b6b3df78940dc198` |
+| Retained `contract-current-document-empty-lua` primitive, not canonical authority | `afa58848b4cf5f0e7434b9f6008d69d9f1cdeb6776a3b8f0e78bb50f3a97ee36` |
+
+The September 18 M3 contract was
+`df171381f4f1bb6d8daec60b9173254f8ae77cfc24907d0a69b279cab89fa562`
+with bundle seal
+`7ec16509119c44a02eafa8c342fe777dfa6b769937c1681efbabb2fc36823614`.
+Its dated full race/Docker results remain evidence for that checkpoint. The
+September 21 source-set digest is identical; the normative document and dependent
+contract/bundle/guard fixture identities changed.
 
 Current guard-core/guard-chain fixtures explicitly reference the canonical
 bundle. The empty-Lua case remains a foundation framing control, not a fallback
@@ -237,7 +264,7 @@ The final matrix and final independent reviews used pinned Go 1.25.13 and passed
 | M1: Foundation release gate | Complete and merged | Approved amendment, independent GO reviews, and passing protected PR #9 checks before merge |
 | M2: Reviewed foundation checkpoint | Complete | Scoped 66-file checkpoint secret-scanned, tested from the index export, committed, pushed, and remote identity verified |
 | M3: Authoritative Lua transitions | Complete locally: 43/43 sources, sealed factory, source conformance and full-module race verification; checkpoint `81028ca` pushed, still dormant | Complete source/pin and in-memory Go/Python/Lua checks plus the final current-tree race result, without runtime activation |
-| M4: Real Redis 7 acceptance | Not started; blocked by protocol/fixture clarifications and explicit approval | Idempotency, fencing, crash, AOF, memory, and latency evidence passes on disposable infrastructure |
+| M4: Real Redis 7 acceptance | Execution not started; first-executor findings closed and independently re-reviewed GO for image preparation; image/CI/execution-approval gates remain | Idempotency, fencing, crash, AOF, memory, and latency evidence passes on disposable infrastructure |
 | M5: Runtime and consumer integration | Blocked by M4 and F4-F6 | Spider, feeder, consumers, Monitoring, Compose, and crawl-admin use only the accepted V2 protocol |
 | M6: Migration, runbooks, and rollback | Blocked by M5 | Stopped migration and rollback rehearsal pass; active docs contain tested V2 commands and no active V1 path |
 | M7: Immutable release gate | Blocked by M6 | Final digests, manifests, images, backups, CI, and authorization/report templates are reviewed |
@@ -291,8 +318,17 @@ The final matrix and final independent reviews used pinned Go 1.25.13 and passed
   do not reuse historical race passes as current evidence.
 - [x] Commit and push the scoped M3 checkpoint, verifying the exact staged
   snapshot and matching local/remote commit identity at `81028ca`.
-- [ ] Resolve the real-Redis protocol/fixture decisions below and obtain explicit
-  M4 approval before starting a disposable Redis acceptance fixture.
+- [x] Inspect the four M4 fixture blockers against the current protocol and
+  source, and draft the 2026-09-21 readiness decision package.
+- [x] Obtain owner approval for D1-D4 and implement the normative amendment.
+- [x] Implement the offline preparation compiler and adversarial/interoperability tests.
+- [x] Implement and locally test the bounded ledger-smoke execution slice.
+- [x] Obtain separate correctness/security review and reproduce its four findings.
+- [x] Resolve COR-1/COR-2 and SEC-1/SEC-2, add regressions and obtain re-review.
+- [x] Correct the closed-peer follow-up found during re-review and obtain final
+  correctness/security GO for image preparation only.
+- [ ] Complete amended-artifact and execution-harness review, then obtain explicit
+  M4 execution approval before starting disposable Redis acceptance.
 
 ## M1: Final foundation release gate
 
@@ -550,9 +586,10 @@ race pass are recorded above.
 
 ### Deferred real-Redis fixture decisions
 
-Resolve these through reviewed protocol/fixture clarification and obtain
-explicit M4 approval before starting real-Redis acceptance. Complete M3 sources
-and scoped in-memory GO reviews change none of the permissions/bootstrap rules:
+The following records the original four blockers. D1-D4 were approved on
+2026-09-21 and amended normative sections 5.1/17.7 now define their resolution.
+Actual execution still requires completed harness/artifact review and explicit
+approval; these historical descriptions are not the current amended rules:
 
 - Active gate validation checks candidate-key absence, but the current fixture
   credential wording prohibits candidate-key access. Required read-only absence
@@ -568,6 +605,531 @@ and scoped in-memory GO reviews change none of the permissions/bootstrap rules:
   validation or production `ZERO_SHA256` rejection. Resolve the fixture's
   compatibility/bootstrap path explicitly; do not manufacture final evidence or
   weaken normal authority checks to make the harness run.
+
+### M4 readiness decision package (2026-09-21)
+
+**Status: owner-approved on 2026-09-21; amendment and offline layer implemented
+locally.** The owner explicitly approved these proposals and continued
+implementation. The decision rationale below is retained; amended normative
+sections 5.1 and 17.7 now control. The administrative profile and nonzero test
+bootstrap are explicit test-only exceptions. Their approval does not authorize
+a real-Redis run.
+
+#### Source-grounded blockers
+
+Paths in this table are relative to
+`services/spider/internal/database/crawljobsv2/`.
+
+| Decision | Observed conflict | Source anchor |
+|---|---|---|
+| D1: candidate absence and ACLs | Active gates must inspect candidate/freeze absence, while section 17.7 forbids fixture credential access to candidate keys | `lua_src/gate.lua`, `G.check`, active branch; protocol sections 5 and 17.7(3) |
+| D2: manifest enforcement | Section 17.7(2) attributes rejection of unlisted fixture keys to unchanged Lua, but the wire has no setup-manifest input | `lua_src/wire.lua`; protocol section 10.1.1's closed KEYS/ARGV layouts |
+| D3: administrative acceptance | The source inventory includes INSTALL/RETIRE/PROMOTE, but the only real-Redis fixture exception prohibits them | `script_bundle.go`, `AuthoritativeScriptBindingSet`; protocol sections 5.1 and 17.7(3) |
+| D4: bootstrap authority | Section 5.1 requires at least one zero evidence digest, but the normal stored-guard and transport paths reject it | `authority_records.go`, `GuardCore.validate`, `NewStoredCommitGuard`, `DecodeStoredCommitGuard`; `transport_gate.go`, `populateActiveGate`; `lua_src/schemas.lua`, `valid_guard`; `lua_src/identities.lua`, `I.digest` |
+
+`ProvisionalGuardCore` is a separate Go serialization type, not a usable active
+transport authority. Encoding its bytes by hand does not fix D4: Lua independently
+rejects the zero fields. The in-memory source tests do not establish that the
+section 5.1 bootstrap can run on Redis.
+
+#### D1 proposal: command-scoped key access, with absence-only semantics
+
+Amend the fixture restriction to permit the exact candidate/freeze absence
+checks required by the normal active gate. For a ledger executor, the only
+content-level operation on these three names is `TYPE`, with `none` required:
+
+- `mifolyo:contracts:candidate`
+- `mifolyo:crawl:v2:contract:candidate`
+- `mifolyo:crawl:v2:admin_freeze`
+
+ACL design must account for the outer `EVALSHA` as well as inner Redis calls.
+Redis 7.2's [EVALSHA command specification](https://github.com/redis/redis/blob/7.2/src/commands/evalsha.json)
+marks declared keys `RW`, `ACCESS`, and `UPDATE`. Simply granting `%R~` on
+candidate keys is therefore not a sufficient design for the existing wire.
+This is source-level guidance, not verification of the eventual pinned Redis
+image.
+
+Propose separate Redis 7 ACL selectors: an `EVALSHA`-only selector admits the
+exact declared key inventory, a read selector admits the required authority
+reads, and mutation selectors admit only the relevant data keys. The outer
+selector grants no `HSET`, `SET`, deletion, expiry, or rename command. No broad
+root selector may recombine those commands with authority-key write access.
+BOOT and administrative test executors receive separate short-lived roles.
+
+The first approved Redis experiment must prove this selector composition on
+the exact image: normal active `EVALSHA` succeeds; direct candidate/freeze
+reads beyond `TYPE`, writes, deletion, expiry, and rename fail; administrative
+Lua cannot mutate those keys using the ledger credential. Presence of any of
+the three keys rejects an active transition without writes. Apply the same
+command/key separation to active authority records and any operation-specific
+legacy absence checks. If this cannot be enforced, stop and revise the ACL/wire
+design; broad marker write grants are not an automatic fallback.
+
+ACLs still do not enforce script-only mutation of permitted data keys. The
+reviewed immutable harness owns the operation/source allowlist, as the existing
+section 10.1 trust model requires.
+
+#### D2 proposal: harness owns setup scope; Lua owns transition scope
+
+Replace section 17.7(2)'s unlisted-key assertion with two separately tested
+responsibilities:
+
+1. **Harness admission:** before direct setup, validate a bounded, immutable
+   setup manifest listing exact key names, types, field/value bytes, expiry
+   rules, and their digests. List required-absent keys separately. Redis-derived
+   setup times must be recorded once in a finalized manifest before the writes
+   that use them; no caller wall time substitutes for Redis time. Reject missing,
+   extra, duplicated, wrong-type, oversized, or mismatched setup entries. Verify
+   the complete installed inventory before revoking setup access.
+2. **Lua admission:** exercise the unchanged wire's exact supplied keys and
+   authenticated derived-key rules. Lua rejects invalid transition keys and
+   identities; it does not parse or enforce an external fixture manifest.
+
+Each case also declares a bounded inventory of possible derived output keys,
+including initially absent jobs, stages, reservations, page/image publications,
+and backlinks. Compare actual post-state against that independently derived
+inventory. The ACL admits only the case's necessary keys/commands. Post-state
+checks detect scope violations; they do not replace pre-write authorization.
+Negative stored-state cases use their own reviewed setup manifest and fresh
+fixture, not restored setup access during a measured sequence.
+
+Keep the manifest outside the production Redis grammar. Add no Lua argument,
+runtime fixture flag, key family, or script bypass. Determinism means identical
+bytes for identical captured inputs, not equal timestamps across independent
+Redis instances.
+
+#### D3 proposal: separate ledger and administrative conformance profiles
+
+Extend the fixture exception to two explicitly non-deployable profiles, using
+different fresh volumes and credentials:
+
+| Profile | Setup and allowed measurements | Required exclusion |
+|---|---|---|
+| Ledger | Preliminary persistence probe, real BOOT approval, bounded direct active-control/data setup, then canonical active transitions, replay, memory, latency, and crash tests | Candidate installation/retirement/promotion cannot mutate state with the ledger executor |
+| Administrative | Preliminary persistence probe, real BOOT approval, bounded synthetic legacy/data setup, then canonical INSTALL, candidate run preparation/audit, RETIRE, PROMOTE, and their replay/failure paths | No retained V1 data, deployable crawl-admin, production release artifacts, or operational migration |
+
+The administrative profile covers both `fresh` and `v1_migration` shapes. It
+derives backup, stopped-writer, empty/nonempty legacy, and retirement evidence
+from its actual isolated test state. Successful candidate and promoted records
+must be produced by the scripts under test, not directly installed as proof of
+success. Direct malformed-state setup is separately identified as a negative
+fixture. After test promotion, only bounded ledger assertions are permitted;
+the resulting Redis state is destroyed with the fixture.
+
+This explicitly changes the current blanket prohibition on fixture candidate
+operations. Production candidate installation still requires final reviewed
+release evidence. Synthetic administrative conformance is not a production
+cutover or rollback rehearsal; those remain M6/M7 gates.
+
+#### D4 proposal: distinguish test inputs from acceptance evidence
+
+Recommend replacing the zero-sentinel *executable bootstrap* with a reviewed
+test-only artifact profile that the ordinary nonzero validators can consume.
+Retain zero-sentinel cases as rejection/serialization controls; do not let
+`ProvisionalGuardCore` become a production `StoredCommitGuard`.
+
+The proposed test profile has these requirements:
+
+1. Use the actual canonical contract/source bundle, exact Redis version/config,
+   real maximum-shape input digest when available, and real preliminary
+   persistence-probe evidence for BOOT. BOOT evidence is never synthetic.
+2. For a measurement unavailable before execution, use the nonzero SHA-256 of
+   an explicit, reviewed **test-input descriptor**, not a fabricated result.
+   Its domain is `mifolyo:crawl:v2:m4-test-input:v1`; it names the evidence field,
+   scenario, contract/source/config identities and `purpose=conformance_only`.
+   Its bytes state `measurement_status=not_measured` and contain no PASS claim.
+   The harness permits only the four currently provisional evidence fields to
+   use this profile. An outer immutable fixture envelope records every such
+   substitution and the resulting guard/compatibility digests.
+3. Keep all ordinary RECORD fields, digest formulas, cross-binding, and nonzero
+   validation unchanged. No Lua branch recognizes the fixture envelope or a
+   test mode. A nonzero hash proves identity, not measurement or release approval.
+4. Resolve the image bootstrap explicitly: final M5/M7 participant images do not
+   yet constitute an accepted V2 release. For missing roles, the proposed
+   exception permits actual immutable digests of reviewed test-only stand-in
+   images, mapped by role in the outer envelope. Do not invent OCI digests,
+   represent V1 images as V2-compatible, or start those role services. Rendering
+   remains `disabled`. Test compatibility proves record binding only.
+5. The harness must be unable to select a production target, accept arbitrary
+   marker bytes, or export an installable release bundle. Its reviewed fixture
+   recipes and artifact pins select the test records. Production artifact
+   admission must positively require the independently reviewed final evidence
+   and participant image identities; rejecting only zeros is insufficient.
+   Final assembly rejects any test descriptor, stand-in role, fixture envelope,
+   or test guard/manifest identity in the release authority chain. Ordinary
+   structural Go/Lua codecs alone cannot identify a nonzero synthetic digest.
+6. Export actual measurements in a separate evidence bundle, bind them to the
+   exact test inputs, and complete teardown before considering them for release
+   assembly. M7 builds a new final guard/manifest from accepted measurements and
+   final images, never by promoting or restoring fixture state. Record which
+   evidence must be rerun when source, configuration, shape, ACLs, or relevant
+   participant behavior changes.
+
+This supersedes the current fixture builder's all-nonzero prohibition and the
+requirement that final target images exist before M4. It also changes the claim
+that every synthetic artifact is rejected by Lua itself: rejection of test
+provenance belongs to release/image admission, while Lua validates exact trusted
+artifacts. These amendments were approved by the owner on September 21. Replacing
+zero fields with arbitrary hashes outside the approved descriptor recipe is
+still prohibited.
+
+#### Approval and implementation sequence
+
+| Step | Deliverable | Exit gate |
+|---|---|---|
+| M4-P0 | This decision package with D1-D4 and source anchors | Owner reviews and explicitly approves or revises the proposed amendments; no Redis starts |
+| M4-P1 | Amend normative sections 5/5.1, 10.1/10.1.1, 17.7, affected image/bootstrap wording and section 18 harness scope; align Go/Python fixtures and independent oracles | Current-document contract/bundle/fixture identities regenerated and checked; production zero rejection retained; scoped review and relevant normal/race tests pass |
+| M4-P2 | Implement a non-shipped harness under proposed `tests/crawl-jobs-v2-redis/`, fixture-envelope/setup schemas, offline validation, selector matrix, pinned image/config, and evidence/teardown reporting | Review deterministic setup, source-only loading, role separation, hard bounds, zero external networking, and failure cleanup; explicit approval names the first real-Redis slice |
+| M4-P3 | Fresh Redis bootstrap, ACL feasibility, BOOT, one minimal active transition/replay, and credential/volume teardown | Real results prove the harness can exercise canonical sources without relaxed validators or marker-write privileges |
+| M4-P4 | Full ledger and administrative matrix, restart/AOF/crash injection, maximum-shape memory and timing | All required cases pass on the same reviewed artifacts, with measured evidence and no skipped required cases |
+| M4-P5 | Exact-revision protected PR checks and evidence review | M4 accepted; any M5 work still requires its stated F4-F6 dependencies |
+
+M4-P1 changes normative document bytes, so even a source-neutral amendment changes
+the contract and bundle pins. Use the existing strict generators and independent
+verifier; update the current identity table only after approved regeneration.
+The September 18 identities and passes remain historical M3 evidence, not a pass
+for an amended contract. PR publication and merge retain their existing explicit
+authorization requirements.
+
+The first execution approval should name the exact commit, Redis and harness
+image digests, ACL/config and fixture-envelope digests, local-only transport,
+resource/time limits, cases, evidence destination, and teardown procedure. A
+same-volume crash restart is allowed within one case; cross-case or cross-run
+volume reuse is not. A proposed networkless Unix-socket transport must prove
+that its private socket mount reaches only this fixture Redis, with no host or
+Docker socket access inside the executor. The lifecycle controller alone owns
+the exact disposable resources and handles cleanup on error or interruption.
+
+#### Acceptance coverage and evidence ownership
+
+The existing required-test list below remains necessary. Expand it into a
+machine-readable case inventory before implementation, mapping every normative
+section 17 requirement to a test and evidence artifact:
+
+- Cover all 43 operations and all 52 allowed gate variants, including candidate
+  phases and receipt-only replays. Shared Go/Python vectors and an independent
+  post-state oracle must agree with canonical-source Redis execution.
+- Separate protocol state tests from later application integration. M4 may kill
+  a synthetic worker at a recorded START or simulated fetch boundary; actual
+  Spider DNS/fetch/render, consumer persistence, Monitoring, and image startup
+  behavior require M5/M6 evidence. No application-level requirement is marked
+  passed merely because a ledger simulation passes.
+- For internal commit-boundary crash tests, identify how each boundary is
+  observed without editing canonical Lua or changing production Redis semantics.
+  Random process kills or kills between client calls alone do not prove every
+  internal write boundary. Unobservable boundaries remain an acceptance blocker
+  until a reviewed method exists.
+- Use real Redis time and original lease/retry/expiry constants. Record the
+  target-image ACL behavior, restart run ID, boot approval, acknowledged-write
+  receipts, lost-response reconciliation, and restored key/state equality.
+  A damaged AOF must fail closed rather than being silently repaired.
+- Keep the section 2.2 memory floors: isolated retained/downstream budgets at
+  most 128 MiB combined, Redis `maxmemory` at least 400 MiB, and container limit
+  at least `maxmemory + 128 MiB`. Measure allocator growth and all maximum
+  reservation/stage/queue shapes; serialized sizes alone are insufficient.
+- Record benchmark methodology, hardware/architecture, exact inputs, warmups,
+  sample count, per-operation p50/p95/p99/max, and measurement overhead. Separate
+  server script timing from client round-trip latency. The maximum-shape Lua
+  p99 remains strictly below 100 ms over at least 1,000 complete
+  command-write-to-reply-read samples including AOF, as normative section 3
+  requires. Redis CPU time is reported separately and cannot replace that gate.
+  A reduced shape, higher Lua time limit, or cached result cannot satisfy it.
+- Export a bounded report containing exact source/contract/image/config/ACL
+  identities, setup and test artifact digests, per-case outcomes, measurement
+  artifacts, and teardown receipts. Exclude passwords, tokens, and raw secrets.
+  Retain failed-case evidence with a failing verdict; cleanup failure invalidates
+  acceptance. Revoke every fixture identity and prove reconnect failure while
+  Redis is reachable, then prove destruction of its container, volume and private
+  transport resources.
+
+#### Review checklist
+
+- [x] D1 selector design and exact absence-read semantics approved.
+- [x] D2 harness/Lua responsibility split and derived-key inventory requirement approved.
+- [x] D3 isolated administrative exception approved for both cutover shapes.
+- [x] D4 nonzero test-artifact and stand-in image exception approved, including
+  positive release-provenance checks and required rejection tests.
+- [x] Independently review the first execution slice for correctness and security;
+  both reviews returned NO-GO, recorded in the dated report.
+- [x] Close all four first-executor findings and the closed-peer follow-up;
+  obtain scoped independent GO for image preparation only.
+- [ ] Normative amendment and regenerated identities independently reviewed.
+- [ ] Harness, evidence schema, crash-boundary method and benchmark plan reviewed.
+- [ ] Explicit M4-P3 execution approval recorded against exact artifacts.
+
+The checked decisions record owner approval and scoped first-executor review.
+Broader M4 protocol/evidence review and actual execution approval remain separate
+unchecked gates; local GO does not close them.
+
+#### M4-P2 implementation checklist
+
+The owner requested the next implementation slice after the offline pass.
+This authorizes implementation and local testing; M4-P3 execution remains gated.
+Checked implementation items below record code and local fake-backed tests, not
+observed Redis behavior or completion of the full M4 matrix.
+The original review found defects despite those passes. Remediation and final
+independent re-review now close the items below; image preparation is next.
+
+- [x] Apply the approved normative amendment and regenerate dependent identities.
+- [x] Implement deterministic offline plans, setup projections and validation.
+- [x] Pass the offline Python, independent Go/Python, full normal and scoped race checks.
+- [x] Define the first bounded ledger-smoke case and exact per-role key/command ACLs.
+- [x] Implement bounded Unix-socket RESP transport and canonical-source loading.
+- [x] Implement real-image/configuration/isolation admission with no implicit pull.
+- [x] Implement a new-volume persistence probe, SIGKILL/restart and canonical BOOT.
+- [x] Implement the minimal active operation/replay path with complete state checks.
+- [x] Implement bounded evidence and failure/interruption cleanup, including
+  credential revocation/reconnect and exact-resource destruction verification.
+- [x] Test transport, admission, ambiguous failures and cleanup using local fakes.
+- [x] Complete independent first-executor correctness/security review (NO-GO).
+- [x] COR-1: terminate and wait for an in-container stage before revocation after
+  a timeout; add an executor-side stage deadline.
+- [x] COR-2: terminate surviving members of the owned subprocess group even when
+  its leader has exited.
+- [x] SEC-1: require observed peer disconnection for held-session termination;
+  reject Redis error replies and ambiguous timeouts as proof.
+- [x] SEC-2: enforce approval expiry after slow preflight and at every Docker
+  mutation dispatch, preserving a separate cleanup budget.
+- [x] Replay all four counterexamples, pass new regressions and obtain independent re-review.
+- [x] Fix the closed-Unix-peer follow-up with a bounded receive-only probe;
+  retain data/error/timeout rejection and pass real local IPC regression/re-review.
+- [x] After GO review, build and validate immutable images and record exact source/memory evidence.
+- [x] Independently review target-discovered image and CI corrections; close the nested-skip finding.
+- [x] Obtain owner authorization for scoped checkpoint commit/push and draft PR #10 update.
+- [ ] Publish the scoped checkpoint and pass all applicable protected CI contexts on that revision.
+- [ ] Record separate approval for the exact first real-Redis case/artifacts.
+- [ ] Run that approved first case and review actual probe, ACL and teardown evidence.
+
+The initial active operation is the empty-inventory
+`CJ2_MAINTAIN_RATE_SCOPES` path. The approved run will test active transport and
+no-write replay after a real BOOT mutation; it cannot establish job/claim/stage/commit acceptance.
+Administrative and maximum-shape cases remain subsequent M4 work.
+
+**Historical pre-amendment verification:** Read-only Lua assembly with both `--check` and
+`--require-complete`, bundle pin (`--check`), and independent digest-vector
+verification passed on 2026-09-21; `git diff --check` passed. The bundle still
+reports the September 18 contract/source/seal identities, 43/43 operations, and
+40 positive/157 negative cases plus baseline. These checks validate the existing
+source/fixture identities, not the proposed bootstrap design. No Redis instance
+was started and no real-Redis acceptance result is claimed.
+
+#### Implemented offline scope (2026-09-21)
+
+`tests/crawl-jobs-v2-redis/harness.py` compiles three closed planning recipes,
+canonical nonzero test descriptors, guard/compatibility RECORDs and a bounded
+ledger-authority setup projection. Validation recomputes every byte against
+current source/contract/generated pins. Unknown fields, changed records, zero
+guards, unauthorized setup keys, stale artifacts and ACL-token injection fail.
+There is no endpoint, Redis client, process launcher, setup writer or release
+exporter. Every plan declares execution false, measurements absent and
+image/isolation verification pending.
+
+At this initial offline checkpoint, the inventory has 43 operations/52 variants and content-bound section 17
+requirements, all explicitly unexecuted. The ACL compiler produces ledger
+fragments only; complete per-case/derived-key and provisioning/BOOT/admin roles
+remain execution-layer work. `redis.conf` pins configuration bytes without
+claiming an image exists or was tested. Administrative success states are never
+directly generated as setup evidence.
+
+Ten adversarial Python tests and `TestM4OfflineArtifacts` exercise schema,
+provenance, setup and ACL failures, compare independent Python guard formulas,
+and pass generated artifacts through normal Go codecs/transport and the literal
+52-variant oracle. The Python suite is wired into protected `required-tests`;
+the Go cross-check is part of normal Spider tests. Docker includes the three
+required inputs in its builder allowlist only. See the
+[harness README](../tests/crawl-jobs-v2-redis/README.md) for commands, schemas and
+limits. Local tests do not establish actual image, Redis ACL, BOOT, isolation,
+measurement or teardown behavior.
+
+M4-P1 is implemented locally, pending review. The later first-case execution
+slice below extends M4-P2 beyond this initial offline checkpoint. M4-P3 still
+requires explicit execution approval after applicable artifact/review gates pass.
+
+#### Local amendment and offline verification (2026-09-21)
+
+| Check | Result |
+|---|---|
+| Offline harness Python suite | PASS: 10/10, including independent Python guard formulas and adversarial artifact/setup/ACL cases |
+| Existing Python suite | PASS: 13/13 |
+| Full Spider normal suite | PASS: `go test -mod=readonly -timeout 30m ./... -count=1`; final V2 package duration 155.473 s, cached pinned Go 1.25.13 |
+| Scoped race suite | PASS: M4 cross-language test, normative wire oracle, all-constructor oracle, and matching guard/transport/canonical-bundle tests; 12.881 s; not a new full-module race claim |
+| Full-module vet and Go formatting | PASS: `go vet -mod=readonly ./...`, changed-file `gofmt -d` |
+| Strict Lua assembly, bundle pins, independent digest verifier | PASS: 43/43 sources; 40 positive/157 negative shared cases plus baseline; identities recorded above |
+| Inventory CLI | PASS: 52 operation/gate entries and 104 section-17 requirement entries, explicitly unexecuted; execution authorization false |
+| Whitespace | PASS: `git diff --check` |
+
+The final scoped race command was:
+
+```text
+GOPROXY=off GOTOOLCHAIN=go1.25.13 go test -mod=readonly -race -timeout 15m ./internal/database/crawljobsv2 -run 'Test(M4OfflineArtifacts|ProtocolWireLayoutReviewedOracle|OperationWireAllConstructorsReadOnlyOracle|.*(GuardCore|StoredCommitGuard|TransportGate|CanonicalBundle|AuthoritativeScriptBinding).*)$' -count=1
+```
+
+The new normal/race evidence is local. Docker packaging was updated but no new
+image build is claimed; workflow lint tools were unavailable locally, and
+protected PR checks were not run. Existing opt-in integration tests were not
+activated. No real Redis instance, lifecycle fixture or acceptance run was
+started. Independent amendment/implementation review was still pending at that
+checkpoint; the later first-executor review result is recorded below.
+
+#### First execution slice: local implementation and verification
+
+The owner requested updating the checklist and implementing the next slice.
+`controller.py`, `executor.py`, `runtime_case.py` and `resp.py` now implement
+`ledger-smoke-v1`. The new execution Dockerfile has a narrowly allowlisted build
+context; it has not been built or assigned a reviewed image identity here.
+
+The case uses six separate ACL roles, a pre-BOOT acknowledged persistence probe,
+SIGKILL and same-volume restart, canonical BOOT plus exact replay, four bounded
+authority setup writes, and two empty `CJ2_MAINTAIN_RATE_SCOPES` calls. Complete
+key/state snapshots must remain identical across maintenance/replay and 21
+candidate/freeze ACL denials. Setup/loader/BOOT access is revoked before that
+measurement. Direct administrative success, jobs, claims, stages, commits,
+maximum shapes and benchmarks are outside this first case.
+
+The controller requires a hash-bound, unexpired approval, the exact clean tracked
+commit, and already-local immutable Linux image IDs. It uses only the local
+Docker Unix socket, new owned named volumes, network mode `none`, explicit
+resource/user/capability settings and no host bind mounts or implicit image pull.
+The executor receives only its private Unix socket/control volume. An init helper
+alone has UID 0 and CHOWN to initialize empty volume ownership; execution uses
+UID/GID 65534 with all capabilities dropped.
+
+Evidence includes a durable pre-mutation `INCOMPLETE` intent, inspected container
+identities/settings, probe/BOOT/setup observations, state comparisons, ACL
+denials and credential/destruction receipts. SIGINT/SIGTERM enter bounded cleanup;
+lost-create replies still leave exact resource names eligible for ownership-
+checked cleanup. Every failed or unproved teardown invalidates the case. An
+uncatchable controller/host failure leaves an incomplete intent for recovery,
+not acceptance evidence. Reports never mark M4 accepted; fake backends cannot
+produce valid real-Redis evidence.
+
+Local verification for this slice:
+
+| Check | Result |
+|---|---|
+| Python offline/execution suites | PASS: 26/26 (10 existing offline tests plus 16 execution/transport/lifecycle tests), using fakes and bounded local subprocess controls only |
+| Independent Go wire/RESP cross-check | PASS: canonical BOOT and active-maintenance command parts and serialized sizes agree with normal Go constructors, alongside the existing artifact/gate checks |
+| Targeted Go race check | PASS: `go test -mod=readonly -race -timeout 15m ./internal/database/crawljobsv2 -run '^TestM4OfflineArtifacts$' -count=1`; 3.220 s |
+| Full-module vet and changed Go formatting | PASS |
+| Bundle pins and independent digest verifier | PASS; normative document, 43 canonical sources and their current identities unchanged by this execution slice |
+| Read-only recipe CLI | PASS: one named case, six roles, two canonical sources; execution authorization false |
+| Whitespace | PASS: `git diff --check` |
+
+The initial wire test compared Go nil slices with Python zero-length bytes using
+structural slice equality. It was corrected to byte equality because both encode
+the same required zero-byte RESP bulk string; every command part and total RESP
+size remain independently checked. No protocol or runtime validator was relaxed.
+
+This is local implementation evidence, not a Docker build, protected PR result,
+independent review or real-Redis run. The subsequent independent review below
+returned NO-GO; remediation and re-review now precede image preparation. See the
+[execution harness README](../tests/crawl-jobs-v2-redis/README.md#first-execution-slice-ledger-smoke-v1)
+for the lifecycle, approval schema and remaining matrix.
+
+#### Initial independent first-executor review (2026-09-21; historical NO-GO)
+
+Separate Code Reviewer and Security Engineer sessions inspected the current
+worktree and reproduced four findings. The coordinator replayed every finding
+using the same implementation bytes and local fakes. The consolidated verdict
+is **NO-GO for advancing this revision to image preparation or real-Redis
+execution**. Existing 26-test Python and Go wire/race checks still pass; they do
+not cover the reproduced cases.
+
+| ID | Severity | Required correction |
+|---|---|---|
+| COR-1 | HIGH | Timed-out `docker exec` may outlive the attaching CLI and overlap revocation; quiesce the actual worker before teardown |
+| COR-2 | MEDIUM | An exited subprocess leader causes `killpg` to be skipped even when children hold pipes open |
+| SEC-1 | MEDIUM | Held-session errors/timeouts are accepted as termination without observing peer disconnection |
+| SEC-2 | MEDIUM | Slow preflight and Docker calls can dispatch Redis start after approval expires |
+
+The [dated review report](crawl-jobs-v2-m4-review-2026-09-21.md) contains exact
+file/line references, reviewed-byte identities, reproduction commands, evidence
+limits and regression expectations. The two standalone scripts under
+`tests/crawl-jobs-v2-redis/review/` preserve the counterexamples; their successful
+exit means a defect was reproduced, not that acceptance passed. No implementation
+fixes or normative changes were included in this review.
+
+The scoped security scan found no production secret/private key in its thirteen
+files; the sole URI-shaped candidate was a negative test without userinfo. This
+was not a history or environment-secret audit. A local memory observation also
+requires checking the init container's target Linux peak during later reviewed
+image validation; it was not classified as a confirmed OOM finding.
+
+#### Remediation and final independent re-review (2026-09-21)
+
+The owner requested fixing all four findings, regression tests and independent
+re-review. COR-1 now has a hard worker timer plus owned-container stop/wait/
+zero-PID/remove before a differently named cleanup helper. Startup polling is
+inside one timed read-only stage. Worker-first destruction also covers failed
+revocation. COR-2 now terminates the owned process group on abort without first
+polling/reaping its leader.
+
+SEC-2 revalidates approval after revision verification and intent journaling,
+caps execution by wall-clock approval expiry and a monotonic deadline, and
+checks dispatch boundaries. The independent 60-second cleanup budget is retained
+solely for quiescence, the fresh revocation helper and resource destruction.
+
+The first SEC-1 fix correctly rejected ambiguous errors but exposed a new HIGH
+correctness issue: writing PING to an already-closed Unix peer could fail with
+EPIPE before observing EOF. The final probe is bounded and receive-only. Only
+receive EOF/reset proves termination; buffered/live data, timeouts and local
+socket errors reject, and fresh authentication must still fail appropriately.
+A real local AF_UNIX socket-pair regression covers the closed-peer case.
+
+Both independent reviewers returned **GO for image preparation only** on the
+final corrected bytes, with no actionable finding left from their scoped reviews.
+The [re-review report](crawl-jobs-v2-m4-rereview-2026-09-21.md) records closure,
+the intermediate follow-up, exact hashes and validation limits. The original
+report and dated reproductions are preserved, not rewritten as passes.
+
+| Final check | Result |
+|---|---|
+| Python suite | PASS: 43 tests (26 prior plus 17 review regressions); author 20.454 s, independent correctness reviewer 19.991 s |
+| Go artifact/wire race check | PASS: author 3.198 s, independent correctness reviewer 3.093 s |
+| Independent security targeted suite | PASS: 12 tests, 3.456 s; additional receive-only IPC/error and expiry probes pass |
+| Independent OS probes | PASS: owned process-group termination and stage exit 124 with blocked stdin/validation/output; no service or listener |
+| Bundle pins/digest verifier | PASS; normative document and canonical source identities unchanged by these fixes |
+| Scope | No Docker/Redis execution, image build, protected-CI run or Git publication; target semantics and resource limits remain pending |
+
+The corrected recipe SHA-256 is
+`e001d497c1bdccb061a19f265ba854812d1da4e5e551bc0d9873ae9773fefc4d`.
+The read-only recipe still says `execution_authorized=false`. A future approval
+must bind the corrected artifacts and exact clean tracked revision. Validate
+target Linux memory, including the 128 MiB init limit, during reviewed image
+preparation; local traced allocations do not certify that limit.
+
+#### Immutable image preparation and publication gate (2026-09-21)
+
+Actual image checks now pass for Python 3.13.15/Redis 7.4.11 on Linux/arm64.
+The retained [image evidence](evidence/m4-image-prep-2026-09-21/README.md) binds
+55 exact files per image check, both daemon-local image IDs, source identities,
+memory observations and verified temporary-container cleanup. The emitted offline
+plan SHA-256 is `bf22f79cd2b23e09aa77fa288b70c190c7c04ef24384d5c48ea5d5a885c362c4`;
+the updated recipe is `2cfb26736d94c9c05188989e8da814272c7a662ac0441d045ff941c5508b078b`.
+These replace the prior recipe only for future exact-artifact approval.
+
+The first broad-context candidate was rejected/deleted. File-only Docker ignore
+rules now prevent parent-directory exceptions from including unrelated trees.
+The target kernel's finite DOWN fallback tunnel devices are admitted only with
+no active external interface, no IPv4 routes, restricted loopback/reject IPv6
+routes and unchanged capability limits. Streaming hash construction preserves
+every canonical digest while reducing observed init memory from about 127 MiB
+to about 47 MiB under the unchanged 128 MiB limit.
+
+The existing PR's 90-minute full race timeout is addressed by eight deterministic
+shards covering all 470 compiled V2 test roots exactly once, with actual outcome
+verification and no non-allowlisted nested/root skip. The protected Spider
+context fails on any missing/failed shard and still runs all other packages.
+The full 90-minute per-shard budget and every race assertion remain; Redis's
+separate latency gate is unchanged. A review finding in nested skip collection
+was fixed and independently re-reviewed GO before publication.
+
+Current local checks: 45 harness tests, 19 script tests, pinned bundle/digest
+verification, actionlint, and actual image validation pass. Exact-index checks
+and a scoped credential scan precede the authorized commit/push. PR #10 was
+converted to draft as requested. Protected results and execution approval are
+not inferred from these local passes. Redis ran only `--version`, never as a
+server; no retained datastore was queried or changed by these checks.
 
 ### Source and trust-anchor rules
 
@@ -628,10 +1190,13 @@ not real-Redis timing, allocator, durability or operational acceptance.
 
 ## M4: Disposable Redis 7 acceptance
 
-**Not started or approved.** M4 waits for the
-[real-Redis fixture decisions](#deferred-real-redis-fixture-decisions) above and
-explicit approval. Neither local M3 completion nor the successful local image
-build waives those requirements or the provisional compatibility boundary.
+**Real-Redis execution not started or approved.** D1-D4 are approved; the
+amendment, offline compiler and first-case executor are implemented locally.
+The final independent re-review and image preparation pass for the first case.
+M4 waits for exact-revision protected CI and explicit execution approval,
+followed by actual first-case and full-matrix acceptance.
+The [2026-09-21 readiness package](#m4-readiness-decision-package-2026-09-21)
+records scope and remaining gates; it is not Redis acceptance evidence.
 
 Use newly created, isolated, non-production infrastructure with no public route,
 production data, production credential, or reusable volume.
@@ -785,8 +1350,12 @@ separate M8 decision.
 F3 foundation remediation may proceed while F1, F2, F4, and F6 remain
 operationally blocked. M1/M2 are merged; all 43 dormant M3 sources and the sealed
 factory are implemented and verified locally, including the final full-module
-race pass. M4 still requires protocol/fixture
-clarification and explicit approval. M5 hermetic code/consumer integration waits
+race pass. M4's approved amendment and offline layer are implemented locally;
+the first-case executor and immutable image validation also pass locally.
+Protected CI and execution approval remain pending. The first-executor
+findings and closed-peer follow-up are fixed; independent final re-review permits
+image preparation only.
+M5 hermetic code/consumer integration waits
 for M4 and F4-F6. In the parent plan, compatible code and runbooks precede the F1/F2
 operational reset so retained evidence is preserved and the environment is reset
 once. Migration rehearsal and candidate promotion require that accepted fresh
@@ -818,6 +1387,14 @@ Rendering remains disabled unless its separate activation requirements pass.
 | 2026-09-18 | Final local M3 verification | Full Spider race suite passes (`crawljobsv2` 2571.353 s, zero skipped V2 tests); fresh Docker normal suite passes (391.9 s); vet, Python 13/13, digest/assembly checks, formatting and workflow lint pass; no M3 staging, commit, push, PR or activation |
 | 2026-09-18 | Scoped M3 checkpoint publication authorization | Owner requested committing and pushing the verified M3 changes; unrelated worktree changes remain outside the checkpoint; no PR, merge, M4 execution or activation authorization |
 | 2026-09-18 | M3 checkpoint publication completed | `81028ca12a1763d46df72fc54759d99a0ea3b561`, 151 scoped files; exact-index normal Spider tests, vet, Python tests and generator/digest checks passed; credential scan detections were triaged as four unchanged synthetic fixture values; local and remote branch identities match; no PR or activation |
+| 2026-09-21 | M4 readiness preparation | Owner requested preparation; source review confirms candidate-ACL, manifest-responsibility, administrative-fixture and zero-guard bootstrap conflicts; D1-D4 amendment proposals and M4-P0 through P5 sequence drafted for review; no normative amendment or Redis execution |
+| 2026-09-21 | Owner approval and offline implementation | Owner approved D1-D4 and continued implementation; normative bootstrap/ACL/manifest/admin exception amended, dependent pins/fixtures regenerated, offline compiler and adversarial/Go interoperability tests added; execution harness and real-Redis approval remain pending |
+| 2026-09-21 | First bounded execution slice | Owner requested the next slice; ledger-smoke controller/executor, six-role ACLs, Unix RESP, boot/probe/restart, state checks, evidence and cleanup implemented; 26 Python tests and independent Go wire/race checks pass locally; no Docker build, Redis run or protected-PR acceptance |
+| 2026-09-21 | Independent correctness/security review | Separate reviewers returned NO-GO: COR-1 HIGH and COR-2/SEC-1/SEC-2 MEDIUM; all four counterexamples replayed by the coordinator; no implementation fixes or infrastructure execution; dated report and remediation checklist added |
+| 2026-09-21 | Remediation and first re-review | Original four findings corrected with 41 local tests; re-review closed the original findings but found a HIGH closed-Unix-peer/PING regression; combined readiness remained NO-GO |
+| 2026-09-21 | Final independent re-review | Receive-only disconnect proof and actual local IPC regression close the follow-up; 43 Python tests and Go wire/race verification pass; correctness and security both GO for image preparation only; no real Redis or image/CI acceptance claimed |
+| 2026-09-21 | Immutable image preparation | Tightened build context, target-kernel network checks and bounded-memory hashing; exact 55-file validation and memory checks pass on immutable arm64 images; all canonical digests unchanged; offline plan/recipe/evidence emitted without run approval |
+| 2026-09-21 | Publication/CI preparation | Owner authorized scoped commit/push/draft PR #10 update; PR converted to draft; exhaustive eight-shard race CI addresses prior aggregate timeout; nested-skip review finding fixed and re-reviewed GO; protected results pending publication |
 
 ## Definition of done
 

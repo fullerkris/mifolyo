@@ -38,8 +38,12 @@ shared deployments.
 M1/M2 merged through PR #9 as `d914a93`. M3's 43 canonical Lua operations and
 sealed source bundle are committed and pushed as `81028ca` on
 `feature/crawl-jobs-v2-lua`, with local verification complete. This is not M3
-protected-PR or real-Redis acceptance. M4 requires reviewed fixture, ACL and
-bootstrap clarifications plus explicit approval; see the
+protected-PR or real-Redis acceptance. The M4 fixture/ACL/bootstrap proposals
+were approved on September 21; the amendment, offline compiler and first bounded
+ledger-smoke executor are implemented and locally tested. The review findings
+are fixed; immutable arm64 images and target checks now pass scoped review and
+validation. The owner authorized the scoped checkpoint and draft PR #10 update;
+protected CI and exact-artifact real-Redis execution approval remain pending. See the
 [Crawl Jobs V2 plan](docs/crawl-jobs-v2-plan.md). Historical V1 commands below do
 not authorize another crawl.
 

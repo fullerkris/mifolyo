@@ -1,0 +1,9 @@
+# Reviewed multi-platform Python 3.13.15 base; preparation records the selected
+# platform manifest and daemon-local image ID. Overrides must also be immutable.
+ARG PYTHON_IMAGE=docker.io/library/python@sha256:2325bb286ec344af3e5898cc224b5844e2707ac6e26b1632516fd3edc84a5e26
+FROM ${PYTHON_IMAGE}
+WORKDIR /app
+COPY . /app/
+USER 65534:65534
+ENTRYPOINT ["python3", "-B", "/app/tests/crawl-jobs-v2-redis/executor.py"]
+CMD ["hold"]

@@ -451,12 +451,12 @@ artifact also records Redis command CPU time separately; warmup, failures, and
 blocked-AOF samples are reported rather than discarded.
 
 The section 5.1 disposable acceptance fixture is the only environment in which
-real-Redis maximum-shape evidence may run before final markers exist. A real
-candidate compatibility marker may be installed only after those benchmarks and
-all other evidence gates have passed and every provisional sentinel has been
-replaced in newly hashed final artifacts. If the p99 is 100 ms or greater, no
-candidate may be installed and implementation constants MUST NOT silently differ
-from this table.
+real-Redis maximum-shape evidence may run before final markers exist. Outside
+its isolated administrative profile, candidate installation requires those
+benchmarks and every other release evidence gate to pass against newly hashed
+final artifacts containing no test substitutes. If p99 is 100 ms or greater,
+no release candidate may be installed. Implementation constants MUST NOT
+silently differ from this table.
 
 ## 4. Identifiers and digests
 
@@ -784,6 +784,15 @@ Runtime clients reconstruct the guard-core field set from the stored guard,
 verify its mounted exact artifact bytes/digest, and separately compare the
 stored compatibility digest; they never hash unordered Redis field iteration.
 
+Nonzero digests establish artifact identity, not evidence provenance. Before
+connecting, release and runtime admission MUST require the exact independently
+reviewed final evidence, compatibility, and participant-image identities. It
+MUST reject section 5.1 test-input descriptors, stand-in images, fixture
+envelopes/authorizations and their guard/manifest identities in release authority
+fields. A digest denylist or rejection of zero alone is insufficient. Structural
+Go/Lua codecs cannot infer whether a nonzero digest denotes an approved result;
+the trusted image/artifact admission boundary enforces that distinction.
+
 Active-mode mutations require approved boot plus exact active compatibility,
 contract, and commit-guard values compiled into the immutable release, exact
 legacy-retirement evidence, and candidate/freeze keys absent. Runtime scripts do
@@ -813,82 +822,158 @@ process-stop evidence therefore remain part of the safety boundary.
 
 ### 5.1 Non-authoritative acceptance-fixture bootstrap
 
-Generating maximum-shape, memory, Lua, AOF, and crash evidence has one narrow
-bootstrap dependency: those tests must execute the authoritative active-mode Lua
-paths before the evidence-derived final guard and compatibility artifact can
-exist. The sole exception is a non-authoritative acceptance-fixture harness. It
-MAY directly install provisional active control records and bounded fixture data
-only when all of these predicates are established before Redis starts:
+Generating maximum-shape, memory, Lua, AOF, and crash evidence requires executing
+authoritative sources before final evidence and integrated release images exist.
+The sole bootstrap exception is a reviewed, non-shipped test harness with two
+isolated profiles: `ledger` and `administrative`. This exception does not grant
+execution approval. The reviewed commit, harness/Redis image digests, exact
+configuration/ACL/fixture artifacts, cases, resource/time limits, evidence
+destination and teardown procedure require explicit approval before Redis starts.
 
-- Redis and its volume are newly created for this evidence run, contain no
-  production or retained data, and will never be attached to another deployment.
-- The Redis network namespace has no route, DNS, proxy, ingress, or egress path
-  to an external target or production network. No crawler, feeder, consumer,
-  runtime/crawl-admin image, production secret, or production credential is
-  present; all fixture credentials are freshly generated and valid only for this
-  disposable Redis fixture.
-- Redis uses the exact target version/configuration. The harness is a separately
-  reviewed test-only image and accepts no caller-supplied marker bytes. Its setup
-  manifest enumerates and digests every directly written key/value and proves
-  that fixture state stays within the section 3 key, run, job, reservation,
-  stage, queue, byte, and command bounds.
+Both profiles MUST establish all of these predicates before Redis starts:
 
-Define `ZERO_SHA256` as exactly 64 ASCII `0` bytes. The harness constructs the
-provisional records deterministically as follows:
+- The container and persistent volume are new, empty, contain no retained or
+  production data, and are exclusive to one case. Same-volume crash restarts
+  within that case are permitted; reuse across cases, runs or deployments is not.
+- The executor and Redis have no external route, DNS, HTTP, proxy, ingress or
+  egress capability. Local transport reaches only that Redis. A Unix socket MAY
+  use a dedicated private mount; no host/Docker socket is exposed to the executor.
+  Only the lifecycle controller can create/destroy its exact disposable resources.
+- No crawler, feeder, consumer, runtime/crawl-admin process, production secret or
+  production credential is present. Fixture credentials are fresh and valid only
+  for that instance. A stand-in image is test identity data, not a running role.
+- Redis uses the exact reviewed standalone Redis 7 image/configuration and section
+  2.2 memory/persistence limits. The immutable harness uses reviewed recipes and
+  pinned inputs, accepts no arbitrary marker/source bytes or production endpoint,
+  and has no release-bundle export operation.
 
-1. It uses the authoritative proposed contract digest, Redis/config values,
-   protocol values, and reviewed target image digests. In the exact guard-core
-   shape from section 5, only fields that are as yet unavailable among
-   `maximum_shape_sha256`, `memory_fixture_sha256`,
-   `lua_benchmark_sha256`, or `aof_crash_evidence_sha256` are replaced by
-   `ZERO_SHA256`; every available evidence field uses its real digest.
-   At least one of those four fields must be the sentinel or the fixture builder
-   refuses setup, so it cannot install an all-nonzero final production record.
-   `cutover_mode=fresh`, `candidate_run_id` is empty, and `approved=1`.
-2. It computes the provisional `commit_guard_sha256` over those exact guard-core
-   bytes using the ordinary section 5 rule. It then serializes the exact
-   compatibility artifact with that guard digest and computes the provisional
-   `manifest_sha256` by the ordinary rule. No test-only field is added to either
-   production-shaped record.
-3. Before boot approval, the setup credential writes an exact bounded
-   setup-manifest persistence probe, records its acknowledged bytes, `SIGKILL`s
-   Redis, restarts the same disposable volume, and proves zero loss. The hash of
-   that current, nonzero preliminary rehearsal artifact may approve this fixture
-   boot through the authoritative `CJ2_APPROVE_BOOT`; it is not the final
-   guard's AOF/crash evidence. The setup credential then directly writes only the
-   exact active compatibility hash, active contract string, fixed-shape commit
-   guard (using the provisional compatibility digest and one recorded Redis
-   setup time), a deterministic `v1_count=0`/five-key-absent legacy-retirement
-   fixture record, and the setup-manifest-enumerated section 6 fixture keys.
-   Candidate markers and `admin_freeze` remain absent. Empty-key evidence
-   digests and every other synthetic digest are hashes of named canonical
-   fixture artifacts, never zero sentinels.
-4. The harness drops the setup credential before testing. Every behavior under
-   measurement uses the unchanged authoritative Lua source and normal mutation
-   path; each script validates the complete supplied/stored provisional gate
-   records exactly. Direct setup or teardown is not transition-correctness
-   evidence. No Lua source recognizes a fixture mode, sentinel, or bypass.
+#### Test artifact identity
 
-The provisional records are not candidate or production artifacts, cannot be
-promoted, and are never crawl authorization. Synthetic fixture activation may
-exercise ledger scripts, including `CJ2_START_REQUEST`, but the harness has no
-external request capability and its response grants no permission outside that
-isolated process. The harness has no candidate-key or marker-admin operation,
-and its credential is not accepted outside the disposable Redis. Runtime and
-crawl-admin images MUST reject `ZERO_SHA256`, the provisional manifest/guard
-digests, fixture authorization artifacts, and any fixture setup manifest; none
-is copied into an image, deployment secret, candidate marker, or release bundle.
+Define `ZERO_SHA256` as exactly 64 ASCII `0` bytes. It remains forbidden in every
+executable guard, compatibility, transport and production authority path.
+Historical provisional GuardCore serialization vectors MAY retain zero evidence
+fields solely as non-executable framing/rejection controls. They have no stored
+guard, transport, Redis setup or promotion authority.
 
-After bounded evidence export, the harness revokes every fixture credential and
-proves authenticated reconnect fails while Redis is still reachable locally,
-then stops Redis and destroys the container and volume; the evidence records
-each teardown result. Release assembly replaces every zero sentinel with the
-resulting evidence digest,
-recomputes the final guard core and compatibility artifact, and records the
-provisional-to-final derivation. Real `CJ2_INSTALL_CANDIDATE_MARKERS` remains
-forbidden until all final evidence fields are nonzero and the final guard,
-manifest, image, and contract digests have passed independent review. No byte
-from the destroyed provisional keyspace may be promoted or restored.
+The harness uses the actual canonical contract/source identities, exact Redis
+version/configuration, and available measured evidence. Only unavailable fields
+among `maximum_shape_sha256`, `memory_fixture_sha256`, `lua_benchmark_sha256` and
+`aof_crash_evidence_sha256` MAY instead hash reviewed test-input descriptors.
+Each descriptor is canonical UTF-8 JSON with sorted keys, compact separators,
+no floating numbers, and one final LF. Its exact fields are:
+
+```text
+domain=mifolyo:crawl:v2:m4-test-input:v1
+purpose=conformance_only
+measurement_status=not_measured
+evidence_field=<one of the four named fields>
+scenario=<reviewed bounded case identifier>
+contract_sha256=<actual canonical contract>
+source_set_sha256=<actual canonical source set>
+redis_config_sha256=<exact configuration artifact>
+```
+
+The descriptor contains no PASS claim. Its nonzero plain SHA-256 fills that one
+guard field. BOOT always requires real, current preliminary abrupt-restart
+evidence with zero acknowledged loss; a descriptor can never replace it.
+Guard-core/compatibility RECORD layouts and digest formulas remain unchanged.
+No Lua source recognizes a fixture mode, descriptor, sentinel or bypass.
+
+An external immutable fixture envelope records profile/scenario, contract/source
+identities, Redis/config/ACL/harness identities, every evidence substitution,
+role-to-image mapping, setup manifest and resulting test guard/manifest digests.
+It is bound to the reviewed recipe and execution approval, not a new Redis key
+or wire argument. For a role whose accepted final image does not yet exist, the
+envelope MAY name an actual immutable digest of a reviewed test-only stand-in
+image. It MUST mark that role as a stand-in. Invented OCI identities or claims
+that a V1 image is V2-compatible are forbidden. `render_worker_image=disabled`
+remains mandatory. Structural compatibility here proves binding, not deployment
+compatibility. Offline planning artifacts MUST be labeled non-executable and
+cannot attest that image, isolation, boot or measurement checks ran.
+
+#### Setup and transition ownership
+
+The harness, not Lua, validates the setup manifest. It enumerates exact directly
+written keys, types, bytes, expiry rules and digests, separately lists required
+absence, and proves section 3 bounds. Captured Redis setup time is recorded once
+before the writes that use it; determinism means identical bytes for identical
+captured inputs. Setup rejects duplicate, omitted, extra, wrong-type, oversized
+or mismatched entries. The harness verifies the complete installed inventory,
+then revokes setup access and terminates its connections before measurement.
+It never regains setup access during a measured sequence.
+
+Each case separately enumerates bounded possible derived output keys, including
+initially absent jobs, stages, reservations, pages/images and backlinks. ACLs
+restrict commands/keys; an independent post-state oracle checks the whole case
+inventory. Negative stored-state tests have their own reviewed setup. Lua owns
+the unchanged exact wire and authenticated derived-key validation, not external
+manifest enforcement. Direct setup/teardown never counts as transition evidence.
+
+Before boot approval, each profile writes a bounded, manifest-listed persistence
+probe, records acknowledged bytes, SIGKILLs Redis and restarts that same volume.
+Only an observed zero-loss result may supply the current nonzero rehearsal
+artifact to canonical `CJ2_APPROVE_BOOT`. Probe state and cleanup are accounted
+for in the manifest. Each later boot approval follows section 2.3.
+
+- **Ledger:** following real BOOT approval, setup MAY directly install the exact
+  test active compatibility/contract/guard, a five-key-absent `v1_count=0` legacy
+  fixture, and bounded section 6 data. `cutover_mode=fresh`; the candidate run ID
+  is empty. Candidate markers and `admin_freeze` remain absent. Canonical active
+  transitions, including synthetic `CJ2_START_REQUEST`, may be tested without
+  any external request capability. Ledger credentials cannot mutate authority
+  markers or execute a successful INSTALL/RETIRE/PROMOTE.
+- **Administrative:** setup MAY install bounded synthetic legacy/data state,
+  but successful candidate installation, retirement and promotion MUST be
+  produced by the canonical scripts under their separate short-lived test roles.
+  Cover both fresh and `v1_migration` shapes. Backup, stop and legacy-content
+  evidence binds the actual isolated case. Candidate run-data rules are unchanged.
+  Post-promotion ledger assertions remain isolated. These records are test-only
+  and are never operational migration, production release or rollback evidence.
+
+The profiles use different instances, volumes and credentials. Malformed-state
+fixtures are labeled separately from script-produced success states.
+
+#### Command-scoped ACLs
+
+Ledger gates MAY check `TYPE` on exactly `mifolyo:contracts:candidate`,
+`mifolyo:crawl:v2:contract:candidate` and `mifolyo:crawl:v2:admin_freeze`, requiring
+`none`. They have no content read or write permission on those keys. Redis 7's
+outer `EVALSHA` key admission also needs its declared keys to be permitted;
+read-only patterns alone do not satisfy its read/write key specification.
+Use separate command-scoped selectors: an EVALSHA-only selector for the exact
+wire key inventory, authority-read selectors, and operation-specific data-write
+selectors. The outer selector MUST grant no direct mutation command, and no
+root/other selector may accidentally grant those commands on authority keys.
+BOOT/administrative roles remain separate. Include operation-specific legacy
+absence checks only where the protocol permits them.
+
+Real target-image tests MUST prove ordinary script success and rejection of
+direct authority writes, content reads on absence-only keys, deletion, expiry,
+rename and administrative mutation under a ledger credential. Failure stops
+acceptance; broad marker write permission is not a fallback. The section 10.1
+trusted-image/script-only data-mutation boundary still applies.
+
+#### Evidence export and final release
+
+Export bounded measured evidence linked to exact test inputs and identities,
+with no credential/token secrets. On success, failure or interruption, revoke
+every fixture credential and terminate authenticated sessions; prove reconnect
+fails while Redis is locally reachable, then destroy the container, volume and
+private transport resources. Teardown failures invalidate acceptance evidence.
+The final revoked identity must still have its failed authentication observed;
+an unauthenticated local reachability probe may distinguish refusal from a
+stopped server without authorizing a command.
+
+Only after verified teardown may independently reviewed measurements become
+inputs to final release assembly. M7 constructs new final guard/compatibility
+artifacts with measured evidence and final participant images; test descriptors,
+stand-ins and test guard/manifest identities are never promoted into release
+authority fields. Preserve their provenance only as labeled historical test
+inputs in evidence. Reassess/rerun evidence when source, configuration, shape,
+ACLs or relevant image behavior changes. No fixture keyspace may be restored
+or attached to another deployment. Production candidate installation retains
+all final evidence/review gates; only the isolated administrative profile may
+exercise it earlier with test artifacts.
 
 ## 6. Redis keyspace
 
@@ -2231,9 +2316,9 @@ that property.
 #### 10.1.1 Closed KEYS/ARGV wire layout
 
 This table makes the existing reviewed Go constructor layout explicit. It adds
-no operation, key family, argument, or response shape. It does not change the
-section 5.1 or 17.7 fixture/bootstrap/ACL gates or authorize any bypass; real-Redis
-fixture and administrative acceptance questions remain separately review-gated.
+no operation, key family, argument, or response shape. Section 5.1 owns the
+test-only fixture/bootstrap/ACL exception; section 17.7 owns its acceptance
+tests. Neither that exception nor this table authorizes a real-Redis run.
 The ordered lists are wire positions, not permission to read or mutate a key
 outside an operation's existing rules. Absent keys retain their wire positions.
 
@@ -2484,9 +2569,11 @@ evidence, `lazyfree_pending_objects=0`, every reviewed downstream source,
 processing, and dead-letter list empty, every consumer owner lock absent, and a
 complete stopped-world backlink scan with zero pending members. It also requires
 exact immutable legacy-retirement evidence, exact target-image/config digests,
-and approved maximum-shape, memory, Lua, AOF, and process-kill evidence. Every
-guard evidence digest must be nonzero and unequal to section 5.1's
-`ZERO_SHA256`; no provisional guard/manifest digest is accepted. Its one
+and approved maximum-shape, memory, Lua, AOF, and process-kill evidence. The sole
+exception for evidence/image provenance is section 5.1's isolated administrative
+conformance profile. Every executable guard digest is nonzero; Lua validates
+structure and exact binding, while trusted release/image admission rejects test
+artifacts outside that profile. Zero-sentinel guards always reject. Its one
 mutation phase installs the prebuilt
 commit guard, renames the candidate compatibility hash to active, renames the
 candidate contract string to active, and removes `admin_freeze`. No client can
@@ -3952,7 +4039,8 @@ Execution mode MUST complete these checks before spawning a goroutine:
    `aof-load-truncated no`, loaded AOF status, noeviction, the release sizing
    formula, and approved current Redis run ID/evidence.
 5. Verify exact active compatibility, crawl-contract, Redis-config, and commit-
-   guard values; reject every section 5.1 sentinel/provisional/fixture artifact;
+   guard values; positively verify final evidence/image provenance and reject
+   every section 5.1 test descriptor, stand-in and fixture artifact;
    candidate markers and `admin_freeze` must be absent.
 6. Require the exact immutable legacy-retirement evidence and release proof that
    promotion/activation observed all five literal legacy names absent. The
@@ -3999,7 +4087,7 @@ Backlinks Processor, and Monitoring image MUST verify approved boot, the exact
 active compatibility manifest, its own immutable image digest, required output
 contract versions, standalone Redis, absence of candidate/freeze state, and the
 exact legacy-retirement evidence plus release absence proof. They reject every
-section 5.1 sentinel/provisional/fixture artifact. Their ACLs and code contain no
+section 5.1 test descriptor, stand-in or fixture authority artifact. Their ACLs and code contain no
 access path for the five legacy names. A mismatch exits before
 acquiring an owner lock or processing work.
 
@@ -4027,15 +4115,15 @@ Every crawl-capable Compose definition MUST:
   are 400 MiB `maxmemory` and 528 MiB container limit;
 - keep the Spider behind an explicit profile with a validation-only default
   command;
-- contain no section 5.1 harness image, fixture credential, provisional artifact,
+- contain no section 5.1 harness image, fixture credential, test authority artifact,
   or fixture setup path in any deployable profile;
 - contain no V1 crawl key variables and no default run activation;
-- grant runtime services no candidate-marker, boot-approval, legacy-retirement,
+- grant runtime services no candidate-marker mutation, boot-approval, legacy-retirement,
   marker-promotion, unrelated-keyspace, `CONFIG SET`/`REWRITE`/`RESETSTAT`, or
   flush permission; permit `CONFIG GET` only for startup/config-gate reads, and
   scope required data commands/key patterns as narrowly as Redis ACL permits; direct
   data-command prohibition is enforced by the immutable-image boundary described
-  in section 10.1, not falsely claimed as ACL privilege elevation;
+   in section 10.1, not falsely claimed as ACL privilege elevation;
 - keep rendering and external image fetching disabled unless separately
   authorized;
 - expose health only after protocol, boot, and run readiness pass.
@@ -4733,56 +4821,64 @@ writes, restart the same AOF volume, and prove zero acknowledged state loss.
 
 The section 5.1 exception has its own mandatory acceptance suite:
 
-1. **Positive setup:** start a newly created empty-volume Redis in a namespace
-   with asserted zero ingress, egress, DNS, proxy, and production-network routes;
-   prove no production data, secret, credential, runtime/crawl-admin image, or
-   consumer is mounted/running. Generate process-local fixture credentials,
-   perform the bounded acknowledged-write/`SIGKILL`/same-volume preliminary
-   persistence probe, require its nonzero current evidence digest, and approve
-   the restarted boot through `CJ2_APPROVE_BOOT`. Build the exact provisional
-   guard core and compatibility bytes twice, and require byte-identical output
-   and hashes. Every unavailable named evidence field is exactly `ZERO_SHA256`,
-   no other field is zero-sentinel, and recomputation yields the installed guard
-   and manifest digests.
-2. **Exact install/use:** directly install only the setup-manifest-enumerated
-   active control and bounded fixture keys, verify their exact types, field
-   counts, values, and aggregate digest, then revoke the setup credential.
-   Unchanged authoritative Lua sources accept byte-identical supplied/stored
-   provisional records and reject one-bit changes, omitted/extra fields,
-   reordered binary records, a wrong-length or nonzero placeholder, and a fixture
-   key not listed in the setup manifest.
-3. **Isolation negatives:** setup refuses a nonempty, reused, shared, or
-   retention-designated volume, a routable interface, available external
-   DNS/HTTP, any production credential or data, or any runtime/crawl-admin
-   process. The fixture credential cannot access
-   candidate keys or invoke `CJ2_INSTALL_CANDIDATE_MARKERS`,
-   `CJ2_RETIRE_LEGACY_KEYS`, or `CJ2_PROMOTE_CANDIDATE_CONTRACTS`. Synthetic run
-   activation and `CJ2_START_REQUEST` are
-   permitted only as a Lua state test; socket/DNS instrumentation proves that no
-   external request capability or request occurs. The builder also refuses an
-   all-nonzero guard, so it cannot directly install final production marker
-   values under the provisional exception.
-4. **Artifact rejection:** offline startup-validation tests for every runtime and
-   crawl-admin image reject a zero evidence sentinel, provisional guard/manifest
-   digest, fixture setup manifest, or fixture authorization artifact before any
-   Redis connection or mutation. Attempts
-   to submit provisional bytes to `CJ2_INSTALL_CANDIDATE_MARKERS` or treat them
-   as authorization fail; no provisional artifact has a promotion path.
-5. **Export:** export and seal evidence binding the contract, Lua source,
-   Redis/config, setup manifest, provisional hashes, test results, and produced
-   nonzero evidence digests. No final marker is installed while the fixture
-   keyspace or credentials still exist.
-6. **Teardown:** immediately after export, revoke/delete every fixture
-   credential and prove each authenticated reconnect fails while the local Redis
-   process remains reachable; then stop Redis, destroy its container and volume,
-   and prove the volume no longer exists. A test that skips or cannot prove any
-   teardown step invalidates its evidence and cannot produce a final release
-   artifact.
-7. **Final assembly:** only after successful teardown, replace every sentinel,
-   recompute the final guard and compatibility artifacts twice, prove all
-   evidence digests are nonzero and only the documented evidence-derived
-   fields/hashes changed, and prove real candidate installation accepts only
-   those independently reviewed final bytes.
+1. **Offline artifact controls:** deterministic test descriptors bind their named
+   field, scenario, contract/source and configuration. Identical captured inputs
+   produce identical guard/compatibility bytes. Missing/extra/duplicate fields,
+   zero executable digests, arbitrary replacements, changed source or artifact
+   bytes, invented image identities and render activation reject. Historical
+   provisional serialization controls still cannot enter a stored guard or
+   active transport. Planning output never reports execution or acceptance.
+2. **Positive setup and BOOT:** prove new exclusive empty storage, zero external
+   network capability, exact approved image/configuration and absent production
+   data/processes/credentials. Perform the acknowledged-write/SIGKILL/same-volume
+   probe and approve only its observed zero-loss boot through canonical BOOT.
+   Missing/stale/synthetic rehearsal evidence rejects. Enforce all section 2.2
+   memory and persistence conditions.
+3. **Manifest ownership:** the harness rejects unlisted/mismatched direct setup,
+   incorrect types/bytes/expiries, duplicates and exceeded bounds, verifies the
+   installed inventory, revokes setup access and terminates its sessions. Lua
+   independently rejects malformed wire and unauthorized derived keys. Compare
+   actual post-state with the complete case inventory; do not attribute external
+   manifest enforcement to Lua or grant setup access during measurement.
+4. **ACL feasibility:** on the exact target image, prove outer EVALSHA and inner
+   command selectors permit the normal active transition while blocking direct
+   authority mutation, content reads on absence-only keys, rename/expiry/deletion
+   and successful marker administration under the ledger role. Candidate/freeze
+   presence rejects active work with no writes. Setup/BOOT/admin roles are
+   distinct, and revocation includes established sessions.
+5. **Administrative conformance:** in separate disposable instances, exercise
+   fresh and V1-migration-shaped INSTALL, candidate run preparation/audit,
+   RETIRE and PROMOTE, exact replay, changed evidence, illegal candidate edges,
+   and fail-closed partial state. Successful markers/retirement are script
+   outputs, not direct-setup evidence. All 43 operations and 52 allowed gate
+   variants require coverage. No test artifact becomes operational authority.
+6. **Isolation negatives:** reject reused/shared/retained volumes, routable
+   interfaces, external DNS/HTTP/proxies, host/Docker sockets inside the executor,
+   production secrets/processes, wrong artifacts, and unapproved cases. Synthetic
+   START permits ledger assertions only; instrumentation proves no external I/O.
+7. **Production provenance:** offline admission tests require exact final
+   evidence and image allowlists before connection. They reject test descriptors,
+   stand-ins, test guard/manifest identities, setup/envelope/authorization bytes,
+   and zero fields even when ordinary structural codecs accept a nonzero hash.
+   Every eventual runtime/crawl-admin image must run these tests in M5/M7;
+   harness-only tests do not attest those unbuilt integrations.
+8. **Measurement:** every required state/crash/memory/rate/output case is mapped
+   to its source identity and independent oracle. Internal commit-boundary crash
+   coverage requires an observed, reviewed method preserving canonical Lua and
+   target Redis semantics; random kills alone are insufficient. Synthetic worker
+   failures are not actual Spider/consumer integration evidence. The section 3
+   p99 gate uses at least 1,000 complete command-write-to-reply-read samples,
+   including AOF; report Redis CPU time separately, not as a substitute.
+9. **Export and teardown:** seal bounded actual measurements, input/provenance
+   identities and failure results; redact secrets. On every exit path revoke all
+   credentials, terminate sessions, prove failed reconnect while locally
+   reachable, then destroy and verify the container, volume and private transport.
+   Missing/failed cleanup invalidates acceptance, including interrupted runs.
+10. **Final assembly:** after teardown, independently review actual measurements,
+    rerun evidence affected by artifact changes, and construct new final guards
+    with measured digests and final role images. Reject all test substitutions
+    in release authority fields. Test input provenance may be retained in
+    labeled evidence only. No fixture keyspace is promoted, reused or restored.
 
 ## 18. Repository integration points
 
@@ -4796,7 +4892,8 @@ The implementation replaces the V1 lifecycle currently centered in:
 - `services/spider/internal/controllers/`
 - `services/spider/cmd/spider/main.go`
 - `services/crawl-admin/` (new stopped boot/release/migration/retention tool)
-- a new non-shipped acceptance-fixture harness implementing only section 5.1
+- a non-shipped acceptance-fixture harness with only the section 5.1 offline,
+  ledger and administrative test profiles (never a deployable crawl-admin)
 - `services/seed-importer/feed.py`
 - `services/indexer/data/redis_client.py`
 - `services/indexer/main.py`

@@ -3267,6 +3267,7 @@ def guard_core_fields(
     mode = model_text(guard["cutover_mode"])
     candidate = model_text(guard["candidate_run_id"])
     if guard_mode == "provisional_fixture":
+        # Historical non-executable framing/rejection controls, not Redis setup.
         if zero_evidence == 0 or mode != "fresh" or candidate:
             reject("INVALID_GUARD_RELATION")
     elif guard_mode == "production":

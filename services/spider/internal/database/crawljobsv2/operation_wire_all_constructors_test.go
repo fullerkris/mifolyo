@@ -79,9 +79,9 @@ type wireOracleScriptIdentity struct {
 func TestOperationWireAllConstructorsReadOnlyOracle(t *testing.T) {
 	expectations := wireOracleOperationExpectations()
 	wireOracleAssertInventory(t, expectations)
-	fixture := newWireOracleFixture(t)
+	fixture := newCanonicalWireOracleFixture(t)
 	wireOracleAssertSameShapedCanaries(t, fixture, expectations)
-	bindings, scriptIdentities := newWireOracleScriptBindingSet(t, expectations, fixture.artifacts.contract)
+	bindings, scriptIdentities := canonicalWireOracleBindings(t, expectations)
 
 	builtCount := 0
 	for _, expectation := range expectations {
@@ -1717,7 +1717,13 @@ func newWireOracleFixture(t *testing.T) *wireOracleFixture {
 
 func newWireOracleArtifacts(t *testing.T, candidateRunID RunID) (wireOracleArtifacts, RetireLegacyKeysWireInput) {
 	t.Helper()
-	contractSHA256 := wireOracleDigestCanary("contract")
+	return newWireOracleArtifactsForContract(t, candidateRunID, wireOracleDigestCanary("contract"))
+}
+
+// Test-only contract seam: regenerate the entire acyclic artifact chain, never
+// patch a digest into already constructed guard/compatibility/freeze records.
+func newWireOracleArtifactsForContract(t *testing.T, candidateRunID RunID, contractSHA256 Digest) (wireOracleArtifacts, RetireLegacyKeysWireInput) {
+	t.Helper()
 	redisConfigSHA256 := wireOracleDigestCanary("redis-config")
 	core, err := NewGuardCore(GuardCoreInput{
 		ContractSHA256: contractSHA256, RedisVersion: "7.2.5", RedisConfigSHA256: redisConfigSHA256,

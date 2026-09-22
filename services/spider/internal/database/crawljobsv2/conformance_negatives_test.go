@@ -44,6 +44,8 @@ func TestSharedFixtureV2NegativeCases(t *testing.T) {
 func (h *fixtureConformanceHarness) runNegativeCase(t *testing.T, vector digestVectorNegative) string {
 	t.Helper()
 	switch vector.Kind {
+	case "canonical_lua_bundle_mutation":
+		return h.canonicalLuaBundleMutationRejection(t, vector)
 	case "transcript_binding_mutation":
 		return runTranscriptBindingNegativeCase(t, h.fixture, vector)
 	case "transition_reason":
@@ -460,11 +462,15 @@ func (h *fixtureConformanceHarness) fixtureCaseByName(t testing.TB, name string)
 func (h *fixtureConformanceHarness) fixtureContractDigest(t testing.TB, name string) Digest {
 	t.Helper()
 	vector := h.fixtureCaseByName(t, name)
-	if vector.Kind != "contract_digest" {
+	switch vector.Kind {
+	case "contract_digest":
+		return mustFixtureDigest(t, verifyContractDigestCase(t, vector).ContractSHA256)
+	case "canonical_lua_bundle":
+		return mustFixtureDigest(t, verifyCanonicalLuaBundleCase(t, vector).ContractSHA256)
+	default:
 		t.Fatalf("guard contract case %q has kind %q", name, vector.Kind)
 	}
-	expected := decodeVectorPart[contractCaseResult](t, vector.Expected, name+".expected")
-	return mustFixtureDigest(t, expected.ContractSHA256)
+	return ""
 }
 
 func fixtureScoreRejection(t testing.TB, value string) string {

@@ -1,0 +1,54 @@
+{
+  "fixture_id": "b65a8abbc5f42e7b7481ec8afc76d293",
+  "kind": "metadata_only_prestart_diagnostic",
+  "containers_started": 0,
+  "original_admission": "ISOLATION",
+  "expected_spec": {
+    "name": "cj2-init-diagnostic-b65a8abbc5f42e7b7481ec8afc76d293-init",
+    "role": "init",
+    "fixture_id": "b65a8abbc5f42e7b7481ec8afc76d293",
+    "image": "sha256:4b0ca8a3cca08646616bfe6952fc2f2423cb3bd55496ee5e0a1312be223f480a",
+    "uid": "0:0",
+    "cap_add": ["CHOWN"],
+    "memory": 134217728,
+    "mounts": [
+      ["cj2-init-diagnostic-b65a8abbc5f42e7b7481ec8afc76d293-control", "/run/cj2", false],
+      ["cj2-init-diagnostic-b65a8abbc5f42e7b7481ec8afc76d293-data", "/data", false]
+    ]
+  },
+  "observed": {
+    "Image": "sha256:4b0ca8a3cca08646616bfe6952fc2f2423cb3bd55496ee5e0a1312be223f480a",
+    "Config": {
+      "User": "0:0",
+      "Labels": {
+        "io.mifolyo.cj2.case": "ledger-smoke-v1",
+        "io.mifolyo.cj2.fixture": "b65a8abbc5f42e7b7481ec8afc76d293"
+      }
+    },
+    "HostConfig": {
+      "Binds": null,
+      "CapAdd": ["CAP_CHOWN"],
+      "CapDrop": ["ALL"],
+      "Devices": [],
+      "IpcMode": "private",
+      "Memory": 134217728,
+      "MemorySwap": 134217728,
+      "NanoCpus": 1000000000,
+      "NetworkMode": "none",
+      "PidMode": "",
+      "PidsLimit": 64,
+      "PortBindings": {},
+      "Privileged": false,
+      "PublishAllPorts": false,
+      "ReadonlyRootfs": true,
+      "RestartPolicy": {"MaximumRetryCount": 0, "Name": "no"},
+      "SecurityOpt": ["no-new-privileges:true"],
+      "Tmpfs": {"/tmp": "rw,noexec,nosuid,size=16777216"}
+    },
+    "Mounts": [
+      {"Type": "volume", "Name": "cj2-init-diagnostic-b65a8abbc5f42e7b7481ec8afc76d293-control", "Destination": "/run/cj2", "RW": true},
+      {"Type": "volume", "Name": "cj2-init-diagnostic-b65a8abbc5f42e7b7481ec8afc76d293-data", "Destination": "/data", "RW": true}
+    ],
+    "State": {"Pid": 0, "Running": false, "Status": "created"}
+  }
+}

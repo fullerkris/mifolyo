@@ -3,10 +3,11 @@
 > [!IMPORTANT]
 > **Status — implemented V1 scaler, currently blocked.** This process reads V1
 > backlog state and invokes service-scaling commands; it is not the read-only
-> Crawl Jobs V2 monitor. Do not start it during F3 foundation or Lua work. F3
-> Monitoring integration is a later milestone and has not started. The local F5
-> cursor-scan repair remains subject to protected `required-tests` PR
-> acceptance. See the
+> Crawl Jobs V2 monitor. Do not start it under the current F3 gates. F3 Monitoring
+> integration has not started. The F5 cursor-scan repair passed all 14 protected
+> checks in PR #9, including `required-tests`, and merged as `d914a93`. That code
+> acceptance does not cover retained-datastore reconciliation, V2 integration,
+> or unrelated current worktree changes. See the
 > [parent remediation plan](../../docs/spider-render-remediation-plan-2026-09-01.md)
 > and [F3 implementation plan](../../docs/crawl-jobs-v2-plan.md).
 

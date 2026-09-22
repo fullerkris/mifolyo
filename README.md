@@ -31,26 +31,54 @@ shared deployments.
 ### Crawl runtime and authorization status
 
 > [!IMPORTANT]
-> V1 remains the current runtime. Crawl Jobs V2 is dormant implementation work:
-> authoritative V2 Lua authoring has not started and is not authorized. Runtime
-> wiring, migration, deployment, candidate promotion, rendering activation, and
-> crawling are also not authorized.
+> V1 remains the current runtime. Crawl Jobs V2 has a complete dormant M3 source
+> implementation, not an activated runtime. V2 integration, migration, deployment,
+> candidate promotion, rendering activation, and crawling remain unauthorized.
 
-F3 checkpoint: M1 passes locally after the approved transcript amendment and
-independent re-review. M2 is pushed and remote-verified at `0989001`. See the
-[Crawl Jobs V2 plan](docs/crawl-jobs-v2-plan.md) for the remaining gates.
-Historical V1 commands below do not authorize another crawl.
+M1/M2 merged through PR #9 as `d914a93`. M3's 43 canonical Lua operations and
+sealed source bundle are committed and pushed as `81028ca` on
+`feature/crawl-jobs-v2-lua`, with local verification complete. This is not M3
+protected-PR or real-Redis acceptance. The M4 fixture/ACL/bootstrap proposals
+were approved on September 21; the amendment, offline compiler and first bounded
+ledger-smoke executor are implemented and locally tested. The review findings
+are fixed; immutable arm64 images and target checks now pass scoped review and
+validation. The owner authorized the scoped checkpoint and draft PR #10 update;
+all fourteen protected checks passed on `340906c`. The first approved smoke
+attempt failed before Redis startup; its capability-spelling defect is now fixed,
+independently reviewed and validated in a rebuilt image. New checkpoint CI and
+fresh approval precede another attempt. See the
+[Crawl Jobs V2 plan](docs/crawl-jobs-v2-plan.md). Historical V1 commands below do
+not authorize another crawl.
 
-Production deployment Compose files for Spider, Indexer, Image Indexer, and
-PageRank require service-specific
-`ghcr.io/fullerkris/mifolyo/<service>@sha256:<64 lowercase hex>` values from the
-reviewed release `release-image.env` artifacts. Release tags are organizational
-metadata, not deployment identities. Use
-`docker compose --env-file release-image.env` and verify the pulled image's
-exact `RepoDigest` before cutover, following the stop/drain/backup procedure in
-`docs/immutable-pipeline-release-cutover.md`. The page/image queue protocol is
-not rolling-upgrade compatible; never mix release generations or add dual-read
-behavior. Root Compose builds remain local and are not production artifacts.
+Current plan state: F1, F2, F4, and F6 are not started. F5's idempotency repair
+passed protected PR #9 checks and merged; retained-data reconciliation and V2
+consumer integration remain separately gated.
+Render Stages 0, 1, and 2a are implemented but disabled. Stage 3 is not
+approved. Use the
+[parent remediation plan](docs/spider-render-remediation-plan-2026-09-01.md)
+and [Crawl Jobs V2 plan](docs/crawl-jobs-v2-plan.md) for current status and
+gates.
+
+### Future V2 release compatibility
+
+A future V2 release must be selected by one reviewed exact-byte
+compatibility-manifest artifact. It binds every required protocol, policy,
+publication, IPC, configuration, and guard field to the protocol-defined image
+field for every named participant. Validate the manifest as one unit; release
+tags and a hand-maintained three- or four-image set are not deployment
+identities.
+`render_worker_image=disabled` remains mandatory unless a separate rendering
+activation is approved.
+
+The future V2 cutover remains coordinated rather than rolling; mixed V1/V2
+operation and dual-read compatibility are prohibited. Root Compose builds
+remain local development artifacts and are not production release inputs.
+
+The legacy digest-env cutover is preserved only as historical V1 context in
+[`docs/immutable-pipeline-release-cutover.md`](docs/immutable-pipeline-release-cutover.md).
+Parent-plan Phase 6 and F3 milestones M6-M7 own its future replacement. For V2,
+the first successful `CJ2_START_REQUEST`, recorded before DNS, is the ordinary
+rollback boundary; Spider startup or first page publication is not.
 
 ## Forum Engine Foundation
 
@@ -71,19 +99,34 @@ Supporting scripts:
 Environment boundaries and production access policy are documented in
 `docs/environments.md`.
 
-## Isolated V1 Baseline Test
+## Historical V1 Baseline Test Procedure (Blocked)
 
-Use `scripts/docker/v1-baseline.compose.yml` for the disposable, search-only
-V1 crawl test. It has the fixed/default project name
+> [!CAUTION]
+> This section preserves the V1 command sequence for historical review. It is
+> not the active V2 procedure and does not authorize preparation, mutation, or
+> another crawl. Parent-plan Phase 6 must replace active operational guidance
+> with tested V2 commands before any future authorized run.
+
+The historical disposable, search-only V1 crawl test used
+`scripts/docker/v1-baseline.compose.yml`. It used the fixed/default project name
 `mifolyo-v1-baseline-test`, no forum service, no data-store ports published by
 this project, and no implicit crawl target. Only Caddy is available on
 `127.0.0.1:${MIFOLYO_V1_TEST_HTTP_PORT:-18080}`.
 
-The spider cannot resolve this project's `mongo` or `postgres` names through
+The retained post-test data is inspection evidence, not a fresh baseline. Do
+not use the commands below against it; follow the linked parent and F3 plans for
+the blocked work and future documentation replacement.
+
+These reference commands are not an execution transcript. The
+[2026-08-18 report](docs/v1-baseline-crawl-test-report-2026-08-18.md) records 70
+enabled seeds and a strict FAIL. The later 67-enabled/3-disabled target below
+has not been accepted as a fresh retained baseline.
+
+The V1 spider cannot resolve this project's `mongo` or `postgres` names through
 Compose DNS, but its egress-capable crawl network can still reach services
-published on the Docker host. Before any crawl, the root development MongoDB,
-Redis, and PostgreSQL services must be stopped or their host port publications
-must be removed by a reviewed local configuration:
+published on the Docker host. The historical preflight required the root
+development MongoDB, Redis, and PostgreSQL services to be stopped or their host
+port publications to be removed by a reviewed local configuration:
 
 ```bash
 docker compose --file docker-compose.yml ps mongo redis postgres
@@ -91,12 +134,13 @@ docker compose --file docker-compose.yml stop mongo redis postgres
 docker compose --file docker-compose.yml ps mongo redis postgres
 ```
 
-The final status must show those services stopped, or show approved running
-services with no host-published ports. Also inventory other local database
-containers before proceeding.
+The recorded final status had to show those services stopped, or show approved
+running services with no host-published ports. The operator also inventoried
+other local database containers.
 
-Every command supplies the file and project explicitly so it cannot operate on
-the root development stack. Configure, build, start, inspect, and read logs:
+Each preserved command supplied the file and project explicitly so it could not
+operate on the root development stack. The historical configure, build, start,
+inspection, and log sequence was:
 
 ```bash
 docker compose --project-name mifolyo-v1-baseline-test \
@@ -127,16 +171,17 @@ docker inspect \
   --format '{{.Name}} {{.Image}}'
 ```
 
-`query-assets` and `query-engine` both use the explicit image tag
+`query-assets` and `query-engine` both used the explicit image tag
 `mifolyo-v1-baseline-test-query-engine:local`; `query-engine` is the sole build
 owner and `query-assets` consumes that image. Recreate both services after a
 query image build and compare their running image IDs as required by
 `docs/v1-baseline-crawl-test-checklist.md`; a mutable tag alone does not prove
 that existing containers use the same image build.
 
-`/up` is HTTP/PHP liveness only, not dependency readiness. Before rebuilding,
-feeding, or crawling, run all of these read-only checks; PostgreSQL must report
-`t`, Redis must report `PONG`, and both API calls must return successful JSON:
+`/up` was HTTP/PHP liveness only, not dependency readiness. The historical
+procedure required all of these read-only checks before rebuilding, feeding, or
+crawling; PostgreSQL had to report `t`, Redis had to report `PONG`, and both API
+calls had to return successful JSON:
 
 ```bash
 docker compose --project-name mifolyo-v1-baseline-test \
@@ -163,11 +208,13 @@ curl --fail --show-error \
   "http://127.0.0.1:${MIFOLYO_V1_TEST_HTTP_PORT:-18080}/api/stats"
 ```
 
-The query readiness endpoints currently prove read-only query-engine-to-MongoDB
-access only; the direct Redis and PostgreSQL checks are therefore mandatory.
+Within that V1 procedure, the query readiness endpoints proved read-only
+query-engine-to-MongoDB access only; the direct Redis and PostgreSQL checks were
+therefore mandatory.
 
-Preview the baseline replacement, then use the test-only environment guard and
-the exact local target confirmation for the approved rebuild:
+The historical sequence previewed the baseline replacement, then used the
+test-only environment guard and exact local target confirmation for its guarded
+rebuild:
 
 ```bash
 docker compose --project-name mifolyo-v1-baseline-test \
@@ -181,7 +228,7 @@ docker compose --project-name mifolyo-v1-baseline-test \
   --confirm-rebuild mongo:27017/mifolyo_index/crawl_seeds
 ```
 
-Preview and feed the reviewed catalog, then start only the downstream
+It then previewed and fed the reviewed catalog before starting the downstream
 consumers:
 
 ```bash
@@ -199,8 +246,8 @@ docker compose --project-name mifolyo-v1-baseline-test \
 
 The spider now enforces DNS-pinned address authorization, redirect
 revalidation, robots policy, and the exact approved baseline policy digest.
-The command remains an operator-gated procedure: do not invoke it until every
-pre-crawl stop condition and checkbox in the baseline checklist has passed.
+That implementation does not authorize the command below. It is historical and
+must not be invoked, even if every old checklist item is completed.
 
 ```bash
 docker compose --project-name mifolyo-v1-baseline-test \
@@ -211,11 +258,12 @@ docker compose --project-name mifolyo-v1-baseline-test \
 
 The optional `image-pipeline` consumes only immutable, spider-authorized
 normalized metadata. It has no outbound image fetch or image decoder path.
-Enable it only when image-indexing behavior is part of the reviewed test scope.
+The historical procedure enabled it only when image-indexing behavior was part
+of the reviewed test scope; no such activation is authorized now.
 
-After preserving logs and test evidence, the only approved full cleanup is the
-following project-restricted command. It deliberately deletes this test
-project's disposable volumes; never run it with the root Compose file:
+The historical full-cleanup step was the following project-restricted command
+after logs and test evidence were preserved. It deliberately deletes this test
+project's disposable volumes and is not currently authorized:
 
 ```bash
 docker compose --project-name mifolyo-v1-baseline-test \
@@ -223,17 +271,18 @@ docker compose --project-name mifolyo-v1-baseline-test \
   down --volumes --remove-orphans
 ```
 
-Do not run the crawl or cleanup until all stop conditions in
-`docs/v1-baseline-crawl-test-checklist.md` have been reviewed. Full lifecycle,
-network-isolation, and verification commands are in `docs/environments.md`.
+Do not run the crawl or cleanup commands. Their V1 context, lifecycle,
+network-isolation, and verification details remain in the historical checklist
+and `docs/environments.md`.
 The query image's npm remediation record, deterministic build rule, and
 non-root asset ownership model are documented in
 `services/query-engine/README.md`.
 
 ## Local Development
 
-Start the core local search stack (the profiled crawl and batch services remain
-stopped):
+The core-only startup command below is a reference for a separately approved
+local development environment, not permission to change retained test state
+or prepare a crawl. Profiled crawl and batch services remain stopped:
 
 ```bash
 docker compose up -d
@@ -241,19 +290,26 @@ docker compose up -d
 
 Spider startup does not contain a default `STARTING_URL`; starting the core
 stack therefore cannot silently seed a crawl. The normal V1 development flow
-is to populate the seed catalog, feed its enabled records, and only then start
-the profiled pipeline.
+historically populated the seed catalog, fed its enabled records, and only then
+started the profiled pipeline.
 
-### Safe V1 baseline bootstrap
+> [!CAUTION]
+> The V1 bootstrap, rebuild, feed, and Spider commands below are legacy
+> references, not crawl authorization. Do not use them to alter retained test
+> evidence or prepare a run. Tested V2 replacements belong to parent-plan
+> Phase 6 after the implementation and acceptance gates pass.
 
-Start the two seed-importer dependencies and build the importer image:
+### Historical V1 baseline bootstrap reference
+
+The historical bootstrap started the two seed-importer dependencies and built
+the importer image:
 
 ```bash
 docker compose up -d mongo redis
 docker compose --profile batch build seed-importer
 ```
 
-Validate the tracked baseline without connecting to MongoDB, then merge it
+It validated the tracked baseline without connecting to MongoDB, then merged it
 into `mifolyo_index.crawl_seeds`:
 
 ```bash
@@ -266,20 +322,20 @@ docker compose --profile batch run --rm seed-importer \
 Bootstrap is replay-safe and performs a compatibility preflight. It refuses to
 rewrite a nonempty incompatible legacy collection.
 
-### Guarded development rebuild (optional)
+### Historical V1 guarded development rebuild reference
 
-A rebuild replaces only the V1 `mifolyo_index.crawl_seeds` collection. Inspect
-the dry-run first:
+The guarded rebuild replaced only the V1 `mifolyo_index.crawl_seeds`
+collection. Its procedure inspected the dry-run first:
 
 ```bash
 docker compose --profile batch run --rm seed-importer \
   python crawl_seeds.py rebuild --dry-run
 ```
 
-Execution requires both the exact process environment guard
+Historical execution required both the exact process environment guard
 `MIFOLYO_ENV=development` and a confirmation bound to the parsed MongoDB
 host, database, and collection. For the root Compose stack, the exact command
-is:
+was:
 
 ```bash
 docker compose --profile batch run --rm \
@@ -293,16 +349,16 @@ MongoDB target requires the exact confirmation token printed by its dry-run;
 neither a CLI environment label nor a generic confirmation can bypass these
 guards.
 
-### Feed and prepare a bounded crawl
+### Historical V1 feed and bounded-crawl reference (do not execute)
 
-Before preparing a 67-enabled-seed V1 baseline crawl from the 70-record catalog,
-complete the isolation,
-preflight, evidence, and cleanup steps in
-`docs/v1-baseline-crawl-test-checklist.md`. Fetch-time transport controls are
-implemented, but the crawl remains blocked until the environment-specific
-host-publication, queue/depth, image, and evidence checks pass.
+This subsection preserves the later, unexecuted 67-enabled/3-disabled V1 target
+for the 70-record catalog, not the recorded August 18 execution. The checklist remains at
+`docs/v1-baseline-crawl-test-checklist.md`; completing its old checkboxes does
+not permit execution. A future crawl requires the accepted V2 procedure and a
+new explicit authorization.
 
-Preview the enabled records, then write them to the V1 Redis structures:
+The V1 procedure previewed the enabled records, then wrote them to these Redis
+structures:
 
 ```bash
 docker compose --profile batch run --rm seed-importer \
@@ -321,12 +377,10 @@ docker compose exec redis redis-cli ZCARD mifolyo:crawl:v1:queue
 ```
 
 The current root development file publishes its MongoDB, Redis, and PostgreSQL
-ports. Do **not** run either spider command below with those publications in
-place. The data stores may remain available to the pipeline only through a
-reviewed portless configuration. Starting the downstream consumers is safe;
-the spider remains operator-gated even though its fetch-time controls are now
-implemented. Its Compose default only validates policy, so a crawl also
-requires the explicit bounded command override:
+ports. The following V1 consumer and Spider commands are historical and must
+not be run. The old procedure additionally required a reviewed portless
+configuration and an explicit bounded command because the Compose default only
+validated policy:
 
 ```bash
 docker compose --profile pipeline up -d indexer backlinks-processor
@@ -334,12 +388,13 @@ docker compose --profile crawl run --rm spider \
   ./spider --once --max-concurrency 2 --max-pages 10 --validate-baseline-policy
 ```
 
-Do not start the development image indexer for this baseline either. External
-image retrieval remains deferred pending the SSRF-hardened fetch path described
-in `docs/environments.md`.
+Do not start the development Image Indexer for this baseline either. The current
+service has no outbound image fetch or decoder path and reconciles only
+Spider-authorized metadata. That implementation does not reactivate the
+historical procedure; see `docs/environments.md`.
 
-For a one-off development target, `STARTING_URL` remains an explicit per-run
-override rather than a stack default:
+For a historical one-off development target, `STARTING_URL` was an explicit
+per-run override rather than a stack default. This command is not authorized:
 
 ```bash
 docker compose --profile crawl run --rm \
@@ -347,8 +402,8 @@ docker compose --profile crawl run --rm \
   ./spider --once --max-concurrency 2 --max-pages 10
 ```
 
-This development override deliberately omits `--validate-baseline-policy`,
-which rejects unreviewed starting URLs.
+That historical development override deliberately omitted
+`--validate-baseline-policy`, which rejects unreviewed starting URLs.
 
 **Never run Redis `FLUSHDB` or `FLUSHALL` to reset crawling.** Redis database
 0 is shared with other pipeline and application state. The V1 key namespace
@@ -363,6 +418,10 @@ only by the page-bound crawler authorization path. Rendering is disabled by
 `services/spider/config/render-policy-v1.disabled.json`; the static baseline
 also rejects every enabled render rule.
 
+Render Stages 0, 1, and 2a are implemented but disabled. Stage 3 is not
+approved, and no rendering activation is authorized. See the parent remediation
+plan for the current gate rather than treating worker availability as approval.
+
 The worker and its sandbox can be tested without contacting a public site:
 
 ```bash
@@ -376,12 +435,17 @@ docker run --rm --network none --read-only --user 65534:65534 \
 ```
 
 External script/style brokering is implemented but is not authorized for the
-baseline. The release workflow promotes the worker image only; it does not
-deploy or activate the required socket and sandbox topology. See
+baseline. Existing image publication does not deploy or activate the required
+socket and sandbox topology. See
 `services/render-worker/README.md` before changing the disabled policy or
 starting the profile.
 
 ### Batch ranking jobs
+
+> [!CAUTION]
+> The commands in this section document local V1 capability only. Do not run the
+> mutating TF-IDF or PageRank publication against retained evidence or under the
+> current F3 gates; a separately reviewed isolated V1 change is required.
 
 Run TF-IDF and perform a read-only PageRank validation:
 
@@ -401,12 +465,13 @@ docker compose --profile batch run --rm page-rank \
   --confirm-target=mongo:27017/mifolyo_index/pagerank
 ```
 
-For the isolated baseline environment, use the stricter procedure in
-`docs/v1-baseline-crawl-test-checklist.md` instead of the root Compose project.
+The isolated baseline historically used the stricter procedure in
+`docs/v1-baseline-crawl-test-checklist.md` instead of the root Compose project;
+neither path grants current execution authority.
 
 The local spider identifies itself as `MiFolyoBot/1.0`. Its root Compose
-default is validation-only; the explicit development crawl shown above is
-bounded by `--once --max-concurrency 2 --max-pages 10`.
+default is validation-only. The historical development crawl shown above was
+bounded by `--once --max-concurrency 2 --max-pages 10` but is not authorized.
 
 ## Notes
 

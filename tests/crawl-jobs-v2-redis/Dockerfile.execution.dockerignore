@@ -1,0 +1,14 @@
+**
+!docs/crawl-jobs-v2.md
+!contracts/crawl-jobs-v2/digest-vectors.json
+!scripts/generate-crawl-jobs-v2-bundle.py
+!services/spider/internal/database/crawljobsv2/script_bundle_generated.go
+!services/spider/internal/database/crawljobsv2/lua/*.lua
+!tests/crawl-jobs-v2-redis/harness.py
+!tests/crawl-jobs-v2-redis/resp.py
+!tests/crawl-jobs-v2-redis/runtime_case.py
+!tests/crawl-jobs-v2-redis/executor.py
+!tests/crawl-jobs-v2-redis/controller.py
+!tests/crawl-jobs-v2-redis/redis.conf
+!tests/crawl-jobs-v2-redis/Dockerfile.execution
+!tests/crawl-jobs-v2-redis/Dockerfile.execution.dockerignore

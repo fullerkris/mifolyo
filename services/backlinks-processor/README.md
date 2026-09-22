@@ -1,19 +1,20 @@
 # Backlinks Processor
 
 > [!IMPORTANT]
-> **Status — current V1/F5 worktree implementation.** The idempotency repair
-> documented here is implemented and verified locally, but F5 still requires a
-> passing protected `required-tests` PR result. F3 runtime/consumer integration
-> has not started, so these procedures are not Crawl Jobs V2 wiring or
+> **Status — current V1; F5 code accepted.** PR #9 passed all 14 protected checks,
+> including `required-tests`, and merged as `d914a93`. That acceptance covers the
+> merged F5 repair, not retained-datastore reconciliation, Crawl Jobs V2
+> integration, or unrelated current worktree changes. F3 runtime/consumer
+> integration has not started; these procedures are not V2 wiring or
 > authorization. See the
 > [parent remediation plan](../../docs/spider-render-remediation-plan-2026-09-01.md)
 > and [F3 implementation plan](../../docs/crawl-jobs-v2-plan.md).
 
 > [!CAUTION]
-> Do not start the processor or apply reconciliation during F3 foundation or Lua
-> work. Runtime and write examples below are retained for separately approved,
+> Do not start the processor or apply reconciliation under the current F3 gates.
+> Runtime and write examples below are retained for separately approved,
 > isolated V1 development only. Unit and disposable-datastore tests remain the
-> local evidence path; protected acceptance is still pending.
+> local evidence path; they do not authorize operation.
 
 The Backlinks Processor maintains MongoDB's additive historical `backlinks`
 projection from Redis sets produced by the Spider. MongoDB `outlinks` remains
@@ -68,7 +69,7 @@ Authentication is fail-closed. Passwordless datastores require the exact local
 test opt-in `ALLOW_INSECURE_DATASTORES=true`; do not set it in production.
 Connections and operations use bounded timeouts.
 
-## Local V1 run example (blocked during F3 foundation and Lua work)
+## Local V1 run example (currently blocked)
 
 ```bash
 python -m pip install --requirement requirements.txt
@@ -79,7 +80,7 @@ The processor handles `SIGINT` and `SIGTERM`, finishes an already-started
 MongoDB/Redis acknowledgment sequence, and otherwise exits at a bounded scan or
 backoff boundary.
 
-## Local V1 reconciliation (apply blocked during F3 foundation and Lua work)
+## Local V1 reconciliation (apply currently blocked)
 
 Run the offline report with the Spider, Indexer, and Backlinks Processor
 stopped:

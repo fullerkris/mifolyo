@@ -19,6 +19,7 @@ type EvalSHARequest struct {
 	scriptName   string
 	scriptSHA1   string
 	sourceSHA256 Digest
+	bundleSeal   scriptBindingSetSeal
 	keys         [][]byte
 	arguments    [][]byte
 	size         uint64
@@ -47,7 +48,7 @@ func BuildEvalSHARequest(bundle ScriptBindingSet, request OperationWireRequest) 
 	}
 	return EvalSHARequest{
 		operation: request.operation, scriptName: binding.sourceName,
-		scriptSHA1: binding.redisSHA1, sourceSHA256: binding.sourceSHA256,
+		scriptSHA1: binding.redisSHA1, sourceSHA256: binding.sourceSHA256, bundleSeal: *bundle.seal,
 		keys: cloneByteSlices(keys), arguments: cloneByteSlices(arguments), size: size,
 	}, nil
 }

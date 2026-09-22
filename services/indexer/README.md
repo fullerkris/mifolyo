@@ -1,5 +1,15 @@
 # Indexer
 
+> [!IMPORTANT]
+> **Status — current V1 downstream consumer.** The queue and deployment
+> procedures below describe V1 only. F3 runtime/consumer integration has not
+> started; the complete, dormant M3 Lua bundle provides no Indexer wiring.
+> Local M3 verification is not protected-PR acceptance. This README does not
+> authorize Crawl Jobs V2 operation. See the
+> [parent remediation plan](../../docs/spider-render-remediation-plan-2026-09-01.md)
+> and [F3 implementation plan](../../docs/crawl-jobs-v2-plan.md) for the published
+> M3 checkpoint and the pending M4 protocol/fixture clarifications and approval.
+
 The Indexer is a core service in the Moogle search engine pipeline. Its job is to process crawled web pages from the Spider, extract and index relevant data, and store it in MongoDB for fast retrieval by other services. The Indexer builds the inverted index, manages metadata, and prepares data for ranking and querying.
 
 For a rendered page, the indexer also stores the latest original response and
@@ -11,7 +21,7 @@ and SHA-256 plus the crawl timestamp. Each artifact has an `expires_at` value
 TTL index, so MongoDB removes expired artifacts asynchronously after that
 finite retention period.
 
-## Queue durability and deployment invariant
+## Current V1 queue durability
 
 The spider publishes immutable
 `page_data:<publication-sha256>:<base64url-normalized-url>` page hashes and
@@ -101,7 +111,13 @@ bytes stay out of Git and Docker contexts; explicit setup fetches two immutable,
 size/hash-verified archives and installs only five fixed plaintext files. Runtime
 does not download, search user caches, fall back to installed NLTK, or load pickles.
 
-From `services/indexer`, inside a development virtual environment:
+**Mandatory before native startup or NLP-dependent tests:** follow the
+[explicit private build/test provisioning procedure](nlp/README.md#explicit-private-buildtest-provisioning)
+using [`tools/vendor_nlp.py`](tools/vendor_nlp.py), then pass the
+[offline verification gate](nlp/README.md#offline-verification-and-distribution-gate)
+using [`verify_nlp.py`](verify_nlp.py). Installing `requirements.txt` alone does
+not provision the assets. From `services/indexer`, inside a development virtual
+environment:
 
 ```sh
 NLP_CACHE="$(mktemp -d "${TMPDIR:-/tmp}/mifolyo-nlp.XXXXXX")"
@@ -111,9 +127,12 @@ python -I -B -m unittest discover -s tests -p test_nlp_compatibility.py -v
 ```
 
 The same cache can provision offline by omitting `--fetch`. Keep it private and
-outside the repository. A clean checkout needs provisioning before NLP imports.
-Use `-B` for native commands: source verification rejects unexpected bytecode.
-Docker performs this setup during its private build, not at consumer startup.
+outside the repository. A clean checkout needs provisioning and verification
+before NLP-dependent imports. Complete this explicit setup before starting tests
+or the application; neither downloads NLP data at startup. Use `-B` for native
+commands: source verification rejects unexpected bytecode. Docker performs this
+setup during its private build, not at consumer startup. A passing integrity
+check does not clear the data/image redistribution block.
 
 The protected Indexer job keeps its dependency audit unchanged and additionally
 requires source/data verification, negative security checks, and independent
@@ -123,9 +142,9 @@ are separate evidence layers. The release workflow runs
 Indexer registry login or push. That command must fail until data rights are
 resolved and the distribution decision is separately reviewed.
 
-Local worktree validation on 2026-09-14 passed all 54 Indexer tests with zero
-skips using disposable Redis 7/MongoDB 8, plus 25 verifier mutation checks and
-96 component/provisioning checks. The 34-case reference fixture protects tokens,
+Historical local worktree validation on 2026-09-14 passed all 54 Indexer tests
+with zero skips using disposable Redis 7/MongoDB 8, plus 25 verifier mutation
+checks and 96 component/provisioning checks. The 34-case reference fixture protects tokens,
 chunk boundaries, HTML extraction, and postings; it contains hashes and synthetic
 examples, not corpus bytes. Reference regeneration and repeated offline parity
 passed. The unmodified dependency audit reported no known vulnerabilities. These
@@ -133,13 +152,24 @@ results do not constitute protected-PR acceptance or deployment/crawl authority.
 
 ## Setup
 
-The service-level Compose file is a deployment artifact and requires the exact
-approved `MIFOLYO_INDEXER_IMAGE=ghcr.io/fullerkris/mifolyo/indexer@sha256:<64
-lowercase hex>` reference from the reviewed release digest artifact. It must be
-cut over with the matching Spider and Image Indexer digests; this queue protocol
-does not permit a rolling or mixed-version deployment. Follow
-`../../docs/immutable-pipeline-release-cutover.md`. Root Compose remains the local
+The service-level Compose file is a current V1 deployment artifact and requires
+the exact
+`MIFOLYO_INDEXER_IMAGE=ghcr.io/fullerkris/mifolyo/indexer@sha256:<64 lowercase
+hex>` reference from the reviewed release digest artifact. This queue protocol
+does not permit a rolling or mixed-version deployment. The
+[legacy cutover runbook](../../docs/immutable-pipeline-release-cutover.md)
+records the retired V1 procedure for historical interpretation only; do not use
+it as current deployment authorization. Root Compose remains the local
 source-build path.
+
+A future V2 release must use one exact reviewed compatibility manifest plus
+every image field and contract, Lua source-set, guard-core, and commit-guard
+artifact required by the
+[Crawl Jobs V2 contract](../../docs/crawl-jobs-v2.md) and F3 plan. Those
+authorities own exact membership; do not infer it from the V1 procedure. Its
+ordinary rollback boundary is the first successful `CJ2_START_REQUEST`,
+recorded before DNS. No V2 Indexer startup or acknowledgment procedure is
+implemented here.
 
 ### Using Docker
 
@@ -168,27 +198,41 @@ The recommended way to run the Indexer is with Docker. This ensures all dependen
     startup by default. Only an isolated local test deployment may explicitly
     set `ALLOW_INSECURE_DATASTORES=true`; the exact lowercase value is required.
     Do not set this flag in production or shared environments.
-3. **Pull and Run a Release**:
-   After completing the runbook stop/drain/backup gates, use the reviewed
-   downloaded digest env file with the service Compose file:
+3. **Historical V1 release example (do not execute)**:
+   The retired runbook used a reviewed downloaded digest env file with the
+   service Compose file. These commands are not current release instructions:
     ```bash
     docker compose --env-file release-image.env pull
     docker compose --env-file release-image.env up -d --no-build
     ```
 
-### Without Docker
+### Without Docker (isolated V1 development only)
 
-If you prefer not to use Docker, you can run the Indexer directly on your machine. Ensure you have all dependencies installed. It is recommended to use a virtual environment to avoid conflicts with other Python packages.
+For a separately approved, isolated V1 development environment, work from
+`services/indexer` inside a virtual environment. The current F3 gates do not
+authorize consumer startup.
 
 1. **Install Dependencies**:  
    Install the required packages using `pip`:
    ```bash
    pip install -r requirements.txt
    ```
-2. **Configure Environment Variables**:  
-   Set up the environment variables in your shell or create a `.env` file in the `services/indexer` directory.
-3. **Run the Indexer**:  
-   Execute the Indexer script:
+2. **Provision and Verify Private NLP Assets (mandatory)**:
+   Before running the service or NLP-dependent tests, complete the
+   [private provisioning](nlp/README.md#explicit-private-buildtest-provisioning)
+   and [verification](nlp/README.md#offline-verification-and-distribution-gate)
+   procedures: run `python -B tools/vendor_nlp.py` with the documented private
+   cache/provisioning options, then require `python -B verify_nlp.py` to pass.
+   A clean checkout intentionally lacks the five data files. Do not move
+   provisioning into application or test startup; data-bearing image
+   distribution remains blocked.
+3. **Configure Environment Variables**:
+   Export the required variables in the process environment before startup. The
+   Python service does not load a `.env` file by itself; source one explicitly
+   in your shell only if it contains isolated development values.
+4. **Run the Indexer (currently blocked)**:
+   Do not start this consumer under the current F3 gates. Only after separate
+   isolated V1 approval and successful NLP provisioning/verification, use:
    ```bash
-   python indexer.py
+   python -B main.py
    ```

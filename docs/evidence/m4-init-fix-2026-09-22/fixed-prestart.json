@@ -1,0 +1,65 @@
+{
+  "cleanup": [
+    {
+      "kind": "container",
+      "name": "cj2-prestart-check-025dd102d41455e7de2e1290abc6cec7-revocation",
+      "removed": true
+    },
+    {
+      "kind": "container",
+      "name": "cj2-prestart-check-025dd102d41455e7de2e1290abc6cec7-executor",
+      "removed": true
+    },
+    {
+      "kind": "container",
+      "name": "cj2-prestart-check-025dd102d41455e7de2e1290abc6cec7-init",
+      "removed": true
+    },
+    {
+      "kind": "container",
+      "name": "cj2-prestart-check-025dd102d41455e7de2e1290abc6cec7-redis",
+      "removed": true
+    },
+    {
+      "kind": "volume",
+      "name": "cj2-prestart-check-025dd102d41455e7de2e1290abc6cec7-data",
+      "removed": true
+    },
+    {
+      "kind": "volume",
+      "name": "cj2-prestart-check-025dd102d41455e7de2e1290abc6cec7-control",
+      "removed": true
+    }
+  ],
+  "containers_started": 0,
+  "kind": "metadata_only_prestart",
+  "roles": [
+    {
+      "cap_add": [
+        "CAP_CHOWN"
+      ],
+      "inspection_sha256": "8f321fe2543d8376ed7d3f91f286c58a546839903c09ec1014640183f11ca784",
+      "role": "init",
+      "status": "PASS"
+    },
+    {
+      "cap_add": null,
+      "inspection_sha256": "d2123960e1f08ee99cc705b1f0531bcbdbe3b7c68b377790d08afbb55be8928c",
+      "role": "executor",
+      "status": "PASS"
+    },
+    {
+      "cap_add": null,
+      "inspection_sha256": "eca7eff3c65798b07936ed7d10fc7dc98d4032b4e41e5156d6d41a2bc1005fed",
+      "role": "redis",
+      "status": "PASS"
+    },
+    {
+      "cap_add": null,
+      "inspection_sha256": "95bd2b3b0bda882029b297983ecff8343d4be0419d0f191ed5275937750eb34f",
+      "role": "revocation",
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}

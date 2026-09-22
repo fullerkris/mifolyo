@@ -2,7 +2,7 @@
 
 **Original review date:** 2026-09-01
 
-**Last updated:** 2026-09-14
+**Last updated:** 2026-09-22 (UTC; M4 init defect corrected and re-reviewed)
 
 **Reviewed baseline:** `main` / `44d8b09a364a1f60032e1f4faccf160813f4dd04`
 
@@ -100,7 +100,7 @@ retained Mongo records still incorrectly say `enabled: true`.
 | F2 | Retained Redis state is a post-test queue, not a fresh baseline | High | Disposable project reset required before feeding |
 | F3 | Spider claims have no durable lease, retry, or dead-letter recovery | Blocker | Crawl-job protocol change required before another crawl |
 | F4 | Enabled host and path scope is broader than the reviewed seed list | Blocker | Narrowed policy contract and review required before another crawl |
-| F5 | Historical Backlinks Processor delete-first persistence was retry-unsafe | Blocker | Idempotency repair is implemented and locally verified; protected `required-tests` PR acceptance remains pending |
+| F5 | Historical Backlinks Processor delete-first persistence was retry-unsafe | Blocker | Code repair passed protected PR #9 checks and merged; retained-state repair and V2 integration remain separately gated |
 | F6 | Static paragraph-only extraction cannot index JavaScript application shells | High | Metadata fallback, replacement seed, or separately authorized rendering decision required |
 
 ## Current status
@@ -109,9 +109,9 @@ retained Mongo records still incorrectly say `enabled: true`.
 |---|---|---|
 | F1 seed reconciliation | Not started | Retained evidence remains 70 enabled records; execute only during the matched freeze/backup/reset sequence |
 | F2 disposable Redis reset | Not started | Retained V1 state remains historical post-test evidence and must not be reused or selectively repaired |
-| F3 durable Crawl Jobs V2 | M1 passes locally; M2 pushed and verified; Lua not started | Reviewed foundation checkpoint `0989001d15c9a84a00464fd55ddd857650eda85e` is remote-verified; no Lua or runtime activation authorized; see [`crawl-jobs-v2-plan.md`](crawl-jobs-v2-plan.md) |
+| F3 durable Crawl Jobs V2 | M1/M2 merged; M3 remains dormant; M4 init defect corrected with independent GO | First smoke attempt remains FAIL; correction passes 53 harness/21 script tests and rebuilt-image validation; new checkpoint CI/fresh approval needed; evidence lives in [`crawl-jobs-v2-plan.md`](crawl-jobs-v2-plan.md) |
 | F4 exact crawl scope | Not started | No crawl-policy V2 schema or approved exact-URL policy is present |
-| F5 backlink persistence | Implemented locally and locally verified; acceptance pending | The repair passed 46 unit, 7 disposable datastore integration, and 6 Monitoring tests on 2026-09-14; a protected `required-tests` PR result is still required |
+| F5 backlink persistence | Code acceptance passed and merged | PR #9 passed protected checks and merged as `d914a93`; no retained datastore reconciliation or V2 consumer activation is implied |
 | F6 JavaScript-shell indexing | Not started | No static-extraction policy schema or approved metadata-fallback configuration is present |
 | Render Stages 0, 1, and 2a | Implemented; disabled | Hermetic inline and brokered rendering exists, but the checked-in render policy remains deny-all and public rendering is unauthorized |
 | Render Stage 3 | Not approved | Requires a reviewed protocol extension, shadow evidence, exact policy, and all F3/F4/F6 activation gates |
@@ -254,7 +254,10 @@ wire grammar, limits, transitions, records, Redis configuration, and evidence.
 ### Current roll-up
 
 - The digest-bound protocol, shared fixture, independent Go/Python verifier, and
-  dormant Go foundation exist on `feature/crawl-jobs-v2-foundation`.
+  dormant Go foundation were merged through PR #9 as `d914a93`. Current M3 work
+  uses `feature/crawl-jobs-v2-lua`; its scoped checkpoint was committed and pushed
+  as `81028ca12a1763d46df72fc54759d99a0ea3b561` on 2026-09-18, with matching
+  local/remote identity. No M3 PR was created or merge/activation authorized.
 - The initial WIP checkpoint is commit
   `e4372a66201b8767bcca4d7476c30c5b7999922c`. The reviewed amendment and foundation
   remediation are preserved in remote-verified checkpoint
@@ -264,29 +267,51 @@ wire grammar, limits, transitions, records, Redis configuration, and evidence.
   contract specifies authenticated genesis/terminal generation, atomic BEGIN
   freeze, and exact seal/commit/replay binding without changing downstream
   semantic output/publication grammar.
-- The final pinned-Go-1.25.13 aggregate passed normal, race, shuffled, full
-  Spider, vet, build, Python fixture/syntax, formatting, and scoped diff checks.
-  Statement coverage is 79.0%; shared evidence contains 39 named positives plus
-  baseline and 139 negatives. Evidence-type limits are recorded in the F3 plan.
-- Subsequent BEGIN output-preparation, exact-witness, abort/expiry/delivery, and
+- The **2026-09-11 historical foundation** pinned-Go-1.25.13 aggregate passed
+  normal, race, shuffled, full Spider, vet, build, Python fixture/syntax,
+  formatting and scoped diff checks. Its coverage was 79.0%, with 39 named
+  positives plus baseline and 139 negatives; these are not current M3 counts or
+  coverage. Evidence-type limits remain in the F3 plan.
+- Foundation BEGIN output-preparation, exact-witness, abort/expiry/delivery, and
   test-oracle findings were fixed and independently replayed. Final correctness,
   conformance, and defensive reviews each returned scoped GO, with no outstanding
   findings from those reviews.
-- M1 passes locally and M2 is complete following the requested scoped push and
-  remote verification. That checkpoint request excluded PR creation and Lua.
-  The owner separately authorized scoped reliability commit/push and draft-PR
-  checks on 2026-09-14; publication is in progress, with no merge or activation
-  authorized. Pure Go validators and constructor tests do not establish the
-  future Lua/Redis atomicity gates.
-- No authoritative Lua, runtime integration, retained datastore mutation, service start,
-  migration, deployment, candidate marker, or crawl has occurred.
+- M1/M2 passed protected PR #9 checks and merged. On 2026-09-15 the owner
+  authorized dormant M3 implementation and the narrow existing-wire/renewal-clock
+  clarification. That date's initial BOOT-only slice (1/43), pure primitives and
+  private reload helpers passed scoped tests and code/protocol review; the dated
+  evidence is retained in the F3 plan, not presented as current completion.
+- **Current M3:** All 43 canonical sources and the complete sealed, zero-argument
+  `AuthoritativeScriptBindingSet()` factory are implemented locally. Normal
+  acceptance, including the latest full normal Docker suite, passes. Independent
+  code review returns scoped in-memory GO for canonical/fragment chains, and
+  final-byte security review clears bundle freshness. **The final current-tree
+  full-module race suite passes, with no skipped V2 tests.** The fresh Docker
+  normal suite also passes after the final harness changes. See the primary plan
+  for identities, test evidence, log limits and the earlier failed race attempt.
+- Activation is blocked by the remaining gates, not an absent bundle. M4's four
+  fixture proposals were approved September 21; the normative amendment and
+  offline compiler/tests and first ledger-smoke executor are implemented locally.
+  The original four findings and a closed-peer follow-up are now corrected.
+  Independent final correctness/security re-review returns GO for image
+  preparation only. Subsequent immutable image validation and exact-revision CI
+  pass. The first approved bounded attempt failed in init before Redis startup;
+  cleanup was verified and the one-case approval is used.
+  Its capability-spelling defect is now corrected and independently re-reviewed;
+  revised-image validation passes, with new checkpoint CI and fresh approval next.
+  No M4 acceptance, runtime
+  integration, retained datastore mutation, application/service activation,
+  migration, deployment, candidate marker or crawl is part of this M3 work.
 
 ### Parent-plan acceptance gate
 
-- [ ] The final independent foundation review permits dormant authoritative Lua
+- [x] The final independent foundation review permits dormant authoritative Lua
   authoring.
-- [ ] The exact Lua transitions and sealed source bundle pass shared Go, Python,
-  and real Redis 7 conformance.
+- [x] All 43 canonical Lua sources and the sealed zero-argument factory are
+  implemented locally and pass normal in-memory acceptance.
+- [x] Record the final current-tree full-module M3 race pass.
+- [ ] The exact Lua transitions and sealed source bundle pass real Redis 7
+  conformance after reviewed execution-harness completion and explicit M4 approval.
 - [ ] Lease, retry, staging, commit, crash, AOF, memory, and maximum-shape gates
   pass with recorded evidence.
 - [ ] Spider, feeder, downstream consumers, Monitoring, Compose, migration, and
@@ -297,8 +322,9 @@ wire grammar, limits, transitions, records, Redis configuration, and evidence.
 ### Rollback boundary
 
 Before the first successful `CJ2_START_REQUEST`, restore the matched V1
-snapshot, old release, and old credential set. That request-start transition,
-recorded before DNS, is the irreversible boundary for ordinary rollback. Never
+snapshot, old release, and old credential set only while all writers are stopped.
+That request-start transition, recorded before DNS, is the irreversible boundary
+for ordinary rollback. Never
 point a V1 Spider at V2 keys or run both generations.
 
 ## F4: Narrow host, path, redirect, and discovery scope
@@ -386,10 +412,10 @@ the service had no behavioral test suite in CI.
 
 ### Current implementation status
 
-The idempotency repair described below is implemented locally and locally
-verified. Acceptance remains pending a passing protected `required-tests` PR
-run; the local evidence does not complete that gate or authorize pipeline
-startup.
+The idempotency repair described below passed protected PR #9 checks and merged
+as `d914a93`. This is code acceptance, not retained-data reconciliation, V2
+consumer integration, or permission to start the pipeline. The dated local
+evidence below preserves the earlier checkpoint status.
 
 ### Target state
 
@@ -399,8 +425,9 @@ Concurrent additions remain pending.
 
 ### Implemented repair design
 
-The local implementation follows these requirements, which remain subject to
-protected acceptance:
+The repair's code and automated tests passed protected PR #9 acceptance. The
+requirements below also include operational prerequisites and retained-data
+reconciliation, which have not been executed or accepted by that code merge:
 
 1. Stop the current Backlinks Processor before any producer resumes.
 2. Replace every `KEYS backlinks:*` path, including Monitoring, with `SCAN`.
@@ -441,15 +468,19 @@ Primary implementation areas are `services/backlinks-processor/main.py`,
 
 ### Acceptance gate
 
-- [ ] MongoDB failure removes zero Redis members.
-- [ ] A crash after MongoDB acknowledgment creates no duplicate edge.
-- [ ] A member added concurrently after the snapshot remains in Redis.
-- [ ] No production path issues `DEL` for `backlinks:*`.
+Checked items record the merged PR #9 code and automated-test evidence, not
+acceptance of unrelated local edits or retained-state reconciliation. The dated
+local results below preserve their original, pre-merge scope.
+
+- [x] MongoDB failure removes zero Redis members.
+- [x] A crash after MongoDB acknowledgment creates no duplicate edge.
+- [x] A member added concurrently after the snapshot remains in Redis.
+- [x] No production path issues `DEL` for `backlinks:*`.
 - [ ] Every current outlink edge has the expected reverse backlink after
   additive reconciliation; extra historical backlinks are permitted and
   reported.
-- [ ] Key, member, byte, and MongoDB document bounds are enforced and tested.
-- [ ] Behavioral tests are required by protected CI.
+- [x] Key, member, byte, and MongoDB document bounds are enforced and tested.
+- [x] Behavioral tests are required by protected CI.
 
 ### Local implementation evidence (2026-09-04)
 
@@ -592,7 +623,7 @@ recrawl or restore, not ad hoc Redis deletion.
 | Phase | Work | Findings | Exit condition |
 |---|---|---|---|
 | 0 | Preserve the read-only historical evidence and keep all execution blocked | F1, F2 | The failed baseline remains reproducible without running a crawl |
-| 1 | Accept the locally implemented and verified Backlinks Processor repair | F5 | Delete-first behavior remains absent and the protected `required-tests` PR run passes |
+| 1 | Backlinks Processor code repair accepted through PR #9 | F5 | Complete for code/CI: merged as `d914a93` after protected checks; retained-data reconciliation and V2 integration remain gated |
 | 2 | Complete Crawl Jobs V2 milestones M1 through M4 | F3 | Foundation, Lua, and disposable Redis lease/retry/dead-letter/crash gates pass without runtime integration or migration |
 | 3 | Specify and implement exact host/path policy V2 | F4 | All 67 seeds pass and broader hosts/paths fail before DNS |
 | 4 | Implement exact-URL metadata fallback | F6 | Hermetic app-shell acceptance tests pass without rendering |
@@ -602,9 +633,15 @@ recrawl or restore, not ad hoc Redis deletion.
 | 8 | Run final hermetic, crash-injection, protected-CI, and immutable release gates | F3-F6 | Every required test and promoted artifact passes against the same reviewed commit |
 | 9 | Obtain new site and run authorization for one bounded static batch | All | Every rewritten V2 checklist gate passes in a new dated report |
 
-F5 protected-PR acceptance can proceed in parallel with F3 milestones M1
-through M4. F4 and the hermetic part of F6 can also proceed before runtime
-integration. F1 and F2 execute only after compatible code and runbooks are ready
+F5 code acceptance and F3 M1/M2 passed through PR #9. M3 is implemented,
+locally verified and pushed. M4's approved amendment/offline layer is implemented
+locally, including the first ledger-smoke execution slice. Its independent review
+and remediation are complete locally, with independent GO for image preparation
+only. The first smoke attempt failed before Redis startup. The init defect is
+now corrected, re-reviewed and validated in a rebuilt image. New checkpoint CI
+and fresh approval precede another attempt; actual M4 acceptance remains pending.
+F4 and the hermetic part of F6 can proceed before runtime integration.
+F1 and F2 execute only after compatible code and runbooks are ready
 so the disposable environment is reset once. Crawl Jobs V2 milestones M5
 through M7 align with parent phases 5 through 8 and wait for the stated F4
 through F6 dependencies.

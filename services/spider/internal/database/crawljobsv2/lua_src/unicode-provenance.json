@@ -1,0 +1,83 @@
+{
+  "counts": {
+    "code_points_checked": 1114112,
+    "composition_pairs": 941,
+    "decomposition_bytes": 9804,
+    "max_decomposition_scalars": 4,
+    "packed_bytes": 67843,
+    "property_records": 2099,
+    "ranges": 6461
+  },
+  "exhaustive_go_oracle_sha256": "b728aa7ae09b7e577fead2845d3489daf7e20d427b2a23ef0ffcd7b1722d5981",
+  "generator_sha256": "b3849e8bcd855c64e1bdc0163160b49ff63c7e20fcbb12f45cd8b56a2faf917f",
+  "identity": "cj2-url-v1/go1.25.13/x-net-v0.58.0/x-text-v0.41.0/unicode-15.0.0/data-1",
+  "licenses_sha256": {
+    "Go-BSD-3-Clause.txt": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad",
+    "Go-PATENTS.txt": "96f408bfae65bf137fc2525d3ecb030271c50c1e90799f87abf8846d8dd505cc",
+    "UNICODE-15-ReadMe.txt": "53672c0d0b5185e3cf04c8e970d544c3af81ae7c8eeba0b9cf6d355aa954ae1f",
+    "UNICODE-LICENSE.txt": "e7a93b009565cfce55919a381437ac4db883e9da2126fa28b91d12732bc53d96"
+  },
+  "module_sums": {
+    "golang.org/x/net": "h1:ynWG7rqYi4ccpTEuPZ2QGWHktVEM9DMCj9yzDE0Q7To=",
+    "golang.org/x/text": "h1:vz/seA0lnX87Othu2f/0L24RcgrXD9/YFTSuGjj3rH8="
+  },
+  "module_versions": {
+    "golang.org/x/net": "v0.58.0",
+    "golang.org/x/text": "v0.41.0"
+  },
+  "notes": [
+    "Unicode 15.0.0 selected by !go1.27; stdlib unicode16 branch is false",
+    "No ContextO; preserve byte-indexed hyphens, exact ContextJ DFA and stream-safe NFC",
+    "Unicode release notice is dated 2022; license.txt is the separately retrieved current authoritative license, not a reconstructed historical notice",
+    "Dormant support; final operation assembly must bind these exact bytes in its source identity"
+  ],
+  "profile": [
+    "ValidateForRegistration",
+    "MapForLookup",
+    "Transitional(false)",
+    "StrictDomainName(true)",
+    "ValidateLabels(true)",
+    "CheckHyphens(true)",
+    "CheckJoiners(true)",
+    "BidiRule",
+    "VerifyDNSLength(true)"
+  ],
+  "source_sha256": {
+    "net/LICENSE": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad",
+    "net/idna/idna.go": "26de47c66ae70e53c5bedffca7fd61aefcde2ef8df6db37c9a50a3fb3c152aab",
+    "net/idna/punycode.go": "3e65858245f1a7d32e225aba714a305d3ef34496acb839956a7b15d1c7a34eb7",
+    "net/idna/tables15.0.0.go": "79fb7af83a29255478a5e56fdc8d176276ccdb4d1ff1b1459646cbf8d52cc5f3",
+    "net/idna/trie.go": "8d2a16a56e4cab9d23a7afb49443bfe7a5ff0d74e885acc9121b4a9c598825eb",
+    "net/idna/trieval.go": "7e2c4893145e4b3b4d7984d70244af9c358da4973915085a42689ed1f3ce5159",
+    "text/LICENSE": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad",
+    "text/PATENTS": "96f408bfae65bf137fc2525d3ecb030271c50c1e90799f87abf8846d8dd505cc",
+    "text/secure/bidirule/bidirule.go": "714b5baaa1ec84a50e03504a7100d54d37e6ea7551d57d28265576c57de94ba9",
+    "text/unicode/bidi/prop.go": "f6391b2f69a1ae2a0ac1f0599a90b260ec350a19f73ad5d6572660100b5950bc",
+    "text/unicode/bidi/tables15.0.0.go": "98c2d6d57e116667e73a4f5c89ee20ead7b27b50d561b5c5d23d8ebf0e3f3310",
+    "text/unicode/bidi/trieval.go": "bf3e17fca178c7d13139aa7cb7828005a0a1b8f4dca8ef97966236c6469a2136",
+    "text/unicode/norm/composition.go": "3d1be52960f2693926472819b747646e7d2371d2bb5f53097cf9d46c913052df",
+    "text/unicode/norm/forminfo.go": "844dadc7a0dc991a4b87a195699476a90655292d302abe2d2f7ddff5968f74bc",
+    "text/unicode/norm/input.go": "965b431790bb139543d71a9c497920ef7d9a15af417456a2bbd0cdb629330e8d",
+    "text/unicode/norm/iter.go": "4d580123776d78ff862131bd8c99fa5758f3cb70530619edc80ed4ee173cd83a",
+    "text/unicode/norm/normalize.go": "9e4fdc543d3b7aabf046ead80f2ef60746f579a7a4691c3c7d6bf69f4c4fa713",
+    "text/unicode/norm/readwriter.go": "d600d1f6cff2536dbb49a0f6bb8c06f6fc05f2754dad2dc05f1d44f9e8e48a35",
+    "text/unicode/norm/tables15.0.0.go": "49dda94f9429bac8c29efe11e09558d46abfaa3c8e1de59816f2910b99cade04",
+    "text/unicode/norm/transform.go": "6f8014595643e2acae76d47ed6abe8ace969a0c9070dbfa5a89c86bebcec812d",
+    "text/unicode/norm/trie.go": "d87793d558251ee8824954f0b7bc5564803e4c9d59a8c4eebb4c3c5cfbd19492"
+  },
+  "toolchain": "go1.25.13",
+  "unicode_data_lua_sha256": "07243776f0a5b1691e872cf92bddaf60cebf292175f25e2146a65220f20e849e",
+  "unicode_notice_sources": [
+    {
+      "Name": "UNICODE-15-ReadMe.txt",
+      "URL": "https://www.unicode.org/Public/15.0.0/ucd/ReadMe.txt",
+      "SHA256": "53672c0d0b5185e3cf04c8e970d544c3af81ae7c8eeba0b9cf6d355aa954ae1f"
+    },
+    {
+      "Name": "UNICODE-LICENSE.txt",
+      "URL": "https://www.unicode.org/license.txt",
+      "SHA256": "e7a93b009565cfce55919a381437ac4db883e9da2126fa28b91d12732bc53d96"
+    }
+  ],
+  "unicode_version": "15.0.0"
+}

@@ -49,3 +49,10 @@ remain separate from, and are not replaced by, canonicalization.
 ## Versioning
 
 Changing an identity rule requires a new version, fixture, URL-ID namespace, MongoDB seed collection migration, and Redis queue namespace. Existing IDs must never be silently reinterpreted under different rules.
+
+## Maintenance
+
+For the dormant Crawl Jobs V2 conformance helper, see
+[Unicode and Python maintenance](../services/spider/internal/database/crawljobsv2/lua_src/README.md#unicode-and-python-maintenance).
+That guide covers pinned data and regeneration, not a replacement for the active
+Seed Importer normalizer or a change to V1 identity rules.

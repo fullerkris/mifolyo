@@ -1,17 +1,20 @@
 # Spider builds use the repository root, but only these inputs may enter.
 **
-!services/
-!services/spider/
 !services/spider/**
-!contracts/
-!contracts/crawl-jobs-v2/
 !contracts/crawl-jobs-v2/digest-vectors.json
-!contracts/url-canonicalization/
 !contracts/url-canonicalization/v1.json
-!docs/
 !docs/crawl-jobs-v2.md
-!seeds/
 !seeds/manual-seeds.csv
+!scripts/verify-crawl-jobs-v2-digests.py
+!scripts/crawl_jobs_v2_url.py
+!scripts/generate-crawl-jobs-v2-lua.py
+!scripts/generate-crawl-jobs-v2-bundle.py
+!scripts/tests/test_crawl_jobs_v2_url.py
+!tests/crawl-jobs-v2-redis/harness.py
+!tests/crawl-jobs-v2-redis/test_harness.py
+!tests/crawl-jobs-v2-redis/redis.conf
+!tests/crawl-jobs-v2-redis/runtime_case.py
+!tests/crawl-jobs-v2-redis/resp.py
 
 **/*.env
 **/.env*

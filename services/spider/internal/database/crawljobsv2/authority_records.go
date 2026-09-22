@@ -375,9 +375,9 @@ func (core GuardCore) RedisConfigSHA256() Digest {
 func (core GuardCore) Cutover() CutoverMode { return core.input.CutoverMode }
 func (core GuardCore) CandidateRun() RunID  { return core.input.CandidateRunID }
 
-// ProvisionalGuardCore is restricted to the disposable acceptance fixture from
-// section 5.1 of the contract. Its distinct type prevents it from being passed
-// to production authority constructors such as NewStoredCommitGuard.
+// ProvisionalGuardCore preserves section 5.1's historical, non-executable
+// zero-sentinel serialization controls. It cannot bootstrap a Redis fixture.
+// Its distinct type prevents it from entering NewStoredCommitGuard or transport.
 type ProvisionalGuardCore struct {
 	input       GuardCoreInput
 	initialized bool

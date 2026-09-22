@@ -1,0 +1,1 @@
+{"format_version":1,"harness_image":"sha256:2059066be4f192b84d4932050d1f811ed2bacf275e7d7cc0179f3e709d50e12c","redis_image":"sha256:24e81cffaba832bcd71068a6ff772a531076bafdbb1d684195766ae9b6511f5c","redis_version":"7.4.11","scenario":"ledger-smoke","standin_image":"sha256:2059066be4f192b84d4932050d1f811ed2bacf275e7d7cc0179f3e709d50e12c"}

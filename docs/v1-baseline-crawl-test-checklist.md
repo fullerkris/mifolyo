@@ -1,51 +1,87 @@
-# V1 Baseline Crawl Test Checklist
+# Historical V1 Baseline Crawl Test Checklist
 
-Use this checklist for a bounded crawl of the 67 enabled V1 manual seeds in the
-70-record catalog, using the disposable local environment defined by
-`scripts/docker/v1-baseline.compose.yml`. This is a search-only test, not
-approval for Curlie or other untrusted bulk sources.
+> [!CAUTION]
+> **Historical V1 procedure - do not execute.** This checklist retains its
+> original V1 step numbers and commands so prior evidence remains interpretable.
+> It is not an active V2 checklist, and completing its checkboxes cannot
+> authorize preparation, datastore mutation, service startup, or a crawl.
+
+V1 remains the current runtime. F3 M1/M2 and the F5 code repair passed protected
+PR #9 checks and merged as `d914a93`. M3 implements all 43 canonical Lua sources
+and the sealed, zero-argument `AuthoritativeScriptBindingSet()` factory. It is
+locally verified, committed, and pushed as `81028ca` on
+`feature/crawl-jobs-v2-lua`, not accepted through an M3 PR or protected CI. M4
+still requires real-Redis fixture, ACL, and bootstrap clarifications plus
+explicit approval. F1, F2, F4, and F6 are not started. Render Stages 0, 1, and 2a
+remain implemented but disabled; Stage 3 is not approved. No V2 runtime wiring,
+migration, deployment, candidate promotion, crawl, or rendering activation is
+authorized.
+
+Parent-plan Phase 6, aligned with F3 milestone M6, must replace this procedure
+with tested V2 instructions. A future V2 run must bind one reviewed exact-byte
+compatibility-manifest artifact and use the first successful
+`CJ2_START_REQUEST`, recorded before DNS, as the ordinary rollback boundary;
+Spider startup and first page publication are not that boundary. See the
+[parent remediation plan](spider-render-remediation-plan-2026-09-01.md) and
+[Crawl Jobs V2 plan](crawl-jobs-v2-plan.md); this checklist does not duplicate
+their current gates.
+
+This checklist retains the V1 procedure with its later 67-enabled/3-disabled
+target, not a transcript of the first run. The
+[2026-08-18 report](v1-baseline-crawl-test-report-2026-08-18.md) records 70 enabled
+seeds, 70 entries in each initial queue/URL/depth structure, policy SHA-256
+`79ab8c6fe1e3dbedb91584b70c68bac6199ec0e60ee789ffab4d9b31b7211895`, and a strict
+**FAIL**. That run did not execute the later 67/3 target or the policy pin below;
+neither establishes a fresh accepted baseline. The environment remains
+`scripts/docker/v1-baseline.compose.yml`, with a search-only scope that excludes
+Curlie and other untrusted bulk sources.
 
 The spider's DNS-pinned transport, redirect revalidation, robots enforcement,
-and exact baseline-policy validation are implemented and tested. That removes
-the former code-level blocker, but it does not authorize a crawl by itself.
-Section 7 remains operationally blocked until sections 1 through 6, including
-the host-publication and three-key queue preflight, are completed and recorded.
-The policy also contains disabled `disabled-sites` and `reddit-crawler` groups.
-BBC, Khan Academy, PolitiFact, and Reddit are not part of the 67 enabled
-baseline domains and must remain disabled.
+and exact baseline-policy validation are implemented and tested in V1. These
+runtime properties do not resolve F3 or F4 and do not authorize use of the
+historical V1 path. The later checked-in policy contains disabled
+`disabled-sites` and `reddit-crawler` groups. BBC News, Khan Academy, and
+PolitiFact are excluded by the later 67-enabled target; Reddit discovery rows
+are not direct baseline targets. These post-run exclusions do not rewrite the
+recorded 70-enabled run.
 
 > [!IMPORTANT]
 > The first authorization was consumed by the run recorded on 2026-08-18.
-> This checklist does not authorize a repeat. Before any future section 7 run,
-> obtain a new authorization and record explicit dispositions for every prior
-> robots, challenge, or usage-term issue, including BBC and Khan Academy.
+> It cannot be reused. Any future authorization must record explicit
+> dispositions for every prior robots, challenge, or usage-term issue, including
+> BBC and Khan Academy, and applies only after every parent-plan gate and the
+> tested V2 procedure pass. It cannot reactivate historical V1 step 7. The
+> retained 261-item queue is evidence, not a reusable baseline. Parent-plan
+> Phase 6 owns operational-document replacement.
 
-## Test objective
+## Historical V1 test objective
 
-Verify that the V1 pipeline preserves canonical absolute URLs from
-`crawl_seeds` through Redis, the spider, indexers, MongoDB metadata, PageRank,
-and search results. Forum behavior is out of scope and no forum service is in this
-environment. The spider may enqueue image references, but external image
-fetching and image indexing are explicitly out of scope.
-JavaScript rendering is also out of scope. Stage 1 inline rendering exists, but
-the checked-in render policy is empty and the `render` profile must not run for
-this static baseline.
+The objective was to verify that the V1 pipeline preserved canonical absolute
+URLs from `crawl_seeds` through Redis, the spider, indexers, MongoDB metadata,
+PageRank, and search results. Forum behavior was out of scope, and no forum
+service was in this environment. The spider could enqueue image references, but
+external image fetching and image indexing were explicitly out of scope.
+JavaScript rendering was also out of scope. Render Stages 0, 1, and 2a now
+exist but remain disabled; Stage 3 is not approved. The checked-in render policy
+is empty, and no Render Worker may run for a static baseline.
 
-A run is limited to one spider batch:
+The historical run was limited to one spider batch:
 
 ```text
 --once --max-concurrency 2 --max-pages 10
 ```
 
-`--max-pages` is a hard global outbound-attempt budget. First-hop global and
-domain-group capacity is reserved before a queue claim; an unused reservation
-is refunded. Every robots, page, and redirect request consumes a slot, and a
-later capacity denial requeues the original candidate at the same score and
-depth. Concurrency cannot raise the batch above ten outbound attempts.
+In the current V1 runtime, `--max-pages` is a hard global outbound-attempt
+budget. First-hop global and domain-group capacity is reserved before a queue
+claim; an unused reservation is refunded. Every robots, page, and redirect
+request consumes a slot, and a later capacity denial requeues the original
+candidate at the same score and depth. Concurrency cannot raise the batch above
+ten outbound attempts.
 
-## Stop conditions
+## Historical V1 stop conditions
 
-Stop the test immediately if any of these conditions occur:
+The historical procedure required the operator to stop immediately if any of
+these conditions occurred:
 
 - The Compose project is not exactly `mifolyo-v1-baseline-test` or the Compose
   file is not exactly `scripts/docker/v1-baseline.compose.yml`.
@@ -78,23 +114,27 @@ Stop the test immediately if any of these conditions occur:
   between validation and publication, or produces a non-finite, negative, or
   non-normalized rank.
 
-## Known limitations
+## V1 runtime limitations
 
-- Redis currently removes a job before crawl acknowledgement. Capacity and
+- V1 currently removes a job before crawl acknowledgement. Capacity and
   cancellation failures are requeued, but a process crash or ordinary fetch
-  failure can still lose pending work until the seed feeder is rerun.
+  failure can still lose pending work. Replaying seeds cannot recover arbitrary
+  discovered jobs or prove terminal outcomes, and must not repair retained state.
 - Application address checks cannot observe every NAT, DNAT, NAT64, or
   publicly numbered internal route. Keep the host-publication inventory and
   outbound network controls as defense in depth.
 - Crawl/data network separation removes baseline MongoDB/PostgreSQL Compose DNS
   resolution from the spider; it does not block access to databases published
   through the Docker host gateway or another host address.
-- The image indexer does not yet have an SSRF-hardened fetch path. Keep its
-  separate `image-pipeline` profile disabled.
+- The historical baseline excluded image fetching and indexing. The current
+  Image Indexer reconciles metadata without HTTP requests or image-byte
+  decoding; its separate `image-pipeline` profile remains disabled here.
 - External-resource brokering is implemented but remains unauthorized and
   disabled for the baseline. Keep the render policy empty and follow
   `docs/javascript-crawling-v1-scope.md` before approving any rendered crawl.
-- Durable leases, ACK/NACK, retries, cancellation, and dead-letter handling are not implemented.
+- Durable crawl-job leases, ACK/NACK, retries, cancellation, and dead-letter
+  handling are absent from the V1 runtime. Dormant M3 source completion does not
+  add those capabilities to V1.
 - Existing legacy crawl-derived MongoDB and Redis data can mix identity
   versions. Do not attach legacy or development volumes to this isolated
   project.
@@ -102,7 +142,7 @@ Stop the test immediately if any of these conditions occur:
   authoritative for PageRank. Ranking must derive the current reverse graph
   from `outlinks` instead.
 
-## 1. Record the test context
+## Historical V1 step 1: Record the test context
 
 - [ ] Test date and operator recorded.
 - [ ] Current branch recorded.
@@ -112,8 +152,10 @@ Stop the test immediately if any of these conditions occur:
 - [ ] Compose project recorded as `mifolyo-v1-baseline-test`.
 - [ ] MongoDB database `mifolyo_index`, Redis database `0`, and V1 key namespace recorded.
 - [ ] Scope recorded as **search only**.
+- [ ] The current dated Spider and Render Worker remediation plan is recorded,
+  with evidence or an explicit open disposition for F1 through F6.
 
-## 2. Confirm data isolation
+## Historical V1 step 2: Confirm data isolation
 
 - [ ] All test named volumes resolve with the `mifolyo-v1-baseline-test_` project prefix.
 - [ ] No volume is marked `external` and no development or production volume is mounted.
@@ -127,7 +169,8 @@ Stop the test immediately if any of these conditions occur:
 - [ ] The stack contains no forum service; forum posts, users, and authentication data cannot be reset by this project.
 - [ ] Redis database 0 is the isolated project instance and will not be flushed.
 - [ ] The legacy `spider_queue` key will not be migrated into V1 or blanket-deleted.
-- [ ] Cleanup will use only the explicit project-restricted command in section 11.
+- [ ] Cleanup remains blocked pending matched backup/restore evidence and explicit
+  future approval; section 11 records the historical project scope only.
 
 Inspect the root development services. If any are running with published
 ports, stop them without removing their containers or volumes, then capture the
@@ -145,7 +188,7 @@ sufficient.
 
 Do not proceed when isolation is ambiguous.
 
-## 3. Validate configuration and services
+## Historical V1 step 3: Validate configuration and services
 
 ```bash
 docker compose --project-name mifolyo-v1-baseline-test \
@@ -209,7 +252,7 @@ docker run --rm --network none --read-only \
   `pipeline`, and its default Compose command is validation-only.
 - [ ] The spider image runtime user is `65534:65534`, includes its CA bundle,
   and validates in a read-only container with networking disabled.
-- [ ] Baseline policy validation reports SHA-256
+- [ ] The later pinned baseline policy validation reports SHA-256
   `50648954d0264f7ac4fdda174178db488e86e335a0b63fdcc448da7bc218bae3`.
 - [ ] Baseline policy reports 67 enabled host rules plus disabled
   `disabled-sites` and `reddit-crawler` groups; all matching URLs are denied
@@ -261,7 +304,7 @@ only. They do not replace the direct Redis and PostgreSQL checks.
 - [ ] `/up` liveness passed and was not treated as dependency readiness.
 - [ ] MongoDB, Redis, PostgreSQL/migrations, and query API readiness checks all passed.
 
-## 4. Validate and rebuild the baseline catalog
+## Historical V1 step 4: Validate and rebuild the baseline catalog
 
 Preview the baseline and guarded target:
 
@@ -279,9 +322,11 @@ Expected result:
 8 Reddit discovery rows excluded
 ```
 
-When the isolated rebuild is approved, use the exact confirmation printed by
-the dry-run. `MIFOLYO_ENV=test` must be supplied only to this one-off command;
-it is intentionally absent from Compose defaults:
+The historical guarded rebuild used the exact confirmation printed by the
+dry-run and supplied `MIFOLYO_ENV=test` only to this one-off command, not Compose
+defaults. These guards do not authorize retained-state reconciliation, which
+still requires the parent plan's matched freeze, backup, restore-test sequence
+and explicit future approval:
 
 ```bash
 docker compose --project-name mifolyo-v1-baseline-test \
@@ -317,7 +362,17 @@ printjson({
 });'
 ```
 
-## 5. Re-feed and verify the V1 queue
+## Historical V1 step 5: Re-feed and verify the V1 queue
+
+> [!CAUTION]
+> The feeder is not a reset mechanism. If the isolated Redis volume contains
+> discovered jobs, hash-only identities, downstream publications, backlink
+> sets, or signal residue, preserve the evidence. Do not feed over the retained
+> post-test queue or repair it with `FLUSHDB`, `FLUSHALL`, or selective deletion.
+> F1/F2 cleanup remains blocked pending the parent plan's matched writer freeze,
+> backups outside project volumes, restore test, and explicit future approval.
+> The [environment cleanup example](environments.md#project-restricted-cleanup)
+> is historical, not permission to reset these volumes.
 
 Preview, then feed the enabled records:
 
@@ -375,7 +430,13 @@ Expected output is `67`, `67`, `67`, `0`, and `1`. The final two values prove
 every queued ID has both mappings and every initial depth is the canonical
 string `0`. Equal counts then exclude extra hash-only IDs.
 
-## 6. Start downstream consumers
+## Historical V1 step 6: Start downstream consumers
+
+> [!CAUTION]
+> The F5 code repair passed protected PR #9 checks and merged as `d914a93`.
+> Do not execute the command below: F5 code acceptance does not authorize
+> consumer startup or retained-data reconciliation. The command remains V1
+> history, and the retained backlog is evidence, not acceptance-test input.
 
 ```bash
 docker compose --project-name mifolyo-v1-baseline-test \
@@ -390,17 +451,20 @@ docker compose --project-name mifolyo-v1-baseline-test \
 
 - [ ] Indexer is running and connected to Redis and MongoDB.
 - [ ] Backlinks processor is running and connected to Redis and MongoDB.
+- [ ] F5 acceptance evidence proves MongoDB failure removes zero Redis backlink
+  members and concurrent additions survive snapshot acknowledgement.
 - [ ] Image indexer is not running; the `image-pipeline` profile remains disabled.
 - [ ] `pages_queue` starting length is recorded.
 - [ ] Consumer logs show no startup or connection errors.
 
-## 7. Run one bounded spider batch
+## Historical V1 step 7: Run one bounded spider batch
 
 > [!WARNING]
-> Do not execute this section until every checkbox in sections 1 through 6 has
-> passed in the current test context. Transport hardening is complete, but the
-> host-publication and isolated queue/depth gates remain mandatory.
-> The 2026-08-18 authorization cannot be reused.
+> **Do not execute this section.** The 2026-08-18 authorization cannot be
+> reused, and passing historical steps 1 through 6 would not authorize a V1
+> crawl. M1/M2 and F5 code acceptance plus local M3 completion do not change
+> that boundary. A future run requires a tested V2 checklist after parent-plan
+> Phase 6, every later gate, and a new explicit site/run authorization under M8.
 
 Immediately before invoking the spider, recheck that root development data
 stores have not restarted with published ports:
@@ -430,7 +494,7 @@ docker compose --project-name mifolyo-v1-baseline-test \
 - [ ] No URL is reconstructed by prepending `https://` to an ID or existing absolute URL.
 - [ ] Crawl output, errors, redirects, and status codes are captured in the test report.
 
-## 8. Verify pipeline output
+## Historical V1 step 8: Verify pipeline output
 
 - [ ] `pages_queue` drains to zero or its remaining count and reason are recorded.
 - [ ] Newly indexed metadata IDs are canonical absolute HTTP/HTTPS URLs.
@@ -442,7 +506,7 @@ docker compose --project-name mifolyo-v1-baseline-test \
 - [ ] Failed URLs are listed for manual review because automatic retry state is not yet durable.
 - [ ] The V1 queue, URL-map, and depth-map counts after outlink discovery are recorded.
 
-## 8A. Validate and publish PageRank
+## Historical V1 step 8A: Validate and publish PageRank
 
 This batch operates only on the isolated MongoDB data already produced by the
 bounded crawl. It does not start the spider, make an external request, or
@@ -512,7 +576,7 @@ After ranking:
 - [ ] If the filtered graph has no edges, every node has rank `1/N` within
   `1e-12`.
 
-## 9. Verify search behavior
+## Historical V1 step 9: Verify search behavior
 
 Confirm Caddy and Laravel liveness before issuing representative search
 queries. This repeats liveness evidence only; dependency readiness must already
@@ -535,13 +599,19 @@ curl --fail --show-error \
 
 Record each query, expected result, actual result, and pass/fail outcome.
 
-## 10. Confirm the search-only boundary
+## Historical V1 step 10: Confirm the search-only boundary
 
 - [ ] Resolved Compose services contain no forum service.
 - [ ] No test step targeted a forum endpoint or forum PostgreSQL database.
 - [ ] No development or production forum/account resource was created, changed, or removed.
 
-## 11. Cleanup and restore a known state
+## Historical V1 step 11: Cleanup and restore a known state
+
+> [!CAUTION]
+> Cleanup is blocked. Preserve retained evidence until the parent plan's matched
+> writer freeze, backups outside project volumes, and restore test are complete
+> and explicit future approval is recorded. The project restriction below is a
+> historical safety control, not current permission to remove these volumes.
 
 - [ ] Logs, before/after counts, and the test report have been preserved.
 - [ ] Do not run Redis `FLUSHDB` or `FLUSHALL`.
@@ -552,7 +622,7 @@ docker compose --project-name mifolyo-v1-baseline-test \
   --file scripts/docker/v1-baseline.compose.yml ps --all
 ```
 
-After those checks, the only approved full cleanup command is:
+The historical project-restricted full cleanup command was:
 
 ```bash
 docker compose --project-name mifolyo-v1-baseline-test \
@@ -564,7 +634,7 @@ docker compose --project-name mifolyo-v1-baseline-test \
 - [ ] No generic `docker compose down`, `docker volume prune`, or `docker system prune` command was used.
 - [ ] Development, forum/account, and production data remain unchanged.
 
-## 12. Final verdict
+## Historical V1 step 12: Final verdict
 
 Choose exactly one result:
 
@@ -577,7 +647,7 @@ non-blocking that does not fail a required checkbox or trigger a stop
 condition. Any dependency audit, container hardening, data isolation, or URL
 identity control failure is `FAIL`.
 
-## Test report template
+## Historical V1 test report template
 
 ```markdown
 # V1 Baseline Crawl Test Report
@@ -598,6 +668,18 @@ identity control failure is `FAIL`.
 **Policy SHA-256:**
 **Spider image digest:**
 **Reddit crawler group:** Disabled
+**Remediation plan / reviewed commit:**
+
+## Prior remediation findings
+
+| Finding | Status | Evidence or disposition |
+|---|---|---|
+| F1 Catalog 67 enabled / 3 disabled | | |
+| F2 Fresh queue with no retained residue | | |
+| F3 Durable leases, retries, and dead letter | | |
+| F4 Exact host/path/redirect scope | | |
+| F5 Acknowledged backlink persistence | | |
+| F6 JavaScript-shell indexing disposition | | |
 
 ## Before
 

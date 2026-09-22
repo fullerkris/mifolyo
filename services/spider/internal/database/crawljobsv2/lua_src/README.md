@@ -25,8 +25,11 @@ nonzero test-input descriptors. The offline compiler is implemented under
 `tests/crawl-jobs-v2-redis/` at repository root, alongside a locally tested first
 ledger-smoke executor. Its findings and closed-peer follow-up are fixed; final
 independent correctness/security re-review returns GO for image preparation
-only. Image validation now passes; protected CI and execution approval remain
-pending. Real-Redis clock,
+only. Image validation and exact-revision CI pass, but the first approved smoke
+attempt failed in init before Redis startup, with cleanup verified. Its capability
+spelling defect is now corrected, re-reviewed and validated in a rebuilt image;
+new checkpoint CI and fresh approval precede another attempt. See the primary plan.
+Real-Redis clock,
 allocator, maximum-shape latency, ACL and crash/AOF evidence remain separate
 gates. Source completeness and bundle sealing do not approve a commit guard,
 authorize I/O, or activate runtime integration or the V1 client.

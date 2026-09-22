@@ -32,6 +32,53 @@ class CommandError(Exception):
     pass
 
 
+ADMISSION_FIELDS = {
+    "INSPECTION_SHAPE": {"inspection", "Config", "Config.Labels", "HostConfig", "Mounts", "State"},
+    "CONTAINER_IDENTITY": {"Image", "Config.User", "Config.Labels.fixture", "Config.Labels.case"},
+    "ISOLATION": {"HostConfig.NetworkMode", "HostConfig.ReadonlyRootfs", "HostConfig.Privileged",
+                  "HostConfig.Memory", "HostConfig.MemorySwap", "HostConfig.PidsLimit", "HostConfig.NanoCpus",
+                  "HostConfig.RestartPolicy", "HostConfig.PortBindings", "HostConfig.PublishAllPorts",
+                  "HostConfig.CapDrop", "HostConfig.CapAdd", "HostConfig.SecurityOpt", "HostConfig.Binds",
+                  "HostConfig.Devices", "HostConfig.PidMode", "HostConfig.IpcMode", "HostConfig.Tmpfs"},
+    "MOUNTS": {"Mounts.inventory", "Mounts.types", "Mounts.tmpfs"},
+    "CONTAINER_STATE": {"State.Running"},
+}
+
+
+class ContainerAdmissionError(h.InvalidArtifact):
+    """Only closed check names; never observed/expected values or raw inspect."""
+    def __init__(self, code, checks):
+        if (type(code) is not str or code not in ADMISSION_FIELDS or type(checks) not in (list, tuple)
+                or not checks or not all(type(name) is str for name in checks)
+                or len(checks) != len(set(checks)) or not set(checks) <= ADMISSION_FIELDS[code]):
+            raise ValueError("INVALID_ADMISSION_DIAGNOSTIC")
+        self.code, self.checks = code, tuple(checks)
+        super().__init__(code)
+
+
+def admission_checks(code, checks):
+    failed = [name for name, passed in checks.items() if not passed]
+    if failed:
+        raise ContainerAdmissionError(code, failed)
+
+
+def failure_details(error):
+    if isinstance(error, ContainerAdmissionError):
+        try:
+            checked = ContainerAdmissionError(error.code, error.checks)
+        except (ValueError, AttributeError):
+            return {"code": "UNEXPECTED_FAILURE"}
+        return {"code": checked.code, "checks": list(checked.checks)}
+    if isinstance(error, KeyboardInterrupt):
+        return {"code": "INTERRUPTED"}
+    if isinstance(error, CommandError):
+        allowed = {"COMMAND_TIMEOUT", "COMMAND_OUTPUT_LIMIT", "DOCKER_COMMAND_FAILED",
+                   "INSPECTION_FAILED", "LIFECYCLE_DEADLINE"}
+        code = error.args[0] if len(error.args) == 1 and type(error.args[0]) is str and error.args[0] in allowed else "COMMAND_FAILED"
+        return {"code": code}
+    return {"code": "VALIDATION_FAILED" if isinstance(error, h.InvalidArtifact) else "UNEXPECTED_FAILURE"}
+
+
 def command(argv, data=b"", timeout=30):
     """Drain both pipes with a combined hard bound; never echo stderr/input."""
     h.require(len(data) <= OUTPUT_LIMIT and timeout > 0, "COMMAND_BOUND")
@@ -130,29 +177,54 @@ def container_spec(name, role, fixture_id, image, volumes):
             "mounts": mounts}
 
 
+def allowed_cap_add(actual, expected):
+    # Docker canonicalizes --cap-add CHOWN to CAP_CHOWN in inspect. Admit only
+    # these two spellings of the sole init capability; not arbitrary CAP_* names.
+    if expected == []:
+        return actual is None or type(actual) is list and actual == []
+    return (expected == ["CHOWN"] and type(actual) is list and len(actual) == 1
+            and actual[0] in ("CHOWN", "CAP_CHOWN"))
+
+
 def verify_container(value, spec, running):
-    config, host = value.get("Config", {}), value.get("HostConfig", {})
-    h.require(value.get("Image") == spec["image"] and config.get("User") == spec["uid"] and
-              config.get("Labels", {}).get(LABEL) == spec["fixture_id"] and
-              config.get("Labels", {}).get("io.mifolyo.cj2.case") == case.CASE, "CONTAINER_IDENTITY")
-    h.require(host.get("NetworkMode") == "none" and host.get("ReadonlyRootfs") is True and
-              host.get("Privileged") is False and host.get("Memory") == spec["memory"] and
-              host.get("MemorySwap") == spec["memory"] and host.get("PidsLimit") == 64 and
-              host.get("NanoCpus") == 1000000000 and host.get("RestartPolicy", {}).get("Name") == "no" and
-              not host.get("PortBindings") and not host.get("PublishAllPorts") and
-              host.get("CapDrop") == ["ALL"] and (host.get("CapAdd") or []) == spec["cap_add"] and
-              host.get("SecurityOpt") == ["no-new-privileges:true"] and not host.get("Binds") and
-              not host.get("Devices") and host.get("PidMode", "") == "" and
-              host.get("IpcMode") == "private" and
-              host.get("Tmpfs") == {"/tmp": "rw,noexec,nosuid,size=16777216"}, "ISOLATION")
-    mounts = value.get("Mounts", [])
+    admission_checks("INSPECTION_SHAPE", {"inspection": type(value) is dict})
+    config, host, mounts, state = (value.get("Config"), value.get("HostConfig"), value.get("Mounts"), value.get("State"))
+    admission_checks("INSPECTION_SHAPE", {"Config": type(config) is dict, "HostConfig": type(host) is dict,
+                                        "Mounts": type(mounts) is list, "State": type(state) is dict})
+    admission_checks("INSPECTION_SHAPE", {"Config.Labels": type(config.get("Labels")) is dict,
+                                        "Mounts": all(type(row) is dict for row in mounts)})
+    admission_checks("CONTAINER_IDENTITY", {
+        "Image": value.get("Image") == spec["image"], "Config.User": config.get("User") == spec["uid"],
+        "Config.Labels.fixture": config["Labels"].get(LABEL) == spec["fixture_id"],
+        "Config.Labels.case": config["Labels"].get("io.mifolyo.cj2.case") == case.CASE,
+    })
+    admission_checks("ISOLATION", {
+        "HostConfig.NetworkMode": host.get("NetworkMode") == "none",
+        "HostConfig.ReadonlyRootfs": host.get("ReadonlyRootfs") is True,
+        "HostConfig.Privileged": host.get("Privileged") is False,
+        "HostConfig.Memory": host.get("Memory") == spec["memory"],
+        "HostConfig.MemorySwap": host.get("MemorySwap") == spec["memory"],
+        "HostConfig.PidsLimit": host.get("PidsLimit") == 64,
+        "HostConfig.NanoCpus": host.get("NanoCpus") == 1000000000,
+        "HostConfig.RestartPolicy": type(host.get("RestartPolicy")) is dict and host["RestartPolicy"].get("Name") == "no",
+        "HostConfig.PortBindings": not host.get("PortBindings"),
+        "HostConfig.PublishAllPorts": not host.get("PublishAllPorts"),
+        "HostConfig.CapDrop": host.get("CapDrop") == ["ALL"],
+        "HostConfig.CapAdd": allowed_cap_add(host.get("CapAdd"), spec["cap_add"]),
+        "HostConfig.SecurityOpt": host.get("SecurityOpt") == ["no-new-privileges:true"],
+        "HostConfig.Binds": not host.get("Binds"), "HostConfig.Devices": not host.get("Devices"),
+        "HostConfig.PidMode": host.get("PidMode", "") == "", "HostConfig.IpcMode": host.get("IpcMode") == "private",
+        "HostConfig.Tmpfs": host.get("Tmpfs") == {"/tmp": "rw,noexec,nosuid,size=16777216"},
+    })
     volumes = [row for row in mounts if row.get("Type") == "volume"]
     tmpfs = [row for row in mounts if row.get("Type") == "tmpfs"]
     actual = {(row.get("Name"), row.get("Destination"), not row.get("RW")) for row in volumes}
-    h.require(len(volumes) == len(spec["mounts"]) and actual == set(spec["mounts"]) and
-              len(volumes) + len(tmpfs) == len(mounts) and len(tmpfs) <= 1 and
-              all(row.get("Destination") == "/tmp" and row.get("RW") is True for row in tmpfs), "MOUNTS")
-    h.require(value.get("State", {}).get("Running") is running, "CONTAINER_STATE")
+    admission_checks("MOUNTS", {
+        "Mounts.inventory": len(volumes) == len(spec["mounts"]) and actual == set(spec["mounts"]),
+        "Mounts.types": len(volumes) + len(tmpfs) == len(mounts),
+        "Mounts.tmpfs": len(tmpfs) <= 1 and all(row.get("Destination") == "/tmp" and row.get("RW") is True for row in tmpfs),
+    })
+    admission_checks("CONTAINER_STATE", {"State.Running": state.get("Running") is running})
 
 
 class Docker:
@@ -277,8 +349,9 @@ def cleanup(backend, resources, fixture_id):
                 backend.remove(kind, name)
             h.require(backend.inspect(kind, name) is None, "RESOURCE_REMAINS")
             row["removed"] = True
-        except (Exception, KeyboardInterrupt):
+        except (Exception, KeyboardInterrupt) as error:
             row["error"] = "CLEANUP_NOT_PROVEN"
+            row["failure_details"] = failure_details(error)
         results.append(row)
     return results
 
@@ -420,8 +493,9 @@ def execute(plan, approval, backend, *, revision_check=verify_revision, journal=
         stage("measure", ("ledger", "observer"), resumed)
         remaining()
         report["case_passed"] = True
-    except (Exception, KeyboardInterrupt):
+    except (Exception, KeyboardInterrupt) as error:
         report["failure_phase"] = phase
+        report["failure_details"] = failure_details(error)
     finally:
         with cleanup_signals():
             backend.deadline = time.monotonic() + 60
@@ -437,8 +511,9 @@ def execute(plan, approval, backend, *, revision_check=verify_revision, journal=
                     result = stage("revoke", case.ROLES, cleanup_mode=True)
                     verify_revocation(result.get("revocation"), case.ROLES)
                     report["revocation"] = "verified"
-                except (Exception, KeyboardInterrupt):
+                except (Exception, KeyboardInterrupt) as error:
                     report["revocation"] = "not_proven"
+                    report["revocation_failure"] = failure_details(error)
             else:
                 report["revocation"] = "server_never_started"
             report["cleanup"] = cleanup(backend, resources, fixture_id)

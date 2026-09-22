@@ -11,7 +11,18 @@ Implementation is locally tested; real-Redis execution and acceptance are pendin
 four original findings and a closed-peer follow-up are fixed and re-reviewed.
 See the [closure report](../../docs/crawl-jobs-v2-m4-rereview-2026-09-21.md).
 The [original NO-GO report](../../docs/crawl-jobs-v2-m4-review-2026-09-21.md) and
-reproduction scripts remain dated evidence. Image/CI and execution gates remain.
+reproduction scripts remain dated evidence. Image and exact-revision CI gates
+now pass; see the [bounded approval record](../../docs/crawl-jobs-v2-m4-ci-approval-2026-09-22.md)
+for its recorded scope. The subsequent single smoke attempt
+[failed in init](../../docs/crawl-jobs-v2-m4-smoke-report-2026-09-22.md), before Redis
+startup; cleanup was verified. The one-case approval is used and must not be reused.
+
+**Init correction (2026-09-22): GO for scoped publication and revised-image
+validation.** Docker's `CAP_CHOWN` spelling is now admitted only as the equivalent
+singleton init capability. Captured-metadata regressions, value-free diagnostics
+and stopped-role image-preparation checks pass independent review. The rebuilt
+image passes; new checkpoint CI and fresh approval are next. See the
+[diagnosis/review report](../../docs/crawl-jobs-v2-m4-init-fix-2026-09-22.md).
 
 ## Implemented commands
 
@@ -174,6 +185,9 @@ The init helper alone uses UID 0 with only CHOWN capability to initialize fresh
 volume ownership. Redis and the executor use `65534:65534` with all capabilities
 dropped. Both have network mode `none`. The controller communicates only with
 the local Docker Unix socket, never a caller-selected Docker host.
+Admission accepts only `CHOWN` or Docker's canonical `CAP_CHOWN` spelling for that
+single init capability; no generic prefix normalization or additional capability
+is allowed.
 
 Execution is bounded at 300 seconds (approval may choose less), capped by the
 approval expiry. Approval is revalidated after revision checks and intent
@@ -192,9 +206,12 @@ valid evidence. This slice provides no automatic recovery/prune command.
 
 ### Image and execution approval gates
 
-The first immutable arm64 image preparation now passes; see the
-[image report](../../docs/crawl-jobs-v2-m4-image-preparation-2026-09-21.md) and
-[exact artifacts](../../docs/evidence/m4-image-prep-2026-09-21/README.md).
+The corrected immutable arm64 image preparation passes; see the
+[init correction report](../../docs/crawl-jobs-v2-m4-init-fix-2026-09-22.md) and
+[new exact artifacts](../../docs/evidence/m4-init-fix-2026-09-22/README.md).
+Preparation first verifies all four stopped container specifications using the
+runtime admission path, checks created/PID-zero state, and proves cleanup. These
+metadata containers never start; failure prevents further checks or artifact export.
 The Dockerfile defaults to a reviewed immutable Python 3.13.15 index. Rebuild from
 the reviewed tree using that base or an explicitly reviewed immutable override.
 Inspect the resulting daemon-local image ID and the selected Redis image ID;
@@ -225,15 +242,17 @@ python3 -B tests/crawl-jobs-v2-redis/controller.py run \
   --evidence-dir /absolute/path/to/existing-private-evidence-directory
 ```
 
-This command has not been run for this slice. A matching input hash does not
-create owner approval. The current uncommitted implementation cannot satisfy
-its clean-revision gate.
+This command ran once and failed in init; see the dated report. A matching input
+hash does not create owner approval or permission to retry. The corrected
+source/image/recipe needs new exact-revision CI and fresh approval; the consumed
+approval for `340906c` cannot authorize these revised bytes.
 
 The controller writes exclusive mode-0600 intent/final JSON files outside the
 fixture volumes. Reports bind identities, actual container checks, probe/BOOT
 evidence, setup/time observations, state comparisons, denials, revocation and
 destruction receipts. Credentials travel via bounded stdin, never command-line
-arguments, environment variables or report fields. Errors omit raw server and
+arguments, environment variables or report fields. Errors retain only closed
+failure codes and admission-check names, omitting inspected values and raw server/
 Docker diagnostics. `m4_accepted` is always false: even a successful future smoke
 case cannot certify the remaining matrix. Injected fake backends always emit
 `evidence_kind=simulated` and `case_evidence_valid=false`.
@@ -253,8 +272,11 @@ redaction using fakes. `test_review_regressions.py` covers the four review
 counterexamples, worker quiescence ordering, a real local Python stage-timer
 exit, process-group aborts, strict peer-disconnection proof and expiry between
 create/start. A real local Unix socket-pair regression covers orderly peer close
-before the probe. Two target-kernel network regressions bring the local suite to
-45 tests; it starts no Docker or Redis. In `services/spider`:
+before the probe. Two target-kernel network regressions and eight container-admission
+regressions bring the local suite to 53 tests; it starts no Docker or Redis.
+`test_container_admission.py` replays captured Docker metadata, rejects broader
+capabilities, checks bounded diagnostics, and verifies metadata-only preparation
+and failure cleanup. In `services/spider`:
 
 ```bash
 GOPROXY=off GOTOOLCHAIN=go1.25.13 go test -mod=readonly \
@@ -274,9 +296,10 @@ runtime image copies only the Spider binary and existing configuration.
 
 The [implementation plan](../../docs/crawl-jobs-v2-plan.md) owns progress.
 The corrected first-case execution layer and target-discovered corrections have
-scoped independent GO. Immutable image content, memory and isolation checks pass;
-protected CI and separate execution approval remain pending. Actual Redis ACL/
-OS lifecycle validation waits for that approved run. Candidate-presence
+scoped independent GO. The init admission defect is corrected and re-reviewed;
+rebuilt-image content, memory and stopped-role isolation checks pass. Complete
+protected CI for the correction and obtain fresh approval before another run.
+Actual Redis ACL/OS lifecycle validation has not been reached. Candidate-presence
 fixtures, administrative transitions, job/lease/stage/commit behavior, maximum
 shapes, crash-boundary coverage, benchmarks and final release/image admission
 remain subsequent gates. Fake results never substitute for those observations.

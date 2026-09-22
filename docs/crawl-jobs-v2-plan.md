@@ -2,7 +2,7 @@
 
 **Finding:** F3 - durable crawl-job leases and recovery
 
-**Last updated:** 2026-09-21 (UTC; immutable images validated, scoped publication authorized)
+**Last updated:** 2026-09-22 (UTC; init admission corrected, re-reviewed and rebuilt image validated)
 
 **Working branch:** `feature/crawl-jobs-v2-lua`
 
@@ -14,14 +14,18 @@ are implemented and dormant. M3 source implementation and local verification
 are complete, including the full Spider module race suite, and the checkpoint
 is committed and pushed as `81028ca`.
 
-**Current next gate:** Immutable Linux/arm64 harness and Redis images are prepared
-and validated. Target-discovered packaging/network/memory corrections and CI
-sharding have scoped independent publication GO. The owner authorized a scoped
-commit/push and draft update of PR #10. Complete protected CI on that revision,
-then obtain separate exact-artifact execution approval. No real-Redis fixture
-has run. See the [image-preparation report](crawl-jobs-v2-m4-image-preparation-2026-09-21.md),
-[re-review report](crawl-jobs-v2-m4-rereview-2026-09-21.md); the
-[original NO-GO report](crawl-jobs-v2-m4-review-2026-09-21.md) remains historical evidence.
+**Current next gate:** Publish the authorized init-admission correction, complete
+protected CI on that exact revision, and obtain fresh artifact-bound approval.
+Metadata-only reproduction isolated Docker's `CHOWN` / `CAP_CHOWN` spelling;
+the narrow fix passes independent correctness/security review, 53 harness tests,
+21 script tests, Go wire/race and revised immutable-image validation. See the
+[diagnosis and correction report](crawl-jobs-v2-m4-init-fix-2026-09-22.md).
+The first [smoke attempt](crawl-jobs-v2-m4-smoke-report-2026-09-22.md) remains
+**FAIL** before Redis startup, with cleanup verified. Its one-case approval is
+consumed. All fourteen CI checks on `340906c` are historical evidence; they do
+not certify the corrected bytes or a smoke pass. The
+[old CI/approval record](crawl-jobs-v2-m4-ci-approval-2026-09-22.md) and earlier
+dated review/image reports remain preserved.
 
 **Preparation update (2026-09-21):** The owner requested work on M4 readiness and
 then explicitly approved all four proposals, permitting continued implementation.
@@ -176,9 +180,9 @@ retains it as a primitive case; guard cases now explicitly bind the complete
 | Authoritative bundle | Complete zero-argument `AuthoritativeScriptBindingSet()` validates embedded sources against fixed generated pins and returns fresh private sealed bindings; no caller-supplied sources, hashes or paths |
 | Local acceptance | September 18 M3 full race/Docker results remain dated evidence; September 21 amendment/offline verification is recorded below; no protected-PR or real-Redis acceptance is claimed |
 | Runtime behavior | No M4 real-Redis acceptance run, operational/retained datastore mutation, application/service activation, migration, deployment, candidate marker, rendering activation, or crawl is part of this M3 work |
-| M4 preparation | Offline compiler and corrected first executor under `tests/crawl-jobs-v2-redis/`; 43 Python tests plus independent Go wire/race checks pass; target image/isolation/ACL/BOOT/teardown evidence pending |
-| Review status | September 18 M3 reviews remain scoped GO. September 21 remediation closes COR-1/COR-2, SEC-1/SEC-2 and the closed-peer follow-up; independent correctness/security re-review is GO for image preparation only |
-| Git state | M3 checkpoint `81028ca12a1763d46df72fc54759d99a0ea3b561` is committed, pushed and remote-verified on `feature/crawl-jobs-v2-lua`, based on PR #9 merge `d914a93`; no M3 PR or merge authorization |
+| M4 preparation | Init capability alias corrected; 53 harness/21 script tests, Go wire/race, four stopped-role checks and rebuilt 55-file arm64 image validation pass; actual Redis/ACL/BOOT acceptance pending |
+| Review status | September 21 findings remain closed. September 22 independent correctness/security re-review is GO for the scoped correction's publication and revised-image validation |
+| Git state | M4 through `340906c` is published with passing CI on draft PR #10; owner authorized the correction/evidence checkpoint; new protected CI and fresh approval are next, with no merge authorization |
 
 ### Current source and fixture identities (regenerated 2026-09-21)
 
@@ -264,7 +268,7 @@ The final matrix and final independent reviews used pinned Go 1.25.13 and passed
 | M1: Foundation release gate | Complete and merged | Approved amendment, independent GO reviews, and passing protected PR #9 checks before merge |
 | M2: Reviewed foundation checkpoint | Complete | Scoped 66-file checkpoint secret-scanned, tested from the index export, committed, pushed, and remote identity verified |
 | M3: Authoritative Lua transitions | Complete locally: 43/43 sources, sealed factory, source conformance and full-module race verification; checkpoint `81028ca` pushed, still dormant | Complete source/pin and in-memory Go/Python/Lua checks plus the final current-tree race result, without runtime activation |
-| M4: Real Redis 7 acceptance | Execution not started; first-executor findings closed and independently re-reviewed GO for image preparation; image/CI/execution-approval gates remain | Idempotency, fencing, crash, AOF, memory, and latency evidence passes on disposable infrastructure |
+| M4: Real Redis 7 acceptance | First bounded attempt FAIL in init before Redis startup; cleanup verified; approval used; diagnosis and fresh approval required before another attempt | Idempotency, fencing, crash, AOF, memory, and latency evidence passes on disposable infrastructure |
 | M5: Runtime and consumer integration | Blocked by M4 and F4-F6 | Spider, feeder, consumers, Monitoring, Compose, and crawl-admin use only the accepted V2 protocol |
 | M6: Migration, runbooks, and rollback | Blocked by M5 | Stopped migration and rollback rehearsal pass; active docs contain tested V2 commands and no active V1 path |
 | M7: Immutable release gate | Blocked by M6 | Final digests, manifests, images, backups, CI, and authorization/report templates are reviewed |
@@ -327,8 +331,9 @@ The final matrix and final independent reviews used pinned Go 1.25.13 and passed
 - [x] Resolve COR-1/COR-2 and SEC-1/SEC-2, add regressions and obtain re-review.
 - [x] Correct the closed-peer follow-up found during re-review and obtain final
   correctness/security GO for image preparation only.
-- [ ] Complete amended-artifact and execution-harness review, then obtain explicit
-  M4 execution approval before starting disposable Redis acceptance.
+- [x] Complete first-case artifact/harness review and record the time-bounded
+  exact-artifact approval; execution remains for a separately requested step.
+- [ ] Complete the broader M4 acceptance reviews and later-case approvals.
 
 ## M1: Final foundation release gate
 
@@ -855,11 +860,12 @@ section 17 requirement to a test and evidence artifact:
   obtain scoped independent GO for image preparation only.
 - [ ] Normative amendment and regenerated identities independently reviewed.
 - [ ] Harness, evidence schema, crash-boundary method and benchmark plan reviewed.
-- [ ] Explicit M4-P3 execution approval recorded against exact artifacts.
+- [x] Exact-artifact approval recorded for the first bounded M4-P3 smoke case,
+  with expiry and record-only scope in the September 22 CI/approval record.
 
 The checked decisions record owner approval and scoped first-executor review.
-Broader M4 protocol/evidence review and actual execution approval remain separate
-unchecked gates; local GO does not close them.
+Broader M4 protocol/evidence review and approvals for later cases remain separate
+unchecked gates; the first-case approval does not close them.
 
 #### M4-P2 implementation checklist
 
@@ -896,9 +902,14 @@ independent re-review now close the items below; image preparation is next.
 - [x] After GO review, build and validate immutable images and record exact source/memory evidence.
 - [x] Independently review target-discovered image and CI corrections; close the nested-skip finding.
 - [x] Obtain owner authorization for scoped checkpoint commit/push and draft PR #10 update.
-- [ ] Publish the scoped checkpoint and pass all applicable protected CI contexts on that revision.
-- [ ] Record separate approval for the exact first real-Redis case/artifacts.
-- [ ] Run that approved first case and review actual probe, ACL and teardown evidence.
+- [x] Publish the scoped checkpoint and pass all applicable protected CI contexts
+  on `340906c` (14/14 SUCCESS).
+- [x] Record separate approval for the exact first case; renewed September 22,
+  expiring at 17:18:43.933 UTC. This is a record-only step, not execution.
+- [x] Execute the approved first case once and preserve its FAIL result and cleanup evidence.
+- [ ] Diagnose the init-container setup/pre-start error with bounded, redacted evidence.
+- [ ] Remediate/review any required change, refresh image/CI artifacts and obtain a new exact-artifact approval.
+- [ ] Pass a newly approved first case and review actual probe, ACL and teardown evidence.
 
 The initial active operation is the empty-inventory
 `CJ2_MAINTAIN_RATE_SCOPES` path. The approved run will test active transport and
@@ -1131,6 +1142,104 @@ converted to draft as requested. Protected results and execution approval are
 not inferred from these local passes. Redis ran only `--version`, never as a
 server; no retained datastore was queried or changed by these checks.
 
+#### Protected CI and exact-artifact approval (2026-09-22)
+
+The scoped M4 checkpoint was published as `db8a059`, followed by CI-only
+correction `340906c694ee6f51d67ea0c9b448b07f29df4834`. Local and remote branch
+identities match, execution-source paths are tracked/clean, and the approved
+image-source bytes are unchanged by the CI-only follow-up. PR #10 remains draft
+and unmerged.
+
+Required Checks run `35652511870` and Unit Tests run `35652511709` both succeeded
+on the final head. All fourteen protected contexts were individually confirmed
+SUCCESS and rechecked September 22. The eight reports cover all 470 compiled
+V2 roots: 469 passed and the one explicitly allowed native-Lua factory test
+skipped. The reports bind tested merge tree
+`642b0e6fa6d2ce7c0235ce8dbbe7727c822718fa` over unchanged base `d914a93`.
+Linux/amd64 CI image validation also passed.
+
+The earlier run's hosted-runner finalization cancellation and aggregate shell
+quoting failure are retained as failed attempts. The final revision uses a tested
+Python argument-list path for all remaining packages; the entire protected matrix
+was rerun successfully rather than bypassing the failed check. Local script
+tests now total 21, alongside the 45 harness tests.
+
+The owner approved one exact Linux/arm64 smoke case with 300 seconds plus
+60-second cleanup, then explicitly renewed it after the original approval expired
+during the outage. Current approval SHA-256:
+`c63cbb050d81466b767ad7a55787ec450bb6df6c472f39fd4e19ee87dcd012c3`.
+It binds head `340906c`, plan `bf22f79cd2b23e09aa77fa288b70c190c7c04ef24384d5c48ea5d5a885c362c4`,
+recipe `2cfb26736d94c9c05188989e8da814272c7a662ac0441d045ff941c5508b078b`
+and the two validated arm64 images. It expires **2026-09-22 17:18:43.933 UTC**.
+The [CI/approval record](crawl-jobs-v2-m4-ci-approval-2026-09-22.md) holds exact
+identities, run links, private approval location and scope.
+
+At approval-recording time, no case had run; the subsequent attempt is recorded
+below. Post-CI notes were held locally to preserve the approved HEAD. After the
+failed attempt consumed that approval, the owner authorized publishing them with
+the correction, requiring new CI and approval. Full M4 acceptance and all later
+integration/release/crawl gates remain open.
+
+#### First bounded smoke attempt (2026-09-22)
+
+After the owner explicitly requested execution, the unchanged approved controller
+ran once with fixture ID `6c963c07b5526561459830bac338b997`. Approval/expiry,
+plan/recipe, clean execution-source scope, both immutable images and all fourteen
+CI contexts were verified before invocation. No prior case-labeled resources
+were present.
+
+The attempt returned **FAIL**, `failure_phase=init`, no completed stage output
+and no container-admission receipt. Redis never started, so the probe, BOOT,
+maintenance and ACL measurements were not reached. Docker events show only
+init-container creation and destruction at 16:38:49 UTC, with no start event.
+The approved controller did not retain the underlying exception or offending
+inspection field; the exact cause cannot be established from this report alone.
+
+Controller cleanup removed the init container and both new volumes. Independent
+label-filtered listings found no containers/volumes, and direct inspection
+confirmed the init container absent. Final report SHA-256:
+`016d79db4345f5b2a74236bb6159fa1610fda49eb54d31ad0a45362c826fef88`.
+The [dated smoke report](crawl-jobs-v2-m4-smoke-report-2026-09-22.md) links the
+exact report, intent and event copies. No runtime implementation was changed,
+no retry was made, and no retained-stack data was targeted.
+
+The single-case approval is used by this failed attempt. A consumption receipt
+is retained beside the original private approval; do not treat its still-future
+expiry as permission for another case. The next work is diagnosing the init
+inspection/start boundary, followed by appropriate regression/review/image/CI
+updates and a fresh approval. No first-case or full M4 acceptance is claimed.
+
+#### Init-boundary diagnosis and correction (2026-09-22)
+
+Metadata-only create/inspect/remove reproduced `ISOLATION` against the exact old
+controller: Docker emitted `CapAdd=["CAP_CHOWN"]` for requested `CHOWN`. Changing
+only that observed spelling makes the old verifier pass. The corrected verifier
+admits only the two singleton init spellings; other roles have no added caps.
+Closed category/field-name diagnostics retain the failed predicate without raw
+Docker, credential or inspected values.
+
+Eight new regression tests bring the harness suite to 53; 21 script tests,
+Go wire/race, generator and digest checks pass. Separate correctness and security
+reviewers returned GO for scoped publication/image validation, with no new
+actionable finding. Their source/offline review and exact hashes are recorded in
+the [dated correction report](crawl-jobs-v2-m4-init-fix-2026-09-22.md).
+
+The image preparer now gates its checks on actual stopped-container admission for
+all four roles. Corrected arm64 harness image
+`sha256:2059066be4f192b84d4932050d1f811ed2bacf275e7d7cc0179f3e709d50e12c`
+passes exact 55-file/source/memory validation; init peak is 48,914,432 bytes under
+128 MiB. Redis remains image `sha256:24e81cffaba832bcd71068a6ff772a531076bafdbb1d684195766ae9b6511f5c`.
+New plan is `d06a4ef887125883ecb1f0924f9192f4070bdb01c003d17ab718ca4baa451fbb`;
+recipe is `9b0adc08f054775c24922a84012d2c4dbd950f630e151226536bd2e619ff81ab`.
+[Artifacts and diagnostics](evidence/m4-init-fix-2026-09-22/) preserve exact bytes.
+Metadata checks started no containers; separate image checks ran only Python
+validation and Redis `--version`. All created resources were removed and absence
+was independently checked. No Redis server or smoke retry ran.
+
+The owner authorized the scoped correction/evidence commit, push and draft PR
+update. Protected checks must pass on that new revision before fresh one-case
+approval. The old FAIL report and consumed approval remain unchanged evidence.
+
 ### Source and trust-anchor rules
 
 - Add exactly one canonical reviewed source for each of the 43 operations.
@@ -1190,11 +1299,11 @@ not real-Redis timing, allocator, durability or operational acceptance.
 
 ## M4: Disposable Redis 7 acceptance
 
-**Real-Redis execution not started or approved.** D1-D4 are approved; the
-amendment, offline compiler and first-case executor are implemented locally.
-The final independent re-review and image preparation pass for the first case.
-M4 waits for exact-revision protected CI and explicit execution approval,
-followed by actual first-case and full-matrix acceptance.
+**First bounded attempt: FAIL before Redis startup.** Images and exact-revision
+CI passed, then the owner requested one approved run. It failed in init and
+cleaned up its resources. The capability-spelling defect is now corrected,
+re-reviewed and validated in the rebuilt image. New exact-revision CI and fresh
+approval precede another attempt. First-case and full M4 acceptance remain open.
 The [2026-09-21 readiness package](#m4-readiness-decision-package-2026-09-21)
 records scope and remaining gates; it is not Redis acceptance evidence.
 
@@ -1352,9 +1461,11 @@ operationally blocked. M1/M2 are merged; all 43 dormant M3 sources and the seale
 factory are implemented and verified locally, including the final full-module
 race pass. M4's approved amendment and offline layer are implemented locally;
 the first-case executor and immutable image validation also pass locally.
-Protected CI and execution approval remain pending. The first-executor
-findings and closed-peer follow-up are fixed; independent final re-review permits
-image preparation only.
+The first approved smoke attempt failed before Redis startup. Its init defect
+is now reproduced and corrected; independent review and rebuilt-image validation
+pass. The owner authorized scoped publication; new protected CI and fresh approval
+precede another attempt. First-case acceptance and the broader M4 matrix remain
+pending. The first-executor findings and closed-peer follow-up remain closed.
 M5 hermetic code/consumer integration waits
 for M4 and F4-F6. In the parent plan, compatible code and runbooks precede the F1/F2
 operational reset so retained evidence is preserved and the environment is reset
@@ -1395,6 +1506,12 @@ Rendering remains disabled unless its separate activation requirements pass.
 | 2026-09-21 | Final independent re-review | Receive-only disconnect proof and actual local IPC regression close the follow-up; 43 Python tests and Go wire/race verification pass; correctness and security both GO for image preparation only; no real Redis or image/CI acceptance claimed |
 | 2026-09-21 | Immutable image preparation | Tightened build context, target-kernel network checks and bounded-memory hashing; exact 55-file validation and memory checks pass on immutable arm64 images; all canonical digests unchanged; offline plan/recipe/evidence emitted without run approval |
 | 2026-09-21 | Publication/CI preparation | Owner authorized scoped commit/push/draft PR #10 update; PR converted to draft; exhaustive eight-shard race CI addresses prior aggregate timeout; nested-skip review finding fixed and re-reviewed GO; protected results pending publication |
+| 2026-09-21 | Scoped publication and CI correction | `db8a059` published the 45-file checkpoint; a runner-finalization cancellation and shell quoting failure prevented its full protected pass; independently reviewed CI-only fix published as `340906c` |
+| 2026-09-21 | Exact-revision protected CI | Required Checks `35652511870` and Unit Tests `35652511709` succeeded on `340906c`; 14/14 protected contexts SUCCESS; 470 V2 roots accounted for, 469 pass/one allowed optional skip; PR remains draft |
+| 2026-09-22 | Approval renewal after connectivity outage | Original approval expired and was correctly rejected; owner explicitly renewed the same artifact scope for one hour, expiry 17:18:43.933 UTC; approval recorded privately, no run started |
+| 2026-09-22 | First approved bounded smoke attempt | Fixture `6c963c07b5526561459830bac338b997` returned FAIL in init before Redis startup; no probe/BOOT/maintenance evidence; init container and both volumes removed and independently checked absent; one-case approval used, no retry |
+| 2026-09-22 | Init diagnosis and reviewed correction | Actual stopped-container metadata reproduces CHOWN/CAP_CHOWN mismatch; finite alias fix, bounded diagnostics and eight regressions pass; independent correctness/security GO for scoped publication and image validation |
+| 2026-09-22 | Corrected immutable-image preparation | New arm64 harness `2059066…` passes all four stopped-role admissions and exact 55-file/source/memory checks; cleanup independently verified; new plan/recipe emitted without run approval; publication/new CI are next |
 
 ## Definition of done
 

@@ -43,7 +43,10 @@ were approved on September 21; the amendment, offline compiler and first bounded
 ledger-smoke executor are implemented and locally tested. The review findings
 are fixed; immutable arm64 images and target checks now pass scoped review and
 validation. The owner authorized the scoped checkpoint and draft PR #10 update;
-protected CI and exact-artifact real-Redis execution approval remain pending. See the
+all fourteen protected checks passed on `340906c`. The first approved smoke
+attempt failed before Redis startup; its capability-spelling defect is now fixed,
+independently reviewed and validated in a rebuilt image. New checkpoint CI and
+fresh approval precede another attempt. See the
 [Crawl Jobs V2 plan](docs/crawl-jobs-v2-plan.md). Historical V1 commands below do
 not authorize another crawl.
 

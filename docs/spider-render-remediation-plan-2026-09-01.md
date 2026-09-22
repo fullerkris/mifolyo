@@ -2,7 +2,7 @@
 
 **Original review date:** 2026-09-01
 
-**Last updated:** 2026-09-21 (UTC; M4 images validated and scoped publication authorized)
+**Last updated:** 2026-09-22 (UTC; M4 init defect corrected and re-reviewed)
 
 **Reviewed baseline:** `main` / `44d8b09a364a1f60032e1f4faccf160813f4dd04`
 
@@ -109,7 +109,7 @@ retained Mongo records still incorrectly say `enabled: true`.
 |---|---|---|
 | F1 seed reconciliation | Not started | Retained evidence remains 70 enabled records; execute only during the matched freeze/backup/reset sequence |
 | F2 disposable Redis reset | Not started | Retained V1 state remains historical post-test evidence and must not be reused or selectively repaired |
-| F3 durable Crawl Jobs V2 | M1/M2 merged; M3 checkpoint `81028ca` pushed, still dormant; M4 images now validated with scoped publication GO | 45 harness tests, 19 script tests and immutable image checks pass; owner authorized scoped checkpoint/draft PR #10 update; exact-revision CI and execution approval pending; evidence lives in [`crawl-jobs-v2-plan.md`](crawl-jobs-v2-plan.md) |
+| F3 durable Crawl Jobs V2 | M1/M2 merged; M3 remains dormant; M4 init defect corrected with independent GO | First smoke attempt remains FAIL; correction passes 53 harness/21 script tests and rebuilt-image validation; new checkpoint CI/fresh approval needed; evidence lives in [`crawl-jobs-v2-plan.md`](crawl-jobs-v2-plan.md) |
 | F4 exact crawl scope | Not started | No crawl-policy V2 schema or approved exact-URL policy is present |
 | F5 backlink persistence | Code acceptance passed and merged | PR #9 passed protected checks and merged as `d914a93`; no retained datastore reconciliation or V2 consumer activation is implied |
 | F6 JavaScript-shell indexing | Not started | No static-extraction policy schema or approved metadata-fallback configuration is present |
@@ -294,8 +294,11 @@ wire grammar, limits, transitions, records, Redis configuration, and evidence.
   offline compiler/tests and first ledger-smoke executor are implemented locally.
   The original four findings and a closed-peer follow-up are now corrected.
   Independent final correctness/security re-review returns GO for image
-  preparation only. Subsequent immutable image validation passes; protected CI
-  and explicit real-Redis execution approval remain pending.
+  preparation only. Subsequent immutable image validation and exact-revision CI
+  pass. The first approved bounded attempt failed in init before Redis startup;
+  cleanup was verified and the one-case approval is used.
+  Its capability-spelling defect is now corrected and independently re-reviewed;
+  revised-image validation passes, with new checkpoint CI and fresh approval next.
   No M4 acceptance, runtime
   integration, retained datastore mutation, application/service activation,
   migration, deployment, candidate marker or crawl is part of this M3 work.
@@ -634,7 +637,9 @@ F5 code acceptance and F3 M1/M2 passed through PR #9. M3 is implemented,
 locally verified and pushed. M4's approved amendment/offline layer is implemented
 locally, including the first ledger-smoke execution slice. Its independent review
 and remediation are complete locally, with independent GO for image preparation
-only. Image validation now passes; protected-CI and execution-approval gates remain.
+only. The first smoke attempt failed before Redis startup. The init defect is
+now corrected, re-reviewed and validated in a rebuilt image. New checkpoint CI
+and fresh approval precede another attempt; actual M4 acceptance remains pending.
 F4 and the hermetic part of F6 can proceed before runtime integration.
 F1 and F2 execute only after compatible code and runbooks are ready
 so the disposable environment is reset once. Crawl Jobs V2 milestones M5

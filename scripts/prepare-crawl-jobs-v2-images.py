@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Validate already-built immutable images without starting Redis or a fixture.
 
-Runs only a Redis version command and two networkless Python image checks.
+Checks stopped-container admission, then runs only a Redis version command and
+two networkless Python image checks. The metadata checks never start containers.
 Writes bounded evidence outside project volumes; never creates an approval.
 """
 from __future__ import annotations
@@ -19,6 +20,44 @@ sys.path.insert(0, str(HERE))
 
 import controller as ctl
 import harness as h
+
+
+def validate_prestart(backend, harness_image, redis_image):
+    fixture = secrets.token_hex(16)
+    prefix = "cj2-prestart-check-" + fixture
+    volumes = {role: prefix + "-" + role for role in ("control", "data")}
+    resources = []
+    report = {"kind": "metadata_only_prestart", "status": "FAIL", "containers_started": 0, "roles": []}
+    try:
+        for volume in volumes.values():
+            h.require(backend.inspect("volume", volume) is None, "CHECK_VOLUME_EXISTS")
+            resources.append(("volume", volume))
+            backend.volume(volume, fixture)
+        for role in ("init", "executor", "redis", "revocation"):
+            name = prefix + "-" + role
+            h.require(backend.inspect("container", name) is None, "CHECK_CONTAINER_EXISTS")
+            spec = ctl.container_spec(name, role, fixture, redis_image if role == "redis" else harness_image, volumes)
+            resources.append(("container", name))
+            backend.create(spec)
+            observed = backend.inspect("container", name)
+            ctl.verify_container(observed, spec, False)
+            h.require(observed["State"].get("Status") == "created" and type(observed["State"].get("Pid")) is int
+                      and observed["State"]["Pid"] == 0,
+                      "CHECK_CONTAINER_STARTED")
+            report["roles"].append({"role": role, "status": "PASS", "cap_add": observed["HostConfig"].get("CapAdd"),
+                                    "inspection_sha256": h.digest(h.canonical(observed))})
+        report["status"] = "PASS"
+    except (Exception, KeyboardInterrupt) as error:
+        report["failure_details"] = ctl.failure_details(error)
+    finally:
+        previous_deadline = backend.deadline
+        with ctl.cleanup_signals():
+            backend.deadline = time.monotonic() + 60
+            report["cleanup"] = ctl.cleanup(backend, resources, fixture)
+            backend.deadline = previous_deadline
+        if not all(row["removed"] for row in report["cleanup"]):
+            report["status"] = "FAIL"
+    return report
 
 
 def validate(backend, image, redis_image, role):
@@ -94,11 +133,12 @@ def main():
     for role, value in (("harness", args.harness_image), ("redis", args.redis_image)):
         raw = backend.inspect("image", value)
         images[role] = ctl.image_admission(raw, value, args.architecture, role == "harness")
+    prestart = validate_prestart(backend, args.harness_image, args.redis_image)
     checks = [validate(backend, args.redis_image, args.redis_image, "redis-version"),
               validate(backend, args.harness_image, args.redis_image, "init"),
-              validate(backend, args.harness_image, args.redis_image, "executor")]
-    report = {"version": 1, "architecture": args.architecture, "images": images, "checks": checks,
-              "status": "PASS" if all(c["status"] == "PASS" for c in checks) else "FAIL",
+              validate(backend, args.harness_image, args.redis_image, "executor")] if prestart["status"] == "PASS" else []
+    report = {"version": 1, "architecture": args.architecture, "images": images, "checks": checks, "prestart": prestart,
+              "status": "PASS" if prestart["status"] == "PASS" and all(c["status"] == "PASS" for c in checks) else "FAIL",
               "redis_started": False, "execution_authorized": False}
     if report["status"] == "PASS":
         inputs = {"format_version": 1, "scenario": "ledger-smoke", "redis_version": "7.4.11",
@@ -112,7 +152,7 @@ def main():
         report["recipe_sha256"] = h.digest(h.canonical(recipe))
     with (args.output_dir / "image-validation.json").open("xb") as stream:
         stream.write(h.canonical(report))
-    print(json.dumps({"status": report["status"], "checks": [
+    print(json.dumps({"status": report["status"], "prestart": prestart, "checks": [
         {k: v for k, v in c.items() if k != "check"} | ({"peak_bytes": c["check"]["cgroup_memory_peak_bytes"]} if "check" in c else {})
         for c in checks]}, sort_keys=True))
     return 0 if report["status"] == "PASS" else 1

@@ -235,11 +235,11 @@ class ProcessReviewTests(unittest.TestCase):
             docker = ctl.Docker()
         response = {"stage": "ready", "status": "PASS", "recipe_sha256": case.recipe_sha256(),
                     "isolation": {}, "result": {}}
-        with patch.object(docker, "call", return_value=h.canonical(response)) as call:
-            docker.stage("fixture", "ready", {}, 0.125)
-            self.assertEqual(call.call_args.args[-1], "125")
+        with patch.object(ctl, "command", return_value=(0, h.canonical(response), b"")) as call:
+            docker.stage("fixture", "ready", {"plan": fixtures.test_plan()}, 0.125)
+            self.assertEqual(call.call_args.args[0][-1], "125")
         for timeout in (0, -1, 0.0001):
-            with patch.object(docker, "call") as call, self.assertRaises((ctl.CommandError, h.InvalidArtifact)):
+            with patch.object(ctl, "command") as call, self.assertRaises((ctl.CommandError, h.InvalidArtifact)):
                 docker.stage("fixture", "ready", {}, timeout)
             call.assert_not_called()
 

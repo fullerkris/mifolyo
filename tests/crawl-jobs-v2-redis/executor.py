@@ -11,12 +11,11 @@ import time
 
 import harness as h
 import runtime_case as case
+import claim_executor as claim_worker
 from resp import Client, RedisError, TransportError
 
 CONTROL = Path("/run/cj2")
-BOOT_FIELDS = ("schema_version", "boot_state", "approved_redis_run_id", "boot_epoch", "approved_at_ms",
-               "planned_shutdown_nonce", "planned_shutdown_evidence_sha256", "last_approval_mode",
-               "consumed_planned_shutdown_nonce", "rehearsal_evidence_sha256", "rehearsal_at_ms", "acknowledged_loss_bound")
+BOOT_FIELDS = case.BOOT_FIELDS
 
 
 def connect(role, credentials):
@@ -104,14 +103,19 @@ def environment(init=False):
 
 
 def validate_request(request):
-    h.exact(request, {"plan", "recipe_sha256", "fixture_id", "credentials", "previous"})
+    h.require(type(request) is dict, "REQUEST")
     h.validate_plan(request["plan"])
-    h.require(request["plan"]["inputs"]["scenario"] == "ledger-smoke", "SCENARIO")
-    h.require(request["recipe_sha256"] == case.recipe_sha256(), "RECIPE")
+    selected = case.case_for_plan(request["plan"])
+    fields = {"plan", "recipe_sha256", "fixture_id", "credentials", "previous"}
+    h.exact(request, fields | ({"claim_material"} if selected == case.CLAIM_CASE else set()))
+    h.require(request["recipe_sha256"] == case.recipe_sha256(selected), "RECIPE")
     h.require(type(request["fixture_id"]) is str and re.fullmatch(r"[0-9a-f]{32}", request["fixture_id"]), "FIXTURE_ID")
     h.require(type(request["credentials"]) is dict and set(request["credentials"]) <= set(case.ROLES), "ROLE")
     h.require(all(type(value) is str and re.fullmatch(r"[0-9a-f]{64}", value)
-                  for value in request["credentials"].values()), "CREDENTIAL_FORMAT")
+                   for value in request["credentials"].values()), "CREDENTIAL_FORMAT")
+    h.require(type(request["previous"]) is dict, "PREVIOUS_STAGE")
+    if selected == case.CLAIM_CASE:
+        case.claim_fixture(request["plan"], request["fixture_id"], request["claim_material"])
 
 
 def configuration(client, plan):
@@ -177,8 +181,8 @@ def snapshot(client):
     return result
 
 
-def loaded(loader, operation):
-    source, sha = case.script_bytes(operation)
+def loaded(loader, operation, case_id=case.CASE):
+    source, sha = case.script_bytes(operation, case_id)
     h.require(loader.call("SCRIPT", "LOAD", source) == sha.encode(), "SCRIPT_SHA")
     return sha
 
@@ -220,7 +224,9 @@ def initialize(request):
         h.require(directory.is_dir() and not directory.is_symlink() and not list(directory.iterdir()), "VOLUME_NOT_EMPTY")
         os.chmod(directory, 0o700)
     config = (h.HERE / "redis.conf").read_bytes()
-    acl = case.acl_file(request["credentials"])
+    selected = case.case_for_plan(request["plan"])
+    binding = case.claim_fixture(request["plan"], request["fixture_id"], request["claim_material"]) if selected == case.CLAIM_CASE else None
+    acl = case.acl_file(request["credentials"], selected, binding, request["plan"])
     for name, raw in (("redis.conf", config), ("fixture.acl", acl)):
         path = CONTROL / name
         with path.open("xb") as stream:
@@ -248,6 +254,7 @@ def probe(request):
 
 def resume(request):
     credentials, plan = request["credentials"], request["plan"]
+    selected = case.case_for_plan(plan)
     previous = request["previous"]
     h.require(previous.get("acknowledged") is True and previous.get("value") == probe_value(request) and
               previous.get("value_sha256") == h.digest(probe_value(request).encode()), "PROBE_HISTORY")
@@ -259,14 +266,14 @@ def resume(request):
                   setup_client.call("PTTL", case.PROBE) == -1, "PERSISTENCE_LOSS")
         at = clock(setup_client)
         h.require(type(previous["at_ms"]) is int and 0 < previous["at_ms"] <= at, "PROBE_CLOCK")
-        evidence = {"case": case.CASE, "fixture_id": request["fixture_id"], "plan_sha256": h.digest(h.canonical(plan)),
+        evidence = {"case": selected, "fixture_id": request["fixture_id"], "plan_sha256": h.digest(h.canonical(plan)),
                     "old_run_id": previous["old_run_id"], "new_run_id": current["run_id"],
                     "acknowledged_probe_sha256": previous["value_sha256"], "verified_at_ms": at,
                     "acknowledged_loss_bound": 0}
         h.require(setup_client.call("DEL", case.PROBE) == 1 and inventory(setup_client) == set(), "PROBE_CLEANUP")
         with connect("loader", credentials) as loader:
-            loaded(loader, "CJ2_APPROVE_BOOT")
-            loaded(loader, "CJ2_MAINTAIN_RATE_SCOPES")
+            for operation in case.sources(selected):
+                loaded(loader, operation, selected)
         epoch = h.digest((request["fixture_id"] + ":boot").encode())[:32]
         evidence_sha = h.digest(h.canonical(evidence))
         boot_request = case.boot_request(current["run_id"], epoch, evidence_sha, at)
@@ -278,25 +285,37 @@ def resume(request):
         expected_boot = dict(zip(BOOT_FIELDS, ("1", "approved", current["run_id"], epoch, first[1].decode(),
                             "", "", "initial", "", evidence_sha, str(at), "0")))
         h.require(read_hash(setup_client, h.AUTH[0], BOOT_FIELDS) == expected_boot, "BOOT_STATE")
-        setup = h.ledger_setup(plan, clock(setup_client))
-        for row in setup["writes"]:
-            h.require(setup_client.call("TYPE", row["key"]) == b"none", "SETUP_PREEXISTING")
-            if row["type"] == "hash":
-                flat = tuple(v for field in row["fields"] for v in field)
-                h.require(setup_client.call("HSET", row["key"], *flat) == len(row["fields"]), "SETUP_WRITE")
-                h.require(read_hash(setup_client, row["key"], tuple(k for k, _ in row["fields"])) == dict(row["fields"]), "SETUP_BYTES")
-            else:
-                h.require(setup_client.call("SET", row["key"], row["value"]) == b"OK" and
-                          setup_client.call("GET", row["key"]) == row["value"].encode(), "SETUP_BYTES")
-        before = snapshot(setup_client)
+        setup_time = clock(setup_client)
+        if selected == case.CLAIM_CASE:
+            fixture = case.claim_fixture(plan, request["fixture_id"], request["claim_material"], setup_time)
+            binding = case.claim_fixture(plan, request["fixture_id"], request["claim_material"])
+            h.require(case.acl_rules(selected, fixture, plan) == case.acl_rules(selected, binding, plan), "ACL_BINDING_DRIFT")
+            before = claim_worker.install(setup_client, plan, fixture, expected_boot)
+            setup_result = {"setup_time_ms": setup_time, "fixture_summary": case.claim.public_summary(plan, fixture),
+                            "setup_state_sha256": before}
+        else:
+            setup = h.ledger_setup(plan, setup_time)
+            for row in setup["writes"]:
+                h.require(setup_client.call("TYPE", row["key"]) == b"none", "SETUP_PREEXISTING")
+                if row["type"] == "hash":
+                    flat = tuple(v for field in row["fields"] for v in field)
+                    h.require(setup_client.call("HSET", row["key"], *flat) == len(row["fields"]), "SETUP_WRITE")
+                    h.require(read_hash(setup_client, row["key"], tuple(k for k, _ in row["fields"])) == dict(row["fields"]), "SETUP_BYTES")
+                else:
+                    h.require(setup_client.call("SET", row["key"], row["value"]) == b"OK" and
+                              setup_client.call("GET", row["key"]) == row["value"].encode(), "SETUP_BYTES")
+            setup_result = {"setup_projection": setup, "snapshot": snapshot(setup_client)}
     revoked = revoke(credentials, case.EARLY_ROLES)
     return {"probe_evidence": evidence, "probe_evidence_sha256": evidence_sha, "boot_epoch": epoch,
-            "boot_record": expected_boot, "setup_projection": setup, "setup_time_observed": True,
-            "snapshot": before, "early_revocation": revoked}
+            "boot_record": expected_boot, "setup_time_observed": True, **setup_result, "early_revocation": revoked}
 
 
 def measure(request):
     previous, credentials = request["previous"], request["credentials"]
+    if case.case_for_plan(request["plan"]) == case.CLAIM_CASE:
+        with connect("observer", credentials) as observer, connect("ledger", credentials) as ledger:
+            h.require(server(observer)["run_id"] == previous["boot_record"]["approved_redis_run_id"], "BOOT_CHANGED")
+            return claim_worker.measure(request, observer, ledger)
     wire = case.active_request(request["plan"], previous["setup_projection"], previous["boot_epoch"])
     with connect("observer", credentials) as observer, connect("ledger", credentials) as ledger:
         h.require(server(observer)["run_id"] == previous["boot_record"]["approved_redis_run_id"], "BOOT_CHANGED")
@@ -371,14 +390,20 @@ def main():
             request = h.decode(sys.stdin.buffer.read(h.MAX_ARTIFACT_BYTES + 1))
             validate_request(request)
             isolation = environment(init=stage == "init")
-            result = stages[stage](request)
-            output = {"stage": stage, "status": "PASS", "recipe_sha256": case.recipe_sha256(),
+            status = "PASS"
+            try:
+                result = stages[stage](request)
+            except claim_worker.MeasurementFailure as failure:
+                h.require(stage == "measure" and case.case_for_plan(request["plan"]) == case.CLAIM_CASE, "MEASUREMENT_FAILURE")
+                result, status = failure.result, "FAIL"
+                claim_worker.validate_measurement(result, False)
+            output = {"stage": stage, "status": status, "recipe_sha256": case.recipe_sha256(case.case_for_plan(request["plan"])),
                       "isolation": isolation, "result": result}
             raw = h.canonical(output)
             h.require(len(raw) <= h.MAX_ARTIFACT_BYTES, "REPORT_BOUND")
             sys.stdout.buffer.write(raw)
             sys.stdout.buffer.flush()
-        return 0
+        return 0 if status == "PASS" else 1
     except Exception:
         print("M4 executor stage failed", file=sys.stderr)
         return 1

@@ -18,22 +18,22 @@ import resp
 import runtime_case as case
 
 
-def test_plan():
-    return h.compile_plan({"format_version": 1, "scenario": "ledger-smoke", "redis_version": "7.2.0",
+def test_plan(scenario="ledger-smoke"):
+    return h.compile_plan({"format_version": 1, "scenario": scenario, "redis_version": "7.2.0",
                            "redis_image": "sha256:" + "1" * 64, "harness_image": "sha256:" + "2" * 64,
                            "standin_image": "sha256:" + "2" * 64})
 
 
 def approval(plan):
-    return {"version": 1, "case": case.CASE, "approved": True, "operator": "unit-test",
+    return {"version": 1, "case": case.case_for_plan(plan), "approved": True, "operator": "unit-test",
             "commit": "a" * 40, "plan_sha256": h.digest(h.canonical(plan)),
-            "recipe_sha256": case.recipe_sha256(), "expires_at_ms": int(time.time() * 1000) + 1000000,
+            "recipe_sha256": case.recipe_sha256(case.case_for_plan(plan)), "expires_at_ms": int(time.time() * 1000) + 1000000,
             "max_seconds": 120, "architecture": "arm64"}
 
 
 def inspected_container(spec):
     return {"Image": spec["image"], "Config": {"User": spec["uid"], "Labels":
-                {ctl.LABEL: spec["fixture_id"], "io.mifolyo.cj2.case": case.CASE}},
+                {ctl.LABEL: spec["fixture_id"], "io.mifolyo.cj2.case": spec.get("case", case.CASE)}},
             "State": {"Running": False, "Pid": 0}, "HostConfig": {
                 "NetworkMode": "none", "ReadonlyRootfs": True, "Privileged": False,
                 "Memory": spec["memory"], "MemorySwap": spec["memory"], "PidsLimit": 64,
@@ -60,7 +60,7 @@ class FakeDocker:
         return self.resources.get((kind, name))
 
     def volume(self, name, fixture_id):
-        self.resources[("volume", name)] = {"Labels": {ctl.LABEL: fixture_id, "io.mifolyo.cj2.case": case.CASE}}
+        self.resources[("volume", name)] = {"Labels": {ctl.LABEL: fixture_id, "io.mifolyo.cj2.case": getattr(self, "case_id", case.CASE)}}
         if self.fail == "ambiguous-volume":
             raise ctl.CommandError("lost create reply")
 

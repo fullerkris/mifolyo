@@ -2,30 +2,41 @@
 
 **Finding:** F3 - durable crawl-job leases and recovery
 
-**Last updated:** 2026-09-22 (UTC; init admission corrected, re-reviewed and rebuilt image validated)
+**Last updated:** 2026-09-23 (UTC; Step 5 claim-specific image validation passes, publication/CI next)
 
-**Working branch:** `feature/crawl-jobs-v2-lua`
+**Working branch:** `feature/crawl-jobs-v2-claim-release`
 
 **Initial checkpoint:** `e4372a66201b8767bcca4d7476c30c5b7999922c`
 
-**Status:** M1/M2 foundation merged through PR #9; all 43 canonical M3 operations
-and the complete sealed, zero-argument `AuthoritativeScriptBindingSet()` factory
-are implemented and dormant. M3 source implementation and local verification
-are complete, including the full Spider module race suite, and the checkpoint
-is committed and pushed as `81028ca`.
+**Status:** M1/M2 foundation merged through PR #9; dormant M3 sources and M4
+preparation merged through PR #10 as `ff2457ebe998707d220e4ce3425aab500c75f5b4`.
+All 43 canonical operations and the sealed, zero-argument
+`AuthoritativeScriptBindingSet()` factory are implemented and dormant. The first
+bounded real-Redis `ledger-smoke-v1` case now passes; full M4 acceptance is open.
 
-**Current next gate:** Publish the authorized init-admission correction, complete
-protected CI on that exact revision, and obtain fresh artifact-bound approval.
-Metadata-only reproduction isolated Docker's `CHOWN` / `CAP_CHOWN` spelling;
-the narrow fix passes independent correctness/security review, 53 harness tests,
-21 script tests, Go wire/race and revised immutable-image validation. See the
-[diagnosis and correction report](crawl-jobs-v2-m4-init-fix-2026-09-22.md).
-The first [smoke attempt](crawl-jobs-v2-m4-smoke-report-2026-09-22.md) remains
-**FAIL** before Redis startup, with cleanup verified. Its one-case approval is
-consumed. All fourteen CI checks on `340906c` are historical evidence; they do
-not certify the corrected bytes or a smoke pass. The
-[old CI/approval record](crawl-jobs-v2-m4-ci-approval-2026-09-22.md) and earlier
-dated review/image reports remain preserved.
+**Current next gate:** Publish the Step 5 checkpoint and complete exact-revision
+protected CI. The corrected immutable arm64 image and claim-specific artifacts
+for [`ledger-claim-release-v1`](#next-bounded-slice-ledger-claim-release-v1) now pass
+validation; see the [image-preparation report](crawl-jobs-v2-m4-claim-image-preparation-2026-09-23.md).
+Separate correctness/security reviews returned
+**GO for image/CI preparation**; all three non-blocking follow-ups were corrected
+and independently re-reviewed. See the [Step 4 report](crawl-jobs-v2-m4-claim-review-2026-09-23.md).
+The corrected scope passes 79 harness tests, 21 script tests and targeted Go
+checks. The earlier independent race/ACL-trace verification covers the unchanged
+Go/wire/Lua/ACL logic. Fresh execution authority remains a later gate; this claim
+case has not run against real Redis.
+The next slice exercises one job through two pre-I/O claim/release cycles,
+including replay, stale ownership and write-capable ACL separation.
+After the separate execution request, the owner explicitly selected **Execute
+approved case**. Fixture `f9692c58d9f07689660a97fbc70ea973` returned **PASS**:
+probe/restart, BOOT/replay, empty maintenance, 21 ACL denials, role revocation and
+cleanup passed; direct inspections confirmed all four containers and two volumes
+absent. See the [passing report](crawl-jobs-v2-m4-smoke-pass-2026-09-22.md).
+Execution used exact approved revision `a02991c`, byte-identical to PR #10's
+merged tree, with passing protected PR CI and live approval. That one-case
+approval is now consumed. `m4_accepted=false`; no further case is authorized.
+The [first init FAIL](crawl-jobs-v2-m4-smoke-report-2026-09-22.md) and
+[correction evidence](crawl-jobs-v2-m4-init-fix-2026-09-22.md) remain preserved.
 
 **Preparation update (2026-09-21):** The owner requested work on M4 readiness and
 then explicitly approved all four proposals, permitting continued implementation.
@@ -114,7 +125,9 @@ resource pressure. Mixed V1/V2 operation is forbidden.
 
 ## Change-control governance
 
-- Current F3 work is WIP and no-merge. Local checks are supporting evidence;
+- Remaining F3 work is WIP and requires separate merge authorization. PR #9 and
+  PR #10 are accepted merged checkpoints, with their limited scope recorded here.
+  Local checks are supporting evidence;
   protected-main acceptance requires the exact pushed commit to pass the
   protected `required-tests` context on a PR targeting `main`.
 - A draft F3 PR may be opened or updated only after scoped verification and a
@@ -178,11 +191,11 @@ retains it as a primitive case; guard cases now explicitly bind the complete
 | Ledger validation | Baseline/delivery/fence history, post-abort freeze, exact retained witnesses, strict worker expiry, completed replay, prior retry/backpressure/reason fixes and zero-sentinel checks pass local normal conformance and reviewed counterexample replays |
 | Script sources | All 43 canonical operations are implemented: unchanged BOOT passthrough plus 42 exact generated sources; both strict source/bundle generator checks pass |
 | Authoritative bundle | Complete zero-argument `AuthoritativeScriptBindingSet()` validates embedded sources against fixed generated pins and returns fresh private sealed bindings; no caller-supplied sources, hashes or paths |
-| Local acceptance | September 18 M3 full race/Docker results remain dated evidence; September 21 amendment/offline verification is recorded below; no protected-PR or real-Redis acceptance is claimed |
-| Runtime behavior | No M4 real-Redis acceptance run, operational/retained datastore mutation, application/service activation, migration, deployment, candidate marker, rendering activation, or crawl is part of this M3 work |
-| M4 preparation | Init capability alias corrected; 53 harness/21 script tests, Go wire/race, four stopped-role checks and rebuilt 55-file arm64 image validation pass; actual Redis/ACL/BOOT acceptance pending |
+| Local and protected acceptance | Dated M3/local evidence retained; all fourteen protected PR checks passed on `a02991c` before PR #10 merged; first bounded real-Redis smoke case passes, broader M4 remains open |
+| Runtime behavior | V2 remains dormant in application services; only the separately authorized disposable Redis smoke case ran, with full owned-resource cleanup |
+| M4 preparation | Init alias fixed, reviewed and image-validated; real probe/restart, BOOT/replay, empty maintenance, 21 ACL denials, six-role revocation and teardown now pass for `ledger-smoke-v1` |
 | Review status | September 21 findings remain closed. September 22 independent correctness/security re-review is GO for the scoped correction's publication and revised-image validation |
-| Git state | M4 through `340906c` is published with passing CI on draft PR #10; owner authorized the correction/evidence checkpoint; new protected CI and fresh approval are next, with no merge authorization |
+| Git state | Fresh local branch `feature/crawl-jobs-v2-claim-release` starts at fetched `origin/main` / PR #10 merge `ff2457e`; all prior pending work preserved; local evidence/planning/status records remain uncommitted |
 
 ### Current source and fixture identities (regenerated 2026-09-21)
 
@@ -332,7 +345,9 @@ The final matrix and final independent reviews used pinned Go 1.25.13 and passed
 - [x] Correct the closed-peer follow-up found during re-review and obtain final
   correctness/security GO for image preparation only.
 - [x] Complete first-case artifact/harness review and record the time-bounded
-  exact-artifact approval; execution remains for a separately requested step.
+  exact-artifact approval.
+- [x] Execute the separately requested corrected ledger smoke case and retain
+  its passing probe/BOOT/ACL/revocation and six-resource cleanup evidence.
 - [ ] Complete the broader M4 acceptance reviews and later-case approvals.
 
 ## M1: Final foundation release gate
@@ -907,14 +922,394 @@ independent re-review now close the items below; image preparation is next.
 - [x] Record separate approval for the exact first case; renewed September 22,
   expiring at 17:18:43.933 UTC. This is a record-only step, not execution.
 - [x] Execute the approved first case once and preserve its FAIL result and cleanup evidence.
-- [ ] Diagnose the init-container setup/pre-start error with bounded, redacted evidence.
-- [ ] Remediate/review any required change, refresh image/CI artifacts and obtain a new exact-artifact approval.
-- [ ] Pass a newly approved first case and review actual probe, ACL and teardown evidence.
+- [x] Diagnose the init-container setup/pre-start error with bounded, redacted evidence.
+- [x] Remediate/review the capability-alias change, refresh image/CI artifacts and obtain a new exact-artifact approval.
+- [x] Pass a newly approved first case and cross-check actual probe, ACL and teardown evidence;
+  fixture `f9692c58d9f07689660a97fbc70ea973`, separate direct absence checks for all six resources.
 
 The initial active operation is the empty-inventory
-`CJ2_MAINTAIN_RATE_SCOPES` path. The approved run will test active transport and
-no-write replay after a real BOOT mutation; it cannot establish job/claim/stage/commit acceptance.
+`CJ2_MAINTAIN_RATE_SCOPES` path. The passing case verifies active transport and
+no-write replay after a real BOOT mutation; it does not establish job/claim/stage/commit acceptance.
 Administrative and maximum-shape cases remain subsequent M4 work.
+
+#### Next bounded slice: `ledger-claim-release-v1`
+
+**Current result (2026-09-23): Steps 2–4 complete; Step 5 image validation passes, publication/CI pending.** The owner
+requested the next planning step after the passing smoke case. This section owns
+the implementation specification; the supporting
+[`planning/claim-release-v1.json`](../tests/crawl-jobs-v2-redis/planning/claim-release-v1.json)
+records all **104 section-17 inventory entries and 52 operation/gate variants**,
+the existing scoped smoke evidence, twelve planned assertion IDs and their
+seventeen requirement links. Every full requirement/variant stays open. This
+planning artifact is not an input accepted by the executable controller.
+
+**Why this slice:** the first smoke case's ledger ACL is intentionally read-only.
+It does not test a job mutation, `redis.acl_check_cmd` over a nonempty write plan,
+pending reservation accounting or lease fencing. One claim/release cycle closes
+that immediate implementation gap while providing the fixture and state oracle
+needed before worker-death/lease-expiry tests. It requires no new normative rule
+or Lua transition and creates no request start.
+
+##### Closed case and fixture
+
+- One new Redis instance and two fresh exclusive volumes, with the existing
+  reviewed networkless Unix transport and six-role lifecycle. BOOT still uses a
+  real acknowledged probe, SIGKILL/same-volume restart and canonical approval/replay.
+- Three canonical source operations: `CJ2_APPROVE_BOOT`, `CJ2_TRY_CLAIM`,
+  `CJ2_RELEASE_BEFORE_IO`. `CJ2_CANCEL_RESERVATION` is not separately called:
+  RELEASE itself cancels the pending reservation through its canonical implementation.
+- After BOOT, direct setup installs the four ledger authority records plus a
+  labeled synthetic active run, one ready job, one policy group and its exact
+  run/global indexes and zero counters. This is manifest-checked fixture setup,
+  not evidence for CREATE/ENQUEUE/AUDIT/SEAL/ACTIVATE transitions.
+- Use fixed canonical document/robots identities under a reserved `.invalid`
+  origin. Choose initial kind `robots` on both fences; its target retains the
+  source job's group/rate lineage/origin. No DNS or robots fetch occurs. Global
+  concurrency remains 2; this fixture uses group/origin concurrency 1 and zero
+  intervals. Nonzero intervals and contention are later cases.
+- Capture Redis setup time once as `T`; bind all relative setup times to that
+  manifest, with synthetic run authorization expiring at `T+600000` ms. This
+  test-only run authorization does not extend the external case approval.
+- Two successful claims, fences 1 and 2, request ordinals 1 and 2, fresh owner/
+  lease-token identities A and B, and two derived reservation records. At most
+  one reservation/lease is live. Baseline `B`, cumulative starts `G`, delivery
+  attempts and all request-start counters remain zero throughout.
+- The complete possible protocol-key union is **58**: `WORK` (44) plus two
+  reservation keys plus three four-key rate blocks (12). Include all empty/
+  absent index positions, derive IDs independently, and reject keys outside the
+  exact manifest. Legacy/downstream/stage absence checks do not authorize writes.
+- Keep the existing 300-second case, 30-second stage and 60-second cleanup
+  limits, 128/256/528 MiB init/executor/Redis container limits, 400 MiB Redis
+  maxmemory, 2 MiB ordinary EVALSHA/request/report ceilings and 256 KiB RESP reply
+  bound. Run the measured sequence inside one 30-second stage; it must fit the
+  unchanged 60-second lease rather than shorten constants or add automatic renewal.
+
+##### Measured sequence and independent oracle
+
+`now_ms` may change between responses. Compare each status/arity and its stable
+identity/timestamp fields, not entire response arrays for byte equality.
+
+| Assertion | Invocation | Required result and state |
+|---|---|---|
+| CR01 | Claim A, prior fence 0, fence 1, ordinal 1 | `CLAIMED`; job ready → leased, one pending reservation, exact per-run/global lease and scope memberships; claims/creations each 1, next ordinal 2 |
+| CR02 | Replay the identical claim A | `ALREADY_CLAIMED`; original fence, reservation and both deadlines; every stored byte and absolute expiry unchanged |
+| CR03 | Release with a different valid token and recomputed transition ID | `LEASE_LOST` with current fence 1; no state change. A malformed digest rejection is not the ownership test |
+| CR04 | Release A | `RELEASED_READY`; matching pending capacity refunded, job ready, lease fields/indexes cleared, cancelled reservation tombstone; claims/creations stay 1 |
+| CR05 | Immediate identical release A | `RELEASED_READY`; original ready timestamp, unchanged state and tombstone expiry |
+| CR06 | Claim B, prior fence 1, fence 2, ordinal 2 | `CLAIMED`; fresh token/reservation, claims/creations each 2, next ordinal 3; old cancelled tombstone retained |
+| CR07 | Replay the exact old release A after claim B | `LEASE_LOST` with current fence 2; cannot release B or change either reservation |
+| CR08 | Release B | `RELEASED_READY`; job ready, no live lease/pending/started capacity, two cancelled tombstones, total claims/creations still 2 |
+| CR09 | Replay release B | `RELEASED_READY`; unchanged records, indexes, counters, ready timestamp and both tombstone expiries |
+| CR10 | Fixed ACL probes under the same write-capable ledger role | Existing 21 absence-key denials plus 25 stored-authority mutation denials: 46 exact `NOPERM` results, each with unchanged state |
+| CR11 | Whole-state check before/after every measured action | Exact primary-state membership, lease cardinalities/scores, scope/run/group equalities, ordinal/fence/B/G history, reason counters and forbidden-key absence |
+| CR12 | Bootstrap, setup-role retirement, export and teardown | Positive bootstrap repeated under the new artifacts; setup/loader/BOOT revoked before measurement; worker quiescence, all-role revocation and exact resource absence proven |
+
+Independent expectations come from the protocol and Go codecs/constructors, not
+from copying the mutated Redis record or a Lua-produced expected-state map.
+Validate every run/job/reservation/rate record field and index membership after
+each step; compare full bounded state for replays and rejections. A new claim's
+deadline is its returned Redis `now_ms+60000`; both lease indexes and its live
+reservation/scope scores agree. Cancellation gives exactly
+`terminal_at_ms+86400000` absolute expiry. Read `PEXPIRETIME` for tombstones:
+decreasing PTTL is normal and cannot be compared for equality or used to permit
+an expiry extension. The three rate-scope records/inventory entries persist
+after capacity is released; zero-cardinality Redis indexes may be absent.
+
+Run/job `claims_total`/`claim_count` and `reservation_creations_total` reach two;
+open/group-open counts stay one; request starts, deliveries, started counts,
+terminal/retry/recovery/disposition counters and `first_request_start` stay at
+their declared zero/absent states. Releasing a reservation is not cancellation
+of the job. This slice covers only zero-baseline history, not a previously started
+fence or the 100-creation limit.
+
+##### ACL, wire and evidence changes required
+
+1. Keep the smoke case's read-only role separate. Build the new case's read/write
+   selectors from an exact per-key command inventory derived from the selected
+   canonical paths. Include required `TIME`, `INFO server/memory`, read commands
+   and actual prebuilt mutation commands; do not copy a blanket command category
+   or wildcard key grant from a generic helper. Outer EVALSHA permission must not
+   grant direct mutation of AUTH. Canonical successful data writes are the
+   positive control for non-vacuous authority-write denials.
+2. Retain the 21 `GET/HGET/SET/HSET/DEL/EXPIRE/RENAME` denials on the three
+   absence-only keys. Add `SET/HSET/DEL/EXPIRE/RENAME` denials on durability,
+   active compatibility, contract, commit guard and retirement (five stored
+   authority keys). A RENAME probe targets an existing case data key, avoiding
+   a denial explained solely by an ungranted destination. Any unexpected success,
+   non-`NOPERM` error or mutation fails the case and proceeds to cleanup.
+3. Extend independent Python/Go wire comparisons to exact 57-key/40-ARGV CLAIM
+   and 44-key/13-ARGV RELEASE requests, including the seven-field active gate,
+   33/6 semantic scalars, key ordering, binary gate records, request sizes,
+   reservation and transition digests. Wrong-token probes must still have valid
+   lexical and digest framing.
+4. Replace smoke-only eight-key/persistent-key assumptions with a **case-bound**
+   bounded inventory and typed oracle. `SCAN COUNT` is a hint: bound replies by
+   the manifest and RESP limit, plus a finite scan budget, not an assumed COUNT
+   maximum. Validate cardinalities and field/member lengths before reading data;
+   declared absences and possible derived outputs are part of the manifest.
+5. Export per-step status, stable redacted identity references, counter deltas,
+   snapshot/input digests and absolute expiries. Keep raw URLs, owner/session
+   material, lease tokens and secret-bearing request/record values out of logs
+   and reports; compare full sensitive state only inside the trusted process.
+   Reports must not copy the claim response's raw reservation identity or a full
+   job/reservation dump. Finalize the concrete key/ACL/state manifest privately
+   before setup, then export its digest and a redacted projection so the manifest
+   itself does not leak those identifiers. Add canary-based failure/redaction coverage.
+6. Preserve expiry checks, one-stage deadlines, no ambiguous write retry,
+   worker-first quiescence, fresh cleanup helper and mandatory teardown validity.
+   Persist bounded lifecycle/action receipts as actions finish. Historical Docker
+   events remain optional for this case; any future crash test that relies on
+   event observation must capture and validate it live before injection. The
+   previous empty history query cannot be repurposed as crash evidence.
+
+##### Code anchors and implementation order
+
+**Step 1 complete (2026-09-22):** created
+`feature/crawl-jobs-v2-claim-release` directly from freshly fetched `origin/main`
+at `ff2457ebe998707d220e4ce3425aab500c75f5b4`. The new branch has zero commits
+ahead/behind that base. Before updating this status record, before/after
+fingerprints matched for all 387 pending files (11 tracked modifications and
+376 untracked files), with identical staging entries and worktree status.
+The pending smoke evidence, planning packet and unrelated user changes carried
+over intact. Step 2's CR-A/CR-B result is recorded below.
+
+**Step 2 complete (2026-09-22): offline fixture and independent checks.**
+
+- `harness.py` now admits the non-executable `ledger-claim-release` planning
+  scenario. Empty test descriptors and the retirement nonce bind the selected
+  scenario rather than silently reuse smoke labels.
+- New `claim_release.py` constructs the closed private fixture from seven
+  inputs: fixture ID, captured Redis-time value, two owners, two lease tokens
+  and one distinct wrong-token control. It fixes the document/robots targets,
+  run/group/policy descriptors and all record/index contents, derives both
+  reservation and transition identities, and rederives the complete artifact
+  for validation. No caller-supplied record, key inventory or marker override
+  is accepted.
+- The inventory is exactly 58 possible keys. The private setup/state map owns
+  57; the durability key is explicitly bootstrap-owned. Step 3 must compare that
+  key with its verified BOOT state and include it in the complete live inventory.
+  The compiler never writes or fabricates a successful BOOT record.
+- CLAIM/RELEASE wire builders produce the nine exact requests. The pure state
+  oracle predicts every managed record, membership, score and absolute expiry
+  for CR01–CR09, including no-write replays/rejections. Its time inputs remain
+  explicitly unobserved offline data: setup can precede measurement, while the
+  nine observations must fit both the 300-second case-relative envelope and a
+  30-second measured span. Equal-millisecond calls are supported.
+- Fixtures, wires and full states are private and contain lease identities.
+  `public_summary()` returns only bounded provenance/digest/count fields;
+  malformed/changed artifacts fail with value-redacted errors. At the Step 2
+  checkpoint runtime admission still rejected the new scenario; Step 3 below
+  adds its separately case/recipe-bound admission.
+- `m4_claim_release_test.go` independently derives the group/source/reservation/
+  transition identities, checks the literal complete key inventory and all
+  EVALSHA bytes/sizes through Go constructors, then runs the unchanged embedded
+  canonical CLAIM/RELEASE Lua through the existing in-memory Redis facade.
+  It compares all nine replies and full state with Python predictions and
+  validates the fixed Go record schemas. BOOT has a separately protected Go
+  in-memory control; it is not a claim of real bootstrap evidence.
+- Two vectors cover setup-to-measurement delay/increasing times and equal times
+  near the exact-integer ceiling: **18 canonical Lua invocations**. Nine Python
+  tests cover input/manifest drift, identity reuse, time bounds, state corruption,
+  omitted indexes, replay accounting, tombstone extension and public redaction.
+  Spider's builder-only COPY/allowlist includes the two new Python files needed
+  by its ordinary Go tests.
+
+| Step 2 verification | Result |
+|---|---|
+| Python harness discovery | PASS: 62 tests, including nine new fixture/oracle tests |
+| Python script tests | PASS: 21 tests |
+| Go M4 artifact and claim/release checks | PASS: final `-race -timeout 180s -count=1`, 85.580 s |
+| Go package vet | PASS |
+| Strict Lua assembly, bundle and independent digest checks | PASS: 43/43 sources; 40 positive/157 negative vectors plus baseline |
+| Scope | Offline construction and in-memory conformance only; no Docker/Redis fixture, image build, protected CI or execution approval for the new case |
+
+The normative contract and Lua bundle identities remain unchanged. The modified
+compiler changes executable plan/recipe source bindings, so the old image/plan
+receipts remain historical. The original planning JSON and its recorded hash are
+retained as the initial proposal; its implementation status is a planning-time
+snapshot, while this document owns current progress.
+
+**Step 3 complete (2026-09-22): bounded executor and case-specific ACLs.**
+
+- `runtime_case.py` has a closed two-case registry. Approval, scenario, recipe,
+  source allowlist, container/volume labels and cleanup ownership all bind the
+  selected case. Cross-case approvals and labels reject. Existing smoke behavior
+  and its review regressions continue to pass.
+- The controller creates fresh owner/token material and sends it only through
+  bounded stdin. ACL keys are derived before Redis starts using a key-only
+  unobserved-time projection. After real BOOT, the executor captures Redis time,
+  reconstructs the final fixture, proves the ACL bytes are time-independent,
+  validates the full manifest before any data write, installs its 26 keys and
+  checks the resulting complete state. Setup/loader/BOOT are revoked before
+  measurement, as in the existing lifecycle.
+- Claim ledger permissions are separated by exact key kind and operation:
+  mutable HSET keys, lease/scope ZADD/ZREM keys, rate-inventory ZADD and the two
+  reservation PEXPIREAT keys. AUTH has no direct mutation grant; absence-only
+  authority keys have TYPE-only content access. No wildcard/category grant or
+  setup regrant is introduced. Both the fake-backed lifecycle and the independent
+  Go canonical command traces check command/key coverage. Target Redis selector
+  semantics still require the separately approved real run.
+- New `claim_executor.py` reads the complete exclusive DB with a 58-key bound,
+  bounded SCAN iteration/replies, fixed record fields, bounded collection counts
+  and `PEXPIRETIME`. It compares all 57 fixture-owned entries and the verified
+  BOOT record after every transition/probe, rejecting unknown/missing keys,
+  changed counters, memberships, values or absolute expiries.
+- One hard-timed measurement stage executes the nine exact requests once each,
+  checks their replies against the independent projection, and performs all 46
+  authority-denial probes with full state checks. Stage reports contain only
+  fixed status labels, times, digests and hashed reservation references/expiries;
+  private fixtures, wires, URLs, owners and lease tokens are not exported.
+- Ordinary measurement failures retain a validated/redacted completed prefix
+  with a fixed failed assertion ID and still fail the case. The controller also
+  rejects known credential/private-material values before retaining any stage
+  receipt. Worker quiescence, fresh revocation helper, all-role proof and exact
+  owned-resource cleanup remain mandatory.
+- Completed controller actions are appended/fsynced to exclusive mode-0600
+  `<fixture>.actions.jsonl` files. A journal failure enters cleanup and fails the
+  case. These receipts document controller-observed actions, not internal Lua
+  write boundaries. A hard timer exit or missing/malformed worker output can
+  still lose the internal measurement prefix; no missing observation is inferred
+  as passed. Cleanup receipts remain in the final report.
+- Execution-image allowlisting now covers **57 exact source files**. The image
+  checker validates requests/recipes for both cases, and the preparation script
+  accepts `--case ledger-claim-release-v1` for selected metadata checks and
+  plan/recipe emission. These code paths are wired; no new image build or Docker
+  validation is claimed at this implementation checkpoint.
+
+| Step 3 verification | Result |
+|---|---|
+| Python harness discovery | PASS: 76 tests, including 14 new lifecycle/ACL/evidence regressions; 109.144 s |
+| Python script suite | PASS: 21 tests |
+| Go M4 wire/state/ACL trace checks | PASS: `-race -timeout 180s -count=1`, 140.193 s |
+| Go package vet | PASS |
+| Bundle and independent digest checks | PASS; all 43 sources and normative identities unchanged |
+| Both recipe CLIs / explicit source allowlist | PASS; execution authorization false, 57 expected source files |
+
+Current local recipe hashes (not execution approvals): smoke
+`862c2f0fdd067135e0197abfd0e82f879cd80c24605d316bf25f0981e7a9def2`;
+claim/release `13c6ff7ea55be703f40245756bf2580bd327406800641a3b506c5a119db0b297`.
+The prior image/plan/approval receipts remain historical and cannot authorize
+these changed bytes. The claim lifecycle results above are simulated; they set
+`case_evidence_valid=false` and `m4_accepted=false`.
+
+**Step 4 complete (2026-09-23): independent review and follow-up closure.**
+
+Both initial reviewers returned GO with no blocking defect. Correctness identified
+missing public counter measurements (P2) and final-report-only cleanup journaling
+(P3); security reproduced retention of a misbound failed measurement receipt
+(informational, whole case still FAIL). All three were corrected in a frozen
+three-file delta and independently re-reviewed **GO**:
+
+- Step receipts now export 33 fixed numeric counters from verified observations,
+  with before/after/delta and exact per-step validation. Booleans, strings,
+  missing/extra fields and inconsistent values reject.
+- Failed measurement fixture digests must match the preceding setup summary
+  before retention. Substituted receipts are discarded and teardown continues.
+- Quiescence, revoker lifecycle, verified revocation and every verified resource
+  removal/absence are journaled incrementally. Cleanup journal/callback errors
+  cannot skip later cleanup; incomplete journaling invalidates PASS.
+
+The corrected source inventory contains the same 71 paths and changes only
+`controller.py`, `claim_executor.py`, and `test_claim_execution.py`. Its SHA-256
+is `6d070f91d06fc4e335a176d2f597b69b4c728aa64ca9bb67738267bd07248717`.
+Corrected recipe hashes: claim
+`07d27ddc8218d6c2aa5adf0f05227795a9f097802f50a534585e87206f8a2ad1`,
+smoke `8ad72404fff4c09346428ca48607de5d250fd0926f1898ed231f7adc321d3f34`.
+The [review report](crawl-jobs-v2-m4-claim-review-2026-09-23.md) and
+[inventories](evidence/m4-claim-review-2026-09-23/README.md) preserve initial and
+corrected identities, reviewer findings, reproduction locations and evidence limits.
+
+Coordinator verification after correction: **79 harness tests PASS** (160.597 s),
+**21 script tests PASS**, targeted Go M4 checks PASS (10.621 s), bundle/digests
+and whitespace PASS. The initial correctness review independently ran the full
+76-test suite and targeted Go race (141.227 s); the final review used focused
+counter/journal/substitution probes, including 4,491 malformed-receipt cases and
+22 cleanup-journal fault positions/types. Security independently re-ran its
+substitution counterexample and added 606 counter-schema negatives and combined
+failure/redaction checks. Neither review started Docker/Redis, built an image,
+published Git changes or claimed target acceptance.
+
+Step 5 must explicitly select `--case ledger-claim-release-v1` when preparing
+claim artifacts. The existing CI invocation defaults to smoke artifacts even
+though the image checker validates both recipes. Real target ACL semantics,
+memory, stage/cleanup timing and durability remain pending. No earlier consumed
+approval or image/recipe identity is reusable for these corrected bytes.
+
+**Step 5 local image gate (2026-09-23): PASS.**
+
+The corrected source inventory still matches all 71 reviewed hashes. A
+network-disabled build from the pinned Python arm64 manifest produced harness
+image `sha256:b8de7cf09495bca22f6bba158bfdbe776b65ab726895e484682a3bb4f95a8a01`.
+Preparation explicitly selected the claim case and passed four stopped-role
+admissions plus exact 57-file/source/recipe/isolation/memory checks. Observed
+init/executor peaks were 48,193,536 / 48,386,048 bytes under unchanged 128/256 MiB
+limits. All temporary resources were removed and listings independently checked.
+Only Redis `--version` ran; no Redis server or acceptance case started.
+
+The new plan SHA-256 is
+`9833e6c25c74d9b0b80cc6370c5e6d38165cea2032f471aab879e146183dba41`,
+with reviewed claim recipe
+`07d27ddc8218d6c2aa5adf0f05227795a9f097802f50a534585e87206f8a2ad1`.
+[Exact artifacts](evidence/m4-claim-image-prep-2026-09-23/README.md) and the
+[preparation report](crawl-jobs-v2-m4-claim-image-preparation-2026-09-23.md) retain
+the observed results. The CI invocation now explicitly selects the claim case;
+actionlint passes and all required checks remain enabled. Scoped publication
+and the new protected results precede any fresh execution approval.
+
+| Work item | Existing anchors / proposed change |
+|---|---|
+| CR-A: offline fixture and IDs — complete locally | `harness.py` adds scenario-bound planning; `claim_release.py:compile_fixture/validate_fixture` derives exact setup, identities and the 58-key ownership inventory; adversarial Python tests pass |
+| CR-B: wire and state oracle — complete locally | `claim_release.py:wire_requests/expected_sequence/validate_state`; `m4_claim_release_test.go` independently verifies Go constructors, fixed records, literal keys and full canonical Lua state; normal/race checks pass |
+| CR-C: narrow case integration — complete locally | Closed case/recipe/approval registry, private input material, exact typed-key ACLs and case-specific resource ownership; old smoke regressions retained |
+| CR-D: measured stage and receipts — complete locally | `claim_executor.py` implements bounded setup/snapshots, nine transitions, 46 denial probes, redacted completed/partial receipts; controller action journal and fail-closed teardown tested using fakes |
+| CR-E: packaging and verification — wired, target validation pending | Explicit 57-file execution context, both recipe validators and case-selecting preparation CLI implemented; target build/validation and protected CI await the later gate |
+| CR-F: review complete, later gates pending | Independent correctness/security GO on corrected bytes; scoped publication, exact-revision CI, rebuilt immutable artifacts and fresh case approval/separate execution request remain |
+
+Any controller/compiler/recipe source change invalidates the old executable
+artifact binding; preserve the passing historical files instead of rewriting or
+silently upgrading their plan. Local recipe identities are recorded above;
+new target-image/plan validation and approval are still pending. Application
+runtime and V1 stay outside this harness-only implementation.
+
+##### Readiness checklist and review findings
+
+- [x] Prepare a fresh implementation branch from merged main and verify all
+  pending local work and staging state are preserved (Step 1).
+- [x] Select the smallest mutating lease cycle and verify it against sections
+  7/8/9/10.3, canonical claim/outcome planners and the independent Go wire oracle.
+- [x] Record the complete source-bound 104-requirement/52-variant inventory,
+  existing partial smoke evidence, proposed assertions and explicit remaining work.
+- [x] Identify implementation gaps: smoke-only scenario/ACLs/source list,
+  eight-key persistent snapshot, missing claim/release wire vectors, token-bearing
+  live state, absolute-expiry comparison and package inventory changes.
+- [x] Implement CR-A/CR-B and verify offline fixture, all 58 possible key names,
+  complete record/index invariants and independent wire/response parity.
+- [x] Implement CR-C/CR-D with exact command/key selectors and all twelve assertions.
+- [x] Prove local test failures for incorrect replay counters, stale release mutation,
+  tombstone extension, missing/mismatched lease/scope indexes, partial snapshots,
+  authority write grants, leaked tokens, ambiguous command outcomes and failed cleanup.
+- [x] Obtain independent correctness/security reviews, close their three
+  non-blocking follow-ups and re-review the corrected source inventory (Step 4).
+- [ ] Complete CR-E/CR-F and obtain fresh exact-artifact authority before any run.
+
+Planning verification passed: exact normative/source binding, all 104 requirement
+IDs and 52 gate variants, twelve unique assertions with seventeen valid partial
+links, historical report hash, wire/limit checks and rejection of this packet as
+an executable plan. Packet SHA-256:
+`e548195f6908f7f795cbebbcf9fb3b6570c31e750efd7336b740eaf585c802aa`.
+Scoped whitespace checks also passed.
+
+The original plan review was source-grounded planning only; Step 4 now records
+independent GO for the implemented slice's image/CI preparation.
+Candidate/freeze **presence**, valid administrator-operation denial under ledger
+credentials, malformed gates and isolation negatives still need separately
+defined fixtures; even a future PASS here cannot close all M4-P3 or section 17.7.
+Close the remaining M4-P3 ACL/bootstrap negatives before advancing the wider
+matrix. This cycle then supplies the prerequisite fixture/oracle for a separately
+observed worker-death/lease-expiry recovery case, followed by request-start/finish
+and nonzero-baseline tests.
+Concurrency, retry/dead/cancel, stages/commit, administrative profiles, complete
+AOF/restore, maximum-shape memory and the ≥1,000-sample latency gate remain open.
 
 **Historical pre-amendment verification:** Read-only Lua assembly with both `--check` and
 `--require-complete`, bundle pin (`--check`), and independent digest-vector
@@ -1240,6 +1635,56 @@ The owner authorized the scoped correction/evidence commit, push and draft PR
 update. Protected checks must pass on that new revision before fresh one-case
 approval. The old FAIL report and consumed approval remain unchanged evidence.
 
+#### Corrected checkpoint CI and fresh approval (2026-09-22)
+
+The 22-file scoped checkpoint was published as
+`a02991c322c3472f7460adbb94b2a15d82b77af6`; local and remote identities match.
+Required Checks `35762828908` and Unit Tests `35762828920` both succeeded with
+all fourteen required contexts confirmed against branch protection. Downloaded
+reports cover all 470 compiled V2 roots, with 469 passes and only the permitted
+optional native-Lua skip, bound to tested merge tree
+`45c3c08f2cfe48222b0be31349e87af9ce063b56`. The retained amd64 image report also
+passes all four stopped-role checks, exact reviewed source inventory, memory and
+cleanup validation. See the [CI record](crawl-jobs-v2-m4-init-fix-ci-2026-09-22.md).
+
+The owner then selected **Approve, record only** for one exact corrected arm64
+`ledger-smoke-v1` case, 300 seconds plus 60-second cleanup, operator `fullerkris`.
+Fresh approval SHA-256 is
+`c057e40cb5ebad30a98aa178382b9621706108214b820359fd998c9561dd25da`,
+expiring **2026-09-22 19:46:36.204 UTC**. It is privately retained and validated
+against the new commit/plan/recipe/images. No retry started. A separate run
+request and a still-valid approval are needed; the old consumed approval remains
+unchanged. Post-CI documentation stays local so tested/approved HEAD is preserved.
+
+#### PR #10 merge and first passing smoke case (2026-09-22)
+
+PR #10 merged as `ff2457ebe998707d220e4ce3425aab500c75f5b4` at 19:26:46 UTC.
+The approved head `a02991c`, tested PR merge `45c3c08` and squash merge all have
+Git tree `6c448ac59e70453bb5a10ebc7d781a5a2e00fb2b`. Execution therefore stayed at
+the exact approved checkout; no commit substitution or approval extension was used.
+The owner explicitly selected **Execute approved case** for the
+[separate request](crawl-jobs-v2-m4-execution-request-2026-09-22.md).
+
+After clean-source, identity, live-expiry, 14-context CI and empty-resource
+preflight, one invocation returned **PASS**. The final report for fixture
+`f9692c58d9f07689660a97fbc70ea973` was written at 19:36:52.707 UTC, 4,732 ms after
+the persisted execution decision and before approval expiry. It records all five
+stages passing, a new Redis run ID with exact preserved probe, canonical BOOT and
+replay, exact setup, two unchanged-state maintenance calls, 21 `NOPERM` denials,
+worker quiescence and all six roles revoked. All four containers and two volumes
+were separately inspected and confirmed absent.
+
+Report SHA-256: `6152a302a95da89eaee3340f1376ec75c8c1833fe80763a587ce4307d6b3b7c5`.
+The [dated result](crawl-jobs-v2-m4-smoke-pass-2026-09-22.md) links exact-byte
+[artifacts](evidence/m4-smoke-pass-2026-09-22/) and the coordinator's postcheck.
+The historical Docker event query returned no fixture records; that optional
+timeline is explicitly unavailable, not invented. Cleanup proof includes separate
+live direct inspections. The scoped evidence secret scan found no leaks.
+
+Approval `c057e40…` is consumed; no automatic retry occurred. Only this small
+ledger case passes, with `case_evidence_valid=true` and `m4_accepted=false`.
+Subsequent M4 cases require reviewed scope and new exact-artifact approval.
+
 ### Source and trust-anchor rules
 
 - Add exactly one canonical reviewed source for each of the 43 operations.
@@ -1299,11 +1744,12 @@ not real-Redis timing, allocator, durability or operational acceptance.
 
 ## M4: Disposable Redis 7 acceptance
 
-**First bounded attempt: FAIL before Redis startup.** Images and exact-revision
-CI passed, then the owner requested one approved run. It failed in init and
-cleaned up its resources. The capability-spelling defect is now corrected,
-re-reviewed and validated in the rebuilt image. New exact-revision CI and fresh
-approval precede another attempt. First-case and full M4 acceptance remain open.
+**First bounded real-Redis smoke case: PASS.** The original pre-start init FAIL
+remains historical evidence. After the reviewed capability-spelling correction,
+image/CI validation and separate owner execution request, the newly approved
+case passed and all resources were removed. The
+[passing report](crawl-jobs-v2-m4-smoke-pass-2026-09-22.md) establishes BOOT and
+empty maintenance only; the required full M4 matrix below remains open.
 The [2026-09-21 readiness package](#m4-readiness-decision-package-2026-09-21)
 records scope and remaining gates; it is not Redis acceptance evidence.
 
@@ -1461,11 +1907,11 @@ operationally blocked. M1/M2 are merged; all 43 dormant M3 sources and the seale
 factory are implemented and verified locally, including the final full-module
 race pass. M4's approved amendment and offline layer are implemented locally;
 the first-case executor and immutable image validation also pass locally.
-The first approved smoke attempt failed before Redis startup. Its init defect
-is now reproduced and corrected; independent review and rebuilt-image validation
-pass. The owner authorized scoped publication; new protected CI and fresh approval
-precede another attempt. First-case acceptance and the broader M4 matrix remain
-pending. The first-executor findings and closed-peer follow-up remain closed.
+PR #10 merged the dormant implementation and reviewed preparation as `ff2457e`.
+The first approved attempt's init FAIL was corrected; the subsequent separately
+authorized `ledger-smoke-v1` case passes with verified cleanup. The broader M4
+matrix remains pending and needs new case scope/approval. The first-executor
+findings and closed-peer follow-up remain closed.
 M5 hermetic code/consumer integration waits
 for M4 and F4-F6. In the parent plan, compatible code and runbooks precede the F1/F2
 operational reset so retained evidence is preserved and the environment is reset
@@ -1512,6 +1958,16 @@ Rendering remains disabled unless its separate activation requirements pass.
 | 2026-09-22 | First approved bounded smoke attempt | Fixture `6c963c07b5526561459830bac338b997` returned FAIL in init before Redis startup; no probe/BOOT/maintenance evidence; init container and both volumes removed and independently checked absent; one-case approval used, no retry |
 | 2026-09-22 | Init diagnosis and reviewed correction | Actual stopped-container metadata reproduces CHOWN/CAP_CHOWN mismatch; finite alias fix, bounded diagnostics and eight regressions pass; independent correctness/security GO for scoped publication and image validation |
 | 2026-09-22 | Corrected immutable-image preparation | New arm64 harness `2059066…` passes all four stopped-role admissions and exact 55-file/source/memory checks; cleanup independently verified; new plan/recipe emitted without run approval; publication/new CI are next |
+| 2026-09-22 | Corrected checkpoint publication and protected CI | `a02991c` pushed and remote-verified; Required Checks `35762828908` and Unit Tests `35762828920` succeed; 14/14 protected contexts, 470 race roots accounted for, revised amd64 image evidence verified |
+| 2026-09-22 | Fresh exact-artifact approval recorded | Owner selected record only for one corrected arm64 case; approval `c057e40…` expires 19:46:36.204 UTC; privately validated, no retry started |
+| 2026-09-22 | PR #10 merged | Squash commit `ff2457e` has the same Git tree as approved head `a02991c` and tested PR merge `45c3c08`; dormant M3/M4-preparation merge does not activate application runtime |
+| 2026-09-22 | Separately requested corrected smoke case | Owner selected Execute approved case; fixture `f9692c58d9f07689660a97fbc70ea973` returned PASS at 19:36:52.707 UTC; actual probe/BOOT/maintenance/21 ACL denials/revocation passed; all six resources directly confirmed absent; approval consumed, full M4 open |
+| 2026-09-22 | Next bounded acceptance slice planned | `ledger-claim-release-v1` specified with one job, two fences/reservations, nine transition calls, 46 ACL denials and twelve assertions; complete 104-entry/52-variant source-bound coverage inventory retained with 17 planned partial links; implementation and new independent/execution gates pending |
+| 2026-09-22 | Claim/release Step 1 branch preparation | Created `feature/crawl-jobs-v2-claim-release` from fetched `origin/main` at `ff2457e`; zero ahead/behind; fingerprints for 11 modified and 376 untracked files plus staging/status matched across the switch; Step 2 remains pending |
+| 2026-09-22 | Claim/release Step 2 offline implementation | Closed fixture and 58-key inventory, exact claim/release wires and state oracle implemented; 62 harness/21 script tests, Go M4 race (85.580 s), vet and source/digest checks pass; two in-memory canonical Lua vectors match all nine transitions; runtime integration/ACLs and new execution gates remain pending |
+| 2026-09-22 | Claim/release Step 3 executor integration | Two-case admission/ownership, exact ACLs, bounded setup and typed snapshots, nine transitions/46 denials, redacted partial receipts and durable controller action journal implemented; 76 harness/21 script tests and Go race/ACL trace check (140.193 s) pass; independent review and actual image/CI/execution gates remain pending |
+| 2026-09-23 | Claim/release Step 4 independent review | Correctness/security initial GO with three non-blocking follow-ups; observed counter export, failed-receipt binding and incremental cleanup journaling corrected and independently re-reviewed GO; final 79 harness/21 script tests and targeted Go checks pass; image/CI preparation is next |
+| 2026-09-23 | Claim/release Step 5 local image preparation | Reviewed 71-file source inventory unchanged; immutable arm64 harness `b8de7cf…` passes four stopped-role admissions and exact 57-file/source/recipe/memory checks; cleanup verified; claim plan `9833e6c…` emitted without execution authority; publication/CI pending |
 
 ## Definition of done
 

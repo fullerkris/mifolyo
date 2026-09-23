@@ -9,6 +9,8 @@
 !tests/crawl-jobs-v2-redis/runtime_case.py
 !tests/crawl-jobs-v2-redis/executor.py
 !tests/crawl-jobs-v2-redis/controller.py
+!tests/crawl-jobs-v2-redis/claim_release.py
+!tests/crawl-jobs-v2-redis/claim_executor.py
 !tests/crawl-jobs-v2-redis/redis.conf
 !tests/crawl-jobs-v2-redis/Dockerfile.execution
 !tests/crawl-jobs-v2-redis/Dockerfile.execution.dockerignore

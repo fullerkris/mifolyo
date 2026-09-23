@@ -49,7 +49,7 @@ func TestM4OfflineArtifacts(t *testing.T) {
 			} `json:"variants"`
 		} `json:"cases"`
 	}
-	if err := json.Unmarshal(output, &vectors); err != nil || len(vectors.Cases) != 3 {
+	if err := json.Unmarshal(output, &vectors); err != nil || len(vectors.Cases) != 4 {
 		t.Fatal("invalid offline artifact inventory")
 	}
 	contract, err := ContractSHA256()

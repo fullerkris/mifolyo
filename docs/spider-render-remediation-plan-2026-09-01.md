@@ -2,7 +2,7 @@
 
 **Original review date:** 2026-09-01
 
-**Last updated:** 2026-09-22 (UTC; M4 init defect corrected and re-reviewed)
+**Last updated:** 2026-09-23 (UTC; claim/release Step 5 arm64 image preparation passes)
 
 **Reviewed baseline:** `main` / `44d8b09a364a1f60032e1f4faccf160813f4dd04`
 
@@ -56,8 +56,9 @@ The authorization consumed on 2026-08-18 cannot be reused.
 
 ## Change-control governance
 
-- All current remediation work is WIP and no-merge. Local verification is
-  supporting evidence, not protected-main acceptance.
+- Remaining remediation work is WIP and needs separate merge authorization;
+  accepted PR #9/#10 checkpoints and their limited scope are recorded below.
+  Local verification is supporting evidence, not protected-main acceptance.
 - Protected-main acceptance requires the exact reviewed commit to pass the
   protected `required-tests` PR context and every applicable plan gate.
 - A draft F3 PR may be opened or updated only after the scoped verification,
@@ -109,7 +110,7 @@ retained Mongo records still incorrectly say `enabled: true`.
 |---|---|---|
 | F1 seed reconciliation | Not started | Retained evidence remains 70 enabled records; execute only during the matched freeze/backup/reset sequence |
 | F2 disposable Redis reset | Not started | Retained V1 state remains historical post-test evidence and must not be reused or selectively repaired |
-| F3 durable Crawl Jobs V2 | M1/M2 merged; M3 remains dormant; M4 init defect corrected with independent GO | First smoke attempt remains FAIL; correction passes 53 harness/21 script tests and rebuilt-image validation; new checkpoint CI/fresh approval needed; evidence lives in [`crawl-jobs-v2-plan.md`](crawl-jobs-v2-plan.md) |
+| F3 durable Crawl Jobs V2 | M1/M2 through PR #9 and dormant M3/M4 preparation through PR #10 merged; first real-Redis smoke case PASS | Claim/release source is independently reviewed; corrected arm64 image/claim artifacts pass validation; scoped publication and exact-revision CI are next; evidence lives in [`crawl-jobs-v2-plan.md`](crawl-jobs-v2-plan.md) |
 | F4 exact crawl scope | Not started | No crawl-policy V2 schema or approved exact-URL policy is present |
 | F5 backlink persistence | Code acceptance passed and merged | PR #9 passed protected checks and merged as `d914a93`; no retained datastore reconciliation or V2 consumer activation is implied |
 | F6 JavaScript-shell indexing | Not started | No static-extraction policy schema or approved metadata-fallback configuration is present |
@@ -282,13 +283,11 @@ wire grammar, limits, transitions, records, Redis configuration, and evidence.
   private reload helpers passed scoped tests and code/protocol review; the dated
   evidence is retained in the F3 plan, not presented as current completion.
 - **Current M3:** All 43 canonical sources and the complete sealed, zero-argument
-  `AuthoritativeScriptBindingSet()` factory are implemented locally. Normal
-  acceptance, including the latest full normal Docker suite, passes. Independent
-  code review returns scoped in-memory GO for canonical/fragment chains, and
-  final-byte security review clears bundle freshness. **The final current-tree
-  full-module race suite passes, with no skipped V2 tests.** The fresh Docker
-  normal suite also passes after the final harness changes. See the primary plan
-  for identities, test evidence, log limits and the earlier failed race attempt.
+  `AuthoritativeScriptBindingSet()` factory are implemented and merged through
+  PR #10 as `ff2457e`, still dormant. Dated normal/Docker/full-module race evidence
+  and independent source reviews are preserved in the primary plan. All fourteen
+  protected checks passed on `a02991c`; eight race reports account for all 470
+  roots with 469 passes and the one permitted optional native-Lua skip.
 - Activation is blocked by the remaining gates, not an absent bundle. M4's four
   fixture proposals were approved September 21; the normative amendment and
   offline compiler/tests and first ledger-smoke executor are implemented locally.
@@ -298,10 +297,12 @@ wire grammar, limits, transitions, records, Redis configuration, and evidence.
   pass. The first approved bounded attempt failed in init before Redis startup;
   cleanup was verified and the one-case approval is used.
   Its capability-spelling defect is now corrected and independently re-reviewed;
-  revised-image validation passes, with new checkpoint CI and fresh approval next.
-  No M4 acceptance, runtime
+  revised-image validation and new checkpoint CI pass. After separate owner
+  authorization, the corrected ledger-smoke case passes with actual Redis
+  probe/BOOT/maintenance/ACL/revocation evidence and all six resources confirmed
+  absent. Full M4 remains open; this small case does not authorize runtime
   integration, retained datastore mutation, application/service activation,
-  migration, deployment, candidate marker or crawl is part of this M3 work.
+  migration, deployment, candidate promotion or crawling.
 
 ### Parent-plan acceptance gate
 
@@ -633,13 +634,10 @@ recrawl or restore, not ad hoc Redis deletion.
 | 8 | Run final hermetic, crash-injection, protected-CI, and immutable release gates | F3-F6 | Every required test and promoted artifact passes against the same reviewed commit |
 | 9 | Obtain new site and run authorization for one bounded static batch | All | Every rewritten V2 checklist gate passes in a new dated report |
 
-F5 code acceptance and F3 M1/M2 passed through PR #9. M3 is implemented,
-locally verified and pushed. M4's approved amendment/offline layer is implemented
-locally, including the first ledger-smoke execution slice. Its independent review
-and remediation are complete locally, with independent GO for image preparation
-only. The first smoke attempt failed before Redis startup. The init defect is
-now corrected, re-reviewed and validated in a rebuilt image. New checkpoint CI
-and fresh approval precede another attempt; actual M4 acceptance remains pending.
+F5 code acceptance and F3 M1/M2 passed through PR #9. Dormant M3 and reviewed M4
+preparation merged through PR #10. The first smoke attempt's init FAIL is retained;
+the corrected, separately approved real-Redis ledger smoke case now passes with
+verified cleanup. Broader M4 conformance and later-case approvals remain pending.
 F4 and the hermetic part of F6 can proceed before runtime integration.
 F1 and F2 execute only after compatible code and runbooks are ready
 so the disposable environment is reset once. Crawl Jobs V2 milestones M5

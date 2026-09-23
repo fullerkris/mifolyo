@@ -36,17 +36,15 @@ shared deployments.
 > candidate promotion, rendering activation, and crawling remain unauthorized.
 
 M1/M2 merged through PR #9 as `d914a93`. M3's 43 canonical Lua operations and
-sealed source bundle are committed and pushed as `81028ca` on
-`feature/crawl-jobs-v2-lua`, with local verification complete. This is not M3
-protected-PR or real-Redis acceptance. The M4 fixture/ACL/bootstrap proposals
-were approved on September 21; the amendment, offline compiler and first bounded
-ledger-smoke executor are implemented and locally tested. The review findings
-are fixed; immutable arm64 images and target checks now pass scoped review and
-validation. The owner authorized the scoped checkpoint and draft PR #10 update;
-all fourteen protected checks passed on `340906c`. The first approved smoke
-attempt failed before Redis startup; its capability-spelling defect is now fixed,
-independently reviewed and validated in a rebuilt image. New checkpoint CI and
-fresh approval precede another attempt. See the
+sealed source bundle, together with the reviewed M4 preparation, merged through
+PR #10 as `ff2457e` after all fourteen protected checks passed on `a02991c`.
+The separately authorized corrected `ledger-smoke-v1` case now **passes** real
+Redis probe/restart, BOOT/replay, empty maintenance, ACL and cleanup checks. All
+four containers and two volumes were confirmed absent. The original init FAIL is
+preserved; the successful case's one-use approval is consumed. The next bounded
+claim/release case is implemented and independently reviewed; corrected arm64
+image preparation passes, with its publication/CI gate next. Full M4 acceptance
+and application integration remain pending. See the
 [Crawl Jobs V2 plan](docs/crawl-jobs-v2-plan.md). Historical V1 commands below do
 not authorize another crawl.
 

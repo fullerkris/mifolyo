@@ -196,6 +196,7 @@ jobs:
           mkdir -p "${RUNNER_TEMP}/m4-image-validation"
           python3 -B scripts/prepare-crawl-jobs-v2-images.py \
             --harness-image "$harness_image" --redis-image "$redis_image" \
+            --case ledger-claim-release-v1 \
             --architecture amd64 --output-dir "${RUNNER_TEMP}/m4-image-validation"
 
       - name: Retain M4 image validation evidence

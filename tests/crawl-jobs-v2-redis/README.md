@@ -1,11 +1,12 @@
 # Crawl Jobs V2 M4 fixture harness
 
 This non-shipped harness has an offline compiler (`harness.py`) and a bounded
-first-case execution controller (`controller.py`). The compiler starts nothing.
+closed-case execution controller (`controller.py`). The compiler starts nothing.
 The controller can create disposable infrastructure only through its explicit
 `run` command with a separately reviewed, digest-bound execution approval.
 Python 3.10+ and its standard library are sufficient for local tests.
-Implementation is locally tested; real-Redis execution and acceptance are pending.
+Implementation is locally tested; the first real-Redis smoke case passes and
+the broader acceptance matrix remains pending.
 
 **Final independent re-review (2026-09-21): GO for image preparation only.** The
 four original findings and a closed-peer follow-up are fixed and re-reviewed.
@@ -21,8 +22,16 @@ startup; cleanup was verified. The one-case approval is used and must not be reu
 validation.** Docker's `CAP_CHOWN` spelling is now admitted only as the equivalent
 singleton init capability. Captured-metadata regressions, value-free diagnostics
 and stopped-role image-preparation checks pass independent review. The rebuilt
-image passes; new checkpoint CI and fresh approval are next. See the
+image and new checkpoint CI pass; see the
+[new CI/approval record](../../docs/crawl-jobs-v2-m4-init-fix-ci-2026-09-22.md) and
 [diagnosis/review report](../../docs/crawl-jobs-v2-m4-init-fix-2026-09-22.md).
+
+**Bounded execution (2026-09-22): PASS.** After PR #10 merged, the owner explicitly
+requested execution at the exact approved, byte-identical revision `a02991c`.
+Fixture `f9692c58d9f07689660a97fbc70ea973` passed probe/restart, BOOT/replay,
+empty maintenance, 21 ACL denials and six-role revocation. All four containers and
+two volumes were directly confirmed absent. The approval is consumed. See the
+[passing report](../../docs/crawl-jobs-v2-m4-smoke-pass-2026-09-22.md).
 
 ## Implemented commands
 
@@ -58,7 +67,7 @@ coerced fields fail:
 | Field | Required value |
 |---|---|
 | `format_version` | Integer `1` (not boolean) |
-| `scenario` | `ledger-smoke`, `administrative-fresh`, or `administrative-migration` |
+| `scenario` | `ledger-smoke`, `ledger-claim-release`, `administrative-fresh`, or `administrative-migration` |
 | `redis_version` | Exact Redis 7 numeric version, at most 64 ASCII bytes |
 | `redis_image` | Nonzero lowercase `sha256:<64 hex>` declaration |
 | `harness_image` | Nonzero lowercase `sha256:<64 hex>` declaration |
@@ -132,7 +141,8 @@ The implementation covers canonical BOOT and empty-inventory
 
 | File | Responsibility |
 |---|---|
-| `runtime_case.py` | Closed first-case recipe, six role ACLs, exact source allowlist and BOOT/active wire construction |
+| `runtime_case.py` | Closed smoke/claim-release recipes, six role ACLs, exact source allowlists and approval binding |
+| `claim_release.py` / `claim_executor.py` | Private claim fixture/oracle plus bounded live setup, typed snapshots and redacted claim/release measurement |
 | `resp.py` | Unix-socket-only RESP2; 2 MiB request/256 KiB reply bounds, command deadlines, redacted errors, no automatic write retry |
 | `executor.py` | Fixed init/readiness/probe/resume/measure/revoke stages inside networkless containers |
 | `controller.py` | Reviewed-commit/image admission, exact owned Docker resources, crash/restart sequence, evidence and cleanup |
@@ -142,6 +152,7 @@ The read-only recipe command starts nothing:
 
 ```bash
 python3 -B tests/crawl-jobs-v2-redis/controller.py recipe
+python3 -B tests/crawl-jobs-v2-redis/controller.py recipe --case ledger-claim-release-v1
 ```
 
 It includes code/configuration fingerprints, the exact wire/storage inventory,
@@ -224,7 +235,7 @@ It has exactly these fields:
 
 | Field | Constraint |
 |---|---|
-| `version`, `case`, `approved` | Integer `1`, `ledger-smoke-v1`, boolean `true` |
+| `version`, `case`, `approved` | Integer `1`, the exact selected `ledger-smoke-v1` or `ledger-claim-release-v1`, boolean `true` |
 | `operator` | Reviewed operator label, 1–64 ASCII letters/digits/underscore/dot/hyphen |
 | `commit` | Exact clean, tracked 40-hex Git revision |
 | `plan_sha256`, `recipe_sha256` | Exact canonical offline-plan and current recipe digests |
@@ -242,18 +253,19 @@ python3 -B tests/crawl-jobs-v2-redis/controller.py run \
   --evidence-dir /absolute/path/to/existing-private-evidence-directory
 ```
 
-This command ran once and failed in init; see the dated report. A matching input
-hash does not create owner approval or permission to retry. The corrected
-source/image/recipe needs new exact-revision CI and fresh approval; the consumed
-approval for `340906c` cannot authorize these revised bytes.
+The original invocation failed in init. The separately approved corrected case
+then ran once and passed; both outcomes are preserved in the dated reports.
+Both one-case approvals are consumed. A matching input hash does not create
+owner approval or permission to retry; further cases need fresh reviewed scope
+and exact-artifact execution authority.
 
 The controller writes exclusive mode-0600 intent/final JSON files outside the
-fixture volumes. Reports bind identities, actual container checks, probe/BOOT
+fixture volumes, plus a bounded/fsynced controller-action JSONL journal. Reports bind identities, actual container checks, probe/BOOT
 evidence, setup/time observations, state comparisons, denials, revocation and
 destruction receipts. Credentials travel via bounded stdin, never command-line
 arguments, environment variables or report fields. Errors retain only closed
 failure codes and admission-check names, omitting inspected values and raw server/
-Docker diagnostics. `m4_accepted` is always false: even a successful future smoke
+Docker diagnostics. `m4_accepted` is always false: even this successful smoke
 case cannot certify the remaining matrix. Injected fake backends always emit
 `evidence_kind=simulated` and `case_evidence_valid=false`.
 
@@ -273,7 +285,10 @@ counterexamples, worker quiescence ordering, a real local Python stage-timer
 exit, process-group aborts, strict peer-disconnection proof and expiry between
 create/start. A real local Unix socket-pair regression covers orderly peer close
 before the probe. Two target-kernel network regressions and eight container-admission
-regressions bring the local suite to 53 tests; it starts no Docker or Redis.
+regressions, nine offline claim/release tests and fourteen integration regressions
+bring the local suite to 76
+tests at Step 3. Three review-follow-up regressions bring the current suite to
+79 tests; it starts no Docker or Redis.
 `test_container_admission.py` replays captured Docker metadata, rejects broader
 capabilities, checks bounded diagnostics, and verifies metadata-only preparation
 and failure cleanup. In `services/spider`:
@@ -292,14 +307,109 @@ The Python suite runs in protected `required-tests`; the Go cross-check runs in
 normal Spider tests. Docker copies these files into the **builder only**; the
 runtime image copies only the Spider binary and existing configuration.
 
-## Remaining before execution
+## Offline claim/release fixture (Step 2)
+
+`claim_release.py` implements the private, deterministic `ledger-claim-release-v1`
+projection. Compile a normal offline plan with scenario `ledger-claim-release`,
+then supply a closed input object with `fixture_id`, `redis_time_ms`, `owner_a`,
+`owner_b`, `token_a`, `token_b` and `wrong_token`. Time must be an exact bounded
+integer; IDs/tokens have fixed lowercase hex shapes, and owners/tokens cannot be
+reused within the case. Input time is not asserted to be a live observation.
+
+| API | Purpose |
+|---|---|
+| `compile_fixture(plan, inputs)` | Private setup, fixed policy/source descriptors, derived identities and all 58 possible keys |
+| `validate_fixture(plan, fixture)` | Exact reconstruction; reject altered, missing, extra, reordered or mismatched content |
+| `wire_requests(plan, fixture, boot_epoch)` | Nine binary-safe CLAIM/RELEASE EVALSHA requests; no transport |
+| `expected_sequence(plan, fixture, times)` | Expected replies and complete 57-key managed state for CR01–CR09, including absolute expiries |
+| `validate_state(plan, fixture, times, step, observed)` | Reject partial or altered managed-state projections; steps are zero-indexed |
+| `public_summary(plan, fixture)` | Redacted digest/count/provenance projection suitable for evidence output |
+
+The 58th key, durability, belongs to bootstrap. No direct setup row supplies it.
+The claim executor separately checks that BOOT record, the entire live inventory
+including unknown-key absence, and the case-bound state/expiry projections.
+The controller and worker enforce the actual approval/lifecycle/stage limits.
+Full fixture/state/wire objects contain private
+tokens and identifiers and must not be logged; use `public_summary()` instead.
+
+`test_claim_release.py` checks adversarial artifacts, state/expiry drift, strict
+time bounds, no I/O and public redaction. `TestM4ClaimReleaseOffline` independently
+reconstructs identities and every wire byte in Go, then compares the Python
+oracle to unchanged canonical Lua in the existing in-memory command facade.
+Two vectors exercise all nine transitions with delayed/increasing and large equal
+timestamps. This is offline conformance, not target Redis/AOF/ACL acceptance.
+
+```bash
+GOPROXY=off GOTOOLCHAIN=go1.25.13 go test -mod=readonly -race -timeout 180s \
+  ./internal/database/crawljobsv2 -run '^TestM4(OfflineArtifacts|ClaimReleaseOffline)$' -count=1
+```
+
+Run that command from `services/spider`. The Python fixture/vector modules are
+included only in the Spider builder's test inputs.
+
+## Bounded claim/release integration (Step 3)
+
+The runtime now selects exactly one of the two known cases from the validated
+plan. The external approval must name that case and its current recipe hash;
+case-swapped approvals and Docker ownership labels fail closed.
+
+For claim/release, the controller generates fresh private owner/token material.
+Init derives exact ACL keys from it before Redis starts. Resume repeats the
+persistence/BOOT sequence, captures setup time, finalizes the private fixture,
+checks ACL time independence and installs its validated 26-key setup. All three
+setup roles are revoked before measurement.
+
+`claim_executor.py` enforces the full 58-key inventory, fixed typed records,
+bounded scans/reads, exact indexes and absolute expiry times. Its one timed stage
+performs CR01–CR09, then all 46 authority-denial probes. Stage output contains
+status labels, timestamps, digests, hashed references and a fixed 33-counter
+before/after/delta projection. Counter types and exact per-step relationships are
+validated before retention. The controller rejects known credential/private
+values and binds both successful and failed measurement receipts to the setup fixture.
+
+Ordinary measurement errors return a closed FAIL receipt with completed-step
+prefixes; hard process termination or malformed/missing output may provide no
+prefix. `<fixture>.actions.jsonl` independently retains completed controller
+actions, including cleanup quiescence, revocation and resource-absence checks.
+Cleanup journal/callback errors invalidate PASS but do not prevent later teardown.
+The journal is not an internal Lua crash-boundary trace. Every failure still
+requires worker-first quiescence/revocation/destruction, and unproved cleanup
+invalidates the case.
+
+The fake-backed lifecycle covers success, partial failures, no retry after an
+ambiguous result, corruption, expiry drift, ACL escalation/denial failures,
+interruptions, private-output rejection, case ownership and journal failures.
+The independent Go test also checks actual canonical command traces against
+the generated ledger selector inventory. These checks do not certify real
+Redis selector parsing, filesystem behavior or target-image performance.
+
+Execution-image input allowlisting now expects 57 files. The image checker
+validates both case recipes; `scripts/prepare-crawl-jobs-v2-images.py --case
+ledger-claim-release-v1` selects the claim case when preparing approved images.
+Independent review and follow-up re-review are GO. Corrected arm64 image validation
+also passes; see the [claim-specific preparation report](../../docs/crawl-jobs-v2-m4-claim-image-preparation-2026-09-23.md).
+Publication, exact-revision CI and fresh execution approval remain subsequent gates. See the
+[Step 4 review report](../../docs/crawl-jobs-v2-m4-claim-review-2026-09-23.md).
+
+## Remaining acceptance work
 
 The [implementation plan](../../docs/crawl-jobs-v2-plan.md) owns progress.
+The current slice is
+[`ledger-claim-release-v1`](../../docs/crawl-jobs-v2-plan.md#next-bounded-slice-ledger-claim-release-v1):
+one ready job, two claim/release cycles, exact replay, stale ownership, complete
+state/expiry checks and write-capable authority ACL denials. The
+[planning inventory](planning/claim-release-v1.json) records all 104 requirement
+entries and 52 operation/gate variants, existing partial smoke evidence and
+twelve planned assertions. It remains the initial planning snapshot, not an
+executable artifact. Steps 2–4 now pass local checks and independent review.
+Step 5's corrected arm64 image and claim-specific artifacts are validated;
+authorized publication and the protected CI gate are next. Fresh execution
+approval follows.
+
 The corrected first-case execution layer and target-discovered corrections have
 scoped independent GO. The init admission defect is corrected and re-reviewed;
-rebuilt-image content, memory and stopped-role isolation checks pass. Complete
-protected CI for the correction and obtain fresh approval before another run.
-Actual Redis ACL/OS lifecycle validation has not been reached. Candidate-presence
+rebuilt-image content, memory and stopped-role isolation checks pass. Protected
+CI and the separately authorized real-Redis smoke case now pass. Candidate-presence
 fixtures, administrative transitions, job/lease/stage/commit behavior, maximum
 shapes, crash-boundary coverage, benchmarks and final release/image admission
 remain subsequent gates. Fake results never substitute for those observations.

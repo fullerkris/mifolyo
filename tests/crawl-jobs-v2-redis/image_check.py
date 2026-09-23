@@ -41,19 +41,24 @@ def main():
         raise ValueError("image inventory mismatch")
     files = {name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest() for name in sorted(actual)}
     redis_image, harness_image = sys.argv[1:3]
-    inputs = {"format_version": 1, "scenario": "ledger-smoke", "redis_version": "7.4.11",
-              "redis_image": redis_image, "harness_image": harness_image, "standin_image": harness_image}
-    plan = harness.compile_plan(inputs)
-    request = {"plan": plan, "recipe_sha256": runtime_case.recipe_sha256(), "fixture_id": "1" * 32,
-               "credentials": {role: format(i + 1, "064x") for i, role in enumerate(runtime_case.ROLES)},
-               "previous": {}}
-    executor.validate_request(request)
+    recipes = {}
+    for case_id, scenario in runtime_case.CASES.items():
+        inputs = {"format_version": 1, "scenario": scenario, "redis_version": "7.4.11",
+                  "redis_image": redis_image, "harness_image": harness_image, "standin_image": harness_image}
+        plan = harness.compile_plan(inputs)
+        recipes[case_id] = runtime_case.recipe_sha256(case_id)
+        request = {"plan": plan, "recipe_sha256": recipes[case_id], "fixture_id": "1" * 32,
+                   "credentials": {role: format(i + 1, "064x") for i, role in enumerate(runtime_case.ROLES)}, "previous": {}}
+        if case_id == runtime_case.CLAIM_CASE:
+            request["claim_material"] = {"owner_a": "2" * 32, "owner_b": "3" * 32,
+                                         "token_a": "4" * 64, "token_b": "5" * 64, "wrong_token": "6" * 64}
+        executor.validate_request(request)
     isolation = executor.environment(init=os.geteuid() == 0)
     peak_file = Path("/sys/fs/cgroup/memory.peak")
     memory_peak = int(peak_file.read_text().strip()) if peak_file.is_file() else None
     print(json.dumps({"status": "PASS", "kind": "image_validation_only", "execution_authorized": False,
                       "python": sys.version.split()[0], "identities": identities,
-                      "recipe_sha256": runtime_case.recipe_sha256(), "files": files,
+                      "recipe_sha256": runtime_case.recipe_sha256(), "recipes": recipes, "files": files,
                       "file_count": len(files), "isolation": isolation,
                       "max_rss_bytes": resource.getrusage(resource.RUSAGE_SELF).ru_maxrss * 1024,
                       "cgroup_memory_peak_bytes": memory_peak,

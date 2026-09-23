@@ -18,21 +18,18 @@ The zero-argument Go `AuthoritativeScriptBindingSet()` factory is implemented;
 it returns a sealed binding set from embedded sources checked against fixed
 build-time pins. See [Assembly](#assembly) for source and bundle checks.
 
-This remains **dormant, in-memory source conformance only**, not real-Redis or
-operational acceptance. M4's fixture amendment is owner-approved: command-scoped
-absence checks, harness-owned setup manifests, isolated administrative tests and
-nonzero test-input descriptors. The offline compiler is implemented under
-`tests/crawl-jobs-v2-redis/` at repository root, alongside a locally tested first
-ledger-smoke executor. Its findings and closed-peer follow-up are fixed; final
-independent correctness/security re-review returns GO for image preparation
-only. Image validation and exact-revision CI pass, but the first approved smoke
-attempt failed in init before Redis startup, with cleanup verified. Its capability
-spelling defect is now corrected, re-reviewed and validated in a rebuilt image;
-new checkpoint CI and fresh approval precede another attempt. See the primary plan.
-Real-Redis clock,
-allocator, maximum-shape latency, ACL and crash/AOF evidence remain separate
-gates. Source completeness and bundle sealing do not approve a commit guard,
-authorize I/O, or activate runtime integration or the V1 client.
+This remains **dormant in application runtime**. M3 and the reviewed M4 harness
+merged through PR #10. The owner-approved fixture amendment and compiler under
+`tests/crawl-jobs-v2-redis/` support isolated, non-authoritative acceptance cases.
+After the init capability-spelling correction, independent review, image/CI gates
+and separate execution request, `ledger-smoke-v1` now passes actual Redis probe/
+restart, BOOT/replay, empty maintenance, scoped ACL and teardown checks. See
+`docs/crawl-jobs-v2-m4-smoke-pass-2026-09-22.md` and the primary plan.
+
+That single case does not accept all 43 operations. Broader Redis clock, allocator,
+maximum-shape latency, ACL and crash/AOF coverage remain separate gates. Source
+completeness and bundle sealing do not approve a release commit guard, authorize
+public I/O, or activate runtime integration or the V1 client.
 
 The revision headings and baseline conventions below record cumulative API
 additions: read revision 2 together with the revision 3/4 extensions to commands,

@@ -22,12 +22,15 @@ import controller as ctl
 import harness as h
 
 
-def validate_prestart(backend, harness_image, redis_image):
+def validate_prestart(backend, harness_image, redis_image, case_id=ctl.case.CASE):
+    ctl.case.sources(case_id)
+    previous_case = getattr(backend, "case_id", ctl.case.CASE)
+    backend.case_id = case_id
     fixture = secrets.token_hex(16)
     prefix = "cj2-prestart-check-" + fixture
     volumes = {role: prefix + "-" + role for role in ("control", "data")}
     resources = []
-    report = {"kind": "metadata_only_prestart", "status": "FAIL", "containers_started": 0, "roles": []}
+    report = {"kind": "metadata_only_prestart", "case": case_id, "status": "FAIL", "containers_started": 0, "roles": []}
     try:
         for volume in volumes.values():
             h.require(backend.inspect("volume", volume) is None, "CHECK_VOLUME_EXISTS")
@@ -36,7 +39,7 @@ def validate_prestart(backend, harness_image, redis_image):
         for role in ("init", "executor", "redis", "revocation"):
             name = prefix + "-" + role
             h.require(backend.inspect("container", name) is None, "CHECK_CONTAINER_EXISTS")
-            spec = ctl.container_spec(name, role, fixture, redis_image if role == "redis" else harness_image, volumes)
+            spec = ctl.container_spec(name, role, fixture, redis_image if role == "redis" else harness_image, volumes, case_id)
             resources.append(("container", name))
             backend.create(spec)
             observed = backend.inspect("container", name)
@@ -55,6 +58,7 @@ def validate_prestart(backend, harness_image, redis_image):
             backend.deadline = time.monotonic() + 60
             report["cleanup"] = ctl.cleanup(backend, resources, fixture)
             backend.deadline = previous_deadline
+            backend.case_id = previous_case
         if not all(row["removed"] for row in report["cleanup"]):
             report["status"] = "FAIL"
     return report
@@ -96,6 +100,7 @@ def validate(backend, image, redis_image, role):
             h.require(checked["status"] == "PASS" and checked["execution_authorized"] is False, "CHECK_RESULT")
             h.require(set(checked["files"]) == set(ctl.scope_paths()), "IMAGE_INVENTORY")
             h.require(checked["identities"] == h.source_identity()[0], "IMAGE_IDENTITIES")
+            h.require(checked["recipes"] == {name: ctl.case.recipe_sha256(name) for name in ctl.case.CASES}, "IMAGE_RECIPES")
             for relative, digest in checked["files"].items():
                 h.require((ROOT / relative).is_file() and h.digest((ROOT / relative).read_bytes()) == digest, "IMAGE_SOURCE_DRIFT")
             h.require(checked["cgroup_memory_peak_bytes"] is not None and
@@ -122,6 +127,7 @@ def main():
     parser.add_argument("--harness-image", required=True)
     parser.add_argument("--redis-image", required=True)
     parser.add_argument("--architecture", choices=("arm64", "amd64"), default="arm64")
+    parser.add_argument("--case", dest="case_id", choices=tuple(ctl.case.CASES), default=ctl.case.CASE)
     parser.add_argument("--output-dir", type=Path, required=True)
     args = parser.parse_args()
     h.require(args.output_dir.is_dir() and not args.output_dir.is_symlink(), "OUTPUT_DIRECTORY")
@@ -133,18 +139,18 @@ def main():
     for role, value in (("harness", args.harness_image), ("redis", args.redis_image)):
         raw = backend.inspect("image", value)
         images[role] = ctl.image_admission(raw, value, args.architecture, role == "harness")
-    prestart = validate_prestart(backend, args.harness_image, args.redis_image)
+    prestart = validate_prestart(backend, args.harness_image, args.redis_image, args.case_id)
     checks = [validate(backend, args.redis_image, args.redis_image, "redis-version"),
               validate(backend, args.harness_image, args.redis_image, "init"),
               validate(backend, args.harness_image, args.redis_image, "executor")] if prestart["status"] == "PASS" else []
-    report = {"version": 1, "architecture": args.architecture, "images": images, "checks": checks, "prestart": prestart,
+    report = {"version": 1, "case": args.case_id, "architecture": args.architecture, "images": images, "checks": checks, "prestart": prestart,
               "status": "PASS" if prestart["status"] == "PASS" and all(c["status"] == "PASS" for c in checks) else "FAIL",
               "redis_started": False, "execution_authorized": False}
     if report["status"] == "PASS":
-        inputs = {"format_version": 1, "scenario": "ledger-smoke", "redis_version": "7.4.11",
+        inputs = {"format_version": 1, "scenario": ctl.case.CASES[args.case_id], "redis_version": "7.4.11",
                   "redis_image": args.redis_image, "harness_image": args.harness_image,
                   "standin_image": args.harness_image}
-        plan, recipe = h.compile_plan(inputs), ctl.case.recipe()
+        plan, recipe = h.compile_plan(inputs), ctl.case.recipe(args.case_id)
         for name, artifact in (("inputs.json", inputs), ("plan.json", plan), ("recipe.json", recipe)):
             with (args.output_dir / name).open("xb") as stream:
                 stream.write(h.canonical(artifact))

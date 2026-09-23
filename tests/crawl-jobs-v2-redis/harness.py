@@ -37,6 +37,7 @@ IMAGE_FIELDS = ("spider_image", "seed_importer_image", "crawl_admin_image",
                 "indexer_image", "image_indexer_image", "backlinks_processor_image",
                 "monitoring_image")
 SCENARIOS = {"ledger-smoke": ("ledger", "fresh"),
+             "ledger-claim-release": ("ledger", "fresh"),
              "administrative-fresh": ("administrative", "fresh"),
              "administrative-migration": ("administrative", "v1_migration")}
 CANDIDATE_RUN_OPS = frozenset(("CJ2_CREATE_RUN", "CJ2_ENQUEUE_BATCH",
@@ -266,11 +267,12 @@ def ledger_setup(plan: dict, redis_time_ms: int) -> dict:
     guard = packed([*core[:2], ("compatibility_manifest_sha256", manifest), *core[2:10],
                     ("approved_at_ms", str(redis_time_ms)), core[10]])
     # Named synthetic artifacts, not alleged retained backups or observations.
-    empty_artifacts = {name: {"purpose": "conformance_only", "scenario": "ledger-smoke",
+    scenario = plan["inputs"]["scenario"]
+    empty_artifacts = {name: {"purpose": "conformance_only", "scenario": scenario,
                              "kind": name, "entries": []} for name in
                        ("backup", "source", "queue", "urls", "depths", "spider", "signal")}
     empty = {name: digest(canonical(value)) for name, value in empty_artifacts.items()}
-    legacy = packed([("protocol_version", "2"), ("freeze_nonce", digest(b"m4-ledger-smoke-freeze")[:32]),
+    legacy = packed([("protocol_version", "2"), ("freeze_nonce", digest(("m4-" + scenario + "-freeze").encode())[:32]),
         ("backup_sha256", empty["backup"]), ("v1_count", "0"), ("v1_url_field_count", "0"),
         ("v1_depth_field_count", "0"), ("v1_source_sha256", empty["source"]),
         ("v1_queue_evidence_sha256", empty["queue"]), ("v1_urls_evidence_sha256", empty["urls"]),

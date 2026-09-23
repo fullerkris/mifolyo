@@ -16,6 +16,12 @@ class ContainerAdmissionTests(unittest.TestCase):
         self.spec = self.capture["expected_spec"]
         self.spec["mounts"] = [tuple(row) for row in self.spec["mounts"]]
         self.observed = self.capture["observed"]
+        # The historical capture intentionally omitted command/environment.
+        # Fill only those new predicates with labeled synthetic controls; the
+        # existing capability/isolation fields remain actual captured metadata.
+        self.spec["entrypoint"], self.spec["command"] = ctl.admission.command_for("init")
+        self.observed["Config"].update(Entrypoint=self.spec["entrypoint"], Cmd=self.spec["command"], Env=[])
+        self.spec["environment_sha256"] = ctl.admission.environment_digest([])
 
     def test_actual_docker_created_init_and_legacy_spelling_both_pass(self):
         self.assertEqual(self.observed["HostConfig"]["CapAdd"], ["CAP_CHOWN"])

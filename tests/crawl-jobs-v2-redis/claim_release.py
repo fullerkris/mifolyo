@@ -139,7 +139,7 @@ def _transition(operation, run_id, job_id, identity, payload):
 def compile_fixture(plan, inputs):
     """Return a private deterministic projection, not measured setup or authority."""
     plan = h.validate_plan(plan)
-    h.require(plan["inputs"]["scenario"] == SCENARIO, "CLAIM_SCENARIO")
+    h.require(plan["inputs"]["scenario"] in (SCENARIO, *h.negative.LEDGER_SCENARIOS), "CLAIM_SCENARIO")
     _inputs(inputs)
     inputs = dict(inputs)
     now, run_id = inputs["redis_time_ms"], inputs["fixture_id"]

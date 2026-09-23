@@ -1,0 +1,104 @@
+{
+  "review": "bootstrap-acl-negatives-v1 Step 3 independent correctness initial review",
+  "date": "2026-09-23",
+  "verdict": "GO_for_later_image_CI_preparation_only",
+  "actionable_findings": [],
+  "execution_authorized": false,
+  "m4_accepted": false,
+  "workspace_edited": false,
+  "head": "b4bda19f07bb22f37737508cd10424b75690d6f5",
+  "branch": "feature/crawl-jobs-v2-claim-release",
+  "manifest_sha256": "dbe881b2c269535b633188986c6f3adbdac0226df23528290bc4554c93277113",
+  "initial_file_hashes_verified": 81,
+  "final_file_hashes_verified": 81,
+  "preserved_source_hashes_verified_each_time": 81,
+  "worktree_mismatches": [],
+  "snapshot_mismatches": [],
+  "recipes_verified_at_closeout": 15,
+  "canonical_operations": 43,
+  "execution_image_input_paths": 62,
+  "offline_scenarios": 17,
+  "python_methods_completed_pass": 42,
+  "environment": {
+    "TMPDIR": "/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode",
+    "go_only": {"GOPROXY": "off", "GOTOOLCHAIN": "go1.25.13"},
+    "python_bytecode_disabled": true
+  },
+  "checks": [
+    {
+      "cwd": "review scratch directory",
+      "command": "python3 -B verify_manifest.py",
+      "status": "PASS_initial_and_final",
+      "note": "Final version also recomputes recipes, identities and registry counts. Both manifest copies verified at both checks."
+    },
+    {
+      "cwd": "services/spider",
+      "command": "go test -mod=readonly -race -timeout 900s ./internal/database/crawljobsv2 -run '^TestM4(Negative|AdministrativeDenial)' -count=1",
+      "status": "PASS",
+      "package_seconds": "76.243",
+      "canonical_lua_calls": 70,
+      "offline_outer_selector_checks": 4
+    },
+    {
+      "cwd": "services/spider",
+      "command": "go test -mod=readonly -timeout 300s ./internal/database/crawljobsv2 -run '^TestM4OfflineArtifacts$' -count=1",
+      "status": "PASS",
+      "package_seconds": "2.558"
+    },
+    {
+      "cwd": "tests/crawl-jobs-v2-redis",
+      "command": "python3 -B -m unittest -v test_negative_cases test_negative_admission",
+      "status": "PASS",
+      "tests": 10,
+      "seconds": "21.944",
+      "planned_offline_admission_variants": 82
+    },
+    {
+      "cwd": "tests/crawl-jobs-v2-redis",
+      "command": "python3 -B -m unittest -v test_negative_execution",
+      "status": "INCOMPLETE_REVIEW_COMMAND_TIMEOUT",
+      "command_timeout_seconds": 360,
+      "completed_pass": ["NegativeLifecycleTests.test_all_thirteen_closed_lifecycles_and_case_roles"],
+      "in_progress_at_timeout": "NegativeLifecycleTests.test_errors_success_and_mutation_fail_without_retry_and_revoke_every_role",
+      "note": "All 13 simulated lifecycle subcases completed in the first method. No full-module or full-fault-matrix PASS is claimed."
+    },
+    {
+      "cwd": "tests/crawl-jobs-v2-redis",
+      "command": "python3 -B -m unittest -v test_negative_execution.NegativeLifecycleTests.test_failed_admin_prefix_is_retained_without_inventing_success test_negative_execution.NegativeLifecycleTests.test_receipt_schema_counter_and_fixture_substitution_reject test_negative_execution.NegativeLifecycleTests.test_failed_receipt_binding_is_checked_before_retention",
+      "status": "PASS",
+      "tests": 3,
+      "seconds": "56.896"
+    },
+    {
+      "cwd": "tests/crawl-jobs-v2-redis",
+      "command": "python3 -B -m unittest -v test_negative_execution.NegativeLifecycleTests.test_stage_interrupt_cleanup_and_journal_errors_cannot_be_acceptance",
+      "status": "PASS",
+      "tests": 1,
+      "seconds": "47.919"
+    },
+    {
+      "cwd": "tests/crawl-jobs-v2-redis",
+      "command": "python3 -B -m unittest -v test_review_regressions test_container_admission test_image_environment",
+      "status": "PASS",
+      "tests": 27,
+      "seconds": "3.229"
+    },
+    {
+      "cwd": "review scratch directory",
+      "command": "python3 -B probe_correctness.py",
+      "status": "PASS",
+      "initial_snapshot_controls": 13,
+      "unknown_key_rejections": 13,
+      "stored_invalid_content_rejections": 8,
+      "expiry_rejections": 14,
+      "independent_wire_mutations": 12,
+      "admin_prefix_controls": 9,
+      "role_inventory_controls": 13
+    },
+    {
+      "cwd": "repository root",
+      "command": "git diff --exit-code HEAD -- docs/crawl-jobs-v2.md contracts/crawl-jobs-v2/digest-vectors.json scripts/generate-crawl-jobs-v2-bundle.py services/spider/internal/database/crawljobsv2/lua services/spider/internal/database/crawljobsv2/script_bundle_generated.go",
+      "status": "PASS_no_diff"
+    }
+  ]
+}

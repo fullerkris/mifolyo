@@ -2,7 +2,7 @@
 
 **Original review date:** 2026-09-01
 
-**Last updated:** 2026-09-23 (UTC; claim/release Step 5 arm64 image preparation passes)
+**Last updated:** 2026-09-23 (UTC; M4-P3 bootstrap/ACL Step 4 arm64 PC01 validation PASS)
 
 **Reviewed baseline:** `main` / `44d8b09a364a1f60032e1f4faccf160813f4dd04`
 
@@ -110,7 +110,7 @@ retained Mongo records still incorrectly say `enabled: true`.
 |---|---|---|
 | F1 seed reconciliation | Not started | Retained evidence remains 70 enabled records; execute only during the matched freeze/backup/reset sequence |
 | F2 disposable Redis reset | Not started | Retained V1 state remains historical post-test evidence and must not be reused or selectively repaired |
-| F3 durable Crawl Jobs V2 | M1/M2 through PR #9 and dormant M3/M4 preparation through PR #10 merged; first real-Redis smoke case PASS | Claim/release source is independently reviewed; corrected arm64 image/claim artifacts pass validation; scoped publication and exact-revision CI are next; evidence lives in [`crawl-jobs-v2-plan.md`](crawl-jobs-v2-plan.md) |
+| F3 durable Crawl Jobs V2 | M1/M2 through PR #9, dormant M3/M4 preparation through PR #10 and claim checkpoint through PR #11 merged; historical smoke/claim real cases PASS | Bootstrap/ACL review GO and fresh arm64 PC01 image/artifact validation PASS; fresh branch preserves pending work; scoped publication/protected CI next; evidence lives in [`crawl-jobs-v2-plan.md`](crawl-jobs-v2-plan.md) |
 | F4 exact crawl scope | Not started | No crawl-policy V2 schema or approved exact-URL policy is present |
 | F5 backlink persistence | Code acceptance passed and merged | PR #9 passed protected checks and merged as `d914a93`; no retained datastore reconciliation or V2 consumer activation is implied |
 | F6 JavaScript-shell indexing | Not started | No static-extraction policy schema or approved metadata-fallback configuration is present |

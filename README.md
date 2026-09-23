@@ -41,12 +41,22 @@ PR #10 as `ff2457e` after all fourteen protected checks passed on `a02991c`.
 The separately authorized corrected `ledger-smoke-v1` case now **passes** real
 Redis probe/restart, BOOT/replay, empty maintenance, ACL and cleanup checks. All
 four containers and two volumes were confirmed absent. The original init FAIL is
-preserved; the successful case's one-use approval is consumed. The next bounded
-claim/release case is implemented and independently reviewed; corrected arm64
-image preparation passes, with its publication/CI gate next. Full M4 acceptance
-and application integration remain pending. See the
-[Crawl Jobs V2 plan](docs/crawl-jobs-v2-plan.md). Historical V1 commands below do
-not authorize another crawl.
+preserved; the successful case's one-use approval is consumed. The separately
+approved `ledger-claim-release-v1` case also **passes**: nine transitions,
+46 ACL denials and complete state/expiry checks, with all six resources
+independently confirmed absent and its approval consumed. It ran on unchanged
+checkpoint `b4bda19`, published with all fourteen required CI checks passing and
+subsequently merged through PR #11 as tree-identical `9b6b8f9`. See the
+[claim/release result](docs/crawl-jobs-v2-m4-claim-run-2026-09-23.md).
+The remaining M4-P3 bootstrap/ACL negative package is implemented and locally
+verified: 95 harness tests and independent Go/Lua race checks pass. Independent
+correctness/security reviews now both return GO with no actionable findings.
+Fresh arm64 image/artifact validation now passes for the refreshed PC01 control;
+scoped publication and protected CI on `feature/crawl-jobs-v2-bootstrap-acl` are
+next. Full M4 acceptance
+and application integration remain pending. The
+[Crawl Jobs V2 plan](docs/crawl-jobs-v2-plan.md) owns current progress. Historical
+V1 commands below do not authorize another crawl.
 
 Current plan state: F1, F2, F4, and F6 are not started. F5's idempotency repair
 passed protected PR #9 checks and merged; retained-data reconciliation and V2

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Opt-in local Docker controller for one approved disposable M4 smoke case.
+"""Opt-in local Docker controller for one approved, closed disposable M4 case.
 
 No pull/build, remote Docker host, retained project, arbitrary command, or restart
 policy. The executor receives neither the Docker socket nor a host bind mount.
@@ -24,6 +24,9 @@ import time
 import harness as h
 import runtime_case as case
 import claim_executor as claim_worker
+import negative_executor as negative_worker
+import negative_specs as ns
+import admission
 
 LABEL = "io.mifolyo.cj2.fixture"
 ENTRY = "/app/tests/crawl-jobs-v2-redis/executor.py"
@@ -47,7 +50,10 @@ ADMISSION_FIELDS = {
                   "HostConfig.Memory", "HostConfig.MemorySwap", "HostConfig.PidsLimit", "HostConfig.NanoCpus",
                   "HostConfig.RestartPolicy", "HostConfig.PortBindings", "HostConfig.PublishAllPorts",
                   "HostConfig.CapDrop", "HostConfig.CapAdd", "HostConfig.SecurityOpt", "HostConfig.Binds",
-                  "HostConfig.Devices", "HostConfig.PidMode", "HostConfig.IpcMode", "HostConfig.Tmpfs"},
+                  "HostConfig.Devices", "HostConfig.PidMode", "HostConfig.IpcMode", "HostConfig.Tmpfs",
+                  "HostConfig.Dns", "HostConfig.DnsSearch", "HostConfig.DnsOptions", "HostConfig.ExtraHosts"},
+    "CONTAINER_COMMAND": {"Config.Entrypoint", "Config.Cmd"},
+    "CONTAINER_ENV": {"Config.Env"},
     "MOUNTS": {"Mounts.inventory", "Mounts.types", "Mounts.tmpfs"},
     "CONTAINER_STATE": {"State.Running"},
 }
@@ -168,19 +174,25 @@ def image_admission(value, expected, architecture, harness=False):
     config = value.get("Config", {})
     h.require(not config.get("OnBuild"), "ONBUILD")
     h.require(not any("=" in entry and entry.split("=", 1)[0].lower().endswith("proxy") and
-                      entry.split("=", 1)[1] for entry in config.get("Env", [])), "IMAGE_PROXY")
+                       entry.split("=", 1)[1] for entry in config.get("Env", [])), "IMAGE_PROXY")
+    environment_sha = admission.environment_digest(config.get("Env", []))
     h.require(set(config.get("Volumes") or {}) <= (set() if harness else {"/data"}), "IMAGE_VOLUMES")
     return {"id": expected, "os": "linux", "architecture": architecture,
-            "layer_digest": h.digest(h.canonical({"layers": value["RootFS"]["Layers"]}))}
+             "environment_sha256": environment_sha,
+             "layer_digest": h.digest(h.canonical({"layers": value["RootFS"]["Layers"]}))}
 
 
-def container_spec(name, role, fixture_id, image, volumes, case_id=case.CASE):
+def container_spec(name, role, fixture_id, image, volumes, case_id=case.CASE, environment_sha256=None):
     case.sources(case_id)
     init = role == "init"
     mounts = [(volumes["control"], "/run/cj2", role in ("executor", "revocation"))]
     if role in ("init", "redis"):
         mounts.append((volumes["data"], "/data", False))
+    entrypoint, command = admission.command_for(role)
+    environment_sha256 = admission.environment_digest([]) if environment_sha256 is None else environment_sha256
+    h.require(h.nonzero(environment_sha256) and len(set(volumes.values())) == 2, "CONTAINER_SPEC")
     return {"name": name, "role": role, "fixture_id": fixture_id, "image": image, "case": case_id,
+             "entrypoint": entrypoint, "command": command, "environment_sha256": environment_sha256,
             "uid": "0:0" if init else "65534:65534", "cap_add": ["CHOWN"] if init else [],
             "memory": 134217728 if init else (553648128 if role == "redis" else 268435456),
             "mounts": mounts}
@@ -207,6 +219,13 @@ def verify_container(value, spec, running):
         "Config.Labels.fixture": config["Labels"].get(LABEL) == spec["fixture_id"],
         "Config.Labels.case": config["Labels"].get("io.mifolyo.cj2.case") == spec.get("case", case.CASE),
     })
+    admission_checks("CONTAINER_COMMAND", {"Config.Entrypoint": config.get("Entrypoint") == spec["entrypoint"],
+                                           "Config.Cmd": config.get("Cmd") == spec["command"]})
+    try:
+        environment_sha = admission.environment_digest(config.get("Env"))
+    except h.InvalidArtifact:
+        environment_sha = None
+    admission_checks("CONTAINER_ENV", {"Config.Env": environment_sha == spec["environment_sha256"]})
     admission_checks("ISOLATION", {
         "HostConfig.NetworkMode": host.get("NetworkMode") == "none",
         "HostConfig.ReadonlyRootfs": host.get("ReadonlyRootfs") is True,
@@ -224,6 +243,8 @@ def verify_container(value, spec, running):
         "HostConfig.Binds": not host.get("Binds"), "HostConfig.Devices": not host.get("Devices"),
         "HostConfig.PidMode": host.get("PidMode", "") == "", "HostConfig.IpcMode": host.get("IpcMode") == "private",
         "HostConfig.Tmpfs": host.get("Tmpfs") == {"/tmp": "rw,noexec,nosuid,size=16777216"},
+        **{"HostConfig." + field: host.get(field) is None or type(host.get(field)) is list and not host[field]
+           for field in ("Dns", "DnsSearch", "DnsOptions", "ExtraHosts")},
     })
     volumes = [row for row in mounts if row.get("Type") == "volume"]
     tmpfs = [row for row in mounts if row.get("Type") == "tmpfs"]
@@ -275,7 +296,14 @@ class Docker:
 
     def volume(self, name, fixture_id):
         self.call("volume", "create", "--label", LABEL + "=" + fixture_id,
-                  "--label", "io.mifolyo.cj2.case=" + self.case_id, name)
+                   "--label", "io.mifolyo.cj2.case=" + self.case_id, name)
+
+    def attachments(self, volume):
+        raw = self.call("container", "ls", "--all", "--filter", "volume=" + volume, "--format", "{{.Names}}")
+        names = raw.decode("ascii").splitlines()
+        h.require(len(names) <= 64 and len(set(names)) == len(names) and all(
+            re.fullmatch(r"[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}", name) for name in names), "VOLUME_SHARED")
+        return names
 
     def create(self, spec):
         args = ["container", "create", "--name", spec["name"], "--pull", "never", "--network", "none",
@@ -313,8 +341,13 @@ class Docker:
                   result["stage"] == stage and result["status"] in ("PASS", "FAIL") and
                   result["recipe_sha256"] == case.recipe_sha256(selected), "STAGE_RESULT")
         if result["status"] == "FAIL":
-            h.require(code != 0 and selected == case.CLAIM_CASE and stage == "measure", "STAGE_FAILURE")
-            claim_worker.validate_measurement(result["result"], False)
+            h.require(code != 0, "STAGE_FAILURE")
+            if selected in ns.CASES:
+                h.require(stage in ("resume", "measure"), "STAGE_FAILURE")
+                negative_worker.validate_stage_result(stage, result["result"], request, result["isolation"], successful=False)
+            else:
+                h.require(selected == case.CLAIM_CASE and stage == "measure", "STAGE_FAILURE")
+                claim_worker.validate_measurement(result["result"], False)
             raise StageFailure(result)
         h.require(code == 0, "STAGE_EXIT")
         return result
@@ -351,6 +384,17 @@ def owned(value, kind, fixture_id, case_id=case.CASE):
     return labels.get(LABEL) == fixture_id and labels.get("io.mifolyo.cj2.case") == case_id
 
 
+def verify_volume_attachments(backend, volumes, specs):
+    allowed = {value["name"]: {volume for volume, _, _ in value["mounts"]} for value in specs.values()}
+    attached = {volume: backend.attachments(volume) for volume in volumes.values()}
+    admission.volume_attachments(volumes, attached, allowed)
+    by_name = {value["name"]: value for value in specs.values()}
+    for name in sorted({name for names in attached.values() for name in names}):
+        observed = backend.inspect("container", name)
+        h.require(type(observed) is dict and type(observed.get("State", {}).get("Running")) is bool, "VOLUME_SHARED")
+        verify_container(observed, by_name[name], observed["State"]["Running"])
+
+
 def cleanup(backend, resources, fixture_id, *, on_removed=None):
     results = []
     # Stop/remove workers before Redis even when exec cancellation was ambiguous.
@@ -362,6 +406,8 @@ def cleanup(backend, resources, fixture_id, *, on_removed=None):
             current = backend.inspect(kind, name)
             if current is not None:
                 h.require(owned(current, kind, fixture_id, getattr(backend, "case_id", case.CASE)), "RESOURCE_OWNER_MISMATCH")
+                if kind == "volume":
+                    h.require(backend.attachments(name) == [], "VOLUME_SHARED")
                 backend.remove(kind, name)
             h.require(backend.inspect(kind, name) is None, "RESOURCE_REMAINS")
             row["removed"] = True
@@ -378,11 +424,7 @@ def cleanup(backend, resources, fixture_id, *, on_removed=None):
 
 
 def verify_revocation(result, targets):
-    h.require(type(result) is dict and set(result) == set(targets), "REVOCATION_INVENTORY")
-    for row in result.values():
-        h.exact(row, {"reconnect", "server_reachable", "held_session"})
-        h.require(row["reconnect"] == "denied" and row["server_reachable"] is True and
-                  row["held_session"] in ("terminated", "already_revoked"), "REVOCATION_EVIDENCE")
+    case.validate_revocation(result, targets)
 
 
 @contextmanager
@@ -406,14 +448,18 @@ def execute(plan, approval, backend, *, revision_check=verify_revision, journal=
     prefix = "cj2-m4-" + fixture_id
     volumes = {role: prefix + "-" + role for role in ("data", "control")}
     names = {role: prefix + "-" + role for role in ("init", "redis", "executor", "revocation")}
-    credentials = {role: secrets.token_hex(32) for role in case.ROLES}
+    credentials = {role: secrets.token_hex(32) for role in case.roles(selected)}
     material = ({"owner_a": secrets.token_hex(16), "owner_b": secrets.token_hex(16),
                  "token_a": secrets.token_hex(32), "token_b": secrets.token_hex(32), "wrong_token": secrets.token_hex(32)}
-                if selected == case.CLAIM_CASE else {})
-    binding = case.claim_fixture(plan, fixture_id, material) if material else None
+                if case.uses_material(selected) else {})
+    binding = case.fixture(plan, fixture_id, material) if selected != case.CASE else None
     private_values = [*credentials.values(), *material.values()]
     if binding:
-        private_values += [binding["identities"][label]["reservation_id"] for label in ("a", "b")]
+        worker_binding = case.worker_fixture(binding)
+        if worker_binding:
+            private_values += [worker_binding["identities"][label]["reservation_id"] for label in ("a", "b")]
+        if selected in ns.CASES:
+            private_values.append(binding["admin_nonce"])
         private_values += [case.claim.URL, case.claim.ROBOTS]
     resources, specs = [], {}
     report = {"case": selected, "fixture_id": fixture_id, "evidence_kind": backend.evidence_kind,
@@ -472,9 +518,12 @@ def execute(plan, approval, backend, *, revision_check=verify_revision, journal=
         except StageFailure as failure:
             raw = h.canonical(failure.receipt)
             h.require(not any(value.encode() in raw for value in private_values), "PRIVATE_STAGE_OUTPUT")
-            claim_worker.validate_measurement(failure.receipt["result"], False)
-            h.require(failure.receipt["result"]["fixture_sha256"] == request["previous"]["fixture_summary"]["fixture_sha256"],
-                      "CLAIM_EVIDENCE_BINDING")
+            if selected in ns.CASES:
+                negative_worker.validate_stage_result(name, failure.receipt["result"], request, failure.receipt["isolation"], successful=False)
+            else:
+                claim_worker.validate_measurement(failure.receipt["result"], False)
+                h.require(failure.receipt["result"]["fixture_sha256"] == request["previous"]["fixture_summary"]["fixture_sha256"],
+                           "CLAIM_EVIDENCE_BINDING")
             report["stages"][name] = failure.receipt
             raise
         raw = h.canonical(result)
@@ -482,6 +531,8 @@ def execute(plan, approval, backend, *, revision_check=verify_revision, journal=
         h.require(not any(value.encode() in raw for value in private_values), "PRIVATE_STAGE_OUTPUT")
         if selected == case.CLAIM_CASE:
             claim_worker.validate_stage_result(name, result["result"], request)
+        elif selected in ns.CASES:
+            negative_worker.validate_stage_result(name, result["result"], request, result["isolation"])
         if name != "ready":
             report["stages"][name] = result
         action("stage_completed", name, cleanup_mode)
@@ -496,17 +547,21 @@ def execute(plan, approval, backend, *, revision_check=verify_revision, journal=
         check()
         name = names[role]
         h.require(backend.inspect("container", name) is None, "RESOURCE_EXISTS")
-        spec = container_spec(name, role, fixture_id, plan["inputs"]["redis_image" if role == "redis" else "harness_image"], volumes, selected)
+        image_role = "redis" if role == "redis" else "harness"
+        spec = container_spec(name, role, fixture_id, plan["inputs"][image_role + "_image"], volumes, selected,
+                              report["images"][image_role]["environment_sha256"])
         specs[role] = spec
         resources.append(("container", name))  # Before create: lost reply may hide a successful create.
         check()
         backend.create(spec)
         action("container_created", role, cleanup_mode)
         verify_container(backend.inspect("container", name), spec, False)
+        verify_volume_attachments(backend, volumes, specs)
         check()
         backend.start(name)
         observed = backend.inspect("container", name)
         verify_container(observed, spec, True)
+        verify_volume_attachments(backend, volumes, specs)
         report["container_admission"][role] = {"spec": spec, "verified": True,
             "inspection_sha256": h.digest(h.canonical(observed))}
         action("container_started_and_verified", role, cleanup_mode)
@@ -533,12 +588,13 @@ def execute(plan, approval, backend, *, revision_check=verify_revision, journal=
             action("volume_created_and_verified", name)
         phase = "init"
         create("init")
-        initialized = stage("init", case.ROLES)
+        initialized = stage("init", case.roles(selected))
         h.require(initialized.get("empty_volumes_verified") is True and
                   initialized.get("config_sha256") == plan["redis_config"]["sha256"] and
                   initialized.get("acl_file_sha256") == h.digest(case.acl_file(credentials, selected, binding, plan)), "INITIALIZATION_EVIDENCE")
         backend.remove("container", names["init"])
         h.require(backend.inspect("container", names["init"]) is None, "INIT_REMAINS")
+        del specs["init"]
         action("container_removed_and_verified", "init")
         phase = "start"
         create("executor")
@@ -556,10 +612,10 @@ def execute(plan, approval, backend, *, revision_check=verify_revision, journal=
         action("container_restarted", "redis")
         ready()
         phase = "resume"
-        resumed = stage("resume", ("setup", "loader", "boot", "observer", "revoker"), probe)
-        verify_revocation(resumed.get("early_revocation"), case.EARLY_ROLES)
+        resumed = stage("resume", case.stage_roles(selected, "resume"), probe)
+        verify_revocation(resumed.get("early_revocation"), case.early_roles(selected))
         phase = "measure"
-        stage("measure", ("ledger", "observer"), resumed)
+        stage("measure", case.measure_roles(selected), resumed)
         remaining()
         report["case_passed"] = True
     except (Exception, KeyboardInterrupt) as error:
@@ -577,9 +633,10 @@ def execute(plan, approval, backend, *, revision_check=verify_revision, journal=
                               proof.get("stopped") is True and type(proof.get("pid")) is int and
                                proof["pid"] == 0 and proof.get("removed") is True, "WORKER_NOT_QUIESCED")
                     action("worker_quiesced_and_removed", "executor", True)
+                    specs.pop("executor", None)
                     create("revocation", cleanup_mode=True)
-                    result = stage("revoke", case.ROLES, cleanup_mode=True)
-                    verify_revocation(result.get("revocation"), case.ROLES)
+                    result = stage("revoke", case.roles(selected), cleanup_mode=True)
+                    verify_revocation(result.get("revocation"), case.roles(selected))
                     report["revocation"] = "verified"
                     action("credentials_revoked_and_verified", "all-roles", True)
                 except (Exception, KeyboardInterrupt) as error:

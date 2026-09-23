@@ -11,6 +11,11 @@
 !tests/crawl-jobs-v2-redis/controller.py
 !tests/crawl-jobs-v2-redis/claim_release.py
 !tests/crawl-jobs-v2-redis/claim_executor.py
+!tests/crawl-jobs-v2-redis/negative_specs.py
+!tests/crawl-jobs-v2-redis/negative_cases.py
+!tests/crawl-jobs-v2-redis/negative_executor.py
+!tests/crawl-jobs-v2-redis/bounded_state.py
+!tests/crawl-jobs-v2-redis/admission.py
 !tests/crawl-jobs-v2-redis/redis.conf
 !tests/crawl-jobs-v2-redis/Dockerfile.execution
 !tests/crawl-jobs-v2-redis/Dockerfile.execution.dockerignore

@@ -5,8 +5,29 @@ closed-case execution controller (`controller.py`). The compiler starts nothing.
 The controller can create disposable infrastructure only through its explicit
 `run` command with a separately reviewed, digest-bound execution approval.
 Python 3.10+ and its standard library are sufficient for local tests.
-Implementation is locally tested; the first real-Redis smoke case passes and
-the broader acceptance matrix remains pending.
+Implementation is locally tested; the bounded real-Redis smoke and claim/release
+cases pass, and the broader acceptance matrix remains pending.
+
+**Bootstrap/ACL Step 2 (2026-09-23): locally complete.** The closed registry now
+includes 13 additional negative cases. All 95 harness tests, the 82 planned
+admission variants and independent Go/canonical-Lua race checks pass locally.
+The new cases have only offline/simulated evidence; their changed source scope
+now has separate correctness/security GO from Step 3, with no actionable findings.
+Fresh image/CI/execution gates remain. See the
+[current package status](../../docs/crawl-jobs-v2-plan.md#step-2-local-implementation-result-2026-09-23).
+
+**Step 3 independent review: GO for image/CI preparation.** Both reviewers
+verified all 81 frozen file hashes and 15 recipes unchanged. Their independent
+checks, the correctness review's explicitly incomplete broad test invocation,
+and scope limits are in the
+[dated review](../../docs/crawl-jobs-v2-m4-bootstrap-acl-review-2026-09-23.md).
+
+**Step 4 local image gate: PASS.** The new arm64 harness validates all 62 files
+and 15 recipes, stopped-role admission, memory and isolation. PC01 selects the
+refreshed `ledger-claim-release-v1` plan; exact cleanup was independently checked.
+See the [preparation report](../../docs/crawl-jobs-v2-m4-bootstrap-acl-image-preparation-2026-09-23.md).
+PR #11 merged as `9b6b8f9`; scoped publication/CI for the bootstrap/ACL checkpoint
+on the fresh branch remains the next gate.
 
 **Final independent re-review (2026-09-21): GO for image preparation only.** The
 four original findings and a closed-peer follow-up are fixed and re-reviewed.
@@ -32,6 +53,15 @@ Fixture `f9692c58d9f07689660a97fbc70ea973` passed probe/restart, BOOT/replay,
 empty maintenance, 21 ACL denials and six-role revocation. All four containers and
 two volumes were directly confirmed absent. The approval is consumed. See the
 [passing report](../../docs/crawl-jobs-v2-m4-smoke-pass-2026-09-22.md).
+
+**Bounded claim/release execution (2026-09-23): PASS.** The owner separately
+approved and requested one `ledger-claim-release-v1` attempt on unchanged
+checkpoint `b4bda19`. Fixture `f59af8adfe82573b64b8dfda427a0b00` passed nine
+transitions, 46 ACL denials and full typed state/absolute-expiry checks. Receipts
+retain 33 counters per snapshot and 28 controller actions, including 11 cleanup
+actions. All six credentials were revoked; four containers and two volumes were
+independently confirmed absent. Approval is consumed; see the
+[dated result](../../docs/crawl-jobs-v2-m4-claim-run-2026-09-23.md).
 
 ## Implemented commands
 
@@ -67,7 +97,7 @@ coerced fields fail:
 | Field | Required value |
 |---|---|
 | `format_version` | Integer `1` (not boolean) |
-| `scenario` | `ledger-smoke`, `ledger-claim-release`, `administrative-fresh`, or `administrative-migration` |
+| `scenario` | One of the 17 closed names in `harness.SCENARIOS`: the original four plus the 13 names in `negative_specs.CASES` |
 | `redis_version` | Exact Redis 7 numeric version, at most 64 ASCII bytes |
 | `redis_image` | Nonzero lowercase `sha256:<64 hex>` declaration |
 | `harness_image` | Nonzero lowercase `sha256:<64 hex>` declaration |
@@ -235,7 +265,7 @@ It has exactly these fields:
 
 | Field | Constraint |
 |---|---|
-| `version`, `case`, `approved` | Integer `1`, the exact selected `ledger-smoke-v1` or `ledger-claim-release-v1`, boolean `true` |
+| `version`, `case`, `approved` | Integer `1`, the exact selected name in the 15-case `runtime_case.CASES` registry, boolean `true` |
 | `operator` | Reviewed operator label, 1–64 ASCII letters/digits/underscore/dot/hyphen |
 | `commit` | Exact clean, tracked 40-hex Git revision |
 | `plan_sha256`, `recipe_sha256` | Exact canonical offline-plan and current recipe digests |
@@ -253,9 +283,10 @@ python3 -B tests/crawl-jobs-v2-redis/controller.py run \
   --evidence-dir /absolute/path/to/existing-private-evidence-directory
 ```
 
-The original invocation failed in init. The separately approved corrected case
-then ran once and passed; both outcomes are preserved in the dated reports.
-Both one-case approvals are consumed. A matching input hash does not create
+The original smoke invocation failed in init. The separately approved corrected
+smoke case then ran once and passed; the subsequent claim/release case also ran
+once and passed under its own approval. The dated reports preserve all outcomes.
+All three one-case approvals are consumed. A matching input hash does not create
 owner approval or permission to retry; further cases need fresh reviewed scope
 and exact-artifact execution authority.
 
@@ -265,8 +296,8 @@ evidence, setup/time observations, state comparisons, denials, revocation and
 destruction receipts. Credentials travel via bounded stdin, never command-line
 arguments, environment variables or report fields. Errors retain only closed
 failure codes and admission-check names, omitting inspected values and raw server/
-Docker diagnostics. `m4_accepted` is always false: even this successful smoke
-case cannot certify the remaining matrix. Injected fake backends always emit
+Docker diagnostics. `m4_accepted` is always false: the successful smoke and
+claim/release cases cannot certify the remaining matrix. Injected fake backends always emit
 `evidence_kind=simulated` and `case_evidence_valid=false`.
 
 ## Verification
@@ -383,33 +414,100 @@ The independent Go test also checks actual canonical command traces against
 the generated ledger selector inventory. These checks do not certify real
 Redis selector parsing, filesystem behavior or target-image performance.
 
-Execution-image input allowlisting now expects 57 files. The image checker
-validates both case recipes; `scripts/prepare-crawl-jobs-v2-images.py --case
+At the claim checkpoint, execution-image allowlisting covered 57 files and the
+image checker validated both original recipes. `scripts/prepare-crawl-jobs-v2-images.py --case
 ledger-claim-release-v1` selects the claim case when preparing approved images.
 Independent review and follow-up re-review are GO. Corrected arm64 image validation
 also passes; see the [claim-specific preparation report](../../docs/crawl-jobs-v2-m4-claim-image-preparation-2026-09-23.md).
-Publication, exact-revision CI and fresh execution approval remain subsequent gates. See the
+Checkpoint `b4bda19` is published on draft PR #11 with all fourteen required
+checks passing and claim-specific amd64 evidence verified; see the
+[CI record](../../docs/crawl-jobs-v2-m4-claim-ci-2026-09-23.md) and
 [Step 4 review report](../../docs/crawl-jobs-v2-m4-claim-review-2026-09-23.md).
+The separately approved single real-Redis case then passed on that unchanged
+checkpoint, with independent cleanup checks and a consumed approval. Its
+[execution result](../../docs/crawl-jobs-v2-m4-claim-run-2026-09-23.md) records
+the measured scope and exact evidence identities.
+
+## Bootstrap/ACL negative implementation (next-gate Step 2)
+
+| Module | Responsibility |
+|---|---|
+| `negative_specs.py` | Closed case IDs, source lists, expected outcomes, extra roles and measured sequences |
+| `negative_cases.py` | Private P/S fixtures, W/B wires, BOOT provenance comparison, independent fresh admin state projections |
+| `bounded_state.py` | Whole-DB 2/58/71-key typed reads, bounded fields/members and absolute expiry comparisons |
+| `negative_executor.py` | Setup/role retirement, negative calls, canonical positive-control dispatch, redacted prefix/measurement receipts and strict controller validation |
+| `admission.py` | Closed image environment and process/program predicates, storage emptiness and permitted same-case volume attachments |
+
+The original planning packet remains an immutable, non-executable specification.
+The executable registry separately contains smoke, claim/release and the 13
+fixed negative case IDs. There is no arbitrary case, key, mutation or source
+parameter. P/S setup is separately labeled invalid stored state; observers may
+read its exact bounded bytes while ledger marker permissions stay restricted.
+Administrative candidate/freeze/retirement/guard states come from canonical
+scripts under separate short-lived release/migration roles. Revocation remains
+worker-first, and the revoker is last even in seven/eight-role cases.
+
+The current execution-image allowlist is **62 files**. All 15 recipes are checked
+by `image_check.py`, including their case-specific credential inventories.
+Controller admission binds the exact entrypoint/command and environment digest,
+rejects DNS/host/port/bind/privilege deviations and checks volume attachments
+before and after start. The executor checks the private process inventory;
+cleanup refuses to remove a volume still attached to an unowned container.
+These new target-image paths have local controls but await actual image validation.
+
+Read-only recipe inspection, from repository root:
+
+```bash
+python3 -B tests/crawl-jobs-v2-redis/controller.py recipe --case bootstrap-rejections-v1
+python3 -B tests/crawl-jobs-v2-redis/controller.py recipe --case ledger-promote-denied-v1
+```
+
+The complete Python suite has **95 tests**, including every planned H/I variant
+and all 13 simulated lifecycles. Four new Go test roots run **70 canonical Lua
+invocations** with independent wire/response/state checks; four additional
+RETIRE/PROMOTE outer-denial checks use the offline selector oracle and do not
+claim target Redis ACL execution. Run from `services/spider`:
+
+```bash
+GOPROXY=off GOTOOLCHAIN=go1.25.13 go test -mod=readonly -race -timeout 900s \
+  ./internal/database/crawljobsv2 -run '^TestM4(Negative|AdministrativeDenial)' -count=1
+```
+
+The Go test timeout does not change the 300-second case, 30-second stage or
+60-second cleanup limits. Public receipts retain no private fixture or wire
+values, and simulated results always set `case_evidence_valid=false`.
 
 ## Remaining acceptance work
 
 The [implementation plan](../../docs/crawl-jobs-v2-plan.md) owns progress.
-The current slice is
+The completed bounded slice is
 [`ledger-claim-release-v1`](../../docs/crawl-jobs-v2-plan.md#next-bounded-slice-ledger-claim-release-v1):
 one ready job, two claim/release cycles, exact replay, stale ownership, complete
 state/expiry checks and write-capable authority ACL denials. The
 [planning inventory](planning/claim-release-v1.json) records all 104 requirement
 entries and 52 operation/gate variants, existing partial smoke evidence and
 twelve planned assertions. It remains the initial planning snapshot, not an
-executable artifact. Steps 2–4 now pass local checks and independent review.
-Step 5's corrected arm64 image and claim-specific artifacts are validated;
-authorized publication and the protected CI gate are next. Fresh execution
-approval follows.
+executable artifact or mutable run-status inventory. Steps 1–6 are complete:
+implementation, independent review, image/artifact validation, protected CI and
+the separately authorized real-Redis case all pass. Full M4 remains open.
 
 The corrected first-case execution layer and target-discovered corrections have
 scoped independent GO. The init admission defect is corrected and re-reviewed;
 rebuilt-image content, memory and stopped-role isolation checks pass. Protected
-CI and the separately authorized real-Redis smoke case now pass. Candidate-presence
-fixtures, administrative transitions, job/lease/stage/commit behavior, maximum
-shapes, crash-boundary coverage, benchmarks and final release/image admission
-remain subsequent gates. Fake results never substitute for those observations.
+CI and both separately authorized real-Redis cases pass. Next are the remaining
+M4-P3 bootstrap/ACL negatives: candidate/freeze presence, valid administrator
+denial under ledger credentials, malformed gates and isolation negatives.
+Step 1's [`bootstrap-acl-negatives-v1` specification](../../docs/crawl-jobs-v2-plan.md#next-bounded-package-bootstrap-acl-negatives-v1)
+and [planning packet](planning/bootstrap-acl-negatives-v1.json) define 13 new
+Redis cases, one refreshed existing positive control, and separate offline/
+admission assertions. Step 2 implements the closed cases and passes local
+verification; the planning JSON itself remains rejected as an execution plan. Its full
+104-requirement/52-variant inventory reference and historical PASS hashes remain
+explicit. Step 3 correctness/security reviews are GO with no actionable findings.
+Step 4's local arm64 PC01 image/artifact validation passes; authorized scoped
+publication and new protected CI are next, followed by separate exact-artifact
+execution decisions.
+
+Broader job/lease/stage/commit behavior, administrative transitions, maximum shapes,
+crash-boundary coverage, benchmarks and final release/image admission remain
+subsequent gates. Fake results never substitute for those observations.

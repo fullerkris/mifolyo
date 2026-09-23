@@ -49,8 +49,25 @@ func TestM4OfflineArtifacts(t *testing.T) {
 			} `json:"variants"`
 		} `json:"cases"`
 	}
-	if err := json.Unmarshal(output, &vectors); err != nil || len(vectors.Cases) != 4 {
+	scenarios := strings.Fields(`ledger-smoke ledger-claim-release administrative-fresh administrative-migration
+		ledger-candidate-compat-present ledger-candidate-contract-present ledger-admin-freeze-present
+		ledger-active-compat-missing ledger-active-contract-wrong-type ledger-active-contract-mismatch
+		ledger-guard-mismatch ledger-active-compat-extra-field ledger-wire-negatives bootstrap-rejections
+		ledger-install-denied ledger-retire-denied ledger-promote-denied`)
+	if err := json.Unmarshal(output, &vectors); err != nil || len(vectors.Cases) != len(scenarios) {
 		t.Fatal("invalid offline artifact inventory")
+	}
+	seenScenarios := map[string]bool{}
+	for _, test := range vectors.Cases {
+		if seenScenarios[test.Scenario] {
+			t.Fatal("duplicate offline scenario")
+		}
+		seenScenarios[test.Scenario] = true
+	}
+	for _, scenario := range scenarios {
+		if !seenScenarios[scenario] {
+			t.Fatal("missing offline scenario", scenario)
+		}
 	}
 	contract, err := ContractSHA256()
 	if err != nil {

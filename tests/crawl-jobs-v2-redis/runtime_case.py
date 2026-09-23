@@ -1,4 +1,4 @@
-"""Closed ledger case recipes and ACLs. Pure construction; starts no fixture."""
+"""Closed ledger/bootstrap/administrative recipes and ACLs; starts no fixture."""
 from __future__ import annotations
 
 import hashlib
@@ -6,10 +6,13 @@ import re
 
 import harness as h
 import claim_release as claim
+import negative_cases as negative
+import negative_specs as ns
 
 CASE = "ledger-smoke-v1"
 CLAIM_CASE = claim.CASE
 CASES = {CASE: "ledger-smoke", CLAIM_CASE: claim.SCENARIO}
+CASES.update(ns.CASES)
 RATE = h.P + "rate_scopes"
 PROBE = h.AUTH[2]  # Temporary pre-BOOT probe; removed before authority setup.
 WIRE_KEYS = (*h.AUTH, RATE)
@@ -21,7 +24,8 @@ BOOT_FIELDS = ("schema_version", "boot_state", "approved_redis_run_id", "boot_ep
                "consumed_planned_shutdown_nonce", "rehearsal_evidence_sha256", "rehearsal_at_ms", "acknowledged_loss_bound")
 SOURCES = ("CJ2_APPROVE_BOOT", "CJ2_MAINTAIN_RATE_SCOPES")
 FILES = ("harness.py", "resp.py", "runtime_case.py", "executor.py", "controller.py",
-         "claim_release.py", "claim_executor.py", "redis.conf", "Dockerfile.execution", "Dockerfile.execution.dockerignore")
+          "claim_release.py", "claim_executor.py", "negative_specs.py", "negative_cases.py", "negative_executor.py",
+          "bounded_state.py", "admission.py", "redis.conf", "Dockerfile.execution", "Dockerfile.execution.dockerignore")
 CONFIG = {"port": "0", "unixsocket": "/run/cj2/redis.sock", "unixsocketperm": "600",
           "aclfile": "/run/cj2/fixture.acl", "dir": "/data", "appendonly": "yes",
           "appendfsync": "always", "aof-use-rdb-preamble": "yes", "aof-load-truncated": "no",
@@ -43,7 +47,73 @@ def case_for_plan(plan):
 
 def sources(case_id=CASE):
     h.require(type(case_id) is str and case_id in CASES, "UNSUPPORTED_CASE")
+    if case_id in ns.CASES:
+        return ns.source_operations(case_id)
     return SOURCES if case_id == CASE else ("CJ2_APPROVE_BOOT", claim.CLAIM, claim.RELEASE)
+
+
+def roles(case_id=CASE):
+    sources(case_id)
+    # DELUSER terminates the revoker's own session: it must remain the final
+    # identity even when a case introduces administrative credentials.
+    return (*ROLES[:-1], *ns.extra_roles(case_id), ROLES[-1])
+
+
+def uses_material(case_id):
+    sources(case_id)
+    return case_id not in (CASE, ns.BOOT)
+
+
+def early_roles(case_id):
+    sources(case_id)
+    if case_id == ns.BOOT:
+        return ("setup", "loader")
+    if case_id in ns.ADMIN:
+        target = ns.ADMIN[case_id][1]
+        return (*EARLY_ROLES, *(("release_admin",) if target == ns.RETIRE else ("migration_admin",) if target == ns.PROMOTE else ()))
+    return EARLY_ROLES
+
+
+def measure_roles(case_id):
+    sources(case_id)
+    if case_id == ns.BOOT:
+        return ("observer", "boot", "revoker")
+    if case_id in ns.ADMIN:
+        return ("ledger", "observer", "revoker", ns.ADMIN[case_id][3])
+    return ("ledger", "observer")
+
+
+def stage_roles(case_id, stage):
+    sources(case_id)
+    choices = {"init": roles(case_id), "ready": ("setup",), "probe": ("setup",),
+               "resume": ("setup", "loader", "boot", "observer", "revoker", *ns.extra_roles(case_id)),
+               "measure": measure_roles(case_id), "revoke": roles(case_id)}
+    h.require(stage in choices, "STAGE")
+    return choices[stage]
+
+
+def validate_revocation(result, targets):
+    h.require(type(result) is dict and set(result) == set(targets), "REVOCATION_INVENTORY")
+    for row in result.values():
+        h.exact(row, {"reconnect", "server_reachable", "held_session"})
+        h.require(row["reconnect"] == "denied" and row["server_reachable"] is True and
+                  row["held_session"] in ("terminated", "already_revoked"), "REVOCATION_EVIDENCE")
+
+
+def fixture(plan, fixture_id, material, at_ms=1000):
+    if case_for_plan(plan) in ns.CASES:
+        values = {"fixture_id": fixture_id, "redis_time_ms": at_ms}
+        if case_for_plan(plan) != ns.BOOT:
+            h.exact(material, {"owner_a", "owner_b", "token_a", "token_b", "wrong_token"})
+            values.update(material)
+        else:
+            h.exact(material, set())
+        return negative.compile_fixture(plan, values)
+    return claim_fixture(plan, fixture_id, material, at_ms)
+
+
+def worker_fixture(binding):
+    return binding.get("worker") if "worker" in binding else binding
 
 
 def claim_fixture(plan, fixture_id, material, at_ms=1000):
@@ -79,6 +149,8 @@ CLAIM_COMMANDS = {
 
 def acl_rules(case_id=CASE, fixture=None, plan=None):
     sources(case_id)
+    if case_id in ns.CASES:
+        return negative_acl_rules(case_id, fixture, plan)
     if case_id == CLAIM_CASE:
         fixture = claim.validate_fixture(plan, fixture)
         groups = claim_key_groups(fixture)
@@ -126,14 +198,65 @@ def acl_rules(case_id=CASE, fixture=None, plan=None):
     }
 
 
-def credentials_valid(credentials):
-    h.exact(credentials, set(ROLES))
+def negative_acl_rules(case_id, fixture, plan):
+    fixture = negative.validate_fixture(plan, fixture)
+    h.require(fixture["case"] == case_id, "NEGATIVE_ACL_CASE")
+    metadata = "+info|persistence +info|memory +info|cluster +info|replication +config|get"
+    if case_id == ns.BOOT:
+        observe = ("+ping +time +dbsize +scan +info|server", selector("+type +pttl +pexpiretime", fixture["key_inventory"]),
+                   selector("+hlen +hstrlen +hmget", (h.AUTH[0],)), selector("+strlen +get", (PROBE,)))
+        return {"setup": (*observe, metadata, selector("+set +del", (PROBE,), "~")),
+                "loader": ("+ping +script|load",), "boot": acl_rules()["boot"], "ledger": ("+ping",),
+                "observer": observe, "revoker": ("+ping +acl|deluser",)}
+    basis = fixture["worker"]
+    result = acl_rules(CLAIM_CASE, basis, negative.worker_plan(plan))
+    # Observer/setup must see the exact negative record bytes, but these grants
+    # are NEVER appended to the ledger identity's selectors.
+    observe = (*result["observer"], selector("+type +pttl +pexpiretime", fixture["key_inventory"]),
+               selector("+hlen +hstrlen +hmget", (h.AUTH[1], h.AUTH[3], h.AUTH[7], h.AUTH[2])),
+               selector("+strlen +get", (h.AUTH[4],)))
+    result["observer"] = observe
+    hashes = [key for key, row in fixture["initial_state"].items() if row is not None and row["type"] == "hash"]
+    strings = [key for key, row in fixture["initial_state"].items() if row is not None and row["type"] == "string"]
+    sets = [key for key, row in fixture["initial_state"].items() if row is not None and row["type"] == "set"]
+    zsets = [key for key, row in fixture["initial_state"].items() if row is not None and row["type"] == "zset"]
+    result["setup"] = (*observe, metadata, selector("+set +del", (PROBE,), "~"),
+                       selector("+hset", hashes, "~"), selector("+set", strings, "~"),
+                       selector("+sadd", sets, "~"), selector("+zadd", zsets, "~"))
+    if case_id not in ns.ADMIN:
+        return result
+    # No direct setup row is allowed in administrative cases (only the probe).
+    h.require(not hashes and not strings and not sets and not zsets, "ADMIN_DIRECT_SETUP")
+    result["setup"] = (*observe, metadata, selector("+set +del", (PROBE,), "~"))
+    proto = (*h.AUTH, *claim.LIVE, *h.LEGACY, *ns.DOWNSTREAM)
+    hash_authority = tuple(h.AUTH[i] for i in (0, 1, 3, 5, 6, 7))
+    reads = ("+ping +time +info|server +info|memory", selector("+type", proto),
+             selector("+hlen +hstrlen +hmget", hash_authority), selector("+strlen +get", (h.AUTH[2], h.AUTH[4])),
+             selector("+hlen +hkeys +hstrlen +hmget", (h.P + "stage_slots",)),
+             selector("+scard +smembers", (h.P + "active_runs", h.P + "unarchived_runs")),
+             selector("+zcard +zrange", (h.P + "runs",)), selector("+hlen", h.LEGACY[1:3]),
+             selector("+zcard", (h.LEGACY[0],)), selector("+llen", (*h.LEGACY[3:], *ns.DOWNSTREAM[:6])))
+    promotion = ns.ADMIN[case_id][1] == ns.PROMOTE
+    result["release_admin"] = (*reads, selector("+evalsha", proto if promotion else h.AUTH, "~"),
+        selector("+hset", (h.AUTH[3], h.AUTH[7], *((h.AUTH[5],) if promotion else ())), "~"),
+        selector("+set", (h.AUTH[4],), "~"),
+        *((selector("+rename", (h.AUTH[1], h.AUTH[2], h.AUTH[3], h.AUTH[4]), "~"),
+           selector("+unlink", (h.AUTH[7],), "~")) if promotion else ()))
+    if "migration_admin" in roles(case_id):
+        result["migration_admin"] = (*reads, selector("+evalsha", (*h.AUTH, *claim.LIVE[:3], *h.LEGACY), "~"),
+                                     selector("+hset", (h.AUTH[6],), "~"))
+    h.require(set(result) == set(roles(case_id)), "NEGATIVE_ROLE_INVENTORY")
+    return result
+
+
+def credentials_valid(credentials, case_id=CASE):
+    h.exact(credentials, set(roles(case_id)))
     h.require(all(type(value) is str and re.fullmatch(r"[0-9a-f]{64}", value) for value in credentials.values()), "CREDENTIAL_FORMAT")
-    h.require(len(set(credentials.values())) == len(ROLES), "CREDENTIAL_REUSE")
+    h.require(len(set(credentials.values())) == len(roles(case_id)), "CREDENTIAL_REUSE")
 
 
 def acl_file(credentials, case_id=CASE, fixture=None, plan=None):
-    credentials_valid(credentials)
+    credentials_valid(credentials, case_id)
     lines = ["user default off resetpass resetkeys resetchannels -@all"]
     for role, rules in acl_rules(case_id, fixture, plan).items():
         hashed = hashlib.sha256(credentials[role].encode()).hexdigest()
@@ -146,7 +269,7 @@ def recipe(case_id=CASE):
     result = {"case": case_id, "profile": "ledger", "source_operations": list(selected_sources),
             "wire_keys": list(WIRE_KEYS), "stored_keys": list(STORED_KEYS),
             "probe_key": PROBE, "probe_limit_bytes": 128, "direct_setup_count": 4,
-            "derived_output_keys": [], "acl_rules": acl_rules(),
+             "derived_output_keys": [], "acl_rules": acl_rules(), "roles": list(roles(case_id)),
             "network_mode": "none", "user": "65534:65534",
             "redis_memory_bytes": 553648128, "executor_memory_bytes": 268435456,
             "max_seconds": 300, "command_timeout_seconds": 30, "cleanup_timeout_seconds": 60,
@@ -160,7 +283,21 @@ def recipe(case_id=CASE):
                       acl_rules={"policy": "claim-key-kinds-v1", "commands": CLAIM_COMMANDS,
                                  "keys": "exact validated fixture identities; no wildcard grants"},
                       possible_keys=58, assertions=[f"CR{i:02}" for i in range(1, 13)], acl_denials=46,
-                      measurement_steps=9, request_starts=0, state_expiry="absolute PEXPIRETIME", report_values="redacted")
+                       measurement_steps=9, request_starts=0, state_expiry="absolute PEXPIRETIME", report_values="redacted")
+    elif case_id in ns.CASES:
+        result.update(profile="administrative" if case_id in ns.ADMIN else "ledger",
+                      wire_keys="closed negative_specs/negative_cases wire inventory", stored_keys="case-specific typed manifest; durability BOOT-owned",
+                      direct_setup_count=(0 if case_id in ns.ADMIN or case_id == ns.BOOT else
+                                          27 if ns.STORED.get(case_id, ("",))[0].startswith("P") else
+                                          25 if ns.STORED.get(case_id, ("",))[0] == "S01" else 26),
+                      derived_output_keys="fixed per-case projection",
+                      possible_keys=2 if case_id == ns.BOOT else 71 if case_id in ns.ADMIN else 58,
+                      acl_rules={"policy": "negative-case-literal-v1", "ledger": "unused ping-only identity" if case_id == ns.BOOT else "unchanged claim-key-kinds-v1",
+                                 "admin": "distinct per-operation roles" if case_id in ns.ADMIN else "none"},
+                      assertions=[list(row) for row in ns.measurement_sequence(case_id)],
+                      measurement_steps=len(ns.measurement_sequence(case_id)),
+                      acl_denials=46 if case_id in (*ns.STORED, ns.WIRE) else 0,
+                      request_starts=0, state_expiry="absolute PEXPIRETIME", report_values="redacted")
     return result
 
 

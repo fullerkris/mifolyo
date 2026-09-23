@@ -20,6 +20,8 @@ import stat
 import struct
 import sys
 
+import negative_specs as negative
+
 ROOT = Path(__file__).resolve().parents[2]
 HERE = Path(__file__).resolve().parent
 MAX_ARTIFACT_BYTES = 2 * 1024 * 1024
@@ -39,7 +41,9 @@ IMAGE_FIELDS = ("spider_image", "seed_importer_image", "crawl_admin_image",
 SCENARIOS = {"ledger-smoke": ("ledger", "fresh"),
              "ledger-claim-release": ("ledger", "fresh"),
              "administrative-fresh": ("administrative", "fresh"),
-             "administrative-migration": ("administrative", "v1_migration")}
+              "administrative-migration": ("administrative", "v1_migration")}
+SCENARIOS.update({scenario: ("administrative" if name in negative.ADMIN else "ledger", "fresh")
+                  for name, scenario in negative.CASES.items()})
 CANDIDATE_RUN_OPS = frozenset(("CJ2_CREATE_RUN", "CJ2_ENQUEUE_BATCH",
     "CJ2_BEGIN_RUN_AUDIT", "CJ2_AUDIT_RUN_BATCH", "CJ2_SEAL_RUN",
     "CJ2_CANCEL_RUN", "CJ2_CANCEL_BATCH", "CJ2_PURGE_RUN_BATCH"))

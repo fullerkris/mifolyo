@@ -48,8 +48,8 @@ def main():
         plan = harness.compile_plan(inputs)
         recipes[case_id] = runtime_case.recipe_sha256(case_id)
         request = {"plan": plan, "recipe_sha256": recipes[case_id], "fixture_id": "1" * 32,
-                   "credentials": {role: format(i + 1, "064x") for i, role in enumerate(runtime_case.ROLES)}, "previous": {}}
-        if case_id == runtime_case.CLAIM_CASE:
+                   "credentials": {role: format(i + 1, "064x") for i, role in enumerate(runtime_case.roles(case_id))}, "previous": {}}
+        if runtime_case.uses_material(case_id):
             request["claim_material"] = {"owner_a": "2" * 32, "owner_b": "3" * 32,
                                          "token_a": "4" * 64, "token_b": "5" * 64, "wrong_token": "6" * 64}
         executor.validate_request(request)

@@ -12,6 +12,9 @@ import time
 import harness as h
 import runtime_case as case
 import claim_executor as claim_worker
+import negative_executor as negative_worker
+import negative_specs as ns
+import admission
 from resp import Client, RedisError, TransportError
 
 CONTROL = Path("/run/cj2")
@@ -19,7 +22,7 @@ BOOT_FIELDS = case.BOOT_FIELDS
 
 
 def connect(role, credentials):
-    h.require(role in case.ROLES and role in credentials, "ROLE")
+    h.require(role in (*case.ROLES, "release_admin", "migration_admin") and role in credentials, "ROLE")
     client = Client()
     try:
         h.require(client.call("AUTH", "cj2_" + role, credentials[role]) == b"OK", "AUTH")
@@ -99,23 +102,26 @@ def environment(init=False):
     status = Path("/proc/self/status").read_text()
     cap = next(line.split()[1] for line in status.splitlines() if line.startswith("CapEff:"))
     h.require(int(cap, 16) == (1 if init else 0), "CAPABILITIES")
-    return {**network, "effective_capabilities": cap, "uid": os.geteuid()}
+    return {**network, "effective_capabilities": cap, "uid": os.geteuid(), **admission.process_inventory()}
 
 
-def validate_request(request):
+def validate_request(request, stage=None):
     h.require(type(request) is dict, "REQUEST")
     h.validate_plan(request["plan"])
     selected = case.case_for_plan(request["plan"])
     fields = {"plan", "recipe_sha256", "fixture_id", "credentials", "previous"}
-    h.exact(request, fields | ({"claim_material"} if selected == case.CLAIM_CASE else set()))
+    h.exact(request, fields | ({"claim_material"} if case.uses_material(selected) else set()))
     h.require(request["recipe_sha256"] == case.recipe_sha256(selected), "RECIPE")
     h.require(type(request["fixture_id"]) is str and re.fullmatch(r"[0-9a-f]{32}", request["fixture_id"]), "FIXTURE_ID")
-    h.require(type(request["credentials"]) is dict and set(request["credentials"]) <= set(case.ROLES), "ROLE")
+    h.require(type(request["credentials"]) is dict and set(request["credentials"]) <= set(case.roles(selected)), "ROLE")
+    if stage is not None:
+        h.exact(request["credentials"], set(case.stage_roles(selected, stage)))
     h.require(all(type(value) is str and re.fullmatch(r"[0-9a-f]{64}", value)
-                   for value in request["credentials"].values()), "CREDENTIAL_FORMAT")
+                    for value in request["credentials"].values()), "CREDENTIAL_FORMAT")
+    h.require(len(set(request["credentials"].values())) == len(request["credentials"]), "CREDENTIAL_REUSE")
     h.require(type(request["previous"]) is dict, "PREVIOUS_STAGE")
-    if selected == case.CLAIM_CASE:
-        case.claim_fixture(request["plan"], request["fixture_id"], request["claim_material"])
+    if selected != case.CASE:
+        case.fixture(request["plan"], request["fixture_id"], request.get("claim_material", {}))
 
 
 def configuration(client, plan):
@@ -219,13 +225,13 @@ def revoke(credentials, targets):
 
 def initialize(request):
     environment(init=True)
-    case.credentials_valid(request["credentials"])
+    selected = case.case_for_plan(request["plan"])
+    case.credentials_valid(request["credentials"], selected)
+    admission.empty_directories((CONTROL, Path("/data")))
     for directory in (CONTROL, Path("/data")):
-        h.require(directory.is_dir() and not directory.is_symlink() and not list(directory.iterdir()), "VOLUME_NOT_EMPTY")
         os.chmod(directory, 0o700)
     config = (h.HERE / "redis.conf").read_bytes()
-    selected = case.case_for_plan(request["plan"])
-    binding = case.claim_fixture(request["plan"], request["fixture_id"], request["claim_material"]) if selected == case.CLAIM_CASE else None
+    binding = case.fixture(request["plan"], request["fixture_id"], request.get("claim_material", {})) if selected != case.CASE else None
     acl = case.acl_file(request["credentials"], selected, binding, request["plan"])
     for name, raw in (("redis.conf", config), ("fixture.acl", acl)):
         path = CONTROL / name
@@ -276,6 +282,8 @@ def resume(request):
                 loaded(loader, operation, selected)
         epoch = h.digest((request["fixture_id"] + ":boot").encode())[:32]
         evidence_sha = h.digest(h.canonical(evidence))
+        if selected in ns.CASES:
+            return negative_worker.resume(request, setup_client, current, evidence, epoch, sys.modules[__name__])
         boot_request = case.boot_request(current["run_id"], epoch, evidence_sha, at)
         with connect("boot", credentials) as boot:
             first = boot.call(*boot_request)
@@ -312,6 +320,8 @@ def resume(request):
 
 def measure(request):
     previous, credentials = request["previous"], request["credentials"]
+    if case.case_for_plan(request["plan"]) in ns.CASES:
+        return negative_worker.measure(request, sys.modules[__name__])
     if case.case_for_plan(request["plan"]) == case.CLAIM_CASE:
         with connect("observer", credentials) as observer, connect("ledger", credentials) as ledger:
             h.require(server(observer)["run_id"] == previous["boot_record"]["approved_redis_run_id"], "BOOT_CHANGED")
@@ -381,14 +391,14 @@ def main():
         time.sleep(600)
         return 0
     stages = {"init": initialize, "ready": ready, "probe": probe, "resume": resume, "measure": measure,
-              "revoke": lambda request: {"revocation": revoke(request["credentials"], case.ROLES)}}
+               "revoke": lambda request: {"revocation": revoke(request["credentials"], case.roles(case.case_for_plan(request["plan"])))}}
     try:
         h.require(len(sys.argv) == 3 and sys.argv[1] in stages and
                   re.fullmatch(r"[1-9][0-9]{0,4}", sys.argv[2]), "STAGE")
         stage = sys.argv[1]
         with stage_deadline(int(sys.argv[2])):
             request = h.decode(sys.stdin.buffer.read(h.MAX_ARTIFACT_BYTES + 1))
-            validate_request(request)
+            validate_request(request, stage)
             isolation = environment(init=stage == "init")
             status = "PASS"
             try:
@@ -397,6 +407,10 @@ def main():
                 h.require(stage == "measure" and case.case_for_plan(request["plan"]) == case.CLAIM_CASE, "MEASUREMENT_FAILURE")
                 result, status = failure.result, "FAIL"
                 claim_worker.validate_measurement(result, False)
+            except negative_worker.NegativeFailure as failure:
+                h.require(stage in ("resume", "measure") and case.case_for_plan(request["plan"]) in ns.CASES, "NEGATIVE_FAILURE")
+                result, status = failure.result, "FAIL"
+                negative_worker.validate_stage_result(stage, result, request, isolation, successful=False)
             output = {"stage": stage, "status": status, "recipe_sha256": case.recipe_sha256(case.case_for_plan(request["plan"])),
                       "isolation": isolation, "result": result}
             raw = h.canonical(output)

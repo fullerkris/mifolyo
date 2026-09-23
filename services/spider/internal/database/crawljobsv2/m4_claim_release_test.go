@@ -345,7 +345,8 @@ func m4ClaimACLAllows(rules []string, command string, keys []string) bool {
 		selectors = append(selectors, match[1])
 	}
 	command = strings.ToLower(command)
-	writes := map[string]bool{"evalsha": true, "hset": true, "set": true, "zadd": true, "zrem": true, "pexpireat": true}
+	writes := map[string]bool{"evalsha": true, "hset": true, "set": true, "zadd": true, "zrem": true, "pexpireat": true,
+		"rename": true, "unlink": true, "del": true, "expire": true, "sadd": true}
 	for _, selector := range selectors {
 		allowed := false
 		admitted := map[string]bool{}

@@ -29,7 +29,7 @@ def validate_prestart(backend, harness_image, redis_image, case_id=ctl.case.CASE
     fixture = secrets.token_hex(16)
     prefix = "cj2-prestart-check-" + fixture
     volumes = {role: prefix + "-" + role for role in ("control", "data")}
-    resources = []
+    resources, specs = [], {}
     report = {"kind": "metadata_only_prestart", "case": case_id, "status": "FAIL", "containers_started": 0, "roles": []}
     try:
         for volume in volumes.values():
@@ -39,11 +39,17 @@ def validate_prestart(backend, harness_image, redis_image, case_id=ctl.case.CASE
         for role in ("init", "executor", "redis", "revocation"):
             name = prefix + "-" + role
             h.require(backend.inspect("container", name) is None, "CHECK_CONTAINER_EXISTS")
-            spec = ctl.container_spec(name, role, fixture, redis_image if role == "redis" else harness_image, volumes, case_id)
+            image = redis_image if role == "redis" else harness_image
+            image_metadata = backend.inspect("image", image)
+            h.require(type(image_metadata) is dict and image_metadata.get("Id") == image, "IMAGE_IDENTITY")
+            environment_sha = ctl.admission.environment_digest(image_metadata.get("Config", {}).get("Env", []))
+            spec = ctl.container_spec(name, role, fixture, image, volumes, case_id, environment_sha)
+            specs[role] = spec
             resources.append(("container", name))
             backend.create(spec)
             observed = backend.inspect("container", name)
             ctl.verify_container(observed, spec, False)
+            ctl.verify_volume_attachments(backend, volumes, specs)
             h.require(observed["State"].get("Status") == "created" and type(observed["State"].get("Pid")) is int
                       and observed["State"]["Pid"] == 0,
                       "CHECK_CONTAINER_STARTED")

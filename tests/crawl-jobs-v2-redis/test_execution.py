@@ -32,7 +32,7 @@ def approval(plan):
 
 
 def inspected_container(spec):
-    return {"Image": spec["image"], "Config": {"User": spec["uid"], "Labels":
+    return {"Image": spec["image"], "Config": {"User": spec["uid"], "Entrypoint": spec["entrypoint"], "Cmd": spec["command"], "Env": [], "Labels":
                 {ctl.LABEL: spec["fixture_id"], "io.mifolyo.cj2.case": spec.get("case", case.CASE)}},
             "State": {"Running": False, "Pid": 0}, "HostConfig": {
                 "NetworkMode": "none", "ReadonlyRootfs": True, "Privileged": False,
@@ -63,6 +63,10 @@ class FakeDocker:
         self.resources[("volume", name)] = {"Labels": {ctl.LABEL: fixture_id, "io.mifolyo.cj2.case": getattr(self, "case_id", case.CASE)}}
         if self.fail == "ambiguous-volume":
             raise ctl.CommandError("lost create reply")
+
+    def attachments(self, volume):
+        return sorted(name for (kind, name), value in self.resources.items() if kind == "container" and
+                      any(row.get("Type") == "volume" and row.get("Name") == volume for row in value.get("Mounts", [])))
 
     def create(self, spec):
         self.resources[("container", spec["name"])] = inspected_container(spec)

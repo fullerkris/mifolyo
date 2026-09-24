@@ -51,9 +51,13 @@ subsequently merged through PR #11 as tree-identical `9b6b8f9`. See the
 The remaining M4-P3 bootstrap/ACL negative package is implemented and locally
 verified: 95 harness tests and independent Go/Lua race checks pass. Independent
 correctness/security reviews now both return GO with no actionable findings.
-Fresh arm64 image/artifact validation now passes for the refreshed PC01 control;
-scoped publication and protected CI on `feature/crawl-jobs-v2-bootstrap-acl` are
-next. Full M4 acceptance
+Checkpoint `6340401` was published through PR #12 with arm64/amd64 PC01 image
+evidence and all fourteen required CI checks passing. Fresh exact-artifact owner
+approval and a separate execution decision then authorized one refreshed PC01
+attempt: **PASS**, with runtime process/admission checks and independent cleanup
+verification. Its approval is consumed. Step 6 accepts PC01 as the scoped positive
+control; PR #12's subsequent merge `320bce3` has the same tree. P01 case-specific
+artifact preparation is next, and all 13 negative cases remain unrun. Full M4 acceptance
 and application integration remain pending. The
 [Crawl Jobs V2 plan](docs/crawl-jobs-v2-plan.md) owns current progress. Historical
 V1 commands below do not authorize another crawl.

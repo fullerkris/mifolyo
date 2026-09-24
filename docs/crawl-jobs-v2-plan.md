@@ -2,9 +2,9 @@
 
 **Finding:** F3 - durable crawl-job leases and recovery
 
-**Last updated:** 2026-09-23 (UTC; bootstrap/ACL Step 4 arm64 PC01 image validation PASS)
+**Last updated:** 2026-09-24 (UTC; Step 6 accepts PC01 as scoped control; P01 artifact preparation next)
 
-**Working branch:** `feature/crawl-jobs-v2-bootstrap-acl`
+**Working branch:** `docs/crawl-jobs-v2-pc01-evidence`
 
 **Initial checkpoint:** `e4372a66201b8767bcca4d7476c30c5b7999922c`
 
@@ -15,13 +15,23 @@ All 43 canonical operations and the sealed, zero-argument
 bounded real-Redis `ledger-smoke-v1` and `ledger-claim-release-v1` cases pass;
 full M4 acceptance is open.
 
-**Current next gate:** finish Step 4 of the
+**Current next gate:** case-specific artifact preparation for **P01 /
+`ledger-candidate-compat-present-v1`** in the
 [`bootstrap-acl-negatives-v1` package](#next-bounded-package-bootstrap-acl-negatives-v1):
-scoped checkpoint publication, new draft PR and exact-revision protected CI.
-Fresh arm64 image validation passed with the **PC01 claim/release control**
-explicitly selected; all 15 recipes and 62 image files matched, with cleanup
-independently verified. See the
-[preparation report](crawl-jobs-v2-m4-bootstrap-acl-image-preparation-2026-09-23.md).
+prepare/revalidate P01's selected plan, recipe, images and exact revision, then
+obtain its own approval and separate execution decision. Step 6 **accepts PC01
+as the refreshed scoped positive control**; its 12 case assertions and 17 partial
+requirement mappings are supported, and all six resources remain absent.
+Approval is consumed. All 13 negative cases remain unrun and M4-P3/full M4 stay
+open. See the [evidence review](crawl-jobs-v2-m4-pc01-evidence-review-2026-09-24.md).
+
+Step 4's checkpoint
+`634040131b36e1cbbc2e251364dacbec2ae5dd01` was published through
+[PR #12](https://github.com/fullerkris/mifolyo/pull/12), with all fourteen required
+contexts passing; arm64/amd64 preparation evidence matches all 15 recipes and
+62 source files. See the [publication/CI record](crawl-jobs-v2-m4-bootstrap-acl-ci-2026-09-23.md).
+PR #12 subsequently merged as `320bce31db07e25758015b7466342fc73300f739`
+after the PC01 run; its tree exactly matches the executed `6340401` tree.
 Step 3 returned independent
 **correctness GO and security GO**, with no actionable findings and all 81
 reviewed file hashes unchanged. See the
@@ -31,7 +41,7 @@ supporting evidence. The registry supports 15 cases and the image scope is 62
 files; the new cases still require target validation and separate fresh execution authority.
 Close the remaining M4-P3 coverage before the wider worker-death/lease-expiry matrix.
 
-**Step 6 complete:** the owner separately approved and requested the single
+**Earlier claim/release Step 6:** the owner separately approved and requested the single
 `ledger-claim-release-v1` attempt at checkpoint
 `b4bda19f07bb22f37737508cd10424b75690d6f5`. That checkpoint is published on draft
 [PR #11](https://github.com/fullerkris/mifolyo/pull/11), all fourteen required
@@ -210,11 +220,11 @@ retains it as a primitive case; guard cases now explicitly bind the complete
 | Ledger validation | Baseline/delivery/fence history, post-abort freeze, exact retained witnesses, strict worker expiry, completed replay, prior retry/backpressure/reason fixes and zero-sentinel checks pass local normal conformance and reviewed counterexample replays |
 | Script sources | All 43 canonical operations are implemented: unchanged BOOT passthrough plus 42 exact generated sources; both strict source/bundle generator checks pass |
 | Authoritative bundle | Complete zero-argument `AuthoritativeScriptBindingSet()` validates embedded sources against fixed generated pins and returns fresh private sealed bindings; no caller-supplied sources, hashes or paths |
-| Local and protected acceptance | Claim checkpoint `b4bda19` passed protected PR checks and its real case; subsequent bootstrap/ACL local verification and independent reviews pass; fresh image/artifact validation and new exact-revision CI remain |
+| Local and protected acceptance | Bootstrap/ACL checkpoint `6340401` passed all fourteen required PR checks; Step 6 accepts its real PC01 result as scoped control, with 475 CI race roots accounted for; negative-case authority/evidence remain open |
 | Runtime behavior | V2 remains dormant in application services; separately authorized disposable Redis smoke and claim/release cases passed, with full owned-resource cleanup |
-| M4 bounded execution | Historical smoke/claim PASS with consumed approvals; all 13 new negative lifecycles pass simulated checks, with 70 new in-memory canonical Lua calls; new real-Redis outcomes remain unmeasured |
+| M4 bounded execution | Historical smoke/claim plus refreshed PC01 PASS with consumed approvals; PC01 evidence review accepted; all 13 negative lifecycles remain simulated/offline only; case-specific P01 preparation next |
 | Review status | Bootstrap/ACL Step 3 correctness/security GO on the frozen 81-file inventory; no actionable findings or source corrections; scoped to image/CI preparation |
-| Git state | PR #11 merged as `9b6b8f9`, tree-identical to `b4bda19`; fresh branch `feature/crawl-jobs-v2-bootstrap-acl` starts there with all 414 pending-file fingerprints/index/status preserved; scoped publication is next |
+| Git state | Documentation/evidence branch `docs/crawl-jobs-v2-pc01-evidence` starts from PR #12 merge `320bce3`, tree-identical to executed `6340401`; this 15-file checkpoint records completed CI/PC01/review evidence; unrelated local work is outside its scope |
 
 ### Current source and fixture identities (regenerated 2026-09-21)
 
@@ -1657,9 +1667,9 @@ created and owned by the attempt; it cannot claim revocation of nonexistent user
 | 1. Specify | **Complete:** this source-grounded specification and non-executable packet; current canonical sources/protocol remain unchanged |
 | 2. Implement and verify | **Complete locally:** closed constructors/oracles, 13 integrated negative cases, case-specific roles and source allowlists, admission predicates, full local harness/script checks and independent Go/Lua race verification |
 | 3. Independent review | **Complete:** separate correctness/security GO on all 81 unchanged file hashes; no actionable findings, so no correction or re-review delta |
-| 4. Image and publication/CI | Local arm64 PC01 image/artifact validation PASS; exact-index verification, scoped secret scan, authorized new checkpoint/draft PR and protected CI are next |
-| 5. Exact execution decisions | Pending: fresh authority and separate request for each selected case; no approval inferred from this package |
-| 6. Evidence review | Pending: verify all mapped outcomes, controls and teardown, retain remaining gaps, then decide whether M4-P3 is closed |
+| 4. Image and publication/CI | **Complete:** arm64/amd64 PC01 image evidence, exact-index checks, scoped publication as `6340401` on draft PR #12 and all fourteen required CI contexts PASS |
+| 5. Exact execution decisions | **PC01 complete:** fresh exact approval, separate execution decision, one PASS attempt and consumed disposition; all 13 negative cases still need their own artifacts/authority |
+| 6. Evidence review | **Complete for PC01:** scoped control accepted on September 24, with 17 partial mappings and no full requirement/variant closure; all 13 negative cases remain unrun, so package/M4-P3 acceptance remains open |
 
 Step 2 implemented pure constructors/oracles and admission predicates before
 runtime integration. The controller now recognizes the existing smoke/claim
@@ -1804,6 +1814,149 @@ The [preparation report](crawl-jobs-v2-m4-bootstrap-acl-image-preparation-2026-0
 records complete identities and limits. CI already explicitly selects PC01;
 required assertions and race-shard coverage remain intact. Publication and
 fresh protected results precede any execution-approval request.
+
+**Step 4 publication/CI complete (2026-09-23): PASS.**
+
+Published **48 intended files** as
+`634040131b36e1cbbc2e251364dacbec2ae5dd01`; local/remote identities match.
+Committed tree `1ebb7168db71ad488de66da157ab85978a3b6d45` matches the tested
+index export: **95 harness tests (638.884 s)**, **21 script tests (8.966 s)**,
+combined M4 race (**213.182 s**), vet, strict generators/digests and actionlint
+passed. Three scoped scan detections matched the existing public canonical
+RETIRE source hash; no unresolved finding remained. All 372 unrelated pending
+file fingerprints were preserved outside the scoped publication.
+
+At the Step 4 checkpoint, [PR #12](https://github.com/fullerkris/mifolyo/pull/12)
+was draft and unmerged; its later merge is recorded in Step 6 below.
+Required Checks `35902232103` and Unit Tests `35902232181` succeeded; all fourteen
+required contexts were rechecked against branch protection. The eight downloaded
+race reports bind tested PR merge `92e7964eb683ca901b2ae5e08c6e45599b541259`
+and match the local compiled inventory: **475 roots, 474 passes and only the
+allowed optional native-Lua skip**. The final required Spider aggregate passed.
+
+Downloaded amd64 PC01 image evidence independently matched all 62 source files,
+15 recipes, image/plan bindings, role/isolation/memory checks and cleanup receipts.
+Its init/executor peaks were **48,001,024 / 48,037,888 bytes**. CI gate SHA-256:
+`8e1016298327f32c75fac38cb20e85c3e052f500237af28f749546d526c3e026`.
+The [post-CI record](crawl-jobs-v2-m4-bootstrap-acl-ci-2026-09-23.md) preserves full
+links, tested identities, artifact hashes and the private evidence location.
+
+The private PC01 request template is `approved=false` with expiry zero. Step 5
+subsequently recorded its own fresh authority and separate execution request;
+no acceptance case ran during Step 4 itself. Post-CI status notes were kept local
+during approval/execution to preserve the tested HEAD and are retained in the
+later documentation/evidence checkpoint. Full M4 acceptance remains open.
+
+##### Step 5 refreshed PC01 result (2026-09-23)
+
+The owner selected **Approve exact case** and then **Execute approved case**.
+Approval `3e034bd6f56cc595fd4d8cba566f2722a3428691f185cecfd59228dedde7a695`
+bound `6340401`, the prepared arm64 images/plan/recipe, operator `fullerkris`,
+one attempt and unchanged 300/30/60-second limits. It was recorded at
+20:15:21.001 UTC, expiring at 21:15:21.001 UTC. A GitHub HTTP 503 stopped the
+first read-only preflight before reservation or resource creation. Revalidation
+then passed; the controller was invoked exactly once.
+
+Fixture `0a1a9641a6044e4dfde80a5c3d381216` returned **PASS** at
+20:22:51.406 UTC. All four container admissions and all five stages passed.
+The actual holder-plus-exec process count was two in every stage; route,
+UID/capability, command/environment and sharing predicates passed. Probe/restart,
+BOOT/replay, all nine claim/release calls, 46 authority denials and full
+state/absolute-expiry checks passed. The 33-counter snapshots confirm two
+claims/creations, final fence 2/next ordinal 3, one open job, zero request starts,
+deliveries/output commits and final zero reservation capacity.
+
+All 28 journal actions match the report, including 11 cleanup actions. The
+executor was stopped/waited/PID-zero/removed before the fresh revoker, all six
+credentials were revoked, and postcheck at 20:26:54.614767 UTC independently
+confirmed all four containers and two volumes absent. Approval is **consumed**,
+`reusable=false`. The host decision-to-report interval was 12,176 ms and the
+resume-to-measure receipt interval 4,388 ms; neither is a Lua latency benchmark.
+
+Report SHA-256:
+`2e1d4817d835d5a76a42552ca31645f97b406843b0bd980a0651353843158e86`.
+The [dated result](crawl-jobs-v2-m4-pc01-run-2026-09-23.md) and
+[exact evidence exports](evidence/m4-pc01-run-2026-09-23/README.md) retain the
+approval/decision/report bindings, observations and cleanup proof. The scoped
+evidence scan found no leaks. Execution used unchanged source bytes at `6340401`;
+the later documentation/evidence checkpoint retains the results separately.
+`case_evidence_valid=true`, `evidence_kind=real_redis`,
+`m4_accepted=false`.
+
+PC01 now provides the refreshed control; it does not close any unrun negative
+case. Step 6 subsequently reviewed this result and retained the remaining gaps. P01 is next in
+the case sequence and needs its own selected-case artifacts, fresh exact owner
+approval and separate execution decision. No further attempt is authorized.
+
+##### Step 6 PC01 evidence review (2026-09-24)
+
+**Decision: ACCEPT PC01 FOR PACKAGE CONTROL; advance to P01 preparation.**
+This scoped coordinator review checked the raw retained report, intent, journal,
+execution decision and postcheck against the approval/reservation/disposition,
+recorded CI/image evidence and unchanged reviewed source. All five exports match
+private originals and all 81 source hashes / 15 recipes still match. The review
+recomputed the literal 33-counter relationships, nine statuses, exact 46 ACL
+pairs, replay state hashes, absolute reservation expiry and ordered 28-action
+lifecycle. A fresh read-only check again found all six exact resources absent.
+
+The [dated assessment](crawl-jobs-v2-m4-pc01-evidence-review-2026-09-24.md) and
+[machine-readable review/coverage ledger](evidence/m4-pc01-review-2026-09-24/README.md)
+record review SHA-256
+`b416011bf828111cecf2311a3adf1243e8e6b2ffe1c3ace9bce8c47ae8e461bb`.
+CR01–CR12 are accepted within the single PC01 scope, with **17 observed partial
+requirement mappings**. The ledger retains the 104-requirement/52-variant
+inventory reference and explicit dispositions for all 14 package cases:
+**one accepted control, 13 real negative cases unrun**. No full requirement or
+operation variant is closed; `m4_p3_accepted=false`, `m4_accepted=false`.
+
+Source continuity was checked after discovering PR #12's later merge:
+`320bce31db07e25758015b7466342fc73300f739`, merged at 20:24:56 UTC on September 23,
+has tree `1ebb7168db71ad488de66da157ab85978a3b6d45`, identical to executed
+`6340401` and the tested PR merge. The merge followed the 20:22:51.406 UTC run
+report. The checkout was not moved, and no post-merge CI result or new authority
+is inferred from tree equality.
+
+PC01 establishes this positive path and successful teardown. It does not exercise
+candidate/freeze presence, malformed-gate/BOOT or administrative negatives, live
+seven/eight-role controls, interruption paths, maximum shapes or the latency/
+restore matrix. H/I tests keep their offline/simulated evidence class. Private
+state was checked inside the reviewed executor; exported hashes cannot recreate
+it. Controller actions do not independently observe internal Lua crash boundaries.
+Final release assembly still requires independent measurement/provenance review.
+
+**P01 handoff:** keep the 58-position one-job fixture and add only the correctly
+typed case compatibility hash at `mifolyo:contracts:candidate` (27 direct setup
+keys). Two valid CLAIM attempts must each return `CRAWL_V2_INVALID_STATE` with
+complete unchanged state/zero counter deltas, followed by all 46 authority
+denials. `WRONG_TYPE`, outer `NOPERM`, `NOSCRIPT`, malformed-wire rejection and
+unexpected success cannot substitute. Only BOOT/CLAIM canonical sources are
+loaded; ledger authority permissions remain narrow.
+
+The current reviewed P01 recipe is
+`7123ed770cb9c900319f412356652e7cb27eef6c3f2704818d3dee402fa4ee74`.
+Its case-specific plan/image-preparation outcome and approval are **pending**.
+Use the explicit P01 selector, fresh preparation/evidence paths and subsequent
+new fixture resources; retain 300/30/60-second and memory bounds. Revalidate the
+chosen exact revision/CI and immutable artifacts before requesting fresh owner
+approval and a separate execution decision. Reassess control applicability for
+source/configuration/shape/ACL/relevant-image changes. No P01 preparation command
+or case run occurred during this evidence review; its records are retained in
+the linked evidence package.
+
+##### PC01 documentation/evidence publication (2026-09-24)
+
+The owner requested publishing the **15-file PC01 documentation/evidence batch**:
+four status documents, three dated CI/run/review reports, six run-evidence files
+and two review-evidence files. A fresh documentation branch was created
+from fetched main `320bce31db07e25758015b7466342fc73300f739`; all 387 pending-file
+fingerprints, the index and status matched across the same-tree switch. The
+remaining 372 local files are outside this checkpoint.
+
+The immutable JSON/JSONL exports retain their recorded hashes and private-original
+bindings. Publication records the already completed observations; it does not
+rerun PC01, alter its executed revision, or grant authority for P01. The next
+gate remains case-specific P01 artifact preparation and its later exact approval
+and separate execution decision.
 
 **Historical pre-amendment verification:** Read-only Lua assembly with both `--check` and
 `--require-complete`, bundle pin (`--check`), and independent digest-vector
@@ -2471,6 +2624,10 @@ Rendering remains disabled unless its separate activation requirements pass.
 | 2026-09-23 | Bootstrap/ACL Step 2 local implementation | All 13 new simulated lifecycles and 82 H/I variants pass within 95 harness tests; 21 script tests, four new Go/Lua roots (70 canonical invocations plus four selector checks), existing M4 race, vet and digest checks pass; 62-file image scope and 81-file source inventory verified; changed scope awaits independent review, new images/CI and real execution |
 | 2026-09-23 | Bootstrap/ACL Step 3 independent reviews | Correctness and security both GO for image/CI preparation on inventory `dbe881b2…`; no actionable findings or source changes; all 81 hashes and 15 recipes verified; reviewer checks and one incomplete broad invocation recorded separately; selected-case image/artifact validation and authorized publication/CI are next |
 | 2026-09-23 | Bootstrap/ACL Step 4 arm64 preparation | PR #11 merge `9b6b8f9` has the same tree as `b4bda19`; fresh bootstrap/ACL branch preserves all 414 pending files; reviewed image `51bc489…` passes four stopped-role admissions, 62-file/all-15-recipe checks and memory/isolation limits; cleanup independently verified; PC01 plan `0861036…` emitted without execution authority; publication/CI next |
+| 2026-09-23 | Bootstrap/ACL Step 4 publication and protected CI | `6340401` publishes 48 scoped files on draft PR #12; 14/14 required checks SUCCESS; downloaded 475-root race inventory fully accounted for (474 pass/one allowed skip), amd64 PC01 image evidence independently verified; fresh owner approval/separate execution decision next |
+| 2026-09-23 | Bootstrap/ACL Step 5 refreshed PC01 | Owner separately approved and requested one attempt on `6340401`; fixture `0a1a9641a6044e4dfde80a5c3d381216` PASS at 20:22:51.406 UTC; nine calls/46 denials/33 counters, five two-process runtime stages and 28 actions verified; six resources independently absent; approval consumed, 13 negative cases unrun |
+| 2026-09-24 | Bootstrap/ACL Step 6 PC01 evidence review | PC01 accepted as scoped positive control; 12 case assertions and 17 partial mappings reviewed, all six resources rechecked absent; all 13 negatives remain unrun and M4-P3/full M4 stay open; PR #12 merge `320bce3` is tree-identical to executed `6340401`; P01 case-specific artifact preparation next |
+| 2026-09-24 | Scoped PC01 documentation/evidence checkpoint | Owner requested the 15-file CI/run/review/status batch; fresh docs branch from merged main preserves all 387 pending files; immutable evidence retained, 372 unrelated files excluded, P01 preparation still next |
 
 ## Definition of done
 

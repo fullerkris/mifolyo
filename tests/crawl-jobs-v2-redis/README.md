@@ -26,8 +26,26 @@ and scope limits are in the
 and 15 recipes, stopped-role admission, memory and isolation. PC01 selects the
 refreshed `ledger-claim-release-v1` plan; exact cleanup was independently checked.
 See the [preparation report](../../docs/crawl-jobs-v2-m4-bootstrap-acl-image-preparation-2026-09-23.md).
-PR #11 merged as `9b6b8f9`; scoped publication/CI for the bootstrap/ACL checkpoint
-on the fresh branch remains the next gate.
+PR #11 merged as `9b6b8f9`; the bootstrap/ACL checkpoint is now published as
+`6340401` on draft PR #12 with all fourteen required checks passing. Downloaded
+amd64 preparation and the complete 475-root race inventory were independently
+verified. See the [post-CI record](../../docs/crawl-jobs-v2-m4-bootstrap-acl-ci-2026-09-23.md).
+That Step 4 handoff preceded the separate PC01 approval and execution below.
+
+**Step 5 refreshed PC01 execution: PASS.** The owner separately approved and
+requested one attempt on `6340401`. Fixture `0a1a9641a6044e4dfde80a5c3d381216`
+passed all nine claim/release calls, 46 ACL denials, complete state/expiry checks
+and the actual holder-plus-exec process predicates in all five stages. All six
+credentials were revoked; four containers and two volumes were independently
+confirmed absent. Approval is consumed. See the
+[PC01 result](../../docs/crawl-jobs-v2-m4-pc01-run-2026-09-23.md).
+
+**Step 6 PC01 evidence review (2026-09-24): accepted as scoped control.**
+All 12 case assertions and 17 partial requirement mappings are supported by the
+retained evidence; the six exact resources were rechecked absent. The 13 negative
+cases remain unrun, and no full requirement/operation variant or M4-P3 gate is
+closed. PR #12 merged after PC01 as tree-identical `320bce3`. See the
+[evidence review and P01 handoff](../../docs/crawl-jobs-v2-m4-pc01-evidence-review-2026-09-24.md).
 
 **Final independent re-review (2026-09-21): GO for image preparation only.** The
 four original findings and a closed-peer follow-up are fixed and re-reviewed.
@@ -284,9 +302,9 @@ python3 -B tests/crawl-jobs-v2-redis/controller.py run \
 ```
 
 The original smoke invocation failed in init. The separately approved corrected
-smoke case then ran once and passed; the subsequent claim/release case also ran
-once and passed under its own approval. The dated reports preserve all outcomes.
-All three one-case approvals are consumed. A matching input hash does not create
+smoke, original claim/release and refreshed PC01 cases each ran once and passed
+under their own approvals. The dated reports preserve all outcomes.
+All four one-case approvals are consumed. A matching input hash does not create
 owner approval or permission to retry; further cases need fresh reviewed scope
 and exact-artifact execution authority.
 
@@ -504,9 +522,12 @@ admission assertions. Step 2 implements the closed cases and passes local
 verification; the planning JSON itself remains rejected as an execution plan. Its full
 104-requirement/52-variant inventory reference and historical PASS hashes remain
 explicit. Step 3 correctness/security reviews are GO with no actionable findings.
-Step 4's local arm64 PC01 image/artifact validation passes; authorized scoped
-publication and new protected CI are next, followed by separate exact-artifact
-execution decisions.
+Step 4's arm64/amd64 preparation, publication and all required CI checks pass on
+`6340401`; the separately approved Step 5 PC01 invocation now also passes with
+independently verified cleanup and consumed approval. Step 6 accepts that scoped
+control and preserves all 13 negative cases as unrun. The next gate is P01's own
+selected-case artifact preparation, followed by fresh exact approval and a
+separate execution decision before it can run.
 
 Broader job/lease/stage/commit behavior, administrative transitions, maximum shapes,
 crash-boundary coverage, benchmarks and final release/image admission remain

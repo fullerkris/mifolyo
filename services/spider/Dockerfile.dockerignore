@@ -20,6 +20,8 @@
 !tests/crawl-jobs-v2-redis/negative_specs.py
 !tests/crawl-jobs-v2-redis/negative_cases.py
 !tests/crawl-jobs-v2-redis/test_negative_cases.py
+!tests/crawl-jobs-v2-redis/recovery_oracle.py
+!tests/crawl-jobs-v2-redis/test_recovery_oracle.py
 
 **/*.env
 **/.env*

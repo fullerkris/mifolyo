@@ -27,6 +27,9 @@ import claim_executor as claim_worker
 import negative_executor as negative_worker
 import negative_specs as ns
 import admission
+import recovery_specs as rs
+import recovery_executor as recovery_worker
+import parked_command
 
 LABEL = "io.mifolyo.cj2.fixture"
 ENTRY = "/app/tests/crawl-jobs-v2-redis/executor.py"
@@ -184,8 +187,9 @@ def image_admission(value, expected, architecture, harness=False):
 
 def container_spec(name, role, fixture_id, image, volumes, case_id=case.CASE, environment_sha256=None):
     case.sources(case_id)
+    h.require(role in case.container_roles(case_id), "CONTAINER_ROLE")
     init = role == "init"
-    mounts = [(volumes["control"], "/run/cj2", role in ("executor", "revocation"))]
+    mounts = [(volumes["control"], "/run/cj2", role in ("executor", "executor_b", "revocation"))]
     if role in ("init", "redis"):
         mounts.append((volumes["data"], "/data", False))
     entrypoint, command = admission.command_for(role)
@@ -195,7 +199,15 @@ def container_spec(name, role, fixture_id, image, volumes, case_id=case.CASE, en
              "entrypoint": entrypoint, "command": command, "environment_sha256": environment_sha256,
             "uid": "0:0" if init else "65534:65534", "cap_add": ["CHOWN"] if init else [],
             "memory": 134217728 if init else (553648128 if role == "redis" else 268435456),
-            "mounts": mounts}
+             "mounts": mounts}
+
+
+def validate_stage_envelope(stage, result, request):
+    h.exact(result, {"stage", "status", "recipe_sha256", "isolation", "result"})
+    selected = case.case_for_plan(request["plan"])
+    h.require(result["stage"] == stage and type(result["status"]) is str and result["status"] in ("PASS", "FAIL") and
+              result["recipe_sha256"] == case.recipe_sha256(selected), "STAGE_RESULT")
+    admission.validate_isolation_receipt(result["isolation"], init=stage == "init")
 
 
 def allowed_cap_add(actual, expected):
@@ -337,20 +349,76 @@ class Docker:
                                data=h.canonical(request), timeout=self.timeout(timeout))
         result = h.decode(out)
         selected = case.case_for_plan(request["plan"])
-        h.require(set(result) == {"stage", "status", "recipe_sha256", "isolation", "result"} and
-                  result["stage"] == stage and result["status"] in ("PASS", "FAIL") and
-                  result["recipe_sha256"] == case.recipe_sha256(selected), "STAGE_RESULT")
+        validate_stage_envelope(stage, result, request)
         if result["status"] == "FAIL":
             h.require(code != 0, "STAGE_FAILURE")
             if selected in ns.CASES:
                 h.require(stage in ("resume", "measure"), "STAGE_FAILURE")
                 negative_worker.validate_stage_result(stage, result["result"], request, result["isolation"], successful=False)
+            elif selected == rs.CASE:
+                h.require(stage == "recover", "STAGE_FAILURE")
+                recovery_worker.validate_stage_result(stage, result["result"], request, successful=False)
             else:
                 h.require(selected == case.CLAIM_CASE and stage == "measure", "STAGE_FAILURE")
                 claim_worker.validate_measurement(result["result"], False)
             raise StageFailure(result)
         h.require(code == 0, "STAGE_EXIT")
         return result
+
+    def park_stage(self, name, request, timeout):
+        milliseconds = int(self.timeout(timeout) * 1000)
+        h.require(1 <= milliseconds <= 30000 and case.case_for_plan(request["plan"]) == rs.CASE, "RECOVERY_PARK_CASE")
+        argv = [*self.prefix, "container", "exec", "--interactive", name, "python3", "-B", ENTRY, "claim_park", str(milliseconds)]
+        parked, result = parked_command.start(argv, h.canonical(request), self.timeout(timeout))
+        try:
+            validate_stage_envelope("claim_park", result, request)
+            h.require(result["status"] == "PASS", "RECOVERY_PARK_RECEIPT")
+            recovery_worker.validate_stage_result("claim_park", result["result"], request)
+            pid = result["result"]["worker_pid"]
+            expected = [{"pid": 1, "argv": ["python3", "-B", ENTRY, "hold"]},
+                        {"pid": pid, "argv": ["python3", "-B", ENTRY, "claim_park", str(milliseconds)]}]
+            h.require(result["isolation"]["process_count"] == 2 and
+                      result["isolation"]["process_inventory_sha256"] == h.digest(h.canonical(expected)), "RECOVERY_CLAIM_PROCESS")
+            parked.require_waiting()
+            return parked, result
+        except BaseException:
+            parked.abort()
+            raise
+
+    def kill_claimant(self, name, fixture_id, expected_id, parked):
+        parked.require_waiting()
+        current = self.inspect("container", name)
+        h.require(current is not None and owned(current, "container", fixture_id, self.case_id) and
+                  current.get("Id") == expected_id and current["State"]["Running"] is True and
+                  current["State"].get("OOMKilled") is False, "RECOVERY_WORKER_IDENTITY")
+        dispatch_ms = int((time.monotonic() - parked.received_at) * 1000)
+        h.require(0 <= dispatch_ms <= rs.MAX_ACK_TO_KILL_MS, "RECOVERY_KILL_DELAY")
+        self.kill(name)
+        self.call("container", "wait", name)
+        stopped = self.inspect("container", name)
+        stopped_at = time.monotonic()
+        observed_ms = int((stopped_at - parked.received_at) * 1000)
+        h.require(stopped is not None and stopped.get("Id") == expected_id and owned(stopped, "container", fixture_id, self.case_id) and
+                  stopped["State"]["Running"] is False and type(stopped["State"].get("Pid")) is int and stopped["State"]["Pid"] == 0 and
+                  type(stopped["State"].get("ExitCode")) is int and stopped["State"]["ExitCode"] == 137 and stopped["State"].get("OOMKilled") is False and
+                  0 <= observed_ms <= rs.MAX_ACK_TO_KILL_MS, "RECOVERY_KILL_NOT_PROVEN")
+        reconcile_left = rs.MAX_ATTACHED_EXIT_SECONDS - (time.monotonic() - stopped_at)
+        h.require(reconcile_left > 0, "RECOVERY_CLAIMANT_EXIT_TIMEOUT")
+        code = parked.finish(self.timeout(reconcile_left))
+        reconciled_at = time.monotonic()
+        reconcile_ms = int((reconciled_at - stopped_at) * 1000)
+        h.require(code == 137, "RECOVERY_CLAIMANT_EXIT")
+        h.require(0 <= reconcile_ms <= rs.MAX_ATTACHED_EXIT_SECONDS * 1000, "RECOVERY_CLAIMANT_EXIT_TIMEOUT")
+        return {"container": name, "container_id": expected_id, "stopped": True, "pid": 0,
+                "container_exit_code": 137, "claimant_exit_code": 137, "oom_killed": False,
+                "ack_to_kill_dispatch_ms": dispatch_ms, "ack_to_stopped_ms": observed_ms,
+                "attached_exit_reconciliation_ms": reconcile_ms,
+                "receipt_to_attached_exit_ms": int((reconciled_at - parked.received_at) * 1000),
+                "timing_origin": "host_received_complete_claim_receipt", "removed": False}
+
+    def wait_interval(self, seconds):
+        h.require(type(seconds) in (int, float) and 0 < seconds <= 2, "RECOVERY_WAIT_INTERVAL")
+        time.sleep(self.timeout(seconds))
 
     def quiesce(self, name, fixture_id):
         """Stop the actual container, wait, and remove it before a teardown helper.
@@ -438,7 +506,7 @@ def cleanup_signals():
             signal.signal(sig, handler)
 
 
-def execute(plan, approval, backend, *, revision_check=verify_revision, journal=None, action_journal=None):
+def execute(plan, approval, backend, *, revision_check=verify_revision, journal=None, action_journal=None, action_journal_verify=None):
     case.validate_approval(plan, approval, int(time.time() * 1000))
     revision_check(approval["commit"])
     case.validate_approval(plan, approval, int(time.time() * 1000))
@@ -448,6 +516,9 @@ def execute(plan, approval, backend, *, revision_check=verify_revision, journal=
     prefix = "cj2-m4-" + fixture_id
     volumes = {role: prefix + "-" + role for role in ("data", "control")}
     names = {role: prefix + "-" + role for role in ("init", "redis", "executor", "revocation")}
+    if selected == rs.CASE:
+        names["executor_b"] = prefix + "-executor-b"
+    active_executor = "executor"
     credentials = {role: secrets.token_hex(32) for role in case.roles(selected)}
     material = ({"owner_a": secrets.token_hex(16), "owner_b": secrets.token_hex(16),
                  "token_a": secrets.token_hex(32), "token_b": secrets.token_hex(32), "wrong_token": secrets.token_hex(32)}
@@ -473,7 +544,9 @@ def execute(plan, approval, backend, *, revision_check=verify_revision, journal=
               "resource_names": {"volumes": volumes, "containers": names}}
     # Publish exact names before any Docker mutation. An uncatchable controller
     # kill leaves an INCOMPLETE intent, never a success or an unidentifiable run.
-    h.require(backend.evidence_kind != "real_redis" or (callable(journal) and callable(action_journal)), "JOURNAL_REQUIRED")
+    action_verifier = action_journal_verify or getattr(action_journal, "verify", None)
+    h.require(backend.evidence_kind != "real_redis" or
+              (callable(journal) and callable(action_journal) and callable(action_verifier)), "JOURNAL_REQUIRED")
     if journal:
         journal(intent)
     case.validate_approval(plan, approval, int(time.time() * 1000))
@@ -507,25 +580,33 @@ def execute(plan, approval, backend, *, revision_check=verify_revision, journal=
         h.require(left > 0, "EXECUTION_DEADLINE")
         return left
 
-    def stage(name, selected_roles, previous=None, cleanup_mode=False):
+    def request_for(selected_roles, previous=None):
         request = {"plan": plan, "recipe_sha256": report["recipe_sha256"], "fixture_id": fixture_id,
                     "credentials": {role: credentials[role] for role in selected_roles}, "previous": previous or {}}
         if material:
             request["claim_material"] = material
-        target = names["init"] if name == "init" else names["revocation" if name == "revoke" else "executor"]
+        return request
+
+    def stage(name, selected_roles, previous=None, cleanup_mode=False):
+        request = request_for(selected_roles, previous)
+        target = names["init"] if name == "init" else names["revocation" if name == "revoke" else active_executor]
         try:
             result = backend.stage(target, name, request, 30 if cleanup_mode else remaining())
         except StageFailure as failure:
+            validate_stage_envelope(name, failure.receipt, request)
             raw = h.canonical(failure.receipt)
             h.require(not any(value.encode() in raw for value in private_values), "PRIVATE_STAGE_OUTPUT")
             if selected in ns.CASES:
                 negative_worker.validate_stage_result(name, failure.receipt["result"], request, failure.receipt["isolation"], successful=False)
+            elif selected == rs.CASE:
+                recovery_worker.validate_stage_result(name, failure.receipt["result"], request, successful=False)
             else:
                 claim_worker.validate_measurement(failure.receipt["result"], False)
                 h.require(failure.receipt["result"]["fixture_sha256"] == request["previous"]["fixture_summary"]["fixture_sha256"],
                            "CLAIM_EVIDENCE_BINDING")
             report["stages"][name] = failure.receipt
             raise
+        validate_stage_envelope(name, result, request)
         raw = h.canonical(result)
         h.require(len(raw) <= OUTPUT_LIMIT, "STAGE_OUTPUT_BOUND")
         h.require(not any(value.encode() in raw for value in private_values), "PRIVATE_STAGE_OUTPUT")
@@ -533,8 +614,14 @@ def execute(plan, approval, backend, *, revision_check=verify_revision, journal=
             claim_worker.validate_stage_result(name, result["result"], request)
         elif selected in ns.CASES:
             negative_worker.validate_stage_result(name, result["result"], request, result["isolation"])
+        elif selected == rs.CASE:
+            recovery_worker.validate_stage_result(name, result["result"], request)
         if name != "ready":
             report["stages"][name] = result
+        if name == "lease_clock":
+            clock_stages = report.setdefault("clock_stages", [])
+            h.require(len(clock_stages) < rs.MAX_CLOCK_OBSERVATIONS, "RECOVERY_CLOCK_BOUND")
+            clock_stages.append(result)
         action("stage_completed", name, cleanup_mode)
         return result["result"]
 
@@ -564,6 +651,9 @@ def execute(plan, approval, backend, *, revision_check=verify_revision, journal=
         verify_volume_attachments(backend, volumes, specs)
         report["container_admission"][role] = {"spec": spec, "verified": True,
             "inspection_sha256": h.digest(h.canonical(observed))}
+        if selected == rs.CASE:
+            h.require(type(observed.get("Id")) is str and re.fullmatch(r"[0-9a-f]{64}", observed["Id"]), "CONTAINER_ID")
+            report["container_admission"][role]["container_id"] = observed["Id"]
         action("container_started_and_verified", role, cleanup_mode)
 
     def ready():
@@ -614,8 +704,70 @@ def execute(plan, approval, backend, *, revision_check=verify_revision, journal=
         phase = "resume"
         resumed = stage("resume", case.stage_roles(selected, "resume"), probe)
         verify_revocation(resumed.get("early_revocation"), case.early_roles(selected))
-        phase = "measure"
-        stage("measure", case.measure_roles(selected), resumed)
+        if selected == rs.CASE:
+            h.require(deadline - time.monotonic() >= 120, "RECOVERY_CASE_BUDGET")
+            phase = "claim_park"
+            parked = None
+            try:
+                request = request_for(case.stage_roles(selected, "claim_park"), resumed)
+                parked, receipt = backend.park_stage(names["executor"], request, remaining())
+                validate_stage_envelope("claim_park", receipt, request)
+                raw = h.canonical(receipt)
+                h.require(len(raw) <= OUTPUT_LIMIT and not any(value.encode() in raw for value in private_values), "PRIVATE_STAGE_OUTPUT")
+                recovery_worker.validate_stage_result("claim_park", receipt["result"], request)
+                report["stages"]["claim_park"] = receipt
+                phase = "kill_claimant"
+                proof = backend.kill_claimant(names["executor"], fixture_id, report["container_admission"]["executor"]["container_id"], parked)
+                h.exact(proof, {"container", "container_id", "stopped", "pid", "container_exit_code", "claimant_exit_code",
+                                "oom_killed", "ack_to_kill_dispatch_ms", "ack_to_stopped_ms", "attached_exit_reconciliation_ms",
+                                "receipt_to_attached_exit_ms", "timing_origin", "removed"})
+                h.require(proof["container"] == names["executor"] and proof["container_id"] == report["container_admission"]["executor"]["container_id"] and
+                          proof["stopped"] is True and type(proof["pid"]) is int and proof["pid"] == 0 and
+                          type(proof["container_exit_code"]) is type(proof["claimant_exit_code"]) is int and
+                          proof["container_exit_code"] == proof["claimant_exit_code"] == 137 and proof["oom_killed"] is False and
+                          proof["removed"] is False and all(type(proof[field]) is int and 0 <= proof[field] <= rs.MAX_ACK_TO_KILL_MS
+                          for field in ("ack_to_kill_dispatch_ms", "ack_to_stopped_ms")), "RECOVERY_DEATH_EVIDENCE")
+                h.require(proof["timing_origin"] == "host_received_complete_claim_receipt" and
+                          type(proof["attached_exit_reconciliation_ms"]) is int and 0 <= proof["attached_exit_reconciliation_ms"] <= rs.MAX_ATTACHED_EXIT_SECONDS * 1000 and
+                          type(proof["receipt_to_attached_exit_ms"]) is int and proof["receipt_to_attached_exit_ms"] >= proof["ack_to_stopped_ms"], "RECOVERY_EXIT_TIMING")
+                report["worker_death"] = proof
+                action("stage_completed", "claim_park")
+                action("container_killed_and_verified", "executor")
+                backend.remove("container", names["executor"])
+                h.require(backend.inspect("container", names["executor"]) is None, "RECOVERY_WORKER_REMAINS")
+                proof["removed"] = True
+                specs.pop("executor")
+                action("container_removed_and_verified", names["executor"])
+            finally:
+                if parked is not None:
+                    parked.abort()
+            phase = "replace_worker"
+            active_executor = "executor_b"
+            create("executor_b")
+            h.require(report["container_admission"]["executor_b"]["container_id"] != report["worker_death"]["container_id"], "RECOVERY_WORKER_REUSE")
+            claimed = receipt["result"]
+            phase = "observe_claim"
+            observation = stage("observe_claim", case.stage_roles(selected, "observe_claim"), {"resume": resumed, "claim": claimed})
+            previous = {"resume": resumed, "claim": claimed, "observation": observation}
+            waiting = {"observations": []}
+            report["recovery_wait"] = waiting
+            phase = "lease_wait"
+            last_clock = observation["observed_times"][-1]
+            for _ in range(rs.MAX_CLOCK_OBSERVATIONS):
+                clock = stage("lease_clock", case.stage_roles(selected, "lease_clock"), previous)
+                h.require(clock["now_ms"] >= last_clock, "RECOVERY_CLOCK_ORDER")
+                waiting["observations"].append(clock)
+                last_clock = clock["now_ms"]
+                if last_clock >= claimed["lease_expires_at_ms"]:
+                    break
+                remaining()
+                backend.wait_interval(min(2, (claimed["lease_expires_at_ms"] - last_clock) / 1000))
+            recovery_worker.validate_wait(waiting, resumed, claimed, observation)
+            phase = "recover"
+            stage("recover", case.stage_roles(selected, "recover"), {**previous, "wait": waiting})
+        else:
+            phase = "measure"
+            stage("measure", case.measure_roles(selected), resumed)
         remaining()
         report["case_passed"] = True
     except (Exception, KeyboardInterrupt) as error:
@@ -627,13 +779,37 @@ def execute(plan, approval, backend, *, revision_check=verify_revision, journal=
             backend.approval_expires_at_ms = None  # Expiry never disables cleanup.
             if redis_started:
                 try:
-                    report["worker_quiescence"] = backend.quiesce(names["executor"], fixture_id)
-                    proof = report["worker_quiescence"]
-                    h.require(type(proof) is dict and proof.get("container") == names["executor"] and
-                              proof.get("stopped") is True and type(proof.get("pid")) is int and
-                               proof["pid"] == 0 and proof.get("removed") is True, "WORKER_NOT_QUIESCED")
+                    if selected == rs.CASE:
+                        proofs = []
+                        for role in ("executor", "executor_b"):
+                            name = names[role]
+                            if ("container", name) not in resources:
+                                continue
+                            current = backend.inspect("container", name)
+                            if current is None:
+                                death = report.get("worker_death", {}) if role == "executor" else {}
+                                if death.get("stopped") is True and death.get("pid") == 0 and death.get("removed") is True:
+                                    worker_proof = {key: death[key] for key in ("container", "stopped", "pid", "removed")}
+                                else:
+                                    # Safe absence permits remaining failure cleanup,
+                                    # but cannot attest the successful-case PID proof.
+                                    worker_proof = {"container": name, "absent": True, "stop_observation": "unavailable"}
+                            else:
+                                worker_proof = backend.quiesce(name, fixture_id)
+                            proofs.append(worker_proof)
+                        if report["case_passed"]:
+                            h.require(len(proofs) == 2 and all(row.get("stopped") is True and type(row.get("pid")) is int and
+                                      row["pid"] == 0 and row.get("removed") is True for row in proofs), "WORKER_NOT_QUIESCED")
+                        report["worker_quiescence"] = {"workers": proofs, "all_named_workers_absent": True}
+                    else:
+                        report["worker_quiescence"] = backend.quiesce(names["executor"], fixture_id)
+                        proof = report["worker_quiescence"]
+                        h.require(type(proof) is dict and proof.get("container") == names["executor"] and
+                                  proof.get("stopped") is True and type(proof.get("pid")) is int and
+                                   proof["pid"] == 0 and proof.get("removed") is True, "WORKER_NOT_QUIESCED")
                     action("worker_quiesced_and_removed", "executor", True)
                     specs.pop("executor", None)
+                    specs.pop("executor_b", None)
                     create("revocation", cleanup_mode=True)
                     result = stage("revoke", case.roles(selected), cleanup_mode=True)
                     verify_revocation(result.get("revocation"), case.roles(selected))
@@ -648,6 +824,19 @@ def execute(plan, approval, backend, *, revision_check=verify_revision, journal=
                 on_removed=lambda kind, name: action(kind + "_removed_and_verified", name, True))
             credentials.clear()
             material.clear()
+    if action_journal is not None:
+        try:
+            h.require(callable(action_verifier), "ACTION_VERIFIER_REQUIRED")
+            proof = action_verifier(fixture_id, report["actions"])
+            h.exact(proof, {"actions", "bytes", "sha256", "file_identity_sha256"})
+            expected = b"".join(h.canonical(row) for row in report["actions"])
+            h.require(type(proof["actions"]) is int and proof["actions"] == len(report["actions"]) and
+                      type(proof["bytes"]) is int and proof["bytes"] == len(expected) and
+                      proof["sha256"] == h.digest(expected) and h.nonzero(proof["file_identity_sha256"]), "ACTION_JOURNAL_MISMATCH")
+            report["journal_integrity"] = proof
+        except (Exception, KeyboardInterrupt) as error:
+            report["journal_failure"] = failure_details(error)
+            report["journal_integrity"] = "not_proven"
     complete = (report["case_passed"] and report["revocation"] == "verified" and
                 all(row["removed"] and "journal_failure" not in row for row in report["cleanup"]) and
                 "journal_failure" not in report)
@@ -675,10 +864,13 @@ def write_report(directory, report, *, intent=False):
     return path
 
 
-def write_action(directory, fixture_id, event):
-    """Durable, bounded controller-action receipts, separate from private state."""
+def _action_path(directory, fixture_id):
     h.require(directory.is_absolute() and directory.is_dir() and not directory.is_symlink(), "EVIDENCE_DIRECTORY")
     h.require(type(fixture_id) is str and re.fullmatch(r"[0-9a-f]{32}", fixture_id), "EVIDENCE_NAME")
+    return directory / (fixture_id + ".actions.jsonl")
+
+
+def _validate_action(event):
     h.exact(event, {"sequence", "action", "subject", "at_ms"})
     h.require(type(event["sequence"]) is int and 0 <= event["sequence"] < 128 and
               type(event["at_ms"]) is int and 0 < event["at_ms"] <= h.MAX_EXACT and
@@ -686,24 +878,94 @@ def write_action(directory, fixture_id, event):
                                   "volume_created_and_verified", "container_removed_and_verified",
                                   "container_killed_and_verified", "container_restarted", "volume_removed_and_verified",
                                   "worker_quiesced_and_removed", "credentials_revoked_and_verified"} and
-              type(event["subject"]) is str and re.fullmatch(r"[a-z0-9-]{1,96}", event["subject"]), "ACTION_FIELDS")
+              type(event["subject"]) is str and re.fullmatch(r"[a-z0-9_-]{1,96}", event["subject"]), "ACTION_FIELDS")
+
+
+def _read_action_stream(stream):
+    info = os.fstat(stream.fileno())
+    h.require(stat.S_ISREG(info.st_mode) and stat.S_IMODE(info.st_mode) == 0o600 and info.st_nlink == 1 and
+              0 <= info.st_size <= OUTPUT_LIMIT, "ACTION_FILE_BOUND")
+    stream.seek(0)
+    raw = stream.read(OUTPUT_LIMIT + 1)
+    after = os.fstat(stream.fileno())
+    h.require(len(raw) == info.st_size == after.st_size and after.st_nlink == 1, "ACTION_FILE_CHANGED")
+    rows = []
+    for line in raw.splitlines(keepends=True):
+        row = h.decode(line)
+        _validate_action(row)
+        h.require(line == h.canonical(row) and row["sequence"] == len(rows) and
+                  (not rows or row["at_ms"] >= rows[-1]["at_ms"]), "ACTION_PREFIX")
+        rows.append(row)
+    h.require(len(rows) <= 128, "ACTION_BOUND")
+    return raw, (info.st_dev, info.st_ino), rows
+
+
+def _action_file_identity(path, identity):
+    info = path.stat(follow_symlinks=False)
+    h.require(stat.S_ISREG(info.st_mode) and info.st_nlink == 1 and (info.st_dev, info.st_ino) == identity, "ACTION_FILE_REPLACED")
+
+
+def write_action(directory, fixture_id, event, *, expected_prefix=None, expected_identity=None):
+    """Append only to an intact canonical prefix; never repair a lost journal."""
+    path = _action_path(directory, fixture_id)
+    _validate_action(event)
     raw = h.canonical(event)
-    flags = os.O_WRONLY | os.O_APPEND | os.O_NOFOLLOW | os.O_NONBLOCK
+    flags = os.O_RDWR | os.O_APPEND | os.O_NOFOLLOW | os.O_NONBLOCK
     if event["sequence"] == 0:
         flags |= os.O_CREAT | os.O_EXCL
-    fd = os.open(directory / (fixture_id + ".actions.jsonl"), flags, 0o600)
-    with os.fdopen(fd, "wb") as stream:
-        info = os.fstat(stream.fileno())
-        h.require(stat.S_ISREG(info.st_mode) and info.st_size + len(raw) <= OUTPUT_LIMIT, "ACTION_FILE_BOUND")
-        stream.write(raw)
+    fd = os.open(path, flags, 0o600)
+    with os.fdopen(fd, "r+b", buffering=0) as stream:
+        prefix, identity, rows = _read_action_stream(stream)
+        h.require(len(rows) == event["sequence"] and (not rows or event["at_ms"] >= rows[-1]["at_ms"]), "ACTION_SEQUENCE")
+        h.require(expected_prefix is None or prefix == expected_prefix, "ACTION_PREFIX_CHANGED")
+        h.require(expected_identity is None or identity == expected_identity, "ACTION_FILE_REPLACED")
+        h.require(len(prefix) + len(raw) <= OUTPUT_LIMIT, "ACTION_FILE_BOUND")
+        written = 0
+        while written < len(raw):
+            count = stream.write(raw[written:])
+            h.require(type(count) is int and count > 0, "ACTION_WRITE")
+            written += count
         stream.flush()
         os.fsync(stream.fileno())
+        observed, after_identity, observed_rows = _read_action_stream(stream)
+        h.require(after_identity == identity and observed == prefix + raw and len(observed_rows) == event["sequence"] + 1, "ACTION_APPEND_MISMATCH")
+        _action_file_identity(path, identity)
     if event["sequence"] == 0:
         directory_fd = os.open(directory, os.O_RDONLY | os.O_DIRECTORY)
         try:
             os.fsync(directory_fd)
         finally:
             os.close(directory_fd)
+    return identity
+
+
+class ActionJournal:
+    """One-case journal with memory-bound prefix and retained-file reconciliation."""
+    def __init__(self, directory):
+        h.require(directory.is_absolute() and directory.is_dir() and not directory.is_symlink(), "EVIDENCE_DIRECTORY")
+        self.directory, self.fixture_id, self.identity = directory, None, None
+        self.raw = b""
+        self.events = []
+
+    def __call__(self, fixture_id, event):
+        h.require(self.fixture_id is None or self.fixture_id == fixture_id, "ACTION_FIXTURE")
+        h.require(event["sequence"] == len(self.events), "ACTION_SEQUENCE")
+        identity = write_action(self.directory, fixture_id, event, expected_prefix=self.raw, expected_identity=self.identity)
+        self.fixture_id, self.identity = fixture_id, identity
+        self.raw += h.canonical(event)
+        self.events.append(h.decode(h.canonical(event)))
+
+    def verify(self, fixture_id, expected):
+        h.require(self.fixture_id == fixture_id and self.identity is not None and type(expected) is list and
+                  h.canonical(expected) == h.canonical(self.events), "ACTION_MEMORY_MISMATCH")
+        path = _action_path(self.directory, fixture_id)
+        fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+        with os.fdopen(fd, "rb", buffering=0) as stream:
+            raw, identity, rows = _read_action_stream(stream)
+        h.require(identity == self.identity and raw == self.raw and rows == self.events, "ACTION_FINAL_MISMATCH")
+        _action_file_identity(path, identity)
+        return {"actions": len(rows), "bytes": len(raw), "sha256": h.digest(raw),
+                "file_identity_sha256": h.digest(h.canonical({"device": identity[0], "inode": identity[1]}))}
 
 
 def main():
@@ -728,9 +990,15 @@ def main():
             raise KeyboardInterrupt()
         old = signal.signal(signal.SIGTERM, interrupted)
         try:
+            actions = ActionJournal(args.evidence_dir)
             report = execute(h.decode(h.read_artifact(args.plan)), h.decode(approval_bytes), Docker(),
-                              journal=lambda value: write_report(args.evidence_dir, value, intent=True),
-                              action_journal=lambda fixture, event: write_action(args.evidence_dir, fixture, event))
+                               journal=lambda value: write_report(args.evidence_dir, value, intent=True),
+                               action_journal=actions)
+            if report["case_evidence_valid"]:
+                try:
+                    h.require(actions.verify(report["fixture_id"], report["actions"]) == report["journal_integrity"], "ACTION_EXPORT_MISMATCH")
+                except (Exception, KeyboardInterrupt) as error:
+                    report.update(verdict="FAIL", case_evidence_valid=False, journal_integrity="not_proven", journal_failure=failure_details(error))
             path = write_report(args.evidence_dir, report)
         finally:
             signal.signal(signal.SIGTERM, old)

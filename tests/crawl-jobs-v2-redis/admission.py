@@ -8,7 +8,25 @@ import harness as h
 
 ENTRY = "/app/tests/crawl-jobs-v2-redis/executor.py"
 BASE_ENV = {"PATH", "LANG", "GPG_KEY", "PYTHON_VERSION", "PYTHON_SHA256", "GOSU_VERSION",
-            "REDIS_VERSION", "REDIS_DOWNLOAD_URL", "REDIS_DOWNLOAD_SHA"}
+             "REDIS_VERSION", "REDIS_DOWNLOAD_URL", "REDIS_DOWNLOAD_SHA"}
+FALLBACK_INTERFACES = frozenset({"tunl0", "gre0", "gretap0", "erspan0", "ip_vti0", "ip6_vti0", "sit0", "ip6tnl0", "ip6gre0"})
+
+
+def validate_isolation_receipt(value, *, init=False, processes=2):
+    """Validate the complete public observation envelope before retention."""
+    h.exact(value, {"interfaces", "inactive_fallbacks", "external_routes", "effective_capabilities", "uid",
+                    "process_count", "process_inventory_sha256"})
+    interfaces, inactive = value["interfaces"], value["inactive_fallbacks"]
+    h.require(type(interfaces) is list and 1 <= len(interfaces) <= 10 and all(type(name) is str for name in interfaces) and
+              "lo" in interfaces and set(interfaces) <= FALLBACK_INTERFACES | {"lo"} and interfaces == sorted(set(interfaces)), "ISOLATION_INTERFACES")
+    h.require(type(inactive) is list and all(type(name) is str for name in inactive) and
+              inactive == sorted(set(interfaces) - {"lo"}), "ISOLATION_FALLBACKS")
+    h.require(type(value["uid"]) is int and value["uid"] == (0 if init else 65534) and
+              type(value["effective_capabilities"]) is str and value["effective_capabilities"] == format(1 if init else 0, "016x"), "ISOLATION_AUTHORITY")
+    h.require(type(value["external_routes"]) is int and value["external_routes"] == 0 and
+              type(value["process_count"]) is int and value["process_count"] == processes and
+              type(value["process_inventory_sha256"]) is str and h.nonzero(value["process_inventory_sha256"]), "ISOLATION_PROCESS")
+    return value
 
 
 def environment_digest(values):
@@ -23,7 +41,7 @@ def environment_digest(values):
 
 
 def command_for(role):
-    h.require(role in ("init", "executor", "redis", "revocation"), "CONTAINER_ROLE")
+    h.require(role in ("init", "executor", "executor_b", "redis", "revocation"), "CONTAINER_ROLE")
     return (["redis-server"], ["/run/cj2/redis.conf"]) if role == "redis" else (["python3"], ["-B", ENTRY, "hold"])
 
 
@@ -52,7 +70,7 @@ def process_inventory():
         expected = ["python3", "-I", "-B", "-", *sys.argv[1:]]
     else:
         h.require(sys.argv[0] == ENTRY and len(sys.argv) == 3 and
-                  sys.argv[1] in ("init", "ready", "probe", "resume", "measure", "revoke") and
+                   sys.argv[1] in ("init", "ready", "probe", "resume", "measure", "revoke", "claim_park", "observe_claim", "lease_clock", "recover") and
                   re.fullmatch(r"[1-9][0-9]{0,4}", sys.argv[2]) and int(sys.argv[2]) <= 30000, "PROCESS_INVENTORY")
         expected = ["python3", "-B", *sys.argv]
     rows = []

@@ -2,7 +2,7 @@
 
 **Original review date:** 2026-09-01
 
-**Last updated:** 2026-09-25 (UTC; M4-P3 bootstrap readiness accepted; full M4 matrix and recovery lifecycle remain open)
+**Last updated:** 2026-09-27 (UTC; corrected recovery lifecycle and image preparation pass; new publication/CI and execution decisions next)
 
 **Reviewed baseline:** `main` / `44d8b09a364a1f60032e1f4faccf160813f4dd04`
 
@@ -110,7 +110,7 @@ retained Mongo records still incorrectly say `enabled: true`.
 |---|---|---|
 | F1 seed reconciliation | Not started | Retained evidence remains 70 enabled records; execute only during the matched freeze/backup/reset sequence |
 | F2 disposable Redis reset | Not started | Retained V1 state remains historical post-test evidence and must not be reused or selectively repaired |
-| F3 durable Crawl Jobs V2 | M4-P3 bootstrap readiness accepted on `963b67b` after fourteen real package cases, admission reconciliation and independent GO reviews; application V2 remains dormant | Full 104/43/52 M4 inventory recorded; recovery oracle has local Python/Go-race checks and scoped GO, but live claimant-kill/expiry integration is pending; internal-crash observation and unrestartable-AOF teardown need design resolution; M4-P4/P5 remain open in [`crawl-jobs-v2-plan.md`](crawl-jobs-v2-plan.md) |
+| F3 durable Crawl Jobs V2 | M4-P3 bootstrap readiness accepted; PR #14's readiness/offline checkpoint merged; application V2 remains dormant | Recovery lifecycle implemented, four blocking review issues closed, 128 harness/21 script checks and 52 canonical recovery invocations under race pass; corrected independent GO and new arm64 image/preparation PASS; new publication/CI and exact execution decisions next; M4-P4/P5 remain open in [`crawl-jobs-v2-plan.md`](crawl-jobs-v2-plan.md) |
 | F4 exact crawl scope | Not started | No crawl-policy V2 schema or approved exact-URL policy is present |
 | F5 backlink persistence | Code acceptance passed and merged | PR #9 passed protected checks and merged as `d914a93`; no retained datastore reconciliation or V2 consumer activation is implied |
 | F6 JavaScript-shell indexing | Not started | No static-extraction policy schema or approved metadata-fallback configuration is present |

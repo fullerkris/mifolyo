@@ -24,14 +24,12 @@ func TestM4RecoveryOracleOffline(t *testing.T) {
 	ctx, cancel := context.WithTimeout(t.Context(), 180*time.Second)
 	defer cancel()
 	path := filepath.Join(fixtureRepositoryRoot(t), "tests/crawl-jobs-v2-redis/test_recovery_oracle.py")
-	raw, err := exec.CommandContext(ctx, "python3", "-B", path, "--go-vectors").Output()
-	if err != nil || len(raw) > 2*1024*1024 {
-		t.Fatal("offline recovery vector generation failed or exceeded bound")
-	}
-	var packet struct {
+	type recoveryPacket struct {
 		Purpose    string `json:"purpose"`
+		Profile    string `json:"profile"`
 		Authorized bool   `json:"execution_authorized"`
 		Vectors    []struct {
+			Scenario   string              `json:"scenario"`
 			Fixture    m4ClaimFixture      `json:"fixture"`
 			Times      []uint64            `json:"times"`
 			Operations []OperationName     `json:"operations"`
@@ -48,8 +46,17 @@ func TestM4RecoveryOracleOffline(t *testing.T) {
 			} `json:"wires"`
 		} `json:"vectors"`
 	}
-	if json.Unmarshal(raw, &packet) != nil || packet.Purpose != "offline_public_recovery_vectors" || packet.Authorized || len(packet.Vectors) != 2 {
-		t.Fatal("invalid offline recovery packet")
+	var combined recoveryPacket
+	for _, profile := range []string{"basis", "recovery"} {
+		raw, err := exec.CommandContext(ctx, "python3", "-B", path, "--go-vectors", profile).Output()
+		if err != nil || len(raw) > 2*1024*1024 {
+			t.Fatal("offline recovery vector generation failed or exceeded bound")
+		}
+		var packet recoveryPacket
+		if json.Unmarshal(raw, &packet) != nil || packet.Purpose != "offline_public_recovery_vectors" || packet.Profile != profile || packet.Authorized || len(packet.Vectors) != 2 {
+			t.Fatal("invalid offline recovery packet")
+		}
+		combined.Vectors = append(combined.Vectors, packet.Vectors...)
 	}
 	ops := []OperationName{OperationTryClaim, OperationRecoverExpired, OperationRecoverExpired, OperationRecoverExpired,
 		OperationTryClaim, OperationTryClaim, OperationTryClaim, OperationReleaseBeforeIO, OperationRenewLease,
@@ -59,7 +66,7 @@ func TestM4RecoveryOracleOffline(t *testing.T) {
 		t.Fatal(err)
 	}
 	contract, _ := ContractSHA256()
-	for vectorIndex, vector := range packet.Vectors {
+	for vectorIndex, vector := range combined.Vectors {
 		t.Run(strconv.Itoa(vectorIndex), func(t *testing.T) {
 			f := vector.Fixture
 			if f.Case != "ledger-claim-release-v1" || f.Authorized || f.Measured != "not_measured" ||
@@ -67,7 +74,8 @@ func TestM4RecoveryOracleOffline(t *testing.T) {
 				!reflect.DeepEqual(vector.Operations, ops) || len(f.Initial) != 57 || len(f.Inventory) != 58 {
 				t.Fatal("unexpected recovery vector scope")
 			}
-			if vector.Times[1] != vector.Times[0]+59999 || vector.Times[2] != vector.Times[0]+60000+uint64(vectorIndex) {
+			if vector.Scenario != []string{"ledger-claim-release", "ledger-claim-release", "ledger-worker-death-pre-io", "ledger-worker-death-pre-io"}[vectorIndex] ||
+				vector.Times[1] != vector.Times[0]+59999 || vector.Times[2] != vector.Times[0]+60000+uint64(vectorIndex%2) {
 				t.Fatal("missing exact/beyond-expiry boundary control")
 			}
 			runID := RunID(f.Inputs.FixtureID)

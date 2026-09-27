@@ -2,9 +2,9 @@
 
 **Finding:** F3 - durable crawl-job leases and recovery
 
-**Last updated:** 2026-09-25 (UTC; scoped M4-P3 readiness accepted; full M4 inventory and reviewed offline recovery foundation recorded)
+**Last updated:** 2026-09-27 (UTC; corrected recovery lifecycle and image preparation pass; new publication/CI and exact execution decisions next)
 
-**Working branch:** `feature/crawl-jobs-v2-m4-readiness`
+**Working branch:** `feature/crawl-jobs-v2-worker-recovery`
 
 **Initial checkpoint:** `e4372a66201b8767bcca4d7476c30c5b7999922c`
 
@@ -15,8 +15,9 @@ All 43 canonical operations and the sealed, zero-argument
 bounded real-Redis `ledger-smoke-v1` and `ledger-claim-release-v1` cases pass;
 full M4 acceptance is open.
 
-**Current next work:** M4-P4 recovery lifecycle implementation and resolution of
-the full-matrix execution-design gates. **M4-P3 bootstrap readiness is accepted**
+**Current next gate:** publish the corrected recovery lifecycle, verify protected
+exact-revision CI, then obtain fresh case-specific approval and a separate
+execution decision. **M4-P3 bootstrap readiness is accepted**
 within frozen checkpoint `963b67b`, following independent correctness/security GO
 on the fourteen real package cases and reconciled H/I evidence. All prior
 approvals are consumed and no negative package case remains unrun.
@@ -24,10 +25,14 @@ approvals are consumed and no negative package case remains unrun.
 The [full inventory](../tests/crawl-jobs-v2-redis/planning/full-m4-acceptance-v1.json)
 maps 104 requirements, 43 operations and 52 allowed gate variants into twelve
 work packages. Seven variants have scoped real observations; no full requirement
-or variant is closed. The first pre-I/O recovery oracle now has six passing Python
-tests, 26 Go/canonical-Lua invocations under race, vet/pin checks and corrected
-independent correctness GO. It is **offline only**: claimant acknowledgment/park,
-actual SIGKILL, replacement worker and real-time waiting are not implemented.
+or variant is closed. The first pre-I/O worker-death recovery lifecycle is now
+implemented. Initial independent NO-GO findings were corrected and re-reviewed
+**correctness/security GO for image/CI preparation** on 90 files. The corrected
+128-test harness, 21 script tests, 52 canonical recovery invocations under Go race,
+vet and strict source-pin checks pass. The new arm64 image and 66-file/16-recipe
+case-specific preparation pass. **No real recovery case has run yet.** See the
+[recovery review](crawl-jobs-v2-m4-recovery-review-2026-09-27.md) and
+[preparation](crawl-jobs-v2-m4-recovery-preparation-2026-09-27.md).
 
 Internal commit-boundary observation and unreachable-Redis/AOF-failure teardown
 need reviewed design decisions before full acceptance. Longer expiry/benchmark
@@ -52,9 +57,9 @@ Step 3 returned independent
 reviewed file hashes unchanged. See the
 [review report](crawl-jobs-v2-m4-bootstrap-acl-review-2026-09-23.md).
 Step 2's 95 harness/21 script tests, Go/Lua race, vet and digest checks remain
-supporting evidence. The registry supports 15 cases and the image scope is 62
-files; the specified Redis cases now have target evidence, with any further
-execution still requiring fresh authority.
+supporting evidence for the prior scope. The current registry supports 16 cases
+and the new image scope is 66 files; prior executed cases retain their original
+source/image bindings and the new recovery case still needs execution authority.
 Narrow M4-P3 readiness is now accepted; broader section-17.7 and M4-P4/P5 obligations remain open.
 
 **Earlier claim/release Step 6:** the owner separately approved and requested the single
@@ -236,11 +241,11 @@ retains it as a primitive case; guard cases now explicitly bind the complete
 | Ledger validation | Baseline/delivery/fence history, post-abort freeze, exact retained witnesses, strict worker expiry, completed replay, prior retry/backpressure/reason fixes and zero-sentinel checks pass local normal conformance and reviewed counterexample replays |
 | Script sources | All 43 canonical operations are implemented: unchanged BOOT passthrough plus 42 exact generated sources; both strict source/bundle generator checks pass |
 | Authoritative bundle | Complete zero-argument `AuthoritativeScriptBindingSet()` validates embedded sources against fixed generated pins and returns fresh private sealed bindings; no caller-supplied sources, hashes or paths |
-| Local and protected acceptance | Frozen execution revision `963b67b` passed fourteen required checks and its 475-root CI inventory; all 14 package Redis cases have scoped PASS evidence; new five-file offline recovery work has local checks/review and is not yet covered by protected CI |
+| Local and protected acceptance | PR #14 head `c09ff84` passed all fourteen checks and its 476-root race inventory; current corrected recovery lifecycle has 128 harness/21 script tests, 52 canonical invocations under race and independent GO, but new protected CI remains pending |
 | Runtime behavior | V2 remains dormant in application services; separately authorized disposable Redis smoke, claim/release and all 13 negative cases passed, with full owned-resource cleanup |
-| M4 bounded execution | All package Redis cases PASS with consumed approvals; narrow M4-P3 readiness independently accepted after H/I reconciliation; no new Redis case run, and actual recovery lifecycle/full M4-P4 matrix remain pending |
-| Review status | Original frozen 81-file source review retained; independent correctness/security GO accepts scoped P3 reconciliation, and corrected five-file offline recovery foundation has correctness GO; no full M4/release GO |
-| Git state | Fresh `feature/crawl-jobs-v2-m4-readiness` branch starts from PR #13 merge `2b2dd0b`, tree-equivalent to execution checkpoint `963b67b`; owner-approved 175-file publication records the verified code/evidence/design scope; protected CI is pending at this checkpoint |
+| M4 bounded execution | Fourteen bootstrap/ACL cases PASS with consumed approvals; recovery workflow and image preparation now implemented/verified but real execution not yet authorized; full M4-P4/P5 remain open |
+| Review status | Prior reviews retained; recovery initial NO-GOs and four blockers corrected, with scoped correctness/security GO on inventory `b5fe64ee…`; no target recovery/full-M4 acceptance inferred |
+| Git state | Fresh `feature/crawl-jobs-v2-worker-recovery` starts from PR #14 merge `7617b86`, tree-identical to `c09ff84`; all 396 pending-file fingerprints survived the switch, including 372 unrelated files; recovery publication is pending |
 
 ### Current source and fixture identities (regenerated 2026-09-21)
 
@@ -326,7 +331,7 @@ The final matrix and final independent reviews used pinned Go 1.25.13 and passed
 | M1: Foundation release gate | Complete and merged | Approved amendment, independent GO reviews, and passing protected PR #9 checks before merge |
 | M2: Reviewed foundation checkpoint | Complete | Scoped 66-file checkpoint secret-scanned, tested from the index export, committed, pushed, and remote identity verified |
 | M3: Authoritative Lua transitions | Complete locally: 43/43 sources, sealed factory, source conformance and full-module race verification; checkpoint `81028ca` pushed, still dormant | Complete source/pin and in-memory Go/Python/Lua checks plus the final current-tree race result, without runtime activation |
-| M4: Real Redis 7 acceptance | M4-P3 bootstrap readiness accepted on the frozen checkpoint; full M4-P4 matrix/M4-P5 gate remain open; next recovery oracle verified offline, live lifecycle pending | Idempotency, fencing, crash, AOF, memory, and latency evidence passes on disposable infrastructure |
+| M4: Real Redis 7 acceptance | M4-P3 bootstrap readiness accepted; corrected recovery lifecycle/image preparation pass, new publication/CI/execution gates next; full M4-P4/P5 remain open | Idempotency, fencing, crash, AOF, memory, and latency evidence passes on disposable infrastructure |
 | M5: Runtime and consumer integration | Blocked by M4 and F4-F6 | Spider, feeder, consumers, Monitoring, Compose, and crawl-admin use only the accepted V2 protocol |
 | M6: Migration, runbooks, and rollback | Blocked by M5 | Stopped migration and rollback rehearsal pass; active docs contain tested V2 commands and no active V1 path |
 | M7: Immutable release gate | Blocked by M6 | Final digests, manifests, images, backups, CI, and authorization/report templates are reviewed |
@@ -2578,7 +2583,7 @@ predicate checks. Independent correctness/security reviewers found no blockers;
 the predicate helper's thin producer-recorded cleanup receipt remains explicitly
 limited. No new Redis acceptance execution occurred during this reconciliation.
 
-**First new implementation: offline recovery oracle.** The new
+**Historical first implementation: offline recovery oracle (September 25).** The new
 `recovery_oracle.py`, `test_recovery_oracle.py` and `m4_recovery_oracle_test.go`
 cover thirteen steps on the existing closed claim fixture: A claim; E−1 zero
 recovery; E/E+1 ready recovery and replay; B's new fence and replay; stale A
@@ -2596,14 +2601,68 @@ re-review of nested-plan type rejection and isolated timing-boundary tests.
 Verification SHA-256 `0b7a1a66d46de86221ebe2a63057bcd6a1963fb2284cf32d043d94ff8ab3055a`;
 review `165f1c2b28c48280b587302d7e130f38d4c01203510e7692347116772c680d4a`.
 
-**Live integration remains pending:** the actual claiming process must emit a
-validated acknowledgment and park alive; its actual container must be killed,
-waited and inspected, then replaced under a distinct identity. The 60-second
-lease wait belongs in bounded controller/short Redis-TIME observation stages,
-not a single 30-second stage. All owned workers must be accounted for in intent,
-failure handling, quiescence, revocation and cleanup. The existing 300/30/60-second
-bounds suffice for this first pre-I/O slice. New source/image/CI review and exact
-approval are required before a real run; the proposed case is not registered yet.
+At that checkpoint, the actual claimant/kill/replacement/time lifecycle was still
+pending and the proposed case was unregistered. The subsequent implementation
+and corrected review are recorded below; the existing 300/30/60-second bounds
+and original lease/expiry constants remain intact.
+
+### Recovery lifecycle and corrected review (2026-09-27)
+
+`ledger-worker-death-pre-io-v1` now has closed claim-and-park, post-death
+observation, short Redis-TIME and final recovery phases. It names five containers
+(two distinct sequential workers) and two volumes, retains six credentials, and
+adds only exact recovery-outcome-map HSET permission to the ledger. The claiming
+process stays parked under its hard timer until container termination; the
+replacement cannot start without the required death proof. The final sequence
+checks recovery/replay, new/stale fencing, renewal/release, 38 counters, exact
+reservation expiries and 46 authority denials.
+
+The initial 89-file review `c6a83393…` returned correctness/security NO-GO. Closed
+findings include an already-exited command masked by inherited pipes, journal
+prefix/final truncation, accepted post-handshake stderr and unvalidated isolation
+envelopes. Non-reaping waitid observation, persistent unresolved cleanup state,
+closed isolation schemas and prefix/identity-bound final journal reconciliation
+now reject the independent counterexamples. Timing explicitly means at most
+one second from host receipt-frame observation to container stop, followed by a
+separate five-second attached-command reconciliation—not one combined promise.
+
+Corrected inventory:
+`b5fe64eee5fded5bd3a946d7a58790617d67c95a0447138ba54a79c709aeb888`;
+90 files, 16 recipes, 66 image inputs and 18 offline scenarios. Both reviewers
+returned **GO for image/CI preparation only**. The full harness passed 128 tests
+with ResourceWarnings treated as errors (1,302,239 ms command wall time); 21 script
+tests passed (12,628 ms); two targeted Go roots under race passed (465,061 ms),
+including 52 canonical recovery invocations in two bounded profile-specific
+packets. Vet and strict complete Lua/bundle checks passed. Verification:
+`25b020b039ef9e96b28000e7f75ae6067262edaa497e1b1859e0cbba3696b6b5`;
+verdicts: `06110c785a327a8015a8b755226a65f6f04155c2d9dde8b42dfe74abb0ca0008`.
+
+The [dated review](crawl-jobs-v2-m4-recovery-review-2026-09-27.md) and
+[exact review artifacts](evidence/m4-recovery-review-2026-09-27/README.md) preserve
+both NO-GO and corrected scope. Fakes remain simulated; local child tests do not
+attest target Docker/Redis behavior. No canonical Lua or normative change occurred.
+
+### Recovery image preparation (2026-09-27)
+
+The network-disabled build used the pinned Python arm64 manifest. Harness
+`sha256:b164fb8610949e2a31393b8897c2a4bfe620f636f24c636caa20b590acad8da2`
+and Redis `sha256:24e81cffaba832bcd71068a6ff772a531076bafdbb1d684195766ae9b6511f5c`
+passed selected-case image preparation. All 90 reviewed bytes remained unchanged.
+Five stopped-role admissions and 66-file/all-16-recipe image checks passed;
+init/executor peaks were 49,262,592 / 49,389,568 bytes. Metadata fixture
+`a3d2a7d1ac7f54ac030e3282268c01a7` started no containers, and all seven exact
+metadata resources were independently found absent.
+
+Plan: `1e00625d41c9f4baa99936abd9a936b454b3e29f54c7ec181e95932d0041acd8`.
+Recipe: `ac0d4fb95391062e271c26d6c8bf3d70d3994470b3273fea6b78751bbe6da987`.
+Image report: `e6301a832e83ee414eaafb034aad208e105bf7d66264d14282d5d1825a695f39`.
+Independent postcheck: `ef313e8df650fd855a1ec4d44bb5b68e9e8dd9bce3e8048833d44ebaf00631df`.
+See [preparation](crawl-jobs-v2-m4-recovery-preparation-2026-09-27.md) and
+[exact artifacts](evidence/m4-recovery-image-prep-2026-09-27/README.md).
+
+New publication/protected CI and fresh exact approval/separate execution decision
+remain next. Old approvals are consumed and old CI covers its own checkpoint.
+No actual recovery case or tracing experiment has run, and full M4 remains open.
 
 ### Full-acceptance design gates
 
@@ -2693,10 +2752,20 @@ were preserved across the same-tree branch switch from `963b67b` to fetched main
 the checkpoint.
 
 Code review, corrected local checks and exact evidence bindings are retained.
-Publication is a review/CI checkpoint: the proposed normative amendment remains
-unapplied, the recovery case remains non-executable, and no new Redis/tracing
-execution or merge is authorized. The exact published identity and protected
-check outcomes belong to the resulting PR/CI record; they are not predicted here.
+At this review/CI publication checkpoint the proposed normative amendment was
+unapplied and the recovery case was non-executable. No new Redis/tracing execution
+or merge authority was granted by publication.
+
+The checkpoint was published as `c09ff845ba7d8acbe45e19d9e2727b800f1450f6` on
+[PR #14](https://github.com/fullerkris/mifolyo/pull/14). All fourteen protected
+checks passed. Downloaded eight-shard evidence accounted for 476 roots: 475 passed,
+with only the permitted optional `TestJobLuaNativeFactoryParity` skipped; the
+new recovery-oracle root passed. Tested merge `85bc1c9d1c0527182ca9cdd8f3ea06a6fafbc99b`
+matched tree `9b0defb8a6007c383e88c040cb6e697595cacea9`. Retained CI gate:
+`f4697e3f8e529c589cd094b6891e88e20e1eb350e8c7a259dfb3f793876abe49`.
+PR #14 subsequently merged at 11:48:01 UTC on September 27 as
+`7617b86e236d14d38ad54a394beca601d7d94fd5`, with that same tree. Its CI remains
+evidence for the published offline/readiness scope, not the later recovery lifecycle.
 
 ## M5: Runtime and consumer integration
 
@@ -2893,6 +2962,9 @@ Rendering remains disabled unless its separate activation requirements pass.
 | 2026-09-25 | Full M4 inventory and recovery-oracle foundation | All 104 requirements/43 operations/52 variants mapped; five design gates recorded; six Python tests, 26 canonical Go/Lua invocations under race, vet and pin checks pass for the corrected offline recovery oracle; independent GO, but no executable recovery lifecycle or new Redis run |
 | 2026-09-25 | Local observer and AOF-failure proposal | Owner selected local Docker and drafting; corrected proposal `f6568eb…` has independent intake GO, with normative change/privileges/execution still gated; stopped-container inspection identifies target ELF/debug symbols and verifies cleanup, but no tracing feasibility or full M4 acceptance |
 | 2026-09-25 | Reviewed M4 checkpoint publication authorized | Owner approved a fresh feature branch and scoped commit/push/draft PR for the 175 verified code/evidence/design files; same-tree switch from `963b67b` to `2b2dd0b` preserves all 547 pending files, with 372 unrelated files excluded; protected CI remains the publication gate |
+| 2026-09-27 | PR #14 protected checkpoint and merge | Published `c09ff84` passes all 14 required checks and 476-root race accounting (475 pass/one allowed skip); same-tree merge `7617b86` observed; new lifecycle work remains outside that CI scope |
+| 2026-09-27 | Recovery lifecycle corrected review | Registered pre-I/O worker-death workflow, distinct replacement, real-time polling and exact state/expiry/counter receipts implemented; initial correctness/security NO-GOs corrected and re-reviewed GO on 90-file inventory `b5fe64ee…`; 128 harness/21 script checks and 52 canonical invocations under race pass; no real run |
+| 2026-09-27 | Recovery arm64 image preparation | Network-disabled pinned-base build yields harness `b164fb8…`; selected recovery plan `1e00625…` / recipe `ac0d4fb…`, five stopped admissions, 66-file/16-recipe checks and seven-resource absence PASS; new publication/CI and fresh execution decisions next |
 
 ## Definition of done
 

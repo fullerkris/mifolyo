@@ -67,11 +67,13 @@ verified cleanup. All approvals are consumed; **zero negative Redis cases remain
 unrun** in the package. See the [results and coverage](docs/crawl-jobs-v2-m4-negative-remainder-2026-09-24.md).
 The September 25 admission reconciliation and independent reviews accept
 **M4-P3 bootstrap readiness** within the frozen checkpoint scope. The full
-104-requirement/43-operation/52-variant M4 inventory is recorded, and the next
-recovery oracle passes offline Python/Go/canonical-Lua checks and review. Its
-actual worker-death controller is not implemented yet; internal-crash observation
-and damaged-AOF teardown also require reviewed designs. See the
-[M4 readiness assessment](docs/crawl-jobs-v2-m4-readiness-2026-09-25.md).
+104-requirement/43-operation/52-variant M4 inventory is recorded. The first
+worker-death recovery lifecycle is now implemented, with 128 harness tests,
+52 canonical-Lua differential invocations under race, and independent corrected
+correctness/security GO. Its new arm64 image/preparation passes; new publication,
+CI and exact execution decisions are next. No actual recovery result is claimed.
+See the [recovery review](docs/crawl-jobs-v2-m4-recovery-review-2026-09-27.md) and
+[image preparation](docs/crawl-jobs-v2-m4-recovery-preparation-2026-09-27.md).
 Full M4 acceptance and application integration remain pending. The
 [Crawl Jobs V2 plan](docs/crawl-jobs-v2-plan.md) owns current progress. Historical
 V1 commands below do not authorize another crawl.

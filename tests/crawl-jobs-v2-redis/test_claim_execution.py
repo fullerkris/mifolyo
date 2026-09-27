@@ -176,7 +176,7 @@ class ClaimDocker(fixtures.FakeDocker):
             raise ctl.CommandError("stage failure")
         if self.fail == "interrupt" and stage == "measure":
             raise KeyboardInterrupt()
-        envelope = {"stage": stage, "status": "PASS", "recipe_sha256": case.recipe_sha256(cr.CASE), "isolation": {"interfaces": ["lo"]}}
+        envelope = {"stage": stage, "status": "PASS", "recipe_sha256": case.recipe_sha256(cr.CASE), "isolation": fixtures.fake_isolation(stage)}
         if stage == "init":
             binding = case.claim_fixture(req["plan"], req["fixture_id"], req["claim_material"])
             self.redis.rules = case.acl_rules(cr.CASE, binding, req["plan"])
@@ -385,7 +385,7 @@ class ClaimIntegrationTests(unittest.TestCase):
     def test_docker_stage_preserves_only_closed_failure_receipt(self):
         req = request(self.plan)
         result = {"scope": cr.CASE, "fixture_sha256": "a" * 64, "steps": [], "acl_negatives": [], "failed_assertion": "CR01"}
-        envelope = {"stage": "measure", "status": "FAIL", "recipe_sha256": case.recipe_sha256(cr.CASE), "isolation": {}, "result": result}
+        envelope = {"stage": "measure", "status": "FAIL", "recipe_sha256": case.recipe_sha256(cr.CASE), "isolation": fixtures.fake_isolation(), "result": result}
         with patch.object(ctl.shutil, "which", return_value="/fake/docker"):
             backend = ctl.Docker()
         with patch.object(ctl, "command", return_value=(1, h.canonical(envelope), b"secret-canary")), self.assertRaises(ctl.StageFailure) as failure:

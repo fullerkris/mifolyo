@@ -31,6 +31,12 @@ def approval(plan):
             "max_seconds": 120, "architecture": "arm64"}
 
 
+def fake_isolation(stage="measure"):
+    return {"interfaces": ["lo"], "inactive_fallbacks": [], "external_routes": 0,
+            "effective_capabilities": format(1 if stage == "init" else 0, "016x"), "uid": 0 if stage == "init" else 65534,
+            "process_count": 2, "process_inventory_sha256": h.digest(b"simulated process inventory; not target evidence")}
+
+
 def inspected_container(spec):
     return {"Image": spec["image"], "Config": {"User": spec["uid"], "Entrypoint": spec["entrypoint"], "Cmd": spec["command"], "Env": [], "Labels":
                 {ctl.LABEL: spec["fixture_id"], "io.mifolyo.cj2.case": spec.get("case", case.CASE)}},
@@ -119,7 +125,7 @@ class FakeDocker:
         if self.fail == "missing-proof" and stage == "revoke":
             result = {"revocation": {}}
         return {"stage": stage, "status": "PASS", "recipe_sha256": case.recipe_sha256(),
-                "isolation": {"interfaces": ["lo"]}, "result": result}
+                "isolation": fake_isolation(stage), "result": result}
 
     def remove(self, kind, name):
         self.events.append("remove:" + kind)

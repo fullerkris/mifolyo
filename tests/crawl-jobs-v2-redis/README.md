@@ -77,13 +77,26 @@ server was started for that reconciliation. See the
 [readiness assessment](../../docs/crawl-jobs-v2-m4-readiness-2026-09-25.md).
 Full M4-P4/P5 acceptance remains open.
 
-**Recovery oracle: offline foundation only.** `recovery_oracle.py` and
+**Historical recovery foundation (2026-09-25): offline only.** `recovery_oracle.py` and
 `test_recovery_oracle.py` project thirteen pre-I/O recovery/fencing steps over the
 existing claim fixture. Six Python tests and 26 independent Go/canonical-Lua
 invocations pass, including the race check; corrected code has scoped GO. The
-prospective case is not registered, and no claimant-park/SIGKILL/real-expiry
-controller is implemented. The executable image still has 62 inputs/15 recipes.
+prospective case was not registered and its process lifecycle was not implemented
+at that checkpoint; the executable image then had 62 inputs/15 recipes.
 The [full M4 inventory](planning/full-m4-acceptance-v1.json) is planning-only.
+
+**Recovery lifecycle (2026-09-27): implemented and corrected-review GO for
+preparation.** `ledger-worker-death-pre-io-v1` is the sixteenth closed case.
+It uses an acknowledged parked claimant, actual container termination proof,
+a distinct replacement, bounded Redis-TIME waiting and thirteen operation
+assertions with 38 counters/46 ACL denials. The image scope is now 66 files.
+The corrected 90-file review closes command-liveness, stderr, isolation-receipt
+and journal-integrity findings. All 128 harness/21 script tests, 52 canonical
+invocations under Go race, vet and source pins pass. New arm64 preparation passes;
+publication/CI and fresh exact execution decisions remain pending.
+See [review](../../docs/crawl-jobs-v2-m4-recovery-review-2026-09-27.md) and
+[preparation](../../docs/crawl-jobs-v2-m4-recovery-preparation-2026-09-27.md).
+No actual worker-death/expiry acceptance result is inferred from local fakes.
 
 **Final independent re-review (2026-09-21): GO for image preparation only.** The
 four original findings and a closed-peer follow-up are fixed and re-reviewed.
@@ -321,7 +334,7 @@ It has exactly these fields:
 
 | Field | Constraint |
 |---|---|
-| `version`, `case`, `approved` | Integer `1`, the exact selected name in the 15-case `runtime_case.CASES` registry, boolean `true` |
+| `version`, `case`, `approved` | Integer `1`, the exact selected name in the 16-case `runtime_case.CASES` registry, boolean `true` |
 | `operator` | Reviewed operator label, 1–64 ASCII letters/digits/underscore/dot/hyphen |
 | `commit` | Exact clean, tracked 40-hex Git revision |
 | `plan_sha256`, `recipe_sha256` | Exact canonical offline-plan and current recipe digests |
@@ -494,6 +507,9 @@ the measured scope and exact evidence identities.
 | `bounded_state.py` | Whole-DB 2/58/71-key typed reads, bounded fields/members and absolute expiry comparisons |
 | `negative_executor.py` | Setup/role retirement, negative calls, canonical positive-control dispatch, redacted prefix/measurement receipts and strict controller validation |
 | `admission.py` | Closed image environment and process/program predicates, storage emptiness and permitted same-case volume attachments |
+| `recovery_specs.py` / `recovery_oracle.py` | Closed recovery case/phases and independently checked complete state/expiry projections |
+| `recovery_executor.py` | Claim-and-park, post-death observation, Redis-time and recovery/fencing/ACL phases with strict receipts |
+| `parked_command.py` | Bounded attached-command handshake, non-reaping child liveness and separately bounded exit reconciliation |
 
 The original planning packet remains an immutable, non-executable specification.
 The executable registry separately contains smoke, claim/release and the 13
@@ -504,7 +520,7 @@ Administrative candidate/freeze/retirement/guard states come from canonical
 scripts under separate short-lived release/migration roles. Revocation remains
 worker-first, and the revoker is last even in seven/eight-role cases.
 
-The current execution-image allowlist is **62 files**. All 15 recipes are checked
+The current execution-image allowlist is **66 files**. All 16 recipes are checked
 by `image_check.py`, including their case-specific credential inventories.
 Controller admission binds the exact entrypoint/command and environment digest,
 rejects DNS/host/port/bind/privilege deviations and checks volume attachments
@@ -574,8 +590,9 @@ and scoped evidence review, with all approvals consumed and resources absent.
 All 14 package Redis cases pass; zero negatives remain unrun. September 25's
 independently reviewed reconciliation accepts narrow M4-P3 bootstrap readiness.
 The full M4 inventory assigns 104 requirements and 52 gate variants to twelve
-work packages. The first recovery oracle is verified offline; actual process-death
-and Redis-time lifecycle integration is still pending.
+work packages. The first recovery lifecycle is implemented and independently
+reviewed after corrections; its real execution remains gated on publication/CI
+and exact owner decisions. Existing accepted evidence keeps its original bindings.
 
 Broader job/lease/stage/commit behavior, administrative transitions, maximum shapes,
 crash-boundary coverage, benchmarks and final release/image admission remain

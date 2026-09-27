@@ -2,9 +2,9 @@
 
 **Finding:** F3 - durable crawl-job leases and recovery
 
-**Last updated:** 2026-09-24 (UTC; Step 6 accepts PC01 as scoped control; P01 artifact preparation next)
+**Last updated:** 2026-09-25 (UTC; scoped M4-P3 readiness accepted; full M4 inventory and reviewed offline recovery foundation recorded)
 
-**Working branch:** `docs/crawl-jobs-v2-pc01-evidence`
+**Working branch:** `feature/crawl-jobs-v2-m4-readiness`
 
 **Initial checkpoint:** `e4372a66201b8767bcca4d7476c30c5b7999922c`
 
@@ -15,15 +15,30 @@ All 43 canonical operations and the sealed, zero-argument
 bounded real-Redis `ledger-smoke-v1` and `ledger-claim-release-v1` cases pass;
 full M4 acceptance is open.
 
-**Current next gate:** case-specific artifact preparation for **P01 /
-`ledger-candidate-compat-present-v1`** in the
-[`bootstrap-acl-negatives-v1` package](#next-bounded-package-bootstrap-acl-negatives-v1):
-prepare/revalidate P01's selected plan, recipe, images and exact revision, then
-obtain its own approval and separate execution decision. Step 6 **accepts PC01
-as the refreshed scoped positive control**; its 12 case assertions and 17 partial
-requirement mappings are supported, and all six resources remain absent.
-Approval is consumed. All 13 negative cases remain unrun and M4-P3/full M4 stay
-open. See the [evidence review](crawl-jobs-v2-m4-pc01-evidence-review-2026-09-24.md).
+**Current next work:** M4-P4 recovery lifecycle implementation and resolution of
+the full-matrix execution-design gates. **M4-P3 bootstrap readiness is accepted**
+within frozen checkpoint `963b67b`, following independent correctness/security GO
+on the fourteen real package cases and reconciled H/I evidence. All prior
+approvals are consumed and no negative package case remains unrun.
+
+The [full inventory](../tests/crawl-jobs-v2-redis/planning/full-m4-acceptance-v1.json)
+maps 104 requirements, 43 operations and 52 allowed gate variants into twelve
+work packages. Seven variants have scoped real observations; no full requirement
+or variant is closed. The first pre-I/O recovery oracle now has six passing Python
+tests, 26 Go/canonical-Lua invocations under race, vet/pin checks and corrected
+independent correctness GO. It is **offline only**: claimant acknowledgment/park,
+actual SIGKILL, replacement worker and real-time waiting are not implemented.
+
+Internal commit-boundary observation and unreachable-Redis/AOF-failure teardown
+need reviewed design decisions before full acceptance. Longer expiry/benchmark
+profiles, maximum-shape transport/readers and final protected CI also remain.
+The owner selected local Docker observer design and requested the AOF-failure
+proposal. The corrected proposal has independent intake GO; its normative
+amendment is not approved/applied. Static inspection found target ELF debug/symbol
+sections, but no source/address map or tracing precision is proven.
+**M4-P4/P5 and full M4 remain open.** See the
+[September 25 readiness assessment](crawl-jobs-v2-m4-readiness-2026-09-25.md) and
+[review/check evidence](evidence/m4-readiness-2026-09-25/README.md).
 
 Step 4's checkpoint
 `634040131b36e1cbbc2e251364dacbec2ae5dd01` was published through
@@ -38,8 +53,9 @@ reviewed file hashes unchanged. See the
 [review report](crawl-jobs-v2-m4-bootstrap-acl-review-2026-09-23.md).
 Step 2's 95 harness/21 script tests, Go/Lua race, vet and digest checks remain
 supporting evidence. The registry supports 15 cases and the image scope is 62
-files; the new cases still require target validation and separate fresh execution authority.
-Close the remaining M4-P3 coverage before the wider worker-death/lease-expiry matrix.
+files; the specified Redis cases now have target evidence, with any further
+execution still requiring fresh authority.
+Narrow M4-P3 readiness is now accepted; broader section-17.7 and M4-P4/P5 obligations remain open.
 
 **Earlier claim/release Step 6:** the owner separately approved and requested the single
 `ledger-claim-release-v1` attempt at checkpoint
@@ -220,11 +236,11 @@ retains it as a primitive case; guard cases now explicitly bind the complete
 | Ledger validation | Baseline/delivery/fence history, post-abort freeze, exact retained witnesses, strict worker expiry, completed replay, prior retry/backpressure/reason fixes and zero-sentinel checks pass local normal conformance and reviewed counterexample replays |
 | Script sources | All 43 canonical operations are implemented: unchanged BOOT passthrough plus 42 exact generated sources; both strict source/bundle generator checks pass |
 | Authoritative bundle | Complete zero-argument `AuthoritativeScriptBindingSet()` validates embedded sources against fixed generated pins and returns fresh private sealed bindings; no caller-supplied sources, hashes or paths |
-| Local and protected acceptance | Bootstrap/ACL checkpoint `6340401` passed all fourteen required PR checks; Step 6 accepts its real PC01 result as scoped control, with 475 CI race roots accounted for; negative-case authority/evidence remain open |
-| Runtime behavior | V2 remains dormant in application services; separately authorized disposable Redis smoke and claim/release cases passed, with full owned-resource cleanup |
-| M4 bounded execution | Historical smoke/claim plus refreshed PC01 PASS with consumed approvals; PC01 evidence review accepted; all 13 negative lifecycles remain simulated/offline only; case-specific P01 preparation next |
-| Review status | Bootstrap/ACL Step 3 correctness/security GO on the frozen 81-file inventory; no actionable findings or source corrections; scoped to image/CI preparation |
-| Git state | Documentation/evidence branch `docs/crawl-jobs-v2-pc01-evidence` starts from PR #12 merge `320bce3`, tree-identical to executed `6340401`; this 15-file checkpoint records completed CI/PC01/review evidence; unrelated local work is outside its scope |
+| Local and protected acceptance | Frozen execution revision `963b67b` passed fourteen required checks and its 475-root CI inventory; all 14 package Redis cases have scoped PASS evidence; new five-file offline recovery work has local checks/review and is not yet covered by protected CI |
+| Runtime behavior | V2 remains dormant in application services; separately authorized disposable Redis smoke, claim/release and all 13 negative cases passed, with full owned-resource cleanup |
+| M4 bounded execution | All package Redis cases PASS with consumed approvals; narrow M4-P3 readiness independently accepted after H/I reconciliation; no new Redis case run, and actual recovery lifecycle/full M4-P4 matrix remain pending |
+| Review status | Original frozen 81-file source review retained; independent correctness/security GO accepts scoped P3 reconciliation, and corrected five-file offline recovery foundation has correctness GO; no full M4/release GO |
+| Git state | Fresh `feature/crawl-jobs-v2-m4-readiness` branch starts from PR #13 merge `2b2dd0b`, tree-equivalent to execution checkpoint `963b67b`; owner-approved 175-file publication records the verified code/evidence/design scope; protected CI is pending at this checkpoint |
 
 ### Current source and fixture identities (regenerated 2026-09-21)
 
@@ -310,7 +326,7 @@ The final matrix and final independent reviews used pinned Go 1.25.13 and passed
 | M1: Foundation release gate | Complete and merged | Approved amendment, independent GO reviews, and passing protected PR #9 checks before merge |
 | M2: Reviewed foundation checkpoint | Complete | Scoped 66-file checkpoint secret-scanned, tested from the index export, committed, pushed, and remote identity verified |
 | M3: Authoritative Lua transitions | Complete locally: 43/43 sources, sealed factory, source conformance and full-module race verification; checkpoint `81028ca` pushed, still dormant | Complete source/pin and in-memory Go/Python/Lua checks plus the final current-tree race result, without runtime activation |
-| M4: Real Redis 7 acceptance | First bounded attempt FAIL in init before Redis startup; cleanup verified; approval used; diagnosis and fresh approval required before another attempt | Idempotency, fencing, crash, AOF, memory, and latency evidence passes on disposable infrastructure |
+| M4: Real Redis 7 acceptance | M4-P3 bootstrap readiness accepted on the frozen checkpoint; full M4-P4 matrix/M4-P5 gate remain open; next recovery oracle verified offline, live lifecycle pending | Idempotency, fencing, crash, AOF, memory, and latency evidence passes on disposable infrastructure |
 | M5: Runtime and consumer integration | Blocked by M4 and F4-F6 | Spider, feeder, consumers, Monitoring, Compose, and crawl-admin use only the accepted V2 protocol |
 | M6: Migration, runbooks, and rollback | Blocked by M5 | Stopped migration and rollback rehearsal pass; active docs contain tested V2 commands and no active V1 path |
 | M7: Immutable release gate | Blocked by M6 | Final digests, manifests, images, backups, CI, and authorization/report templates are reviewed |
@@ -829,7 +845,7 @@ still prohibited.
 | M4-P0 | This decision package with D1-D4 and source anchors | Owner reviews and explicitly approves or revises the proposed amendments; no Redis starts |
 | M4-P1 | Amend normative sections 5/5.1, 10.1/10.1.1, 17.7, affected image/bootstrap wording and section 18 harness scope; align Go/Python fixtures and independent oracles | Current-document contract/bundle/fixture identities regenerated and checked; production zero rejection retained; scoped review and relevant normal/race tests pass |
 | M4-P2 | Implement a non-shipped harness under proposed `tests/crawl-jobs-v2-redis/`, fixture-envelope/setup schemas, offline validation, selector matrix, pinned image/config, and evidence/teardown reporting | Review deterministic setup, source-only loading, role separation, hard bounds, zero external networking, and failure cleanup; explicit approval names the first real-Redis slice |
-| M4-P3 | Fresh Redis bootstrap, ACL feasibility, BOOT, one minimal active transition/replay, and credential/volume teardown | Real results prove the harness can exercise canonical sources without relaxed validators or marker-write privileges |
+| M4-P3 | Fresh Redis bootstrap, ACL feasibility, BOOT, one minimal active transition/replay, and credential/volume teardown; **scoped readiness accepted 2026-09-25 on `963b67b`** | Real results prove the harness can exercise canonical sources without relaxed validators or marker-write privileges |
 | M4-P4 | Full ledger and administrative matrix, restart/AOF/crash injection, maximum-shape memory and timing | All required cases pass on the same reviewed artifacts, with measured evidence and no skipped required cases |
 | M4-P5 | Exact-revision protected PR checks and evidence review | M4 accepted; any M5 work still requires its stated F4-F6 dependencies |
 
@@ -1667,9 +1683,9 @@ created and owned by the attempt; it cannot claim revocation of nonexistent user
 | 1. Specify | **Complete:** this source-grounded specification and non-executable packet; current canonical sources/protocol remain unchanged |
 | 2. Implement and verify | **Complete locally:** closed constructors/oracles, 13 integrated negative cases, case-specific roles and source allowlists, admission predicates, full local harness/script checks and independent Go/Lua race verification |
 | 3. Independent review | **Complete:** separate correctness/security GO on all 81 unchanged file hashes; no actionable findings, so no correction or re-review delta |
-| 4. Image and publication/CI | **Complete:** arm64/amd64 PC01 image evidence, exact-index checks, scoped publication as `6340401` on draft PR #12 and all fourteen required CI contexts PASS |
-| 5. Exact execution decisions | **PC01 complete:** fresh exact approval, separate execution decision, one PASS attempt and consumed disposition; all 13 negative cases still need their own artifacts/authority |
-| 6. Evidence review | **Complete for PC01:** scoped control accepted on September 24, with 17 partial mappings and no full requirement/variant closure; all 13 negative cases remain unrun, so package/M4-P3 acceptance remains open |
+| 4. Image and publication/CI | **Complete for all selected Redis cases:** published source and fourteen protected checks pass; each negative has exact arm64 selected-case preparation on unchanged reviewed source/images and independently verified metadata cleanup |
+| 5. Exact execution decisions | **Complete for all 14 package Redis cases:** own exact approval and separate execution decision, one PASS attempt and consumed disposition; the last twelve were explicitly supervised sequentially with predecessor review/cleanup gating |
+| 6. Evidence review | **Complete for narrow M4-P3 readiness:** scoped real-case reviews and classified H/I reconciliation independently accepted September 25; no full section-17.7 requirement/variant closure or M4-P4/P5 acceptance inferred |
 
 Step 2 implemented pure constructors/oracles and admission predicates before
 runtime integration. The controller now recognizes the existing smoke/claim
@@ -1934,7 +1950,7 @@ loaded; ledger authority permissions remain narrow.
 
 The current reviewed P01 recipe is
 `7123ed770cb9c900319f412356652e7cb27eef6c3f2704818d3dee402fa4ee74`.
-Its case-specific plan/image-preparation outcome and approval are **pending**.
+At this review, its case-specific plan/image-preparation outcome and approval were **pending**.
 Use the explicit P01 selector, fresh preparation/evidence paths and subsequent
 new fixture resources; retain 300/30/60-second and memory bounds. Revalidate the
 chosen exact revision/CI and immutable artifacts before requesting fresh owner
@@ -1955,8 +1971,143 @@ remaining 372 local files are outside this checkpoint.
 The immutable JSON/JSONL exports retain their recorded hashes and private-original
 bindings. Publication records the already completed observations; it does not
 rerun PC01, alter its executed revision, or grant authority for P01. The next
-gate remains case-specific P01 artifact preparation and its later exact approval
-and separate execution decision.
+gate at publication was case-specific P01 artifact preparation and its later exact
+approval and separate execution decision. PR #13 subsequently passed all 14
+required checks and merged as `2b2dd0b240984e379f5464ce7066fb5a31c904f9` at
+16:57:46 UTC, with the same tree as its published head `963b67b` and tested merge.
+
+##### P01 selected artifact preparation (2026-09-24)
+
+**Preparation PASS; fresh exact approval and a separate execution decision next.**
+The selected execution revision is published `963b67b73e2cd67ff73f559fa9984813b9d5946a`.
+All 81 reviewed sources and 15 recipes remain unchanged; PC01's accepted control
+and five run exports were rechecked. All 14 current protected checks pass and
+downloaded eight-shard evidence accounts for 475 roots (474 pass, the sole allowed
+optional native-factory skip). The tested merge `70321f77e64ba3fbcd995bcb14668748439a24ca`
+and final PR #13 merge have the same tree as the selected head.
+
+Explicit `--case ledger-candidate-compat-present-v1` preparation produced plan
+`503f6ae40e0bd2ce7e833b90eb8c9d62b48d391972b508fb06b243ae0b33d79c` and unchanged
+recipe `7123ed770cb9c900319f412356652e7cb27eef6c3f2704818d3dee402fa4ee74` on arm64
+harness `51bc489…` / Redis `24e81cf…`. Four stopped-role admissions, Redis version,
+62-file/15-recipe Python image checks and isolation/memory predicates passed.
+Init/executor image-check peaks were 48,861,184 / 48,943,104 bytes. Metadata fixture
+`e1b6c7ed5b04d3f8ce02e16bba94587f` started no containers; all four exact containers
+and two volumes were independently found absent after cleanup.
+
+The [preparation report](crawl-jobs-v2-m4-p01-preparation-2026-09-24.md) and
+[exact artifacts](evidence/m4-p01-image-prep-2026-09-24/README.md) retain the
+P01-specific identities and independent postcheck. One negative stored-state
+attempt must produce two `CRAWL_V2_INVALID_STATE` results, zero state/accounting
+delta and 46 authority denials within the existing 300/30/60-second bounds.
+At preparation handoff, approval was unrecorded and no acceptance invocation had
+occurred. The subsequent separately authorized result follows.
+
+##### P01 single execution result (2026-09-24)
+
+**PASS; approval consumed; scoped evidence review next.** The owner selected
+**Approve exact case**, then separately **Execute approved case**. Approval
+`d8eba81cc15e148c302f150bb96e40181ad4cde526c3dacc3f5354c964a5edc5` bound the
+prepared `963b67b` commit, plan `503f6ae…`, recipe `7123ed7…`, immutable arm64
+images and 300/30/60-second bounds. It was recorded at 17:53:20.739 UTC with
+18:53:20.739 UTC expiry. Final live preflight passed before exclusive reservation
+at 18:04:28.167 UTC; the controller was invoked once.
+
+Fixture **`f3c66e07c31db6d3a141c083ba70c56d`** wrote its PASS report at
+**18:04:40.906 UTC**. Both otherwise valid CLAIMs returned
+`CRAWL_V2_INVALID_STATE`, with all 33 counters unchanged and zero deltas. All 46
+exact direct authority probes returned `NOPERM`; post-state hashes from both
+rejections and all probes match the setup/final state. The reviewed executor checked
+complete typed state and absolute expiry. Claims/fence/reservations remain zero,
+next ordinal is 1, total/open job counts are 1, and starts/deliveries/output
+commits/pending capacity remain zero.
+
+All four runtime admissions and five two-process stage-isolation receipts pass.
+Worker quiescence precedes fresh revocation of all six roles and destruction.
+The 28-action journal includes 11 cleanup actions; the independent postcheck at
+18:08:48.062438 UTC found all four exact containers and two volumes absent.
+Decision-to-report was 12,739 ms; resume-to-measure receipts spanned 3,106 ms,
+which are lifecycle observations, not Lua latency benchmarks.
+
+The [dated result](crawl-jobs-v2-m4-p01-run-2026-09-24.md) and
+[exact evidence/coverage ledger](evidence/m4-p01-run-2026-09-24/README.md) retain
+report SHA-256 `745ffa976a63b186f319c2f0d0ab2ff8df0b0e4c2b2044bd8e5b69da0fc710fe`
+and postcheck `ef021599e7f8efa33b220cdf205436f539ee6fcace88e6979f48a757d1b39e87`.
+Run/export secret scans found no leaks. Preparation scan matches were exactly
+two public canonical RETIRE source digests, independently resolved with zero
+unresolved findings. Original private approval/reservation/disposition remains
+mode 0600; consumed authority cannot be reused.
+
+P01 supplies observed partial evidence for `17.7/e763d134a36fb68c` and case-scoped
+E01–E05 observations. Its full evidence review remains the next gate, before P02
+artifact preparation and fresh decisions. **12 negatives remain unrun**, H/I
+retains its offline/simulated class, and no full requirement/operation variant
+is closed. M4-P3/full M4 and final independent release-measurement review remain
+open. Original planning packets and earlier evidence bytes are unchanged.
+
+##### Remaining twelve cases: review and execution (2026-09-24)
+
+**All twelve PASS; scoped case reviews accepted; zero negative Redis cases unrun.**
+The owner requested review and execution of the remaining cases. A new coordinator
+review accepted P01's scoped presence evidence, retaining its one partial link,
+consumed approval and original bytes. Review SHA-256:
+`3eff5a0a48cea36645289ca10976b0065f827a99ff9df674e5e1bb468c3561f5`.
+The 81-file source inventory, all 15 recipes, immutable arm64 images and all 14
+protected checks still match. Definitions, expected code/layer/actor sequences,
+profiles, source lists and role counts for P02/P03/S01–S05/W/B/A01–A03 were checked
+against the immutable package specification; no source correction was needed.
+
+All twelve explicit selected-case preparations passed. The exact manifest is
+`8e43dfb7475e7fa5b42b5fbbc79e69b0b14272cdeaa4950fee7a85a263ebaca3`; it binds each
+plan/recipe/preparation hash, role/source inventory, evidence path and unchanged
+case limits. All 48 metadata containers stayed stopped and all 72 metadata
+resources were independently found absent. The preparation scan's 24 matches
+were exactly unchanged public RETIRE source hashes; zero unresolved findings.
+
+The owner selected **Approve all 12 cases**, then separately **Execute all 12
+sequentially**. Each case received an individual one-use approval, with window
+18:50:06.241–20:50:06.241 UTC. Approval-set SHA-256:
+`851d86e76168fee51d6fd6ffe149d1e50b0d01182f5df5c136de18f70ceebbdb`.
+The separate decision is
+`1cf9b1b03f8cf5c110ceec52277ddb8d406f4e2e547d721d462f3aa2bb8970e1`.
+Each controller invocation was explicit and singular; every predecessor's
+postchecked PASS, consumed disposition and cleanup had to pass before continuing.
+No automatic batch dispatcher, retry, reused credentials or source change occurred.
+
+| Cases | Observed result |
+|---|---|
+| P02 / P03 | Both PASS: correctly typed contract/freeze presence rejected twice with `CRAWL_V2_INVALID_STATE`; unchanged state/accounting and 46 ACL denials per case |
+| S01–S05 | All PASS: two exact designated stored-state errors and 46 ACL denials per case, with complete unchanged state/accounting |
+| W | PASS: 24 wire/gate rejections, then same-instance `CLAIMED` / `RELEASED_READY`, plus 46 ACL denials |
+| B | PASS: 18 BOOT rejections, then actual-evidence `OK` / `EXISTS_IDENTICAL`; complete two-key state additionally reconstructed in postcheck |
+| A01 | PASS: two Lua mutation-preflight denials then same-wire `CANDIDATE_INSTALLED`; seven-role teardown |
+| A02 | PASS: canonical INSTALL prefix, two outer-key `NOPERM` results, same-wire `LEGACY_RETIRED`; eight-role teardown |
+| A03 | PASS: canonical INSTALL/RETIRE prefix, two outer-key `NOPERM` results, same-wire fresh `CONTRACTS_PROMOTED`; eight-role teardown |
+
+Totals: **62 measured negative calls, seven measured positive controls, three
+admin prefix calls, 368 direct ACL denials, 77 roles revoked, 48 containers and
+24 volumes independently absent, 336 controller actions / 132 cleanup actions**.
+First decision was 18:57:18.383 UTC; last report was 19:02:38.794 UTC. Individual
+decision-to-report intervals were 6,737–16,852 ms, not per-Lua benchmarks.
+All twelve approvals are consumed/non-reusable. Each raw run scan was clean.
+
+The [dated results](crawl-jobs-v2-m4-negative-remainder-2026-09-24.md) and
+[exact evidence index](evidence/m4-negative-remainder-2026-09-24/README.md)
+retain six exports per case, all hashes, decisions and scoped reviews.
+Results SHA-256: `0d175db16e1e6fe0729a1c20dbe1f6f1c81158b9e877b98f732e8e809c707b3d`;
+coverage: `4cf0ff3823dab5aa164f5401cd16f645bb8a849f3df0e27b622f62c6aa5b99ca`.
+The ledger joins all **14 real-Redis package cases / 35 case assertion IDs**,
+preserves seven partial links and the complete 104/52 inventory, and records
+zero unrun negative cases. No full requirement or operation variant is closed.
+
+**Next:** reconcile package-level evidence/coverage, including the 82 H/I
+offline/admission variants and remaining M4-P3 obligations, before wider
+worker-death/lease-expiry work. Successful-case target admission does not relabel
+H/I as real adverse-target observations. Full private worker state remains
+bound to reviewed runtime oracles; controller journals are not internal Lua
+crash-boundary evidence. Full/migration-shaped administration, complete AOF/restore,
+maximum shapes, ≥1,000-sample latency and final release provenance remain open.
+`m4_p3_accepted=false`, `m4_accepted=false`; no further execution is authorized.
 
 **Historical pre-amendment verification:** Read-only Lua assembly with both `--check` and
 `--require-complete`, bundle pin (`--check`), and independent digest-vector
@@ -2391,7 +2542,12 @@ not real-Redis timing, allocator, durability or operational acceptance.
 
 ## M4: Disposable Redis 7 acceptance
 
-**First bounded real-Redis smoke case: PASS.** The original pre-start init FAIL
+**Current phase: M4-P3 readiness accepted; M4-P4/P5 open.** The
+[September 25 assessment](crawl-jobs-v2-m4-readiness-2026-09-25.md) binds the scoped
+independent GO decisions, admission reconciliation and new offline recovery work.
+The required full matrix below remains open.
+
+**Historical first bounded real-Redis smoke case: PASS.** The original pre-start init FAIL
 remains historical evidence. After the reviewed capability-spelling correction,
 image/CI validation and separate owner execution request, the newly approved
 case passed and all resources were removed. The
@@ -2402,6 +2558,91 @@ records scope and remaining gates; it is not Redis acceptance evidence.
 
 Use newly created, isolated, non-production infrastructure with no public route,
 production data, production credential, or reusable volume.
+
+### Full-matrix inventory and next implementation
+
+The immutable
+[`full-m4-acceptance-v1.json`](../tests/crawl-jobs-v2-redis/planning/full-m4-acceptance-v1.json)
+has SHA-256 `d69db20eb96e3ae47163722d0c31cacdeed674b8004d111e4eec1f4a918c2ada`.
+It retains all 104 normative entries verbatim, all 43 operations/52 gate variants,
+planned test IDs, existing independent-oracle anchors, twelve work packages and
+five design/gate decisions. It is not an executable plan or mutable run ledger.
+Later Spider/consumer/Monitoring, coordinated migration/restore and final-image
+provenance obligations retain their M5/M6/M7 ownership.
+
+The scoped readiness decision is
+`4ea4a7ee41f17fe56563526c9101d4f47ae09e8fd154e04e2c3ffae33e183c76`.
+It accepts the narrow bootstrap/ACL exit after fourteen real package cases,
+82 classified H/I variants, seven supplemental host checks and nine target-image
+predicate checks. Independent correctness/security reviewers found no blockers;
+the predicate helper's thin producer-recorded cleanup receipt remains explicitly
+limited. No new Redis acceptance execution occurred during this reconciliation.
+
+**First new implementation: offline recovery oracle.** The new
+`recovery_oracle.py`, `test_recovery_oracle.py` and `m4_recovery_oracle_test.go`
+cover thirteen steps on the existing closed claim fixture: A claim; E−1 zero
+recovery; E/E+1 ready recovery and replay; B's new fence and replay; stale A
+claim/release/renewal; B renewal; release/replay; drained recovery. Complete
+state, retained histories, the counter-only stale-renewal exception and absolute
+tombstone expiries agree between Python expectations and unchanged canonical Lua
+with independently constructed Go wires. Only a proposed exact HSET selector for
+the recovery-outcome map is added to offline vectors; live permissions are unchanged.
+
+The final five-file offline scope includes builder-only Docker copy/allowlist
+changes. Six Python tests passed in 4,584 ms; the Go differential race command
+passed in 195,334 ms with 26 canonical invocations; vet and strict complete
+Lua/bundle checks passed. Independent correctness GO followed correction and
+re-review of nested-plan type rejection and isolated timing-boundary tests.
+Verification SHA-256 `0b7a1a66d46de86221ebe2a63057bcd6a1963fb2284cf32d043d94ff8ab3055a`;
+review `165f1c2b28c48280b587302d7e130f38d4c01203510e7692347116772c680d4a`.
+
+**Live integration remains pending:** the actual claiming process must emit a
+validated acknowledgment and park alive; its actual container must be killed,
+waited and inspected, then replaced under a distinct identity. The 60-second
+lease wait belongs in bounded controller/short Redis-TIME observation stages,
+not a single 30-second stage. All owned workers must be accounted for in intent,
+failure handling, quiescence, revocation and cleanup. The existing 300/30/60-second
+bounds suffice for this first pre-I/O slice. New source/image/CI review and exact
+approval are required before a real run; the proposed case is not registered yet.
+
+### Full-acceptance design gates
+
+**Owner-selected direction:** local Docker observer design and an AOF-failure
+proof proposal for review. The
+[corrected proposal](crawl-jobs-v2-m4-observer-and-failure-design-2026-09-25.md),
+SHA-256 `f6568eb6b322fa84fc9164d1b616d983a4f71cdc1dc85d42bccc4cb59b1479ae`, has
+independent correctness/security **GO for proposal intake only**. The initial
+ambiguities were corrected: affirmative exact-invocation acknowledgment classes,
+no deliberate-corruption substitution for process crashes, unavailable post-state
+on refusal, and continuing safe cleanup around disputed resources. The proposed
+normative amendment remains unapproved/unapplied; ordinary revocation rules hold.
+
+Static inspection from a never-started owned container found the pinned AArch64
+Redis ELF (`772f79e9154598fe509961928dc4d7c1ac577a948be6e86b793fdb7b0599e1b6`,
+build ID `a6678635938881e640c42ca2824a014aea114c4f`) with debug/symbol sections.
+The inspection container was removed and checked absent by name and ID. No Redis
+process, tracing or new capability was used. Exact address mapping, observer
+confinement and held-boundary precision are still feasibility gates.
+
+- **D01: precise internal crash observation.** A reviewed observed method must
+  preserve canonical Lua and target Redis semantics. Random/MONITOR-triggered
+  kills do not establish exact cuts; Redis 7.4.11's synchronous debugger requires
+  EVAL and changes timeout/debug behavior. A narrowly scoped external Linux-side
+  held-boundary observer is a research candidate, with exact binary mapping,
+  process-access, timing and platform feasibility still unproven/unapproved.
+- **D02: unrestartable AOF teardown.** Resolve fail-closed AOF startup with the
+  mandatory reachable-server revocation/reconnect proof. No accepted method or
+  exception is assumed; do not repair evidence silently or substitute another
+  server as authentication proof. Any necessary normative clarification needs
+  explicit owner review before protocol/digest changes.
+- **D03: long-lived tests.** Review bounded profiles for 900-second stages,
+  one-day tombstones and benchmark workloads. Preserve constants and distinguish
+  seeded historical-state controls from observed elapsed time.
+- **D04: maximum shapes.** Implement operation-specific larger request and
+  complete large/LIST state readers; current small-case limits are insufficient.
+- **D05: final evidence/CI.** Require exact reviewed published artifacts, required
+  real-case coverage without skips, and independent final measurement review.
+  Current new source is local WIP, not covered by the old checkpoint's CI.
 
 ### Required tests
 
@@ -2439,6 +2680,23 @@ production data, production credential, or reusable volume.
 - Maximum-shape input digest, memory evidence, Lua benchmark, AOF/crash
   evidence, and restart-approval evidence.
 - Explicit restore scope and separate backup/restore rehearsal results.
+
+### Reviewed publication checkpoint (2026-09-25)
+
+The owner authorized committing/pushing the **175-file reviewed M4 checkpoint**
+on a fresh feature branch and opening a draft PR for protected CI. It contains
+P01/remainder run evidence, M4-P3 readiness and full-inventory records, the corrected
+five-file offline recovery foundation, the reviewed observer/AOF design proposal
+and four status roll-ups. All 547 pending-file fingerprints, index and status
+were preserved across the same-tree branch switch from `963b67b` to fetched main
+`2b2dd0b240984e379f5464ce7066fb5a31c904f9`; 372 unrelated files remain outside
+the checkpoint.
+
+Code review, corrected local checks and exact evidence bindings are retained.
+Publication is a review/CI checkpoint: the proposed normative amendment remains
+unapplied, the recovery case remains non-executable, and no new Redis/tracing
+execution or merge is authorized. The exact published identity and protected
+check outcomes belong to the resulting PR/CI record; they are not predicted here.
 
 ## M5: Runtime and consumer integration
 
@@ -2628,6 +2886,13 @@ Rendering remains disabled unless its separate activation requirements pass.
 | 2026-09-23 | Bootstrap/ACL Step 5 refreshed PC01 | Owner separately approved and requested one attempt on `6340401`; fixture `0a1a9641a6044e4dfde80a5c3d381216` PASS at 20:22:51.406 UTC; nine calls/46 denials/33 counters, five two-process runtime stages and 28 actions verified; six resources independently absent; approval consumed, 13 negative cases unrun |
 | 2026-09-24 | Bootstrap/ACL Step 6 PC01 evidence review | PC01 accepted as scoped positive control; 12 case assertions and 17 partial mappings reviewed, all six resources rechecked absent; all 13 negatives remain unrun and M4-P3/full M4 stay open; PR #12 merge `320bce3` is tree-identical to executed `6340401`; P01 case-specific artifact preparation next |
 | 2026-09-24 | Scoped PC01 documentation/evidence checkpoint | Owner requested the 15-file CI/run/review/status batch; fresh docs branch from merged main preserves all 387 pending files; immutable evidence retained, 372 unrelated files excluded, P01 preparation still next |
+| 2026-09-24 | P01 selected preparation | PR #13 merged with tree continuity and 14/14 protected checks; all 81 reviewed hashes unchanged, 475 CI roots accounted for; P01 plan `503f6ae…` / recipe `7123ed7…`, four stopped admissions and 62-file image checks PASS; six metadata resources independently absent; fresh exact approval and separate execution decision next |
+| 2026-09-24 | P01 separately approved execution | Fixture `f3c66e07c31db6d3a141c083ba70c56d` PASS once on `963b67b` at 18:04:40.906 UTC; two `CRAWL_V2_INVALID_STATE` responses, zero 33-counter deltas and 46 denials verified; six-role revocation/all six resources absent, approval consumed; scoped P01 evidence review next and 12 negatives unrun |
+| 2026-09-24 | Remaining twelve negatives reviewed and run | P01 scoped review accepted; all twelve own-case preparations/approvals and separately requested sequential attempts PASS on `963b67b`; 62 negative calls, seven measured controls, 368 denials, 77 roles revoked and 72 resources independently absent; all approvals consumed and zero negatives unrun; package-level H/I/coverage reconciliation next |
+| 2026-09-25 | M4-P3 readiness reconciliation | Four stopped metadata admissions, all 82 planned H/I variants, seven host supplements and nine target-image predicates pass; independent correctness/security GO accepts narrow readiness on the frozen checkpoint; full section-17.7/M4-P4/P5 remain open |
+| 2026-09-25 | Full M4 inventory and recovery-oracle foundation | All 104 requirements/43 operations/52 variants mapped; five design gates recorded; six Python tests, 26 canonical Go/Lua invocations under race, vet and pin checks pass for the corrected offline recovery oracle; independent GO, but no executable recovery lifecycle or new Redis run |
+| 2026-09-25 | Local observer and AOF-failure proposal | Owner selected local Docker and drafting; corrected proposal `f6568eb…` has independent intake GO, with normative change/privileges/execution still gated; stopped-container inspection identifies target ELF/debug symbols and verifies cleanup, but no tracing feasibility or full M4 acceptance |
+| 2026-09-25 | Reviewed M4 checkpoint publication authorized | Owner approved a fresh feature branch and scoped commit/push/draft PR for the 175 verified code/evidence/design files; same-tree switch from `963b67b` to `2b2dd0b` preserves all 547 pending files, with 372 unrelated files excluded; protected CI remains the publication gate |
 
 ## Definition of done
 

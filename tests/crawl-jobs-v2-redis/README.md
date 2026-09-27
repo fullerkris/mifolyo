@@ -5,15 +5,15 @@ closed-case execution controller (`controller.py`). The compiler starts nothing.
 The controller can create disposable infrastructure only through its explicit
 `run` command with a separately reviewed, digest-bound execution approval.
 Python 3.10+ and its standard library are sufficient for local tests.
-Implementation is locally tested; the bounded real-Redis smoke and claim/release
-cases pass, and the broader acceptance matrix remains pending.
+Implementation is locally tested; bounded real-Redis smoke, claim/release and all
+13 bootstrap/ACL negative cases pass. Broader M4 acceptance remains pending.
 
 **Bootstrap/ACL Step 2 (2026-09-23): locally complete.** The closed registry now
 includes 13 additional negative cases. All 95 harness tests, the 82 planned
 admission variants and independent Go/canonical-Lua race checks pass locally.
-The new cases have only offline/simulated evidence; their changed source scope
-now has separate correctness/security GO from Step 3, with no actionable findings.
-Fresh image/CI/execution gates remain. See the
+At Step 2, the new cases had only offline/simulated evidence. Their changed source
+scope received separate correctness/security GO from Step 3, with no actionable
+findings. Subsequent image/CI/execution results are recorded below. See the
 [current package status](../../docs/crawl-jobs-v2-plan.md#step-2-local-implementation-result-2026-09-23).
 
 **Step 3 independent review: GO for image/CI preparation.** Both reviewers
@@ -42,10 +42,48 @@ confirmed absent. Approval is consumed. See the
 
 **Step 6 PC01 evidence review (2026-09-24): accepted as scoped control.**
 All 12 case assertions and 17 partial requirement mappings are supported by the
-retained evidence; the six exact resources were rechecked absent. The 13 negative
-cases remain unrun, and no full requirement/operation variant or M4-P3 gate is
+retained evidence; the six exact resources were rechecked absent. At that review,
+all 13 negative cases were unrun, and no full requirement/operation variant or M4-P3 gate was
 closed. PR #12 merged after PC01 as tree-identical `320bce3`. See the
 [evidence review and P01 handoff](../../docs/crawl-jobs-v2-m4-pc01-evidence-review-2026-09-24.md).
+
+**P01 separately authorized execution (2026-09-24): PASS.** Exact selected-case
+preparation and 14 protected checks passed on published `963b67b`; all 81 reviewed
+sources remain unchanged. Fixture `f3c66e07c31db6d3a141c083ba70c56d` returned two
+`CRAWL_V2_INVALID_STATE` rejections, with complete unchanged state, zero delta in
+all 33 counters and 46 authority `NOPERM` results. Six-role revocation and
+independent absence of all four containers/two volumes passed. Approval is
+consumed. See the [preparation](../../docs/crawl-jobs-v2-m4-p01-preparation-2026-09-24.md)
+and [run result](../../docs/crawl-jobs-v2-m4-p01-run-2026-09-24.md).
+P01's subsequent scoped evidence review was accepted.
+
+**Remaining twelve cases (2026-09-24): all PASS with scoped reviews accepted.**
+The owner approved all exact case artifacts, then separately requested sequential
+execution. Each case ran once on unchanged `963b67b`, with predecessor review and
+cleanup required before continuing. Results include 62 exact negative calls,
+seven measured positive controls, three administrative prefix operations and
+368 direct ACL denials. All 77 per-case roles were revoked; all 48 containers and
+24 volumes were independently found absent. The twelve approvals are consumed.
+See the [results/coverage report](../../docs/crawl-jobs-v2-m4-negative-remainder-2026-09-24.md)
+and [exact artifacts](../../docs/evidence/m4-negative-remainder-2026-09-24/README.md).
+All 14 package Redis cases (PC01 plus 13 negatives) now have accepted scoped
+PASS evidence. Zero negatives remain unrun. The subsequent reconciliation is below.
+
+**M4-P3 readiness (2026-09-25): accepted within checkpoint scope.** Independent
+correctness/security reviews accepted the fourteen-case matrix plus exact 82 H/I
+variants, seven host supplements and nine target-image predicate controls. Their
+offline/simulated/captured-metadata classifications remain explicit; no new Redis
+server was started for that reconciliation. See the
+[readiness assessment](../../docs/crawl-jobs-v2-m4-readiness-2026-09-25.md).
+Full M4-P4/P5 acceptance remains open.
+
+**Recovery oracle: offline foundation only.** `recovery_oracle.py` and
+`test_recovery_oracle.py` project thirteen pre-I/O recovery/fencing steps over the
+existing claim fixture. Six Python tests and 26 independent Go/canonical-Lua
+invocations pass, including the race check; corrected code has scoped GO. The
+prospective case is not registered, and no claimant-park/SIGKILL/real-expiry
+controller is implemented. The executable image still has 62 inputs/15 recipes.
+The [full M4 inventory](planning/full-m4-acceptance-v1.json) is planning-only.
 
 **Final independent re-review (2026-09-21): GO for image preparation only.** The
 four original findings and a closed-peer follow-up are fixed and re-reviewed.
@@ -302,9 +340,10 @@ python3 -B tests/crawl-jobs-v2-redis/controller.py run \
 ```
 
 The original smoke invocation failed in init. The separately approved corrected
-smoke, original claim/release and refreshed PC01 cases each ran once and passed
-under their own approvals. The dated reports preserve all outcomes.
-All four one-case approvals are consumed. A matching input hash does not create
+smoke, original claim/release, refreshed PC01, P01 and the remaining twelve
+negative cases each ran once and passed under their own approvals. The dated
+reports preserve all outcomes. All seventeen one-case approvals are consumed.
+A matching input hash does not create
 owner approval or permission to retry; further cases need fresh reviewed scope
 and exact-artifact execution authority.
 
@@ -314,8 +353,8 @@ evidence, setup/time observations, state comparisons, denials, revocation and
 destruction receipts. Credentials travel via bounded stdin, never command-line
 arguments, environment variables or report fields. Errors retain only closed
 failure codes and admission-check names, omitting inspected values and raw server/
-Docker diagnostics. `m4_accepted` is always false: the successful smoke and
-claim/release cases cannot certify the remaining matrix. Injected fake backends always emit
+Docker diagnostics. `m4_accepted` is always false: the successful smoke,
+claim/release and bootstrap/ACL cases cannot certify the wider M4 matrix. Injected fake backends always emit
 `evidence_kind=simulated` and `case_evidence_valid=false`.
 
 ## Verification
@@ -471,7 +510,8 @@ Controller admission binds the exact entrypoint/command and environment digest,
 rejects DNS/host/port/bind/privilege deviations and checks volume attachments
 before and after start. The executor checks the private process inventory;
 cleanup refuses to remove a volume still attached to an unowned container.
-These new target-image paths have local controls but await actual image validation.
+These paths now have image-validation and actual scoped Redis-case observations;
+their H/I negatives retain the offline/predicate evidence classes stated above.
 
 Read-only recipe inspection, from repository root:
 
@@ -525,10 +565,26 @@ explicit. Step 3 correctness/security reviews are GO with no actionable findings
 Step 4's arm64/amd64 preparation, publication and all required CI checks pass on
 `6340401`; the separately approved Step 5 PC01 invocation now also passes with
 independently verified cleanup and consumed approval. Step 6 accepts that scoped
-control and preserves all 13 negative cases as unrun. The next gate is P01's own
-selected-case artifact preparation, followed by fresh exact approval and a
-separate execution decision before it can run.
+control and preserved all 13 negatives as unrun at that review. P01's later
+selected-case preparation on `963b67b` and separately approved single attempt
+also pass, with zero state/accounting delta, 46 denials and verified cleanup.
+P01's scoped review was accepted. The remaining twelve cases subsequently passed
+individual preparation, exact approval, separately requested sequential execution
+and scoped evidence review, with all approvals consumed and resources absent.
+All 14 package Redis cases pass; zero negatives remain unrun. September 25's
+independently reviewed reconciliation accepts narrow M4-P3 bootstrap readiness.
+The full M4 inventory assigns 104 requirements and 52 gate variants to twelve
+work packages. The first recovery oracle is verified offline; actual process-death
+and Redis-time lifecycle integration is still pending.
 
 Broader job/lease/stage/commit behavior, administrative transitions, maximum shapes,
 crash-boundary coverage, benchmarks and final release/image admission remain
 subsequent gates. Fake results never substitute for those observations.
+
+Run the new offline-only checks from this directory and `services/spider`, respectively:
+
+```bash
+python3 -B -m unittest -v test_recovery_oracle
+GOPROXY=off GOTOOLCHAIN=go1.25.13 go test -mod=readonly -race -timeout 900s \
+  ./internal/database/crawljobsv2 -run '^TestM4RecoveryOracleOffline$' -count=1
+```

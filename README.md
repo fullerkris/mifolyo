@@ -56,9 +56,23 @@ evidence and all fourteen required CI checks passing. Fresh exact-artifact owner
 approval and a separate execution decision then authorized one refreshed PC01
 attempt: **PASS**, with runtime process/admission checks and independent cleanup
 verification. Its approval is consumed. Step 6 accepts PC01 as the scoped positive
-control; PR #12's subsequent merge `320bce3` has the same tree. P01 case-specific
-artifact preparation is next, and all 13 negative cases remain unrun. Full M4 acceptance
-and application integration remain pending. The
+control; PR #12's subsequent merge `320bce3` has the same tree. P01 preparation
+and protected CI then passed on PR #13's published `963b67b`. Its separately
+approved single attempt **passed** both presence rejections and all 46 authority
+denials, with zero accounting changes and independently verified cleanup.
+P01's scoped evidence review passed. The remaining twelve cases were then
+individually approved and run sequentially: **all PASS**, with 62 exact negative
+calls, seven measured positive controls, 368 ACL denials and independently
+verified cleanup. All approvals are consumed; **zero negative Redis cases remain
+unrun** in the package. See the [results and coverage](docs/crawl-jobs-v2-m4-negative-remainder-2026-09-24.md).
+The September 25 admission reconciliation and independent reviews accept
+**M4-P3 bootstrap readiness** within the frozen checkpoint scope. The full
+104-requirement/43-operation/52-variant M4 inventory is recorded, and the next
+recovery oracle passes offline Python/Go/canonical-Lua checks and review. Its
+actual worker-death controller is not implemented yet; internal-crash observation
+and damaged-AOF teardown also require reviewed designs. See the
+[M4 readiness assessment](docs/crawl-jobs-v2-m4-readiness-2026-09-25.md).
+Full M4 acceptance and application integration remain pending. The
 [Crawl Jobs V2 plan](docs/crawl-jobs-v2-plan.md) owns current progress. Historical
 V1 commands below do not authorize another crawl.
 

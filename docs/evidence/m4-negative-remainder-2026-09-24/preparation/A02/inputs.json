@@ -1,0 +1,1 @@
+{"format_version":1,"harness_image":"sha256:51bc4896057b8015e1bb67ff7e57448ed6356449c98a6df9100c06693de8e265","redis_image":"sha256:24e81cffaba832bcd71068a6ff772a531076bafdbb1d684195766ae9b6511f5c","redis_version":"7.4.11","scenario":"ledger-retire-denied","standin_image":"sha256:51bc4896057b8015e1bb67ff7e57448ed6356449c98a6df9100c06693de8e265"}

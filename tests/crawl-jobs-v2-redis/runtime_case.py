@@ -8,11 +8,13 @@ import harness as h
 import claim_release as claim
 import negative_cases as negative
 import negative_specs as ns
+import recovery_specs as rs
 
 CASE = "ledger-smoke-v1"
 CLAIM_CASE = claim.CASE
 CASES = {CASE: "ledger-smoke", CLAIM_CASE: claim.SCENARIO}
 CASES.update(ns.CASES)
+CASES[rs.CASE] = rs.SCENARIO
 RATE = h.P + "rate_scopes"
 PROBE = h.AUTH[2]  # Temporary pre-BOOT probe; removed before authority setup.
 WIRE_KEYS = (*h.AUTH, RATE)
@@ -25,7 +27,8 @@ BOOT_FIELDS = ("schema_version", "boot_state", "approved_redis_run_id", "boot_ep
 SOURCES = ("CJ2_APPROVE_BOOT", "CJ2_MAINTAIN_RATE_SCOPES")
 FILES = ("harness.py", "resp.py", "runtime_case.py", "executor.py", "controller.py",
           "claim_release.py", "claim_executor.py", "negative_specs.py", "negative_cases.py", "negative_executor.py",
-          "bounded_state.py", "admission.py", "redis.conf", "Dockerfile.execution", "Dockerfile.execution.dockerignore")
+          "bounded_state.py", "admission.py", "recovery_specs.py", "recovery_oracle.py", "recovery_executor.py", "parked_command.py",
+          "redis.conf", "Dockerfile.execution", "Dockerfile.execution.dockerignore")
 CONFIG = {"port": "0", "unixsocket": "/run/cj2/redis.sock", "unixsocketperm": "600",
           "aclfile": "/run/cj2/fixture.acl", "dir": "/data", "appendonly": "yes",
           "appendfsync": "always", "aof-use-rdb-preamble": "yes", "aof-load-truncated": "no",
@@ -47,6 +50,8 @@ def case_for_plan(plan):
 
 def sources(case_id=CASE):
     h.require(type(case_id) is str and case_id in CASES, "UNSUPPORTED_CASE")
+    if case_id == rs.CASE:
+        return rs.SOURCES
     if case_id in ns.CASES:
         return ns.source_operations(case_id)
     return SOURCES if case_id == CASE else ("CJ2_APPROVE_BOOT", claim.CLAIM, claim.RELEASE)
@@ -85,6 +90,9 @@ def measure_roles(case_id):
 
 def stage_roles(case_id, stage):
     sources(case_id)
+    if case_id == rs.CASE and stage in rs.PHASE_ROLES:
+        return rs.PHASE_ROLES[stage]
+    h.require(case_id != rs.CASE or stage != "measure", "STAGE")
     choices = {"init": roles(case_id), "ready": ("setup",), "probe": ("setup",),
                "resume": ("setup", "loader", "boot", "observer", "revoker", *ns.extra_roles(case_id)),
                "measure": measure_roles(case_id), "revoke": roles(case_id)}
@@ -101,6 +109,8 @@ def validate_revocation(result, targets):
 
 
 def fixture(plan, fixture_id, material, at_ms=1000):
+    if case_for_plan(plan) == rs.CASE:
+        return claim_fixture(plan, fixture_id, material, at_ms)
     if case_for_plan(plan) in ns.CASES:
         values = {"fixture_id": fixture_id, "redis_time_ms": at_ms}
         if case_for_plan(plan) != ns.BOOT:
@@ -149,6 +159,10 @@ CLAIM_COMMANDS = {
 
 def acl_rules(case_id=CASE, fixture=None, plan=None):
     sources(case_id)
+    if case_id == rs.CASE:
+        rules = acl_rules(CLAIM_CASE, fixture, plan)
+        rules["ledger"] = (*rules["ledger"], selector("+hset", (fixture["base_key"] + ":recovery_outcome_counts",), "~"))
+        return rules
     if case_id in ns.CASES:
         return negative_acl_rules(case_id, fixture, plan)
     if case_id == CLAIM_CASE:
@@ -283,7 +297,17 @@ def recipe(case_id=CASE):
                       acl_rules={"policy": "claim-key-kinds-v1", "commands": CLAIM_COMMANDS,
                                  "keys": "exact validated fixture identities; no wildcard grants"},
                       possible_keys=58, assertions=[f"CR{i:02}" for i in range(1, 13)], acl_denials=46,
-                       measurement_steps=9, request_starts=0, state_expiry="absolute PEXPIRETIME", report_values="redacted")
+                        measurement_steps=9, request_starts=0, state_expiry="absolute PEXPIRETIME", report_values="redacted")
+    elif case_id == rs.CASE:
+        result.update(wire_keys="closed recovery_oracle wire inventory", stored_keys="57 claim-basis keys plus BOOT-owned durability",
+            direct_setup_count=26, possible_keys=58, derived_output_keys="two reservations and three rate blocks",
+            acl_rules={"policy": "claim-key-kinds-v1 plus exact recovery_outcome_counts HSET"},
+            assertions=[f"RCV{i:02}" for i in range(1, 14)], measurement_steps=13, acl_denials=46,
+            phases=list(rs.PHASES), container_roles=list(rs.CONTAINER_ROLES), worker_instances=2,
+            minimum_case_seconds=rs.MIN_CASE_SECONDS,
+            clock_observation_limit=rs.MAX_CLOCK_OBSERVATIONS, max_receipt_to_container_stop_milliseconds=rs.MAX_ACK_TO_KILL_MS,
+            attached_exit_reconciliation_seconds=rs.MAX_ATTACHED_EXIT_SECONDS, death_timing_origin="host_received_complete_claim_receipt",
+            request_starts=0, state_expiry="absolute PEXPIRETIME", report_values="redacted")
     elif case_id in ns.CASES:
         result.update(profile="administrative" if case_id in ns.ADMIN else "ledger",
                       wire_keys="closed negative_specs/negative_cases wire inventory", stored_keys="case-specific typed manifest; durability BOOT-owned",
@@ -299,6 +323,11 @@ def recipe(case_id=CASE):
                       acl_denials=46 if case_id in (*ns.STORED, ns.WIRE) else 0,
                       request_starts=0, state_expiry="absolute PEXPIRETIME", report_values="redacted")
     return result
+
+
+def container_roles(case_id=CASE):
+    sources(case_id)
+    return rs.CONTAINER_ROLES if case_id == rs.CASE else ("init", "executor", "redis", "revocation")
 
 
 def recipe_sha256(case_id=CASE):
@@ -318,6 +347,7 @@ def validate_approval(plan, approval, now_ms):
     h.require(approval["plan_sha256"] == h.digest(h.canonical(plan)) and
               approval["recipe_sha256"] == recipe_sha256(selected), "APPROVAL_ARTIFACT_MISMATCH")
     h.require(type(approval["max_seconds"]) is int and 1 <= approval["max_seconds"] <= 300, "TIME_LIMIT")
+    h.require(selected != rs.CASE or approval["max_seconds"] >= rs.MIN_CASE_SECONDS, "RECOVERY_TIME_LIMIT")
     h.require(type(approval["expires_at_ms"]) is int and now_ms + approval["max_seconds"] * 1000 <
               approval["expires_at_ms"] <= min(h.MAX_EXACT, now_ms + 86400000), "APPROVAL_EXPIRY")
     h.require(approval["architecture"] in ("amd64", "arm64"), "PLATFORM")

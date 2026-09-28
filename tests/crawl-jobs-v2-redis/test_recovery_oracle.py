@@ -6,14 +6,15 @@ import unittest
 import claim_release as cr
 import harness as h
 import recovery_oracle as recovery
+import recovery_specs as spec
 import resp
 import runtime_case as case
 from test_claim_release import captured
 from test_harness import inputs
 
 
-def context(offset=0):
-    plan = h.compile_plan(inputs(cr.SCENARIO))
+def context(offset=0, scenario=cr.SCENARIO):
+    plan = h.compile_plan(inputs(scenario))
     fixture = cr.compile_fixture(plan, captured())
     claimed = 1000001
     due = claimed + 60000 + offset
@@ -74,13 +75,13 @@ class RecoveryOracleTests(unittest.TestCase):
             with self.assertRaises(h.InvalidArtifact):
                 recovery.validate_state(plan, f, times, index, changed)
 
-    def test_wire_shapes_and_offline_only_admission(self):
+    def test_wire_shapes_and_closed_case_admission(self):
         plan, f, _ = context()
         wires = recovery.wire_requests(plan, f, "7" * 32)
         self.assertEqual([int(wire[2]) for wire in wires], [57, 42, 42, 42, 57, 57, 57, 44, 44, 44, 44, 44, 42])
         self.assertEqual([len(wire) - 3 - int(wire[2]) for wire in wires], [40, 8, 8, 8, 40, 40, 40, 13, 12, 12, 13, 13, 8])
         self.assertTrue(all(len(resp.encode(wire)) <= 65536 for wire in wires))
-        self.assertNotIn(recovery.CASE, case.CASES)
+        self.assertEqual(case.CASES[recovery.CASE], spec.SCENARIO)
         self.assertFalse(f["execution_authorized"])
         with self.assertRaises(h.InvalidArtifact):
             recovery.fixture_for(h.compile_plan(inputs()), f)
@@ -106,25 +107,45 @@ class RecoveryOracleTests(unittest.TestCase):
         with self.assertRaisesRegex(h.InvalidArtifact, "^RECOVERY_PHASE_TIME$"):
             recovery.expected_sequence(plan, f, changed)
 
+    def test_go_vector_packets_preserve_size_and_profile_boundaries(self):
+        for profile, scenario in (("basis", cr.SCENARIO), ("recovery", spec.SCENARIO)):
+            with self.subTest(profile=profile):
+                raw = go_vector_packet(profile)
+                self.assertLessEqual(len(raw), 2 * 1024 * 1024)
+                packet = h.decode(raw)
+                self.assertEqual(packet["profile"], profile)
+                self.assertFalse(packet["execution_authorized"])
+                self.assertEqual(len(packet["vectors"]), 2)
+                self.assertEqual({row["scenario"] for row in packet["vectors"]}, {scenario})
 
-def go_vectors():
+
+def go_vector_packet(profile):
+    h.require(profile in ("basis", "recovery"), "VECTOR_GROUP")
     vectors = []
+    scenario = cr.SCENARIO if profile == "basis" else spec.SCENARIO
     for offset in (0, 1):
-        plan, f, times = context(offset)
+        plan, f, times = context(offset, scenario)
         rules = copy.deepcopy(case.acl_rules(case.CLAIM_CASE, f, plan))
-        # Proposed exact recovery-only addition, not granted to any live role.
+        # Independently fixed extension; the recovery group checks the actual
+        # registered selector against this literal expectation before Go traces.
         rules["ledger"] = (*rules["ledger"], case.selector("+hset", {f["base_key"] + ":recovery_outcome_counts"}, "~"))
-        vectors.append({"fixture": f, "times": times, "operations": list(recovery.OPERATIONS),
+        if profile == "recovery":
+            actual = case.acl_rules(spec.CASE, f, plan)
+            h.require(actual == rules, "RECOVERY_ACL_VECTOR")
+            rules = actual
+        vectors.append({"scenario": scenario, "fixture": f, "times": times, "operations": list(recovery.OPERATIONS),
             "expected": recovery.expected_sequence(plan, f, times), "acl_rules": rules,
             "wires": [{"parts_hex": [(value.encode() if type(value) is str else value).hex() for value in wire], "resp_size": len(resp.encode(wire))}
                       for wire in recovery.wire_requests(plan, f, "7" * 32)]})
-    raw = h.canonical({"purpose": "offline_public_recovery_vectors", "execution_authorized": False, "vectors": vectors})
+    raw = h.canonical({"purpose": "offline_public_recovery_vectors", "profile": profile, "execution_authorized": False, "vectors": vectors})
     h.require(len(raw) <= h.MAX_ARTIFACT_BYTES, "VECTOR_BOUND")
-    sys.stdout.buffer.write(raw)
+    return raw
 
 
 if __name__ == "__main__":
     if sys.argv[1:] == ["--go-vectors"]:
-        go_vectors()
+        sys.stdout.buffer.write(go_vector_packet("basis"))
+    elif len(sys.argv) == 3 and sys.argv[1] == "--go-vectors":
+        sys.stdout.buffer.write(go_vector_packet(sys.argv[2]))
     else:
         unittest.main()

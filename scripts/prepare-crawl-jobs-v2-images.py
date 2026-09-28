@@ -36,7 +36,7 @@ def validate_prestart(backend, harness_image, redis_image, case_id=ctl.case.CASE
             h.require(backend.inspect("volume", volume) is None, "CHECK_VOLUME_EXISTS")
             resources.append(("volume", volume))
             backend.volume(volume, fixture)
-        for role in ("init", "executor", "redis", "revocation"):
+        for role in ctl.case.container_roles(case_id):
             name = prefix + "-" + role
             h.require(backend.inspect("container", name) is None, "CHECK_CONTAINER_EXISTS")
             image = redis_image if role == "redis" else harness_image
@@ -55,6 +55,12 @@ def validate_prestart(backend, harness_image, redis_image, case_id=ctl.case.CASE
                       "CHECK_CONTAINER_STARTED")
             report["roles"].append({"role": role, "status": "PASS", "cap_add": observed["HostConfig"].get("CapAdd"),
                                     "inspection_sha256": h.digest(h.canonical(observed))})
+            if case_id == ctl.rs.CASE:
+                # Recovery workers are sequential identities, not five concurrent
+                # consumers of the control volume. Admit each stopped role alone.
+                backend.remove("container", name)
+                h.require(backend.inspect("container", name) is None, "CHECK_REMAINS")
+                del specs[role]
         report["status"] = "PASS"
     except (Exception, KeyboardInterrupt) as error:
         report["failure_details"] = ctl.failure_details(error)
@@ -104,6 +110,7 @@ def validate(backend, image, redis_image, role):
         else:
             checked = h.decode(output)
             h.require(checked["status"] == "PASS" and checked["execution_authorized"] is False, "CHECK_RESULT")
+            ctl.admission.validate_isolation_receipt(checked["isolation"], init=role == "init", processes=1)
             h.require(set(checked["files"]) == set(ctl.scope_paths()), "IMAGE_INVENTORY")
             h.require(checked["identities"] == h.source_identity()[0], "IMAGE_IDENTITIES")
             h.require(checked["recipes"] == {name: ctl.case.recipe_sha256(name) for name in ctl.case.CASES}, "IMAGE_RECIPES")

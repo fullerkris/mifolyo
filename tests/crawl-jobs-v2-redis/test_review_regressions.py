@@ -234,7 +234,7 @@ class ProcessReviewTests(unittest.TestCase):
         with patch.object(ctl.shutil, "which", return_value="/fake/docker"):
             docker = ctl.Docker()
         response = {"stage": "ready", "status": "PASS", "recipe_sha256": case.recipe_sha256(),
-                    "isolation": {}, "result": {}}
+                    "isolation": fixtures.fake_isolation(), "result": {}}
         with patch.object(ctl, "command", return_value=(0, h.canonical(response), b"")) as call:
             docker.stage("fixture", "ready", {"plan": fixtures.test_plan()}, 0.125)
             self.assertEqual(call.call_args.args[0][-1], "125")

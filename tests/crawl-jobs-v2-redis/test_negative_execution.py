@@ -19,9 +19,8 @@ from test_negative_cases import AT
 PROCESS_SHA = h.digest(b"simulated process-inventory receipt; not target evidence")
 
 
-def isolation(**_):
-    return {"uid": 65534, "interfaces": ["lo"], "external_routes": 0, "effective_capabilities": "0",
-            "process_count": 2, "process_inventory_sha256": PROCESS_SHA}
+def isolation(**options):
+    return {**base.fake_isolation("init" if options.get("init") else "measure"), "process_inventory_sha256": PROCESS_SHA}
 
 
 class NegativeRedis(ClaimRedis):
@@ -143,7 +142,7 @@ class NegativeDocker(base.FakeDocker):
         if self.fail == "interrupt" and stage == "measure":
             raise KeyboardInterrupt()
         worker.validate_request(request, stage)
-        envelope = {"stage": stage, "status": "PASS", "recipe_sha256": case.recipe_sha256(selected), "isolation": isolation()}
+        envelope = {"stage": stage, "status": "PASS", "recipe_sha256": case.recipe_sha256(selected), "isolation": isolation(init=stage == "init")}
         if stage == "init":
             fixture = case.fixture(request["plan"], request["fixture_id"], request.get("claim_material", {}))
             self.private.add(fixture["admin_nonce"])

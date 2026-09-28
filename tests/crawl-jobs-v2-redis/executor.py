@@ -14,6 +14,8 @@ import runtime_case as case
 import claim_executor as claim_worker
 import negative_executor as negative_worker
 import negative_specs as ns
+import recovery_specs as rs
+import recovery_executor as recovery_worker
 import admission
 from resp import Client, RedisError, TransportError
 
@@ -68,7 +70,7 @@ def validate_network(interfaces, ipv4_routes, ipv6_routes):
     None may be administratively UP, and neither routing table may provide an
     external route. The caller separately verifies the absence of NET_ADMIN.
     """
-    fallback = {"tunl0", "gre0", "gretap0", "erspan0", "ip_vti0", "ip6_vti0", "sit0", "ip6tnl0", "ip6gre0"}
+    fallback = admission.FALLBACK_INTERFACES
     h.require("lo" in interfaces and set(interfaces) <= fallback | {"lo"}, "NETWORK_INTERFACE")
     for name, observed in interfaces.items():
         flags = int(observed["flags"], 16)
@@ -284,6 +286,8 @@ def resume(request):
         evidence_sha = h.digest(h.canonical(evidence))
         if selected in ns.CASES:
             return negative_worker.resume(request, setup_client, current, evidence, epoch, sys.modules[__name__])
+        if selected == rs.CASE:
+            return recovery_worker.resume(request, setup_client, current, evidence, epoch, sys.modules[__name__])
         boot_request = case.boot_request(current["run_id"], epoch, evidence_sha, at)
         with connect("boot", credentials) as boot:
             first = boot.call(*boot_request)
@@ -392,6 +396,8 @@ def main():
         return 0
     stages = {"init": initialize, "ready": ready, "probe": probe, "resume": resume, "measure": measure,
                "revoke": lambda request: {"revocation": revoke(request["credentials"], case.roles(case.case_for_plan(request["plan"])))}}
+    for phase in rs.PHASES:
+        stages[phase] = lambda request, phase=phase: getattr(recovery_worker, phase)(request, sys.modules[__name__])
     try:
         h.require(len(sys.argv) == 3 and sys.argv[1] in stages and
                   re.fullmatch(r"[1-9][0-9]{0,4}", sys.argv[2]), "STAGE")
@@ -400,6 +406,7 @@ def main():
             request = h.decode(sys.stdin.buffer.read(h.MAX_ARTIFACT_BYTES + 1))
             validate_request(request, stage)
             isolation = environment(init=stage == "init")
+            admission.validate_isolation_receipt(isolation, init=stage == "init")
             status = "PASS"
             try:
                 result = stages[stage](request)
@@ -411,12 +418,20 @@ def main():
                 h.require(stage in ("resume", "measure") and case.case_for_plan(request["plan"]) in ns.CASES, "NEGATIVE_FAILURE")
                 result, status = failure.result, "FAIL"
                 negative_worker.validate_stage_result(stage, result, request, isolation, successful=False)
+            except recovery_worker.RecoveryFailure as failure:
+                h.require(stage == "recover" and case.case_for_plan(request["plan"]) == rs.CASE, "RECOVERY_FAILURE")
+                result, status = failure.result, "FAIL"
+                recovery_worker.validate_stage_result(stage, result, request, successful=False)
             output = {"stage": stage, "status": status, "recipe_sha256": case.recipe_sha256(case.case_for_plan(request["plan"])),
                       "isolation": isolation, "result": result}
             raw = h.canonical(output)
             h.require(len(raw) <= h.MAX_ARTIFACT_BYTES, "REPORT_BOUND")
             sys.stdout.buffer.write(raw)
             sys.stdout.buffer.flush()
+            if stage == "claim_park":
+                h.require(status == "PASS" and case.case_for_plan(request["plan"]) == rs.CASE, "RECOVERY_PARK")
+                while True:
+                    signal.pause()
         return 0 if status == "PASS" else 1
     except Exception:
         print("M4 executor stage failed", file=sys.stderr)

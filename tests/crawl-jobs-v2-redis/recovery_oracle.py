@@ -1,8 +1,7 @@
-"""Offline pre-I/O recovery oracle over the existing private claim fixture.
+"""Pure pre-I/O recovery oracle over the private claim-fixture basis.
 
-This is not an executable case, controller, clock, process-death observation or
-execution approval. The future runtime slice needs its own reviewed scenario,
-ACL, claimant-park/kill handshake and real-time lifecycle before admission.
+This module starts nothing and supplies no clock or process-death evidence.
+The controller/executor must bind its projections to actual captured inputs.
 """
 from __future__ import annotations
 
@@ -12,8 +11,9 @@ import hashlib
 import claim_release as cr
 import harness as h
 import resp
+import recovery_specs as spec
 
-CASE = "ledger-worker-death-pre-io-v1"
+CASE = spec.CASE
 RECOVER = "CJ2_RECOVER_EXPIRED"
 RENEW = "CJ2_RENEW_LEASE"
 OPERATIONS = (cr.CLAIM, RECOVER, RECOVER, RECOVER, cr.CLAIM, cr.CLAIM,
@@ -24,7 +24,7 @@ LABELS = ("claim_a", "recover_before_expiry", "recover_due", "recover_replay", "
 
 def fixture_for(plan, fixture):
     h.require(type(plan) is dict and type(plan.get("inputs")) is dict and
-              plan["inputs"].get("scenario") == cr.SCENARIO, "RECOVERY_ORACLE_BASIS")
+              plan["inputs"].get("scenario") in (cr.SCENARIO, spec.SCENARIO), "RECOVERY_ORACLE_BASIS")
     return cr.validate_fixture(plan, fixture)
 
 
@@ -113,6 +113,11 @@ def _ready(state, f, label, now, recovered):
 
 def expected_sequence(plan, fixture, times):
     f = fixture_for(plan, fixture)
+    return _expected_sequence_validated(f, times)
+
+
+def _expected_sequence_validated(f, times):
+    """Internal projection after a caller has reconstructively validated f."""
     at = f["inputs"]["redis_time_ms"]
     h.require(type(times) is list and len(times) == len(OPERATIONS) and
               all(type(now) is int and at <= now <= at + cr.CASE_MS for now in times) and times == sorted(times), "RECOVERY_TIMES")
@@ -163,3 +168,34 @@ def validate_state(plan, fixture, times, step, observed):
     h.require(type(step) is int and 0 <= step < len(OPERATIONS), "RECOVERY_STEP")
     expected = expected_sequence(plan, fixture, times)[step]["state"]
     h.require(type(observed) is dict and cr._bounded(observed) == h.canonical(expected), "RECOVERY_STATE_MISMATCH")
+
+
+def prefix_times(observed):
+    """Complete an oracle-only future tail; never describe that tail as observed."""
+    h.require(type(observed) is list and 1 <= len(observed) <= len(OPERATIONS) and
+              all(type(value) is int and 0 < value <= h.MAX_EXACT for value in observed) and
+              observed == sorted(observed), "RECOVERY_OBSERVATIONS")
+    times = list(observed)
+    while len(times) < len(OPERATIONS):
+        index = len(times)
+        candidate = times[-1] + 1
+        if index == 2:
+            candidate = max(candidate, times[0] + cr.LEASE_MS)
+        if index == 9:
+            candidate = max(candidate, times[4] + 1)
+        times.append(candidate)
+    return times
+
+
+def public_summary(plan, fixture):
+    fixture = fixture_for(plan, fixture)
+    return _public_summary_validated(fixture)
+
+
+def _public_summary_validated(fixture):
+    from pathlib import Path
+    return {"case": CASE, "basis_case": cr.CASE, "purpose": "conformance_only", "execution_authorized": False,
+            "release_eligible": False, "measurement_status": "not_measured", "fixture_sha256": h.digest(h.canonical(fixture)),
+            "compiler_sha256": fixture["compiler_sha256"], "plan_sha256": fixture["plan_sha256"],
+            "possible_keys": len(fixture["key_inventory"]), "fixture_owned_keys": len(fixture["initial_state"]),
+            "oracle_sha256": h.digest(Path(__file__).read_bytes())}

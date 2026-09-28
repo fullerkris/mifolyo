@@ -2,9 +2,9 @@
 
 **Finding:** F3 - durable crawl-job leases and recovery
 
-**Last updated:** 2026-09-27 (UTC; corrected recovery lifecycle and image preparation pass; new publication/CI and exact execution decisions next)
+**Last updated:** 2026-09-28 (UTC; bounded request lifecycle implemented, corrected independent GO and arm64 preparation PASS; publication/CI and fresh execution decisions next)
 
-**Working branch:** `feature/crawl-jobs-v2-worker-recovery`
+**Working branch:** `feature/crawl-jobs-v2-request-lifecycle`
 
 **Initial checkpoint:** `e4372a66201b8767bcca4d7476c30c5b7999922c`
 
@@ -15,24 +15,40 @@ All 43 canonical operations and the sealed, zero-argument
 bounded real-Redis `ledger-smoke-v1` and `ledger-claim-release-v1` cases pass;
 full M4 acceptance is open.
 
-**Current next gate:** publish the corrected recovery lifecycle, verify protected
-exact-revision CI, then obtain fresh case-specific approval and a separate
-execution decision. **M4-P3 bootstrap readiness is accepted**
+**Current next gate:** complete the owner-authorized 44-file publication of the
+request implementation and retained recovery-run evidence, verify protected CI, then obtain
+fresh case-specific approval and a separate execution decision. The new bounded
+request slice is implemented and image-prepared; its real execution is pending.
+**M4-P3 bootstrap readiness is accepted**
 within frozen checkpoint `963b67b`, following independent correctness/security GO
 on the fourteen real package cases and reconciled H/I evidence. All prior
 approvals are consumed and no negative package case remains unrun.
 
 The [full inventory](../tests/crawl-jobs-v2-redis/planning/full-m4-acceptance-v1.json)
 maps 104 requirements, 43 operations and 52 allowed gate variants into twelve
-work packages. Seven variants have scoped real observations; no full requirement
-or variant is closed. The first pre-I/O worker-death recovery lifecycle is now
-implemented. Initial independent NO-GO findings were corrected and re-reviewed
-**correctness/security GO for image/CI preparation** on 90 files. The corrected
-128-test harness, 21 script tests, 52 canonical recovery invocations under Go race,
-vet and strict source-pin checks pass. The new arm64 image and 66-file/16-recipe
-case-specific preparation pass. **No real recovery case has run yet.** See the
-[recovery review](crawl-jobs-v2-m4-recovery-review-2026-09-27.md) and
+work packages. Its planning-time snapshot records seven variants with scoped real
+observations; no full requirement or variant is closed. The first pre-I/O
+worker-death case now has **accepted scoped real evidence** at published `c009282`
+on draft PR #15. Its corrected 90-file source review, 128 harness/21 script tests,
+52 canonical invocations under race, arm64 preparation and all fourteen protected
+checks passed before the separately approved single run. Fixture
+`d02e7fa6424d446089fd1333206bb294` passed thirteen operations, 38 counters and
+46 authority denials. Independent correctness/security reviews accepted the
+result; six-role revocation, exact retained journal and absence of five containers
+plus two volumes were verified. The one-use approval is consumed. See the
+[recovery result](crawl-jobs-v2-m4-recovery-run-2026-09-27.md),
+[source review](crawl-jobs-v2-m4-recovery-review-2026-09-27.md) and
 [preparation](crawl-jobs-v2-m4-recovery-preparation-2026-09-27.md).
+
+The subsequent `ledger-request-lifecycle-v1` uses one lease with robots/document
+reservations, 22 calls and synthetic unused START grants. It checks two cumulative
+starts on one delivery, historical replay, first/document history and rate
+accounting with 33 counters and complete state/expiry comparison. Corrected
+96-file source review is **correctness/security GO for image/CI preparation**;
+140 harness/21 script tests, 44 new canonical invocations under race, vet and pins
+pass. Selected arm64 preparation verifies 69 image files/all 17 recipes, with
+zero metadata starts and six independently absent preparation resources. No real
+request case has run. See the [request checkpoint](crawl-jobs-v2-m4-request-lifecycle-2026-09-28.md).
 
 Internal commit-boundary observation and unreachable-Redis/AOF-failure teardown
 need reviewed design decisions before full acceptance. Longer expiry/benchmark
@@ -57,9 +73,10 @@ Step 3 returned independent
 reviewed file hashes unchanged. See the
 [review report](crawl-jobs-v2-m4-bootstrap-acl-review-2026-09-23.md).
 Step 2's 95 harness/21 script tests, Go/Lua race, vet and digest checks remain
-supporting evidence for the prior scope. The current registry supports 16 cases
-and the new image scope is 66 files; prior executed cases retain their original
-source/image bindings and the new recovery case still needs execution authority.
+supporting evidence for the prior scope. The current registry supports 17 cases
+and the new image scope is 69 files; prior executed cases retain their original
+source/image bindings. Recovery execution used its own newly approved artifacts;
+that approval is now consumed.
 Narrow M4-P3 readiness is now accepted; broader section-17.7 and M4-P4/P5 obligations remain open.
 
 **Earlier claim/release Step 6:** the owner separately approved and requested the single
@@ -241,11 +258,11 @@ retains it as a primitive case; guard cases now explicitly bind the complete
 | Ledger validation | Baseline/delivery/fence history, post-abort freeze, exact retained witnesses, strict worker expiry, completed replay, prior retry/backpressure/reason fixes and zero-sentinel checks pass local normal conformance and reviewed counterexample replays |
 | Script sources | All 43 canonical operations are implemented: unchanged BOOT passthrough plus 42 exact generated sources; both strict source/bundle generator checks pass |
 | Authoritative bundle | Complete zero-argument `AuthoritativeScriptBindingSet()` validates embedded sources against fixed generated pins and returns fresh private sealed bindings; no caller-supplied sources, hashes or paths |
-| Local and protected acceptance | PR #14 head `c09ff84` passed all fourteen checks and its 476-root race inventory; current corrected recovery lifecycle has 128 harness/21 script tests, 52 canonical invocations under race and independent GO, but new protected CI remains pending |
-| Runtime behavior | V2 remains dormant in application services; separately authorized disposable Redis smoke, claim/release and all 13 negative cases passed, with full owned-resource cleanup |
-| M4 bounded execution | Fourteen bootstrap/ACL cases PASS with consumed approvals; recovery workflow and image preparation now implemented/verified but real execution not yet authorized; full M4-P4/P5 remain open |
-| Review status | Prior reviews retained; recovery initial NO-GOs and four blockers corrected, with scoped correctness/security GO on inventory `b5fe64ee…`; no target recovery/full-M4 acceptance inferred |
-| Git state | Fresh `feature/crawl-jobs-v2-worker-recovery` starts from PR #14 merge `7617b86`, tree-identical to `c09ff84`; all 396 pending-file fingerprints survived the switch, including 372 unrelated files; recovery publication is pending |
+| Local and protected acceptance | Published recovery `c009282` retains its passing protected checks; new request delta passes 140 harness/21 script tests, four Go roots under race (44 new/114 total lifecycle invocations), vet and pins. New protected CI is pending |
+| Runtime behavior | V2 remains dormant in application services; separately authorized disposable Redis smoke, claim/release, all 13 negatives and one pre-I/O worker-death recovery case passed with owned-resource cleanup |
+| M4 bounded execution | Fourteen bootstrap/ACL cases and one pre-I/O recovery slice have scoped PASS evidence and consumed approvals. New request lifecycle is implemented/image-prepared but unexecuted; full M4-P4/P5 remain open |
+| Review status | Prior reviews retained. Request initial NEEDS_WORK findings on failed-envelope dispatch and failure-label progress are closed; both reviewers give GO for image/CI preparation on corrected inventory `36e8aed8…` |
+| Git state | Owner-authorized 44-file checkpoint prepared on fresh `feature/crawl-jobs-v2-request-lifecycle` from reviewed recovery `c009282`; PR #15 remains open, so the new PR inherits that already-reviewed commit. All 416 pending paths survived the branch switch, including 372 unrelated files; exact-revision protected CI remains the publication gate |
 
 ### Current source and fixture identities (regenerated 2026-09-21)
 
@@ -331,7 +348,7 @@ The final matrix and final independent reviews used pinned Go 1.25.13 and passed
 | M1: Foundation release gate | Complete and merged | Approved amendment, independent GO reviews, and passing protected PR #9 checks before merge |
 | M2: Reviewed foundation checkpoint | Complete | Scoped 66-file checkpoint secret-scanned, tested from the index export, committed, pushed, and remote identity verified |
 | M3: Authoritative Lua transitions | Complete locally: 43/43 sources, sealed factory, source conformance and full-module race verification; checkpoint `81028ca` pushed, still dormant | Complete source/pin and in-memory Go/Python/Lua checks plus the final current-tree race result, without runtime activation |
-| M4: Real Redis 7 acceptance | M4-P3 bootstrap readiness accepted; corrected recovery lifecycle/image preparation pass, new publication/CI/execution gates next; full M4-P4/P5 remain open | Idempotency, fencing, crash, AOF, memory, and latency evidence passes on disposable infrastructure |
+| M4: Real Redis 7 acceptance | M4-P3 bootstrap readiness accepted; first pre-I/O worker-death recovery case independently accepted after exact source/image/CI and execution gates; full M4-P4/P5 remain open | Idempotency, fencing, crash, AOF, memory, and latency evidence passes on disposable infrastructure |
 | M5: Runtime and consumer integration | Blocked by M4 and F4-F6 | Spider, feeder, consumers, Monitoring, Compose, and crawl-admin use only the accepted V2 protocol |
 | M6: Migration, runbooks, and rollback | Blocked by M5 | Stopped migration and rollback rehearsal pass; active docs contain tested V2 commands and no active V1 path |
 | M7: Immutable release gate | Blocked by M6 | Final digests, manifests, images, backups, CI, and authorization/report templates are reviewed |
@@ -2550,7 +2567,9 @@ not real-Redis timing, allocator, durability or operational acceptance.
 **Current phase: M4-P3 readiness accepted; M4-P4/P5 open.** The
 [September 25 assessment](crawl-jobs-v2-m4-readiness-2026-09-25.md) binds the scoped
 independent GO decisions, admission reconciliation and new offline recovery work.
-The required full matrix below remains open.
+The [September 27 recovery run](crawl-jobs-v2-m4-recovery-run-2026-09-27.md) adds
+one independently accepted pre-I/O worker-death case. The required full matrix
+below remains open.
 
 **Historical first bounded real-Redis smoke case: PASS.** The original pre-start init FAIL
 remains historical evidence. After the reviewed capability-spelling correction,
@@ -2660,9 +2679,115 @@ Independent postcheck: `ef313e8df650fd855a1ec4d44bb5b68e9e8dd9bce3e8048833d44eba
 See [preparation](crawl-jobs-v2-m4-recovery-preparation-2026-09-27.md) and
 [exact artifacts](evidence/m4-recovery-image-prep-2026-09-27/README.md).
 
-New publication/protected CI and fresh exact approval/separate execution decision
-remain next. Old approvals are consumed and old CI covers its own checkpoint.
-No actual recovery case or tracing experiment has run, and full M4 remains open.
+At this preparation checkpoint, publication/CI and execution decisions remained
+pending. They were subsequently completed for the one recovery run below. The
+dated preparation artifacts retain their original non-execution classification.
+
+### Recovery publication and single real run (2026-09-27)
+
+The owner authorized the exact **41-file** checkpoint on draft
+[PR #15](https://github.com/fullerkris/mifolyo/pull/15), published as
+`c009282ba5473e89984e95466efec37bf7ab2a3a`. All fourteen protected checks passed;
+downloaded eight-shard reports match the 476-root compiled inventory, with 475
+passes and only optional `TestJobLuaNativeFactoryParity` skipped. Tested merge
+`c628fe9754a0c071b75632ff225e046378a084f8` has the same tree
+`70aeeb2c6db38fb467fa767546d8d8fb8f82a7da`. The amd64 CI image report verifies
+66 files/all 16 recipes under its explicitly selected PC01 preparation; the
+separate arm64 preparation admits all five recovery roles. CI verification:
+`4d35850d1c1a460c82dbd43883ee5b883f93441137fb4bf77ee7f6eb36b471fe`.
+
+The owner then approved the exact recovery artifacts and separately selected
+**Execute approved case**. Approval `3e691983…` was recorded at 18:04:43.123 UTC
+with a one-hour window. The single invocation ran 18:27:46.662–18:29:06.119 UTC
+and passed in **79,457 ms**, with fixture `d02e7fa6424d446089fd1333206bb294`.
+
+The original worker was observed stopped **654 ms** after host receipt of its
+complete claim frame, with non-OOM container/attached-command exit 137 and PID 0;
+attached reconciliation took 0 ms at recorded millisecond resolution. A different
+worker container followed. Twenty Redis-TIME observations crossed the unchanged
+60-second lease; early recovery was 57,370 ms before expiry and due recovery
+2,710 ms after expiry. All thirteen operations, 38 counters, exact one-day
+terminal reservation expiries and 46 authority denials passed.
+
+Independent correctness and defensive-security evidence reviews both returned
+**ACCEPT within this case scope**. Six ordinary roles were revoked while Redis
+was reachable. Both workers were quiesced, the 55-action retained journal matched
+the report by exact bytes and original file identity, all five containers were
+independently absent by name and ID, and both volumes were absent. Secret scan:
+zero findings. Approval disposition: **consumed, non-reusable**.
+
+Report: `afe9bd92aea51e14a935c44f99c653f486a97889e3da3f30c20891ca89f51775`.
+Postcheck: `cba49dea86c45ecddbae96dd3a24c65a24acbc451f3abc72e1adab9fa9b9bb4d`.
+See the [dated result](crawl-jobs-v2-m4-recovery-run-2026-09-27.md) and
+[exact evidence index](evidence/m4-recovery-run-2026-09-27/README.md).
+
+This provides actual before/after-expiry observations, not live E−1/E/E+1 cuts,
+an internal Lua crash trace or a benchmark. Full private comparisons occurred
+inside the reviewed executor/controller; exported hashes do not reconstruct
+discarded owners/tokens/state. Remaining request/rate and after-I/O histories,
+full protocol/admin, crash/AOF/restore, maximum-shape and latency work remain open.
+At this run checkpoint, request-start/finish and rate accounting was the next
+bounded implementation. Its subsequent implementation is recorded below; new
+artifacts and authority are required before another real case.
+
+### Request lifecycle implementation and preparation (2026-09-28)
+
+`ledger-request-lifecycle-v1` is a closed one-job/one-lease case over 58 protocol
+positions, with robots ordinal 1 then document ordinal 2 under the same owner,
+token and fence. The 22-call sequence contains six mutations, four actual RESP
+errors, ten replays and two `CJ2_MAINTAIN_RATE_SCOPES` integrity passes. Its six
+canonical sources include BOOT, CLAIM, RESERVE_REQUEST, START_REQUEST,
+FINISH_REQUEST and rate maintenance. The fixture records two starts and one
+delivery attempt; no network I/O or output/stage work is dispatched.
+
+The oracle reconstructs complete private state and absolute expiries, including
+the immutable first-start record, document witness, both terminal reservation
+records and all three rate indexes. Errors have no fabricated reply time. Public
+receipts reconstruct 33 counters, exact deltas, history/rate fingerprints and
+46 direct authority denials. ACL additions are confined to exact first-start and
+group-start hashes plus each scope's started index. No protocol, Lua or pin
+change was needed; original lease/tombstone and 300/30/60-second bounds remain.
+
+Initial inventory `d6284b4d…` passed local tests but both independent reviewers
+returned NEEDS_WORK: the actual Docker adapter omitted request-case FAIL dispatch,
+and failure labels could contradict the retained prefix. Corrections in three
+paths add the production dispatch, progress-bound failure labels, and serialized
+adapter regressions for ambiguous START/FINISH with no retry and preserved cleanup.
+Initial artifacts remain intact. Corrected 96-file inventory:
+`36e8aed8723ba5a90eb8233572caeb2d3cedd612d5cdd4893879e880693fac57`.
+Both re-reviews return **GO for image/CI preparation**.
+
+Corrected verification passes **140 harness tests** with ResourceWarnings as
+errors (1,048,302 ms command wall time), **21 script tests**, and four focused Go
+roots under race (844,561 ms): 44 new request invocations plus 70 prior claim/recovery
+invocations. Vet, strict 43-source assembly and bundle pins pass. Source
+verification: `db54b66d7d030af686feff9a505b1430547adea5249f0ffdbf57830f9f25e62e`;
+review record: `92e82586e77bb572177dda88a3a7b09600a84e4f1e80647aa7abebcaef128746`.
+
+The network-disabled arm64 build and explicit selected-case preparation pass:
+
+| Artifact | SHA-256 / image identity |
+|---|---|
+| Harness / stand-in | `sha256:66b9cadf929c2e28b6965addbe7d398539c05ec1149ec537633ad31cdcef6457` |
+| Redis 7.4.11 | `sha256:24e81cffaba832bcd71068a6ff772a531076bafdbb1d684195766ae9b6511f5c` |
+| Plan | `98259b8ebef77f3d060cbcfccbdd124c14a968b6aa68888dd895946ef7d92389` |
+| Recipe | `b005236f8091e2064de50a39284b0eb1be5eb7cba955b56444a5d9b6a2ca5b4f` |
+| Image validation | `ed5af7bd532c6fa7b74e7a7907c6c9bb5a687a6625a5a5361544c5e069f360a0` |
+| Independent postcheck | `d8d1c1aacb92818bf6319b2ff21b285e8b06c6cb8e0c3f7b8ef55b6de41751aa` |
+
+All 96 reviewed bytes match after preparation. Image checks cover 69 exact files
+and all 17 recipes; four role containers were inspected while stopped. All four
+containers and both volumes of metadata fixture `f02ce82de0eace19b48e813169b43fa4`
+were independently absent. Init/executor image-check peaks were
+48,898,048 / 48,955,392 bytes. Only networkless image checks/Redis `--version` ran;
+no request acceptance Redis server was started.
+
+The [dated checkpoint](crawl-jobs-v2-m4-request-lifecycle-2026-09-28.md) and
+[exact evidence](evidence/m4-request-lifecycle-2026-09-28/README.md) record this
+scope. Publication, protected CI and fresh exact approval/separate execution
+decision remain next. Zero intervals do not establish positive-interval blocking
+or cross-worker/scope concurrency. After-I/O recovery, budgets/creation limits,
+durability, full admin/lifecycle, maximum-shape and latency coverage remain open.
 
 ### Full-acceptance design gates
 
@@ -2886,8 +3011,10 @@ The first approved attempt's init FAIL was corrected; the subsequent separately
 authorized `ledger-smoke-v1` case passes with verified cleanup. The claim/release
 checkpoint `b4bda19` passes protected PR #11 CI; its separately approved
 `ledger-claim-release-v1` case also passes with independent six-resource absence
-checks and consumed approval. The broader M4 matrix remains pending and needs
-new case scope/approval, starting with the remaining M4-P3 negatives. The first-executor
+checks and consumed approval. All remaining M4-P3 negatives subsequently passed
+and scoped readiness was accepted. One pre-I/O worker-death recovery case has now
+also passed independent evidence review on `c009282`. The broader M4 matrix still
+needs new bounded request/rate and remaining protocol/failure cases. The first-executor
 findings and closed-peer follow-up remain closed.
 M5 hermetic code/consumer integration waits
 for M4 and F4-F6. In the parent plan, compatible code and runbooks precede the F1/F2
@@ -2965,6 +3092,10 @@ Rendering remains disabled unless its separate activation requirements pass.
 | 2026-09-27 | PR #14 protected checkpoint and merge | Published `c09ff84` passes all 14 required checks and 476-root race accounting (475 pass/one allowed skip); same-tree merge `7617b86` observed; new lifecycle work remains outside that CI scope |
 | 2026-09-27 | Recovery lifecycle corrected review | Registered pre-I/O worker-death workflow, distinct replacement, real-time polling and exact state/expiry/counter receipts implemented; initial correctness/security NO-GOs corrected and re-reviewed GO on 90-file inventory `b5fe64ee…`; 128 harness/21 script checks and 52 canonical invocations under race pass; no real run |
 | 2026-09-27 | Recovery arm64 image preparation | Network-disabled pinned-base build yields harness `b164fb8…`; selected recovery plan `1e00625…` / recipe `ac0d4fb…`, five stopped admissions, 66-file/16-recipe checks and seven-resource absence PASS; new publication/CI and fresh execution decisions next |
+| 2026-09-27 | Recovery checkpoint publication and CI | Owner-approved 41-file checkpoint `c009282` published on draft PR #15; 14/14 protected contexts PASS; 476-root race inventory verified and amd64 66-file/16-recipe preparation retained |
+| 2026-09-27 | Single pre-I/O worker-death run accepted | Separate exact approval and execution decision produce fixture `d02e7fa6…` PASS in 79,457 ms; independent correctness/security ACCEPT, six-role revocation, 55-action journal and seven-resource absence verified; approval consumed |
+| 2026-09-28 | Bounded request lifecycle implemented and prepared | One-lease robots/document 22-call case; production failure-adapter and progress-label findings corrected/re-reviewed GO on 96-file inventory `36e8aed8…`; 140 harness/21 script tests and 44 new canonical invocations under race PASS; 69-file/17-recipe arm64 preparation and six-resource absence PASS; new publication/CI/execution gates remain |
+| 2026-09-28 | Request checkpoint publication authorized | Owner approved the reviewed 44-file commit/push/draft-PR/CI scope; fresh request-lifecycle branch from `c009282` preserves all 416 pending paths and clean index. PR #15 is still open, so the main-targeted draft includes its already-reviewed recovery commit; new case execution remains separately gated |
 
 ## Definition of done
 

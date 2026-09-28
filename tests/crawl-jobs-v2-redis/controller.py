@@ -29,6 +29,8 @@ import negative_specs as ns
 import admission
 import recovery_specs as rs
 import recovery_executor as recovery_worker
+import request_specs as qs
+import request_executor as request_worker
 import parked_command
 
 LABEL = "io.mifolyo.cj2.fixture"
@@ -358,6 +360,9 @@ class Docker:
             elif selected == rs.CASE:
                 h.require(stage == "recover", "STAGE_FAILURE")
                 recovery_worker.validate_stage_result(stage, result["result"], request, successful=False)
+            elif selected == qs.CASE:
+                h.require(stage == "measure", "STAGE_FAILURE")
+                request_worker.validate_stage_result(stage, result["result"], request, successful=False)
             else:
                 h.require(selected == case.CLAIM_CASE and stage == "measure", "STAGE_FAILURE")
                 claim_worker.validate_measurement(result["result"], False)
@@ -600,6 +605,8 @@ def execute(plan, approval, backend, *, revision_check=verify_revision, journal=
                 negative_worker.validate_stage_result(name, failure.receipt["result"], request, failure.receipt["isolation"], successful=False)
             elif selected == rs.CASE:
                 recovery_worker.validate_stage_result(name, failure.receipt["result"], request, successful=False)
+            elif selected == qs.CASE:
+                request_worker.validate_stage_result(name, failure.receipt["result"], request, successful=False)
             else:
                 claim_worker.validate_measurement(failure.receipt["result"], False)
                 h.require(failure.receipt["result"]["fixture_sha256"] == request["previous"]["fixture_summary"]["fixture_sha256"],
@@ -616,6 +623,8 @@ def execute(plan, approval, backend, *, revision_check=verify_revision, journal=
             negative_worker.validate_stage_result(name, result["result"], request, result["isolation"])
         elif selected == rs.CASE:
             recovery_worker.validate_stage_result(name, result["result"], request)
+        elif selected == qs.CASE:
+            request_worker.validate_stage_result(name, result["result"], request)
         if name != "ready":
             report["stages"][name] = result
         if name == "lease_clock":

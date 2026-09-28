@@ -17,6 +17,9 @@
 !tests/crawl-jobs-v2-redis/bounded_state.py
 !tests/crawl-jobs-v2-redis/admission.py
 !tests/crawl-jobs-v2-redis/recovery_specs.py
+!tests/crawl-jobs-v2-redis/request_specs.py
+!tests/crawl-jobs-v2-redis/request_oracle.py
+!tests/crawl-jobs-v2-redis/request_executor.py
 !tests/crawl-jobs-v2-redis/recovery_oracle.py
 !tests/crawl-jobs-v2-redis/recovery_executor.py
 !tests/crawl-jobs-v2-redis/parked_command.py

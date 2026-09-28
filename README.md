@@ -67,13 +67,25 @@ verified cleanup. All approvals are consumed; **zero negative Redis cases remain
 unrun** in the package. See the [results and coverage](docs/crawl-jobs-v2-m4-negative-remainder-2026-09-24.md).
 The September 25 admission reconciliation and independent reviews accept
 **M4-P3 bootstrap readiness** within the frozen checkpoint scope. The full
-104-requirement/43-operation/52-variant M4 inventory is recorded. The first
-worker-death recovery lifecycle is now implemented, with 128 harness tests,
-52 canonical-Lua differential invocations under race, and independent corrected
-correctness/security GO. Its new arm64 image/preparation passes; new publication,
-CI and exact execution decisions are next. No actual recovery result is claimed.
-See the [recovery review](docs/crawl-jobs-v2-m4-recovery-review-2026-09-27.md) and
+104-requirement/43-operation/52-variant M4 inventory is recorded. The reviewed
+worker-death recovery lifecycle was published as `c009282` on draft PR #15 with
+all fourteen protected checks passing. Its separately approved single real case
+**passed**: thirteen operations, 38 counters, 46 authority denials and actual
+lease expiry after worker termination. Correctness/security evidence reviews
+accepted the scoped result; all six credentials were revoked, all seven resources
+independently found absent, and its one-use approval consumed. See the
+[recovery result](docs/crawl-jobs-v2-m4-recovery-run-2026-09-27.md),
+[source review](docs/crawl-jobs-v2-m4-recovery-review-2026-09-27.md) and
 [image preparation](docs/crawl-jobs-v2-m4-recovery-preparation-2026-09-27.md).
+The next bounded request lifecycle is now implemented and independently reviewed
+GO for image/CI preparation: robots then document under one lease, 22 calls with
+once-only starts/finishes, historical receipts, first/document history and
+zero-interval rate accounting. Corrected checks pass 140 harness tests, 21 script
+tests and focused Go race conformance, including 44 new canonical invocations.
+The selected arm64 image verifies 69 files/all 17 recipes; all six preparation
+resources are independently absent. New publication/CI and exact execution
+decisions remain next; no real request-case result is claimed. See the
+[request lifecycle checkpoint](docs/crawl-jobs-v2-m4-request-lifecycle-2026-09-28.md).
 Full M4 acceptance and application integration remain pending. The
 [Crawl Jobs V2 plan](docs/crawl-jobs-v2-plan.md) owns current progress. Historical
 V1 commands below do not authorize another crawl.

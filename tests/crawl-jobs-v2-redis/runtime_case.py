@@ -9,12 +9,15 @@ import claim_release as claim
 import negative_cases as negative
 import negative_specs as ns
 import recovery_specs as rs
+import request_specs as qs
+import request_oracle as requests
 
 CASE = "ledger-smoke-v1"
 CLAIM_CASE = claim.CASE
 CASES = {CASE: "ledger-smoke", CLAIM_CASE: claim.SCENARIO}
 CASES.update(ns.CASES)
 CASES[rs.CASE] = rs.SCENARIO
+CASES[qs.CASE] = qs.SCENARIO
 RATE = h.P + "rate_scopes"
 PROBE = h.AUTH[2]  # Temporary pre-BOOT probe; removed before authority setup.
 WIRE_KEYS = (*h.AUTH, RATE)
@@ -28,6 +31,7 @@ SOURCES = ("CJ2_APPROVE_BOOT", "CJ2_MAINTAIN_RATE_SCOPES")
 FILES = ("harness.py", "resp.py", "runtime_case.py", "executor.py", "controller.py",
           "claim_release.py", "claim_executor.py", "negative_specs.py", "negative_cases.py", "negative_executor.py",
           "bounded_state.py", "admission.py", "recovery_specs.py", "recovery_oracle.py", "recovery_executor.py", "parked_command.py",
+          "request_specs.py", "request_oracle.py", "request_executor.py",
           "redis.conf", "Dockerfile.execution", "Dockerfile.execution.dockerignore")
 CONFIG = {"port": "0", "unixsocket": "/run/cj2/redis.sock", "unixsocketperm": "600",
           "aclfile": "/run/cj2/fixture.acl", "dir": "/data", "appendonly": "yes",
@@ -50,6 +54,8 @@ def case_for_plan(plan):
 
 def sources(case_id=CASE):
     h.require(type(case_id) is str and case_id in CASES, "UNSUPPORTED_CASE")
+    if case_id == qs.CASE:
+        return qs.SOURCES
     if case_id == rs.CASE:
         return rs.SOURCES
     if case_id in ns.CASES:
@@ -109,6 +115,9 @@ def validate_revocation(result, targets):
 
 
 def fixture(plan, fixture_id, material, at_ms=1000):
+    if case_for_plan(plan) == qs.CASE:
+        h.exact(material, {"owner_a", "owner_b", "token_a", "token_b", "wrong_token"})
+        return requests.compile_fixture(plan, dict(material, fixture_id=fixture_id, redis_time_ms=at_ms))
     if case_for_plan(plan) == rs.CASE:
         return claim_fixture(plan, fixture_id, material, at_ms)
     if case_for_plan(plan) in ns.CASES:
@@ -165,9 +174,12 @@ def acl_rules(case_id=CASE, fixture=None, plan=None):
         return rules
     if case_id in ns.CASES:
         return negative_acl_rules(case_id, fixture, plan)
-    if case_id == CLAIM_CASE:
-        fixture = claim.validate_fixture(plan, fixture)
+    if case_id in (CLAIM_CASE, qs.CASE):
+        fixture = requests.validate_fixture(plan, fixture) if case_id == qs.CASE else claim.validate_fixture(plan, fixture)
         groups = claim_key_groups(fixture)
+        if case_id == qs.CASE:
+            groups["write_hashes"] += [h.P + "first_request_start", fixture["base_key"] + ":group_started", fixture["base_key"] + ":group_active_started"]
+            groups["write_zsets"] += [h.P + "rate:" + scope + ":started" for scope in fixture["scope_ids"]]
         readable = tuple(key for key in fixture["key_inventory"] if key not in h.ABSENCE_ONLY)
         fixed_hashes = tuple(h.AUTH[i] for i in (0, 1, 5, 6))
         data_reads = (selector("+type", fixture["key_inventory"]), selector("+pttl", readable),
@@ -298,6 +310,13 @@ def recipe(case_id=CASE):
                                  "keys": "exact validated fixture identities; no wildcard grants"},
                       possible_keys=58, assertions=[f"CR{i:02}" for i in range(1, 13)], acl_denials=46,
                         measurement_steps=9, request_starts=0, state_expiry="absolute PEXPIRETIME", report_values="redacted")
+    elif case_id == qs.CASE:
+        result.update(wire_keys="closed REQUEST/MAINTAIN templates from request_oracle.py", stored_keys="57 fixture-owned plus BOOT-owned durability",
+            direct_setup_count=26, possible_keys=58, derived_output_keys="two same-lease reservations, first_request_start, three rate blocks",
+            acl_rules={"policy": "claim-key-kinds-v1 plus exact first-start/group-start hashes and started indexes"},
+            assertions=[f"REQ{i:02}" for i in range(1, 23)], measurement_steps=22, acl_denials=46,
+            request_starts=2, external_io_attempts=0, issued_leases=1, effective_mutations=6, expected_errors=4,
+            state_expiry="absolute PEXPIRETIME", rate_intervals="zero; positive-interval blocking not covered", report_values="redacted")
     elif case_id == rs.CASE:
         result.update(wire_keys="closed recovery_oracle wire inventory", stored_keys="57 claim-basis keys plus BOOT-owned durability",
             direct_setup_count=26, possible_keys=58, derived_output_keys="two reservations and three rate blocks",

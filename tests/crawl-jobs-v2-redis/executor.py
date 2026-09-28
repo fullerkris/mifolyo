@@ -16,6 +16,8 @@ import negative_executor as negative_worker
 import negative_specs as ns
 import recovery_specs as rs
 import recovery_executor as recovery_worker
+import request_specs as qs
+import request_executor as request_worker
 import admission
 from resp import Client, RedisError, TransportError
 
@@ -288,6 +290,8 @@ def resume(request):
             return negative_worker.resume(request, setup_client, current, evidence, epoch, sys.modules[__name__])
         if selected == rs.CASE:
             return recovery_worker.resume(request, setup_client, current, evidence, epoch, sys.modules[__name__])
+        if selected == qs.CASE:
+            return request_worker.resume(request, setup_client, current, evidence, epoch, sys.modules[__name__])
         boot_request = case.boot_request(current["run_id"], epoch, evidence_sha, at)
         with connect("boot", credentials) as boot:
             first = boot.call(*boot_request)
@@ -324,6 +328,8 @@ def resume(request):
 
 def measure(request):
     previous, credentials = request["previous"], request["credentials"]
+    if case.case_for_plan(request["plan"]) == qs.CASE:
+        return request_worker.measure(request, sys.modules[__name__])
     if case.case_for_plan(request["plan"]) in ns.CASES:
         return negative_worker.measure(request, sys.modules[__name__])
     if case.case_for_plan(request["plan"]) == case.CLAIM_CASE:
@@ -422,6 +428,10 @@ def main():
                 h.require(stage == "recover" and case.case_for_plan(request["plan"]) == rs.CASE, "RECOVERY_FAILURE")
                 result, status = failure.result, "FAIL"
                 recovery_worker.validate_stage_result(stage, result, request, successful=False)
+            except request_worker.RequestFailure as failure:
+                h.require(stage == "measure" and case.case_for_plan(request["plan"]) == qs.CASE, "REQUEST_FAILURE")
+                result, status = failure.result, "FAIL"
+                request_worker.validate_stage_result(stage, result, request, successful=False)
             output = {"stage": stage, "status": status, "recipe_sha256": case.recipe_sha256(case.case_for_plan(request["plan"])),
                       "isolation": isolation, "result": result}
             raw = h.canonical(output)

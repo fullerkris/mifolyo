@@ -3,6 +3,7 @@ package crawljobsv2
 import (
 	"bytes"
 	"context"
+	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
@@ -20,6 +21,12 @@ import (
 // Independent Go identities, literal wires and schemas execute embedded canonical
 // Lua against a command facade. Synthetic START grants never perform network I/O.
 func TestM4RequestLifecycleOffline(t *testing.T) {
+	m4RequestLifecycleProfiles(t, false)
+}
+
+// Each profile owns a fresh command facade. The positive-rate deadline controls
+// share identical fixture/prefix inputs, rather than retrying a mutated branch.
+func m4RequestLifecycleProfiles(t *testing.T, positive bool) {
 	ops := []OperationName{OperationTryClaim, OperationTryClaim, OperationFinishRequest, OperationReserveRequest,
 		OperationStartRequest, OperationStartRequest, OperationStartRequest, OperationFinishRequest, OperationFinishRequest,
 		OperationStartRequest, OperationMaintainRateScopes, OperationReserveRequest, OperationReserveRequest, OperationFinishRequest,
@@ -30,16 +37,39 @@ func TestM4RequestLifecycleOffline(t *testing.T) {
 		STARTED ALREADY_STARTED ALREADY_STARTED CRAWL_V2_IMMUTABLE_MISMATCH FINISHED ALREADY_FINISHED ALREADY_STARTED BATCH_DONE`)
 	mutations := map[int]bool{0: true, 5: true, 7: true, 11: true, 14: true, 18: true}
 	errorSteps := map[int]bool{2: true, 3: true, 4: true, 17: true}
+	profiles := []string{"spaced", "same-ms"}
+	caseID, purpose, packetFile, assertionPrefix := "ledger-request-lifecycle-v1", "offline_public_request_vectors", "test_request_oracle.py", "REQ"
+	interval := uint64(0)
+	if positive {
+		profiles = []string{"before", "at", "after"}
+		caseID, purpose, packetFile, assertionPrefix = "ledger-positive-interval-v1", "offline_public_rate_vectors", "test_rate_oracle.py", "RATE"
+		interval = 8000
+		ops = []OperationName{OperationTryClaim, OperationTryClaim, OperationFinishRequest, OperationReserveRequest,
+			OperationStartRequest, OperationStartRequest, OperationStartRequest, OperationFinishRequest, OperationFinishRequest,
+			OperationStartRequest, OperationMaintainRateScopes, OperationReserveRequest, OperationReserveRequest, OperationReserveRequest,
+			OperationFinishRequest, OperationStartRequest, OperationReserveRequest, OperationStartRequest, OperationStartRequest,
+			OperationFinishRequest, OperationFinishRequest, OperationFinishRequest, OperationStartRequest, OperationMaintainRateScopes}
+		statuses = strings.Fields(`CLAIMED ALREADY_CLAIMED CRAWL_V2_INVALID_STATE CRAWL_V2_INVALID_STATE CRAWL_V2_IMMUTABLE_MISMATCH
+			STARTED ALREADY_STARTED FINISHED ALREADY_FINISHED ALREADY_STARTED BATCH_DONE RATE_BLOCKED RESERVED ALREADY_RESERVED
+			ALREADY_FINISHED STARTED ALREADY_RESERVED ALREADY_STARTED ALREADY_STARTED CRAWL_V2_IMMUTABLE_MISMATCH
+			FINISHED ALREADY_FINISHED ALREADY_STARTED BATCH_DONE`)
+		mutations = map[int]bool{0: true, 5: true, 7: true, 12: true, 15: true, 20: true}
+		errorSteps = map[int]bool{2: true, 3: true, 4: true, 19: true}
+	}
 	bundle, err := AuthoritativeScriptBindingSet()
 	if err != nil {
 		t.Fatal(err)
 	}
 	contract, _ := ContractSHA256()
-	for _, profile := range []string{"spaced", "same-ms"} {
+	for _, profile := range profiles {
 		t.Run(profile, func(t *testing.T) {
+			count := len(ops)
+			if positive && profile == "before" {
+				count = 12
+			}
 			ctx, cancel := context.WithTimeout(t.Context(), 180*time.Second)
 			defer cancel()
-			path := filepath.Join(fixtureRepositoryRoot(t), "tests/crawl-jobs-v2-redis/test_request_oracle.py")
+			path := filepath.Join(fixtureRepositoryRoot(t), "tests/crawl-jobs-v2-redis", packetFile)
 			raw, err := exec.CommandContext(ctx, "python3", "-B", path, "--go-vectors", profile).Output()
 			if err != nil || len(raw) > 2*1024*1024 {
 				t.Fatal("request vectors failed or exceeded their packet bound", err)
@@ -63,18 +93,18 @@ func TestM4RequestLifecycleOffline(t *testing.T) {
 				} `json:"expected"`
 				Wires []m4NegativeWire `json:"wires"`
 			}
-			if json.Unmarshal(raw, &vector) != nil || vector.Purpose != "offline_public_request_vectors" || vector.Profile != profile || vector.Authorized ||
-				len(vector.Expected) != 22 || len(vector.Observations) != 22 || len(vector.Wires) != 22 {
+			if json.Unmarshal(raw, &vector) != nil || vector.Purpose != purpose || vector.Profile != profile || vector.Authorized ||
+				len(vector.Expected) != count || len(vector.Observations) != count || len(vector.Wires) != count {
 				t.Fatal("invalid request vector envelope")
 			}
 			f := vector.Fixture
-			if f.Case != "ledger-request-lifecycle-v1" || f.Authorized || f.Measured != "not_measured" || len(f.Initial) != 57 || !reflect.DeepEqual(f.Bootstrap, []string{DurabilityKey}) {
+			if f.Case != caseID || f.Authorized || f.Measured != "not_measured" || len(f.Initial) != 57 || !reflect.DeepEqual(f.Bootstrap, []string{DurabilityKey}) {
 				t.Fatal("invalid request fixture scope")
 			}
 			runID := RunID(f.Inputs.FixtureID)
 			lineage := RateScopeID(digestFramed("mifolyo:m4:claim-release:lineage:v1", []byte(runID))[:32])
 			groupScope, _ := DeriveGroupScopeID(lineage)
-			group := PolicyGroup{GroupID: "fixture", RateScopeID: lineage, GroupScopeID: groupScope, RequestStartLimit: 10, Concurrency: 1}
+			group := PolicyGroup{GroupID: "fixture", RateScopeID: lineage, GroupScopeID: groupScope, RequestStartLimit: 10, Concurrency: 1, IntervalMS: interval}
 			groupRecord, _ := policyGroupRecord(group)
 			if !reflect.DeepEqual(groupRecord, m4ClaimRecord(t, f.Group)) {
 				t.Fatal("independent group definition mismatch")
@@ -85,7 +115,7 @@ func TestM4RequestLifecycleOffline(t *testing.T) {
 			targets := []RequestTarget{{URLID: JobID(utils.URLIDV1(robots)), CanonicalURL: robots}, {URLID: jobID, CanonicalURL: document}}
 			decisions := make([]PolicyDecision, 2)
 			for i, kind := range []RequestKind{RequestRobots, RequestDocument} {
-				decisions[i], err = NewPolicyDecision(PolicyDecisionInput{RequestKind: kind, Target: targets[i], Depth: 1, GroupID: "fixture", RateScopeID: lineage, GroupConcurrency: 1, OriginConcurrency: 1})
+				decisions[i], err = NewPolicyDecision(PolicyDecisionInput{RequestKind: kind, Target: targets[i], Depth: 1, GroupID: "fixture", RateScopeID: lineage, GroupConcurrency: 1, OriginConcurrency: 1, GroupIntervalMS: interval, OriginIntervalMS: interval})
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -103,6 +133,18 @@ func TestM4RequestLifecycleOffline(t *testing.T) {
 			runFields := map[string]string{}
 			for _, field := range runRecord {
 				runFields[field.Name] = string(field.Value)
+			}
+			if positive {
+				// Literal test policy, independent of Python's descriptor constructor.
+				descriptor, e := json.Marshal(map[string]any{"purpose": "conformance_only", "case": caseID, "kind": "crawl_policy", "release_eligible": false,
+					"global_concurrency": 2, "global_interval_ms": 0, "group_concurrency": 1, "group_interval_ms": 8000, "origin_concurrency": 1, "origin_interval_ms": 8000})
+				if e != nil {
+					t.Fatal(e)
+				}
+				digest := sha256.Sum256(append(descriptor, '\n'))
+				if runFields["crawl_policy_sha256"] != hex.EncodeToString(digest[:]) {
+					t.Fatal("positive policy descriptor mismatch")
+				}
 			}
 			sourceDigest, _ := DeriveSourceDigest([]SourceJob{source})
 			groupDigest, _ := DerivePolicyGroupMapDigest([]PolicyGroup{group})
@@ -153,7 +195,7 @@ func TestM4RequestLifecycleOffline(t *testing.T) {
 					t.Fatal(e)
 				}
 				return []string{strconv.Itoa(i + 1), string(d.RequestKind), string(targets[i].URLID), targets[i].CanonicalURL, string(d.TargetDigest),
-					runFields["crawl_policy_sha256"], string(digest), "fixture", string(lineage), string(d.GlobalScopeID), string(d.GroupScopeID), string(d.OriginScopeID), "2", "0", "1", "0", "1", "0"}
+					runFields["crawl_policy_sha256"], string(digest), "fixture", string(lineage), string(d.GlobalScopeID), string(d.GroupScopeID), string(d.OriginScopeID), "2", "0", "1", strconv.FormatUint(interval, 10), "1", strconv.FormatUint(interval, 10)}
 			}
 			r := &sharedLuaRedis{data: map[string]bootLuaEntry{}, sets: map[string]map[string]bool{}, zsets: map[string]map[string]float64{},
 				lists: map[string][]string{}, now: f.Inputs.Time, runID: strings.Repeat("a", 40), used: 1000000, maximum: 400 * 1024 * 1024}
@@ -170,9 +212,10 @@ func TestM4RequestLifecycleOffline(t *testing.T) {
 			for name, value := range boot.hash {
 				protectedBoot.hash[name] = value
 			}
-			for i, op := range ops {
+			for i, op := range ops[:count] {
 				who := 0
-				if i == 3 || i == 11 || i == 12 || i == 14 || i == 15 || i >= 17 {
+				if (!positive && (i == 3 || i == 11 || i == 12 || i == 14 || i == 15 || i >= 17)) ||
+					(positive && (i == 3 || i == 11 || i == 12 || i == 13 || i == 15 || i == 16 || i == 17 || i >= 19)) {
 					who = 1
 				}
 				gate, e := NewTransportGate(op, gateInput)
@@ -223,7 +266,7 @@ func TestM4RequestLifecycleOffline(t *testing.T) {
 				if !reflect.DeepEqual(keys, wantKeys) || len(args) != len(semantic)+7 || !reflect.DeepEqual(args[7:], semantic) {
 					t.Fatalf("literal wire layout mismatch step %d", i)
 				}
-				if i == 4 || i == 17 {
+				if i == 4 || (!positive && i == 17) || (positive && i == 19) {
 					args[10] = f.Inputs.WrongToken
 				} // Valid Q, deliberately mismatched lease token.
 				parts := []string{"EVALSHA", built.ScriptSHA1(), strconv.Itoa(len(keys))}
@@ -245,9 +288,20 @@ func TestM4RequestLifecycleOffline(t *testing.T) {
 				observation := vector.Observations[i]
 				wantedBefore := uint64(1000001)
 				width := uint64(0)
-				if profile == "spaced" {
+				if profile == "spaced" || positive {
 					wantedBefore += uint64(i * 3)
 					width = 2
+				}
+				if positive && i >= 11 {
+					width = 0
+					if i == 11 {
+						wantedBefore = 1000017 + 8000 - 1
+					} else {
+						wantedBefore = 1000017 + 8000 + uint64((i-12)*3)
+						if profile == "after" {
+							wantedBefore++
+						}
+					}
 				}
 				if observation.Before != wantedBefore || observation.After != wantedBefore+width || (observation.Now == nil) != errorSteps[i] {
 					t.Fatal("missing precise time vector")
@@ -269,7 +323,7 @@ func TestM4RequestLifecycleOffline(t *testing.T) {
 				}
 				result := workerLuaRun(t, r, canonical, keys, args)
 				expected := vector.Expected[i]
-				if result.runtimeErr != nil || expected.ID != fmt.Sprintf("REQ%02d", i+1) || expected.Operation != op {
+				if result.runtimeErr != nil || expected.ID != fmt.Sprintf("%s%02d", assertionPrefix, i+1) || expected.Operation != op {
 					t.Fatal("canonical execution or identity failure", result.runtimeErr)
 				}
 				if errorSteps[i] {
@@ -281,6 +335,12 @@ func TestM4RequestLifecycleOffline(t *testing.T) {
 					var want []any
 					if json.Unmarshal(expected.Reply, &want) != nil || want[0] != statuses[i] || !reflect.DeepEqual(result.raw, want) || ValidateOperationResponse(op, result.raw) != nil {
 						t.Fatalf("reply mismatch at step %d: got %v want %v", i, result.raw, want)
+					}
+				}
+				if positive && i == 11 {
+					want := []any{"RATE_BLOCKED", strconv.FormatUint(r.now, 10), string(groupScope), "1008017", "1"}
+					if !reflect.DeepEqual(result.raw, want) {
+						t.Fatal("positive denial scope/deadline/after-IO tail mismatch")
 					}
 				}
 				workerLuaTrace(t, r)

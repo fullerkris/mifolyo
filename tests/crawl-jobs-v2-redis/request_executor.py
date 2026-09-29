@@ -7,6 +7,7 @@ import harness as h
 import negative_executor as negative
 import request_oracle as oracle
 import request_specs as spec
+import rate_specs as rate
 import runtime_case as case
 from resp import RedisError
 
@@ -56,12 +57,14 @@ def with_boot(state, boot):
 
 
 def validate_resume(result, request, previous=None):
+    selected = case.case_for_plan(request["plan"])
+    h.require(selected in (spec.CASE, rate.CASE), "REQUEST_RESUME_CASE")
     h.exact(result, {"probe_evidence", "probe_evidence_sha256", "boot_epoch", "boot_record", "setup_time_ms", "setup_time_observed",
         "fixture_summary", "setup_state_sha256", "setup_counters", "early_revocation"})
     proof, plan, fid = result["probe_evidence"], request["plan"], request["fixture_id"]
     h.exact(proof, {"case", "fixture_id", "plan_sha256", "old_run_id", "new_run_id", "acknowledged_probe_sha256", "verified_at_ms", "acknowledged_loss_bound"})
     probe = "m4-probe:" + fid + ":" + h.digest(h.canonical(plan))
-    h.require(proof["case"] == spec.CASE and proof["fixture_id"] == fid and proof["plan_sha256"] == h.digest(h.canonical(plan)) and
+    h.require(proof["case"] == selected and proof["fixture_id"] == fid and proof["plan_sha256"] == h.digest(h.canonical(plan)) and
         proof["acknowledged_probe_sha256"] == h.digest(probe.encode()) and result["probe_evidence_sha256"] == h.digest(h.canonical(proof)) and
         type(proof["verified_at_ms"]) is int and 0 < proof["verified_at_ms"] <= h.MAX_EXACT and
         type(proof["acknowledged_loss_bound"]) is int and proof["acknowledged_loss_bound"] == 0 and
@@ -92,6 +95,8 @@ def validate_resume(result, request, previous=None):
 
 def resume(request, setup, current, proof, epoch, api):
     credentials, plan = request["credentials"], request["plan"]
+    selected = case.case_for_plan(plan)
+    h.require(selected in (spec.CASE, rate.CASE), "REQUEST_RESUME_CASE")
     proof_sha = h.digest(h.canonical(proof))
     wire = case.boot_request(current["run_id"], epoch, proof_sha, proof["verified_at_ms"])
     with api.connect("boot", credentials) as client:
@@ -107,7 +112,7 @@ def resume(request, setup, current, proof, epoch, api):
         h.require(api.read_hash(setup, h.AUTH[0], case.BOOT_FIELDS) == boot, "REQUEST_BOOT_REPLAY")
     at = api.clock(setup)
     f, binding = fixture(request, at), fixture(request, 1000)
-    h.require(case.acl_rules(spec.CASE, f, plan) == case.acl_rules(spec.CASE, binding, plan), "REQUEST_ACL_BINDING")
+    h.require(case.acl_rules(selected, f, plan) == case.acl_rules(selected, binding, plan), "REQUEST_ACL_BINDING")
     snapshot(setup, dict.fromkeys(f["initial_state"]), boot)
     for key, row in sorted(f["initial_state"].items()):
         if row is None:
@@ -131,15 +136,20 @@ def resume(request, setup, current, proof, epoch, api):
 
 
 def _row(index, observation, expected, observed, f, before_counts):
+    selected = oracle.case_spec(f)
     public = projection(observed, f)
     counts = public.pop("counters")
-    return {"sequence": index, "assertion_id": f"REQ{index + 1:02}", "operation": spec.STEPS[index][0],
-        "response_kind": "error" if index in spec.ERRORS else "reply", "response_status": spec.STEPS[index][2],
+    if selected is rate:
+        public["rate_denial"] = ({"blocking_scope_kind": "group", "next_allowed_ms": int(expected["reply"][3]), "after_io": 1}
+            if index == 11 else None)
+    return {"sequence": index, "assertion_id": expected["assertion_id"], "operation": selected.STEPS[index][0],
+        "response_kind": "error" if index in selected.ERRORS else "reply", "response_status": selected.STEPS[index][2],
         **observation, "response_sha256": h.digest(h.canonical(expected["reply"])), **public,
         "counters": {"before": before_counts, "after": counts, "delta": {key: counts[key] - before_counts[key] for key in counts}}}
 
 
 def measure(request, api):
+    h.require(case.case_for_plan(request["plan"]) == spec.CASE, "REQUEST_MEASURE_CASE")
     resumed, plan = request["previous"], request["plan"]
     f = validate_resume(resumed, request)
     boot = resumed["boot_record"]
@@ -205,6 +215,7 @@ def validate_stage_result(stage, result, request, successful=True):
         h.require(successful, "REQUEST_FAILURE_STAGE")
         claim.validate_stage_result(stage, result, request)
         return
+    h.require(case.case_for_plan(request["plan"]) == spec.CASE, "REQUEST_MEASURE_CASE")
     resumed = request["previous"]
     f = validate_resume(resumed, request)
     fields = {"scope", "fixture_sha256", "steps", "acl_negatives", "clock_reference_ms"}

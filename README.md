@@ -77,15 +77,22 @@ independently found absent, and its one-use approval consumed. See the
 [recovery result](docs/crawl-jobs-v2-m4-recovery-run-2026-09-27.md),
 [source review](docs/crawl-jobs-v2-m4-recovery-review-2026-09-27.md) and
 [image preparation](docs/crawl-jobs-v2-m4-recovery-preparation-2026-09-27.md).
-The next bounded request lifecycle is now implemented and independently reviewed
-GO for image/CI preparation: robots then document under one lease, 22 calls with
-once-only starts/finishes, historical receipts, first/document history and
-zero-interval rate accounting. Corrected checks pass 140 harness tests, 21 script
-tests and focused Go race conformance, including 44 new canonical invocations.
-The selected arm64 image verifies 69 files/all 17 recipes; all six preparation
-resources are independently absent. New publication/CI and exact execution
-decisions remain next; no real request-case result is claimed. See the
-[request lifecycle checkpoint](docs/crawl-jobs-v2-m4-request-lifecycle-2026-09-28.md).
+The bounded request lifecycle is now **accepted for its single real-run scope**:
+robots then document under one lease, 22 calls, 33 counters, first/document
+history, exact expiry and 46 authority denials. It ran once in 12,944 ms on
+merged `561774f`, after passing main CI and separate artifact/execution decisions.
+Independent correctness/security reviews accepted the evidence; six-role
+revocation, the 28-action journal and absence of all six resources were verified.
+Its approval is consumed. See the [request run](docs/crawl-jobs-v2-m4-request-run-2026-09-28.md)
+and [implementation/preparation checkpoint](docs/crawl-jobs-v2-m4-request-lifecycle-2026-09-28.md).
+The next positive-interval slice is implemented and independently reviewed GO for
+image/CI preparation. It binds matching 8-second group/origin intervals, a
+group-first `RATE_BLOCKED` response, bounded observer-only Redis-time waiting and
+deadline admission/replays across 24 calls. All 150 harness tests, 21 script tests,
+five focused Go race roots, vet and source pins pass; selected arm64 preparation
+verifies 71 files/all 18 recipes with six-resource absence confirmed. Publication,
+CI and fresh exact execution decisions are next. See the
+[positive-interval checkpoint](docs/crawl-jobs-v2-m4-positive-interval-2026-09-29.md).
 Full M4 acceptance and application integration remain pending. The
 [Crawl Jobs V2 plan](docs/crawl-jobs-v2-plan.md) owns current progress. Historical
 V1 commands below do not authorize another crawl.

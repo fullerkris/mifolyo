@@ -119,14 +119,14 @@ def _change(entry, **changes):
     entry["fields"] = [[key, str(changes.get(key, value))] for key, value in entry["fields"]]
 
 
-def _decision(kind, url, lineage, scopes):
+def _decision(kind, url, lineage, scopes, interval=0):
     target_id = h.digest(("mifolyo-url:v1\0" + url).encode())
     fields = [("request_kind", kind), ("target_url_id", target_id),
         ("target_digest", _framed_digest("mifolyo:request-target:v2", target_id, url)), ("depth", "1"),
         ("group_id", GROUP), ("rate_scope_id", lineage), ("global_scope_id", scopes[0]),
         ("group_scope_id", scopes[1]), ("origin_scope_id", scopes[2]), ("global_concurrency", "2"),
-        ("global_interval_ms", "0"), ("group_concurrency", "1"), ("group_interval_ms", "0"),
-        ("origin_concurrency", "1"), ("origin_interval_ms", "0")]
+        ("global_interval_ms", "0"), ("group_concurrency", "1"), ("group_interval_ms", str(interval)),
+        ("origin_concurrency", "1"), ("origin_interval_ms", str(interval))]
     return dict(fields), _section_digest("mifolyo:policy-decision:v2", "decision", [fields])
 
 
@@ -139,21 +139,26 @@ def _transition(operation, run_id, job_id, identity, payload):
 def compile_fixture(plan, inputs):
     """Return a private deterministic projection, not measured setup or authority."""
     plan = h.validate_plan(plan)
-    h.require(plan["inputs"]["scenario"] in (SCENARIO, *h.negative.LEDGER_SCENARIOS, h.recovery.SCENARIO, h.requests.SCENARIO), "CLAIM_SCENARIO")
+    h.require(plan["inputs"]["scenario"] in (SCENARIO, *h.negative.LEDGER_SCENARIOS, h.recovery.SCENARIO, h.requests.SCENARIO, h.rates.SCENARIO), "CLAIM_SCENARIO")
     _inputs(inputs)
     inputs = dict(inputs)
     now, run_id = inputs["redis_time_ms"], inputs["fixture_id"]
     lineage = _framed_digest("mifolyo:m4:claim-release:lineage:v1", run_id)[:32]
     scopes = [_framed_digest("mifolyo:rate:global:v2"), _framed_digest("mifolyo:rate:group:v2", lineage),
               _framed_digest("mifolyo:rate:origin:v2", ORIGIN)]
-    document, document_sha = _decision("document", URL, lineage, scopes)
-    robots, robots_sha = _decision("robots", ROBOTS, lineage, scopes)
+    interval = h.rates.INTERVAL_MS if plan["inputs"]["scenario"] == h.rates.SCENARIO else 0
+    document, document_sha = _decision("document", URL, lineage, scopes, interval)
+    robots, robots_sha = _decision("robots", ROBOTS, lineage, scopes, interval)
     job_id = document["target_url_id"]
     base, job_key = h.P + "run:" + run_id, h.P + "run:" + run_id + ":job:" + job_id
     descriptors = {name: _descriptor(name) for name in ("authorization", "authorization_scope", "canonicalization", "crawl_policy", "render_policy")}
+    if interval:
+        descriptors["crawl_policy"] = {"purpose": "conformance_only", "case": h.rates.CASE, "kind": "crawl_policy", "release_eligible": False,
+            "global_concurrency": 2, "global_interval_ms": 0, "group_concurrency": 1, "group_interval_ms": interval,
+            "origin_concurrency": 1, "origin_interval_ms": interval}
     pins = {name: h.digest(h.canonical(value)) for name, value in descriptors.items()}
     group = [("group_id", GROUP), ("rate_scope_id", lineage), ("group_scope_id", scopes[1]),
-             ("request_start_limit", "10"), ("concurrency", "1"), ("interval_ms", "0")]
+             ("request_start_limit", "10"), ("concurrency", "1"), ("interval_ms", str(interval))]
     source = [("job_id", job_id), ("canonical_url", URL), ("score_text", "0"), ("depth", "1"),
               ("group_id", GROUP), ("rate_scope_id", lineage), ("policy_decision_sha256", document_sha)]
     # Explicit fixed-shape literals; Go independently checks every field/order.
@@ -212,7 +217,7 @@ def compile_fixture(plan, inputs):
     for suffix, score in (("job_order", 0), ("ready", 0), ("ready_at", now - 100)):
         state[base + ":" + suffix] = _zset({job_id: score})
     maps = {"group_limits": "10", "group_rate_scope_ids": lineage, "group_scope_ids": scopes[1], "group_concurrency": "1",
-            "group_interval_ms": "0", "group_started": "0", "group_pending": "0", "group_active_started": "0",
+            "group_interval_ms": str(interval), "group_started": "0", "group_pending": "0", "group_active_started": "0",
             "group_open_jobs": "1", "audit_group_counts": "1"}
     for suffix, value in maps.items():
         state[base + ":" + suffix] = _hash([(GROUP, value)])

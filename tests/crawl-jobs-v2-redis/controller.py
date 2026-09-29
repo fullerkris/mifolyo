@@ -31,6 +31,8 @@ import recovery_specs as rs
 import recovery_executor as recovery_worker
 import request_specs as qs
 import request_executor as request_worker
+import rate_specs as ps
+import rate_executor as rate_worker
 import parked_command
 
 LABEL = "io.mifolyo.cj2.fixture"
@@ -363,6 +365,9 @@ class Docker:
             elif selected == qs.CASE:
                 h.require(stage == "measure", "STAGE_FAILURE")
                 request_worker.validate_stage_result(stage, result["result"], request, successful=False)
+            elif selected == ps.CASE:
+                h.require(stage in ("rate_before", "rate_after"), "STAGE_FAILURE")
+                rate_worker.validate_stage_result(stage, result["result"], request, successful=False)
             else:
                 h.require(selected == case.CLAIM_CASE and stage == "measure", "STAGE_FAILURE")
                 claim_worker.validate_measurement(result["result"], False)
@@ -607,6 +612,8 @@ def execute(plan, approval, backend, *, revision_check=verify_revision, journal=
                 recovery_worker.validate_stage_result(name, failure.receipt["result"], request, successful=False)
             elif selected == qs.CASE:
                 request_worker.validate_stage_result(name, failure.receipt["result"], request, successful=False)
+            elif selected == ps.CASE:
+                rate_worker.validate_stage_result(name, failure.receipt["result"], request, successful=False)
             else:
                 claim_worker.validate_measurement(failure.receipt["result"], False)
                 h.require(failure.receipt["result"]["fixture_sha256"] == request["previous"]["fixture_summary"]["fixture_sha256"],
@@ -625,11 +632,17 @@ def execute(plan, approval, backend, *, revision_check=verify_revision, journal=
             recovery_worker.validate_stage_result(name, result["result"], request)
         elif selected == qs.CASE:
             request_worker.validate_stage_result(name, result["result"], request)
+        elif selected == ps.CASE:
+            rate_worker.validate_stage_result(name, result["result"], request)
         if name != "ready":
             report["stages"][name] = result
         if name == "lease_clock":
             clock_stages = report.setdefault("clock_stages", [])
             h.require(len(clock_stages) < rs.MAX_CLOCK_OBSERVATIONS, "RECOVERY_CLOCK_BOUND")
+            clock_stages.append(result)
+        if name == "rate_clock":
+            clock_stages = report.setdefault("rate_clock_stages", [])
+            h.require(len(clock_stages) < ps.MAX_CLOCK_OBSERVATIONS, "RATE_CLOCK_BOUND")
             clock_stages.append(result)
         action("stage_completed", name, cleanup_mode)
         return result["result"]
@@ -774,6 +787,28 @@ def execute(plan, approval, backend, *, revision_check=verify_revision, journal=
             recovery_worker.validate_wait(waiting, resumed, claimed, observation)
             phase = "recover"
             stage("recover", case.stage_roles(selected, "recover"), {**previous, "wait": waiting})
+        elif selected == ps.CASE:
+            h.require(deadline - time.monotonic() >= 60, "RATE_CASE_BUDGET")
+            phase = "rate_before"
+            prefix_result = stage("rate_before", case.stage_roles(selected, "rate_before"), resumed)
+            previous = {"resume": resumed, "prefix": prefix_result}
+            waiting = {"observations": []}
+            report["rate_wait"] = waiting
+            phase = "rate_wait"
+            last_clock = prefix_result["finished_at_ms"]
+            target = rate_worker.deadline(prefix_result)
+            for _ in range(ps.MAX_CLOCK_OBSERVATIONS):
+                clock = stage("rate_clock", case.stage_roles(selected, "rate_clock"), previous)
+                h.require(clock["now_ms"] >= last_clock, "RATE_CLOCK_ORDER")
+                waiting["observations"].append(clock)
+                last_clock = clock["now_ms"]
+                if last_clock >= target:
+                    break
+                remaining()
+                backend.wait_interval(min(2, (target - last_clock) / 1000))
+            rate_worker.validate_wait(waiting, resumed, prefix_result)
+            phase = "rate_after"
+            stage("rate_after", case.stage_roles(selected, "rate_after"), {**previous, "wait": waiting})
         else:
             phase = "measure"
             stage("measure", case.measure_roles(selected), resumed)

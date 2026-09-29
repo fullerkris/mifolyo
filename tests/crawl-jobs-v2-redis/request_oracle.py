@@ -10,12 +10,13 @@ from pathlib import Path
 import claim_release as cr
 import harness as h
 import request_specs as spec
+import rate_specs as rate
 import resp
 
 
 def compile_fixture(plan, inputs):
     h.require(type(plan) is dict and type(plan.get("inputs")) is dict and
-              plan["inputs"].get("scenario") == spec.SCENARIO, "REQUEST_SCENARIO")
+              plan["inputs"].get("scenario") in (spec.SCENARIO, rate.SCENARIO), "REQUEST_SCENARIO")
     f = cr.compile_fixture(plan, inputs)
     # Replace the unused B/fence-2 reservation position with A's second intent.
     # The old claim/recovery fixtures and their case-specific identities are intact.
@@ -35,7 +36,7 @@ def compile_fixture(plan, inputs):
     del f["initial_state"][old]
     f["initial_state"][h.P + "reservation:" + q] = None
     f["key_inventory"] = sorted((set(f["key_inventory"]) - {old}) | {h.P + "reservation:" + q})
-    f.update(case=spec.CASE, artifact_kind="private_offline_request_fixture",
+    f.update(case=rate.CASE if plan["inputs"]["scenario"] == rate.SCENARIO else spec.CASE, artifact_kind="private_offline_request_fixture",
         basis_compiler_sha256=f["compiler_sha256"], compiler_sha256=h.digest(Path(__file__).read_bytes()))
     h.require(len(f["key_inventory"]) == 58 and len(f["initial_state"]) == 57, "REQUEST_INVENTORY")
     return h.decode(h.canonical(f))
@@ -48,6 +49,11 @@ def validate_fixture(plan, fixture):
     return expected
 
 
+def case_spec(fixture):
+    h.require(fixture["case"] in (spec.CASE, rate.CASE), "REQUEST_CASE")
+    return rate if fixture["case"] == rate.CASE else spec
+
+
 def wire_requests(plan, fixture, epoch):
     f = validate_fixture(plan, fixture)
     h.require(cr._hex(epoch, 32), "BOOT_EPOCH")
@@ -58,7 +64,7 @@ def wire_requests(plan, fixture, epoch):
     shas = {op: hashlib.sha1((h.ROOT / "services/spider/internal/database/crawljobsv2/lua" / (op.lower() + ".lua")).read_bytes()).hexdigest()
         for op in spec.SOURCES[1:]}
     wires = []
-    for operation, label, _, wrong in spec.STEPS:
+    for operation, label, _, wrong in case_spec(f).STEPS:
         identity = f["identities"][label]
         keys = [*f["work_keys"], h.P + "reservation:" + identity["reservation_id"],
             *[h.P + "rate:" + scope + suffix for scope in f["scope_ids"] for suffix in ("", ":active", ":pending", ":started")]]
@@ -96,7 +102,7 @@ def _scopes(state, f, label, now, expiry, phase):
         if phase == "claim":
             values = dict(protocol_version="2", scope_id=scope, scope_kind=kind,
                 scope_witness="global" if kind == "global" else identity["intent"]["rate_scope_id"] if kind == "group" else cr.ORIGIN,
-                effective_concurrency="2" if kind == "global" else "1", effective_interval_ms="0", next_allowed_ms="0", last_started_at_ms="0",
+                effective_concurrency="2" if kind == "global" else "1", effective_interval_ms=identity["intent"][kind + "_interval_ms"], next_allowed_ms="0", last_started_at_ms="0",
                 active_count="1", pending_count="1", started_count="0", updated_at_ms=str(now),
                 concurrency_source_sha256=identity["intent"]["crawl_policy_sha256"], interval_source_sha256=identity["intent"]["crawl_policy_sha256"])
             state[key] = cr._hash([(name, values[name]) for name in cr.RATE_FIELDS])
@@ -105,7 +111,7 @@ def _scopes(state, f, label, now, expiry, phase):
         elif phase == "start":
             previous = dict(state[key]["fields"])
             cr._change(state[key], pending_count=0, started_count=1, last_started_at_ms=now, updated_at_ms=now,
-                next_allowed_ms=previous["next_allowed_ms"] if kind == "global" else max(int(previous["next_allowed_ms"]), now))
+                next_allowed_ms=previous["next_allowed_ms"] if kind == "global" else max(int(previous["next_allowed_ms"]), now + int(previous["effective_interval_ms"])))
         else:
             cr._change(state[key], active_count=0, started_count=0, updated_at_ms=now)
         state[key + ":active"] = None if phase == "finish" else cr._zset({q: expiry})
@@ -120,7 +126,8 @@ def expected_sequence(plan, fixture, observations):
 
 def _expected_validated(f, observations):
     """Project only an observed prefix; never manufacture future reply times."""
-    h.require(type(observations) is list and 0 <= len(observations) <= len(spec.STEPS), "REQUEST_OBSERVATIONS")
+    selected = case_spec(f)
+    h.require(type(observations) is list and 0 <= len(observations) <= len(selected.STEPS), "REQUEST_OBSERVATIONS")
     state, result = copy.deepcopy(f["initial_state"]), []
     base, job = f["base_key"], f["job_key"]
     minimum = f["inputs"]["redis_time_ms"]
@@ -131,15 +138,20 @@ def _expected_validated(f, observations):
             "REQUEST_OBSERVATION_TIME")
         h.require(after - observations[0]["started_at_ms"] <= cr.STAGE_MS, "REQUEST_MEASURE_SPAN")
         minimum = after
-        operation, label, status, _ = spec.STEPS[index]
+        operation, label, status, _ = selected.STEPS[index]
         identity = f["identities"][label]
         q, qkey = identity["reservation_id"], h.P + "reservation:" + identity["reservation_id"]
-        if index in spec.ERRORS:
+        if index in selected.ERRORS:
             h.require(now is None, "REQUEST_ERROR_TIME")
             reply = {"error": status}
         else:
             h.require(type(now) is int and before <= now <= after, "REQUEST_REPLY_TIME")
-            if index == 0:
+            if selected is rate and index >= 11:
+                deadline = observations[5]["now_ms"] + rate.INTERVAL_MS
+                h.require(now < deadline if index == 11 else now >= deadline, "RATE_ADMISSION_TIME")
+                if index in (16, 17):
+                    h.require(now < observations[15]["now_ms"] + rate.INTERVAL_MS, "RATE_REPLAY_WINDOW")
+            if status == "CLAIMED":
                 expiry = now + cr.LEASE_MS
                 cr._change(state[base], claims_total=1, reservation_creations_total=1, pending_request_reservations=1,
                     last_activity_at_ms=now, last_execution_at_ms=now)
@@ -152,15 +164,15 @@ def _expected_validated(f, observations):
                 state[h.P + "active_leases"] = cr._zset({f["run_id"] + ":" + f["job_id"]: expiry})
                 state[qkey] = _reservation(f, label, now, expiry)
                 _scopes(state, f, label, now, expiry, "claim")
-            elif index == 11:
+            elif status == "RESERVED":
                 expiry = int(dict(state[job]["fields"])["lease_expires_at_ms"])
                 cr._change(state[base], reservation_creations_total=2, pending_request_reservations=1, last_activity_at_ms=now)
                 cr._change(state[base + ":group_pending"], **{cr.GROUP: 1})
                 cr._change(state[job], active_reservation_id=q, next_request_ordinal=3, updated_at_ms=now)
                 state[qkey] = _reservation(f, label, now, expiry)
                 _scopes(state, f, label, now, expiry, "reserve")
-            elif index in (5, 14):
-                count = 1 if index == 5 else 2
+            elif status == "STARTED":
+                count = 1 if label == "a" else 2
                 expiry = int(dict(state[qkey]["fields"])["expires_at_ms"])
                 cr._change(state[base], pending_request_reservations=0, started_request_reservations=1, request_starts=count,
                     last_activity_at_ms=now, last_execution_at_ms=now, last_request_started_at_ms=now)
@@ -169,7 +181,7 @@ def _expected_validated(f, observations):
                 cr._change(state[job], request_starts=count, delivery_attempts=1, lease_delivery_started=1, last_request_started_at_ms=now, updated_at_ms=now)
                 cr._change(state[qkey], state="started", started_at_ms=now, delivery_attempts_after_start=1,
                     job_starts_after_start=count, run_starts_after_start=count, group_starts_after_start=count)
-                if index == 5:
+                if label == "a":
                     state[h.P + "first_request_start"] = cr._hash([("protocol_version", "2"), ("run_id", f["run_id"]),
                         ("job_id", f["job_id"]), ("lease_fence", "1"), ("started_at_ms", str(now))])
                 else:
@@ -177,7 +189,7 @@ def _expected_validated(f, observations):
                         last_document_target_url_id=identity["intent"]["target_url_id"], last_document_target_url=cr.URL,
                         last_document_target_digest=identity["intent"]["target_digest"])
                 _scopes(state, f, label, now, expiry, "start")
-            elif index in (7, 18):
+            elif status == "FINISHED":
                 expiry = int(dict(state[qkey]["fields"])["expires_at_ms"])
                 cr._change(state[base], started_request_reservations=0, last_activity_at_ms=now)
                 cr._change(state[base + ":group_active_started"], **{cr.GROUP: 0})
@@ -186,7 +198,9 @@ def _expected_validated(f, observations):
                 state[qkey]["expires_at_ms"] = now + cr.TOMBSTONE_MS
                 _scopes(state, f, label, now, expiry, "finish")
             reservation = dict(state[qkey]["fields"]) if state[qkey] is not None else {}
-            if operation == spec.CLAIM:
+            if status == "RATE_BLOCKED":
+                reply = [status, str(now), f["scope_ids"][1], str(observations[5]["now_ms"] + rate.INTERVAL_MS), "1"]
+            elif operation == spec.CLAIM:
                 reply = [status, str(now), "1", reservation["expires_at_ms"], q, reservation["expires_at_ms"]]
             elif operation == spec.RESERVE:
                 reply = [status, str(now), q, reservation["expires_at_ms"]]
@@ -199,7 +213,7 @@ def _expected_validated(f, observations):
             else:
                 reply = [status, str(now), "3", "0"]
         h.require(after < int(dict(state[job]["fields"])["lease_expires_at_ms"]), "REQUEST_LEASE_SPAN")
-        result.append({"assertion_id": f"REQ{index + 1:02}", "operation": operation, "reply": reply, "state": copy.deepcopy(state)})
+        result.append({"assertion_id": f"{'RATE' if selected is rate else 'REQ'}{index + 1:02}", "operation": operation, "reply": reply, "state": copy.deepcopy(state)})
     return result
 
 
@@ -208,6 +222,6 @@ def public_summary(plan, fixture):
 
 
 def _public_summary_validated(f):
-    return {"case": spec.CASE, "purpose": "conformance_only", "execution_authorized": False, "release_eligible": False,
+    return {"case": f["case"], "purpose": "conformance_only", "execution_authorized": False, "release_eligible": False,
         "measurement_status": "not_measured", "fixture_sha256": h.digest(h.canonical(f)), "compiler_sha256": f["compiler_sha256"],
         "basis_compiler_sha256": f["basis_compiler_sha256"], "plan_sha256": f["plan_sha256"], "possible_keys": 58, "fixture_owned_keys": 57}

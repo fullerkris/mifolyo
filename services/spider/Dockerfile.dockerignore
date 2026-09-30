@@ -26,6 +26,8 @@
 !tests/crawl-jobs-v2-redis/request_specs.py
 !tests/crawl-jobs-v2-redis/request_oracle.py
 !tests/crawl-jobs-v2-redis/test_request_oracle.py
+!tests/crawl-jobs-v2-redis/rate_specs.py
+!tests/crawl-jobs-v2-redis/test_rate_oracle.py
 
 **/*.env
 **/.env*

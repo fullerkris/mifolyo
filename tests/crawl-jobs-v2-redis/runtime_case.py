@@ -11,6 +11,7 @@ import negative_specs as ns
 import recovery_specs as rs
 import request_specs as qs
 import request_oracle as requests
+import rate_specs as ps
 
 CASE = "ledger-smoke-v1"
 CLAIM_CASE = claim.CASE
@@ -18,6 +19,7 @@ CASES = {CASE: "ledger-smoke", CLAIM_CASE: claim.SCENARIO}
 CASES.update(ns.CASES)
 CASES[rs.CASE] = rs.SCENARIO
 CASES[qs.CASE] = qs.SCENARIO
+CASES[ps.CASE] = ps.SCENARIO
 RATE = h.P + "rate_scopes"
 PROBE = h.AUTH[2]  # Temporary pre-BOOT probe; removed before authority setup.
 WIRE_KEYS = (*h.AUTH, RATE)
@@ -32,6 +34,7 @@ FILES = ("harness.py", "resp.py", "runtime_case.py", "executor.py", "controller.
           "claim_release.py", "claim_executor.py", "negative_specs.py", "negative_cases.py", "negative_executor.py",
           "bounded_state.py", "admission.py", "recovery_specs.py", "recovery_oracle.py", "recovery_executor.py", "parked_command.py",
           "request_specs.py", "request_oracle.py", "request_executor.py",
+          "rate_specs.py", "rate_executor.py",
           "redis.conf", "Dockerfile.execution", "Dockerfile.execution.dockerignore")
 CONFIG = {"port": "0", "unixsocket": "/run/cj2/redis.sock", "unixsocketperm": "600",
           "aclfile": "/run/cj2/fixture.acl", "dir": "/data", "appendonly": "yes",
@@ -54,7 +57,7 @@ def case_for_plan(plan):
 
 def sources(case_id=CASE):
     h.require(type(case_id) is str and case_id in CASES, "UNSUPPORTED_CASE")
-    if case_id == qs.CASE:
+    if case_id in (qs.CASE, ps.CASE):
         return qs.SOURCES
     if case_id == rs.CASE:
         return rs.SOURCES
@@ -98,7 +101,9 @@ def stage_roles(case_id, stage):
     sources(case_id)
     if case_id == rs.CASE and stage in rs.PHASE_ROLES:
         return rs.PHASE_ROLES[stage]
-    h.require(case_id != rs.CASE or stage != "measure", "STAGE")
+    if case_id == ps.CASE and stage in ps.PHASE_ROLES:
+        return ps.PHASE_ROLES[stage]
+    h.require(case_id not in (rs.CASE, ps.CASE) or stage != "measure", "STAGE")
     choices = {"init": roles(case_id), "ready": ("setup",), "probe": ("setup",),
                "resume": ("setup", "loader", "boot", "observer", "revoker", *ns.extra_roles(case_id)),
                "measure": measure_roles(case_id), "revoke": roles(case_id)}
@@ -115,7 +120,7 @@ def validate_revocation(result, targets):
 
 
 def fixture(plan, fixture_id, material, at_ms=1000):
-    if case_for_plan(plan) == qs.CASE:
+    if case_for_plan(plan) in (qs.CASE, ps.CASE):
         h.exact(material, {"owner_a", "owner_b", "token_a", "token_b", "wrong_token"})
         return requests.compile_fixture(plan, dict(material, fixture_id=fixture_id, redis_time_ms=at_ms))
     if case_for_plan(plan) == rs.CASE:
@@ -174,10 +179,10 @@ def acl_rules(case_id=CASE, fixture=None, plan=None):
         return rules
     if case_id in ns.CASES:
         return negative_acl_rules(case_id, fixture, plan)
-    if case_id in (CLAIM_CASE, qs.CASE):
-        fixture = requests.validate_fixture(plan, fixture) if case_id == qs.CASE else claim.validate_fixture(plan, fixture)
+    if case_id in (CLAIM_CASE, qs.CASE, ps.CASE):
+        fixture = requests.validate_fixture(plan, fixture) if case_id in (qs.CASE, ps.CASE) else claim.validate_fixture(plan, fixture)
         groups = claim_key_groups(fixture)
-        if case_id == qs.CASE:
+        if case_id in (qs.CASE, ps.CASE):
             groups["write_hashes"] += [h.P + "first_request_start", fixture["base_key"] + ":group_started", fixture["base_key"] + ":group_active_started"]
             groups["write_zsets"] += [h.P + "rate:" + scope + ":started" for scope in fixture["scope_ids"]]
         readable = tuple(key for key in fixture["key_inventory"] if key not in h.ABSENCE_ONLY)
@@ -310,13 +315,18 @@ def recipe(case_id=CASE):
                                  "keys": "exact validated fixture identities; no wildcard grants"},
                       possible_keys=58, assertions=[f"CR{i:02}" for i in range(1, 13)], acl_denials=46,
                         measurement_steps=9, request_starts=0, state_expiry="absolute PEXPIRETIME", report_values="redacted")
-    elif case_id == qs.CASE:
+    elif case_id in (qs.CASE, ps.CASE):
         result.update(wire_keys="closed REQUEST/MAINTAIN templates from request_oracle.py", stored_keys="57 fixture-owned plus BOOT-owned durability",
             direct_setup_count=26, possible_keys=58, derived_output_keys="two same-lease reservations, first_request_start, three rate blocks",
             acl_rules={"policy": "claim-key-kinds-v1 plus exact first-start/group-start hashes and started indexes"},
             assertions=[f"REQ{i:02}" for i in range(1, 23)], measurement_steps=22, acl_denials=46,
             request_starts=2, external_io_attempts=0, issued_leases=1, effective_mutations=6, expected_errors=4,
             state_expiry="absolute PEXPIRETIME", rate_intervals="zero; positive-interval blocking not covered", report_values="redacted")
+        if case_id == ps.CASE:
+            result.update(assertions=[f"RATE{i:02}" for i in range(1, 25)], measurement_steps=24, phases=list(ps.PHASES),
+                minimum_case_seconds=ps.MIN_CASE_SECONDS, clock_observation_limit=ps.MAX_CLOCK_OBSERVATIONS,
+                interval_ms=ps.INTERVAL_MS, measurement_span_milliseconds=30000, rate_denials=1,
+                rate_intervals="global=0; group=origin=8000; group-first deadline block; no independent origin-block/concurrency claim")
     elif case_id == rs.CASE:
         result.update(wire_keys="closed recovery_oracle wire inventory", stored_keys="57 claim-basis keys plus BOOT-owned durability",
             direct_setup_count=26, possible_keys=58, derived_output_keys="two reservations and three rate blocks",
@@ -367,6 +377,7 @@ def validate_approval(plan, approval, now_ms):
               approval["recipe_sha256"] == recipe_sha256(selected), "APPROVAL_ARTIFACT_MISMATCH")
     h.require(type(approval["max_seconds"]) is int and 1 <= approval["max_seconds"] <= 300, "TIME_LIMIT")
     h.require(selected != rs.CASE or approval["max_seconds"] >= rs.MIN_CASE_SECONDS, "RECOVERY_TIME_LIMIT")
+    h.require(selected != ps.CASE or approval["max_seconds"] >= ps.MIN_CASE_SECONDS, "RATE_TIME_LIMIT")
     h.require(type(approval["expires_at_ms"]) is int and now_ms + approval["max_seconds"] * 1000 <
               approval["expires_at_ms"] <= min(h.MAX_EXACT, now_ms + 86400000), "APPROVAL_EXPIRY")
     h.require(approval["architecture"] in ("amd64", "arm64"), "PLATFORM")

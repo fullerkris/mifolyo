@@ -70,7 +70,7 @@ def process_inventory():
         expected = ["python3", "-I", "-B", "-", *sys.argv[1:]]
     else:
         h.require(sys.argv[0] == ENTRY and len(sys.argv) == 3 and
-                   sys.argv[1] in ("init", "ready", "probe", "resume", "measure", "revoke", "claim_park", "observe_claim", "lease_clock", "recover") and
+                   sys.argv[1] in ("init", "ready", "probe", "resume", "measure", "revoke", "claim_park", "observe_claim", "lease_clock", "recover", "rate_before", "rate_clock", "rate_after") and
                   re.fullmatch(r"[1-9][0-9]{0,4}", sys.argv[2]) and int(sys.argv[2]) <= 30000, "PROCESS_INVENTORY")
         expected = ["python3", "-B", *sys.argv]
     rows = []

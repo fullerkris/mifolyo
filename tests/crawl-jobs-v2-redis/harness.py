@@ -23,6 +23,7 @@ import sys
 import negative_specs as negative
 import recovery_specs as recovery
 import request_specs as requests
+import rate_specs as rates
 
 ROOT = Path(__file__).resolve().parents[2]
 HERE = Path(__file__).resolve().parent
@@ -48,6 +49,7 @@ SCENARIOS.update({scenario: ("administrative" if name in negative.ADMIN else "le
                   for name, scenario in negative.CASES.items()})
 SCENARIOS[recovery.SCENARIO] = ("ledger", "fresh")
 SCENARIOS[requests.SCENARIO] = ("ledger", "fresh")
+SCENARIOS[rates.SCENARIO] = ("ledger", "fresh")
 CANDIDATE_RUN_OPS = frozenset(("CJ2_CREATE_RUN", "CJ2_ENQUEUE_BATCH",
     "CJ2_BEGIN_RUN_AUDIT", "CJ2_AUDIT_RUN_BATCH", "CJ2_SEAL_RUN",
     "CJ2_CANCEL_RUN", "CJ2_CANCEL_BATCH", "CJ2_PURGE_RUN_BATCH"))

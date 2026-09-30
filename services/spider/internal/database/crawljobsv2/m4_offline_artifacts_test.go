@@ -53,7 +53,7 @@ func TestM4OfflineArtifacts(t *testing.T) {
 		ledger-candidate-compat-present ledger-candidate-contract-present ledger-admin-freeze-present
 		ledger-active-compat-missing ledger-active-contract-wrong-type ledger-active-contract-mismatch
 		ledger-guard-mismatch ledger-active-compat-extra-field ledger-wire-negatives bootstrap-rejections
-		ledger-install-denied ledger-retire-denied ledger-promote-denied ledger-worker-death-pre-io ledger-request-lifecycle`)
+		ledger-install-denied ledger-retire-denied ledger-promote-denied ledger-worker-death-pre-io ledger-request-lifecycle ledger-positive-interval`)
 	if err := json.Unmarshal(output, &vectors); err != nil || len(vectors.Cases) != len(scenarios) {
 		t.Fatal("invalid offline artifact inventory")
 	}

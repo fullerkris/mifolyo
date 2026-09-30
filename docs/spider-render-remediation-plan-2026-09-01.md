@@ -2,7 +2,7 @@
 
 **Original review date:** 2026-09-01
 
-**Last updated:** 2026-09-29 (UTC; positive-interval rate slice implemented, independent GO and arm64 preparation PASS; publication/CI and fresh execution decisions next)
+**Last updated:** 2026-09-30 (UTC; published positive-interval case independently accepted after one approved run; credentials revoked, cleanup verified and approval consumed; full M4 open)
 
 **Reviewed baseline:** `main` / `44d8b09a364a1f60032e1f4faccf160813f4dd04`
 
@@ -110,7 +110,7 @@ retained Mongo records still incorrectly say `enabled: true`.
 |---|---|---|
 | F1 seed reconciliation | Not started | Retained evidence remains 70 enabled records; execute only during the matched freeze/backup/reset sequence |
 | F2 disposable Redis reset | Not started | Retained V1 state remains historical post-test evidence and must not be reused or selectively repaired |
-| F3 durable Crawl Jobs V2 | M4-P3 readiness, pre-I/O recovery and bounded zero-interval request cases accepted within their scopes; application V2 remains dormant | Positive-interval 24-call slice now has source correctness/security GO, 150 harness/21 script tests and five Go race roots passing, plus selected arm64 preparation on 71 files/18 recipes with verified cleanup. Its real run awaits publication/CI and fresh decisions. Independent origin/shared concurrency, after-I/O recovery, broader protocol/admin, crash/AOF, maximum-shape and latency work leave M4-P4/P5 open in [`crawl-jobs-v2-plan.md`](crawl-jobs-v2-plan.md) |
+| F3 durable Crawl Jobs V2 | M4-P3 readiness, pre-I/O recovery, bounded zero-interval request and one positive-interval case accepted within their scopes; application V2 remains dormant | Published `7431599` passes protected CI. Positive fixture `99e1a00b…` passes once in 21,736 ms: 24 calls, exact group-first block/wait/admission, 33 counters and 46 denials; independent correctness/security ACCEPT, six-role revocation, original 33-action journal and six-resource absence verified. Renewed approval consumed; independent origin/shared concurrency, after-I/O recovery, broader protocol/admin, crash/AOF, maximum-shape and latency work leave M4-P4/P5 open in [`crawl-jobs-v2-plan.md`](crawl-jobs-v2-plan.md) |
 | F4 exact crawl scope | Not started | No crawl-policy V2 schema or approved exact-URL policy is present |
 | F5 backlink persistence | Code acceptance passed and merged | PR #9 passed protected checks and merged as `d914a93`; no retained datastore reconciliation or V2 consumer activation is implied |
 | F6 JavaScript-shell indexing | Not started | No static-extraction policy schema or approved metadata-fallback configuration is present |

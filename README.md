@@ -85,14 +85,16 @@ Independent correctness/security reviews accepted the evidence; six-role
 revocation, the 28-action journal and absence of all six resources were verified.
 Its approval is consumed. See the [request run](docs/crawl-jobs-v2-m4-request-run-2026-09-28.md)
 and [implementation/preparation checkpoint](docs/crawl-jobs-v2-m4-request-lifecycle-2026-09-28.md).
-The next positive-interval slice is implemented and independently reviewed GO for
-image/CI preparation. It binds matching 8-second group/origin intervals, a
-group-first `RATE_BLOCKED` response, bounded observer-only Redis-time waiting and
-deadline admission/replays across 24 calls. All 150 harness tests, 21 script tests,
-five focused Go race roots, vet and source pins pass; selected arm64 preparation
-verifies 71 files/all 18 recipes with six-resource absence confirmed. Publication,
-CI and fresh exact execution decisions are next. See the
-[positive-interval checkpoint](docs/crawl-jobs-v2-m4-positive-interval-2026-09-29.md).
+The positive-interval slice now has **accepted scoped real evidence** at published
+`7431599` on draft PR #17, after all fourteen protected checks passed. Its single
+21,736-ms invocation verifies 24 calls, an exact 8-second group-first block,
+four observer clock samples and due admission/replays, 33 counters and 46 denials.
+Independent correctness/security reviews accept the result; six-role revocation,
+the original 33-action journal and exact six-resource absence pass. The initial
+approval expired unused; a separately approved renewal and execution decision
+preceded the run. The renewed approval is consumed. See the
+[positive-interval result](docs/crawl-jobs-v2-m4-positive-run-2026-09-30.md) and
+[preparation checkpoint](docs/crawl-jobs-v2-m4-positive-interval-2026-09-29.md).
 Full M4 acceptance and application integration remain pending. The
 [Crawl Jobs V2 plan](docs/crawl-jobs-v2-plan.md) owns current progress. Historical
 V1 commands below do not authorize another crawl.

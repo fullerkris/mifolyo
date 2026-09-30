@@ -136,8 +136,7 @@ remain dependent on the reviewed producer's private comparisons. See the
 This zero-interval case does not prove positive-interval blocking, cross-worker
 concurrency, actual fetches, request durability or after-I/O recovery.
 
-**Positive-interval case (2026-09-29): implemented, independent GO for image/CI
-preparation, selected arm64 preparation PASS.** `ledger-positive-interval-v1`
+**Positive-interval case (2026-09-30): accepted scoped real PASS.** `ledger-positive-interval-v1`
 is the eighteenth closed case. Group and origin both use the matched group's
 8,000-ms interval; global remains zero. The 24 calls contain six mutations, four
 errors, eleven replays, one group-first rate denial and two integrity passes.
@@ -153,10 +152,23 @@ script tests pass. An aggregate existing-Go regression command timed out at 900
 seconds; the same four roots subsequently passed in separately bounded race
 batches without removing assertions. Vet and strict Lua/bundle checks pass.
 Source review covers 101 files; image checks cover 71 files/all 18 recipes.
-All six metadata resources are independently absent. See the
-[checkpoint/evidence](../../docs/crawl-jobs-v2-m4-positive-interval-2026-09-29.md).
-No positive-interval acceptance Redis case has run. Independent origin blocking,
-shared concurrency and policy tightening retain separate coverage obligations.
+All six metadata resources are independently absent. Published `7431599` on
+draft PR #17 passes 14/14 protected checks, with all 478 race roots accounted for
+(477 pass/one allowed optional skip). See the
+[preparation checkpoint](../../docs/crawl-jobs-v2-m4-positive-interval-2026-09-29.md).
+
+The initial approval expired unused, before reservation. After explicit renewal
+and a separate execution decision, fixture `99e1a00b…` ran once in 21,736 ms:
+all 24 calls/33 counters/46 denials pass. Group blocking was observed 7,432 ms
+before the exact deadline; four clock samples crossed it by 818 ms and admission
+followed 1,793 ms after it. Measurement spans 12,748 ms within the original lease.
+Both independent reviewers accept the scoped evidence. Six-role revocation,
+original 33-action journal and exact name/label absence of four containers/two
+volumes pass. Ten distinct runtime envelopes cover twelve completions; two ready
+completions are journal-only. The renewed approval is consumed. See the
+[run and evidence](../../docs/crawl-jobs-v2-m4-positive-run-2026-09-30.md).
+Independent origin blocking, shared concurrency and policy tightening retain
+separate coverage obligations; full M4 remains open.
 
 **Final independent re-review (2026-09-21): GO for image preparation only.** The
 four original findings and a closed-peer follow-up are fixed and re-reviewed.
@@ -594,8 +606,9 @@ Prior paths have image-validation and actual scoped Redis-case observations boun
 to their historical revisions. The request slice now has a separately authorized
 real-run PASS at merged `561774f`, with scoped independent acceptance. H/I
 negatives retain the offline/predicate evidence classes stated above.
-The positive-interval delta has preparation evidence only and needs its own
-published revision, CI and execution decisions; old run bindings remain historical.
+The positive-interval delta now has separately approved real-run PASS at published
+`7431599`, after exact-revision CI and fresh execution decisions. Its approval is
+consumed; old run bindings remain historical and the next case needs fresh gates.
 
 Read-only recipe inspection, from repository root:
 

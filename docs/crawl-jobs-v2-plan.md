@@ -2,9 +2,9 @@
 
 **Finding:** F3 - durable crawl-job leases and recovery
 
-**Last updated:** 2026-09-29 (UTC; positive-interval admission implemented, independent source GO and arm64 preparation PASS; new publication/CI/execution gates next)
+**Last updated:** 2026-09-30 (UTC; positive-interval real run independently accepted and approval consumed; owner authorized its 23-file result publication on PR #17, with fresh publication CI next; full M4 open)
 
-**Working branch:** `feature/crawl-jobs-v2-positive-interval`, based on merged `561774f`
+**Working branch:** `feature/crawl-jobs-v2-positive-interval`, executed source checkpoint `7431599` on draft PR #17, based on merged `561774f`; the accepted run-result/status batch is authorized for publication on the same branch and PR
 
 **Initial checkpoint:** `e4372a66201b8767bcca4d7476c30c5b7999922c`
 
@@ -15,10 +15,12 @@ All 43 canonical operations and the sealed, zero-argument
 bounded real-Redis `ledger-smoke-v1` and `ledger-claim-release-v1` cases pass;
 full M4 acceptance is open.
 
-**Current next gate:** complete the owner-authorized 47-file publication of the
-positive-interval implementation and request-run evidence, verify protected CI, then obtain
-fresh case-specific artifact approval and a separate execution decision. The
-positive-interval case is implemented/image-prepared but has not run on Redis.
+**Current next gate:** complete the owner-authorized 23-file publication of the
+accepted positive-interval run evidence/status batch and verify fresh protected CI,
+followed by the next reviewed M4 slice. The 47-file source
+checkpoint is published as `7431599`; protected CI and the separately approved
+single positive-interval run pass. Independent origin blocking/shared concurrency,
+budgets and after-I/O recovery remain subsequent implementation/acceptance work.
 **M4-P3 bootstrap readiness is accepted**
 within frozen checkpoint `963b67b`, following independent correctness/security GO
 on the fourteen real package cases and reconciled H/I evidence. All prior
@@ -52,14 +54,17 @@ and all fourteen main-push checks preceded execution. See the
 [request run](crawl-jobs-v2-m4-request-run-2026-09-28.md) and
 [preparation checkpoint](crawl-jobs-v2-m4-request-lifecycle-2026-09-28.md).
 
-The new `ledger-positive-interval-v1` pins matching 8-second group/origin
-intervals and checks group-first rate blocking, real Redis-time wait admission,
-and replays across 24 calls. Independent correctness/security reviewers returned
-**GO for image/CI preparation** on 101 frozen files. Local checks pass 150 harness
-tests, 21 script tests, five focused Go roots under race, vet and strict source
-pins. Selected arm64 preparation checks 71 files/all 18 recipes, with no metadata
-container starts and all six preparation resources independently absent. See the
-[positive-interval checkpoint](crawl-jobs-v2-m4-positive-interval-2026-09-29.md).
+`ledger-positive-interval-v1` now has **accepted scoped real evidence** at published
+`7431599` on draft PR #17. Its single 21,736-ms invocation passes 24 calls, exact
+8-second group-first blocking, four observer clock samples and due admission,
+33 counters and 46 denials. Both independent reviewers accept the result;
+six-role revocation, the original 33-action journal and exact name/label absence
+of four containers/two volumes pass. The first approval expired unused; explicit
+renewal and a subsequent execution decision preceded the run. The renewed approval
+is consumed. Source review on 101 files, 150 harness/21 script tests, five focused
+Go race roots, 71-file/18-recipe arm64 preparation and 14/14 protected checks
+preceded execution. See the [positive run](crawl-jobs-v2-m4-positive-run-2026-09-30.md)
+and [preparation checkpoint](crawl-jobs-v2-m4-positive-interval-2026-09-29.md).
 
 Internal commit-boundary observation and unreachable-Redis/AOF-failure teardown
 need reviewed design decisions before full acceptance. Longer expiry/benchmark
@@ -269,11 +274,11 @@ retains it as a primitive case; guard cases now explicitly bind the complete
 | Ledger validation | Baseline/delivery/fence history, post-abort freeze, exact retained witnesses, strict worker expiry, completed replay, prior retry/backpressure/reason fixes and zero-sentinel checks pass local normal conformance and reviewed counterexample replays |
 | Script sources | All 43 canonical operations are implemented: unchanged BOOT passthrough plus 42 exact generated sources; both strict source/bundle generator checks pass |
 | Authoritative bundle | Complete zero-argument `AuthoritativeScriptBindingSet()` validates embedded sources against fixed generated pins and returns fresh private sealed bindings; no caller-supplied sources, hashes or paths |
-| Local and protected acceptance | Merged request `561774f` retains its passing main CI. New positive-interval source passes 150 harness/21 script tests, five focused race roots (60 new/174 total canonical lifecycle invocations), vet and pins. New protected CI is pending |
-| Runtime behavior | V2 remains dormant in application services; separately authorized disposable Redis smoke, claim/release, all 13 negatives, pre-I/O recovery and bounded request lifecycle passed within their original source/image scopes |
-| M4 bounded execution | Prior bootstrap/ACL, pre-I/O recovery and zero-interval request slices have scoped PASS evidence and consumed approvals. The new positive-interval case is unexecuted; full M4-P4/P5 remain open |
-| Review status | Prior source findings and real-run reviews remain bound to their original artifacts. Positive-interval correctness/security review is GO for image/CI preparation on inventory `c4c97b76…`, with no actionable correctness or blocking security finding |
-| Git state | Owner-authorized 47-file checkpoint prepared on fresh `feature/crawl-jobs-v2-positive-interval` from merged `561774f`; all 419 pending-file fingerprints survived the branch switch, including 372 unrelated paths. Exact-revision protected CI remains the publication gate |
+| Local and protected acceptance | Positive `7431599` passes 14/14 protected checks: all 478 race roots accounted for (477 pass/one allowed optional skip), 150 harness/21 script tests and 71-file/18-recipe image evidence. Local five-root race conformance, vet and pins also pass |
+| Runtime behavior | V2 remains dormant in application services; separately authorized disposable Redis smoke, claim/release, all 13 negatives, pre-I/O recovery, bounded request lifecycle and one positive-interval case passed within their original source/image scopes |
+| M4 bounded execution | Positive fixture `99e1a00b…` passes once: 24 calls, exact group-first block/wait/admission, 33 counters and 46 denials. Six-role revocation, original 33-action journal and six-resource absence pass; renewed approval consumed. Full M4-P4/P5 remain open |
+| Review status | Positive source GO is bound to inventory `c4c97b76…`; independent correctness/security ACCEPT and separate provenance PASS are bound to report `56fe5836…`. Prior findings/runs retain their original artifacts |
+| Git state | The 47-file source checkpoint is published as `7431599` on draft PR #17. The owner authorized adding the 23-file accepted-run evidence/status batch on the same branch/PR; the combined PR has 66 paths. Fresh publication CI follows; 372 unrelated files remain preserved |
 
 ### Current source and fixture identities (regenerated 2026-09-21)
 
@@ -359,7 +364,7 @@ The final matrix and final independent reviews used pinned Go 1.25.13 and passed
 | M1: Foundation release gate | Complete and merged | Approved amendment, independent GO reviews, and passing protected PR #9 checks before merge |
 | M2: Reviewed foundation checkpoint | Complete | Scoped 66-file checkpoint secret-scanned, tested from the index export, committed, pushed, and remote identity verified |
 | M3: Authoritative Lua transitions | Complete locally: 43/43 sources, sealed factory, source conformance and full-module race verification; checkpoint `81028ca` pushed, still dormant | Complete source/pin and in-memory Go/Python/Lua checks plus the final current-tree race result, without runtime activation |
-| M4: Real Redis 7 acceptance | M4-P3 bootstrap readiness, one pre-I/O recovery case and one bounded request lifecycle independently accepted within their scopes; full M4-P4/P5 remain open | Idempotency, fencing, crash, AOF, memory, and latency evidence passes on disposable infrastructure |
+| M4: Real Redis 7 acceptance | M4-P3 bootstrap readiness, one pre-I/O recovery, one bounded request lifecycle and one positive-interval case independently accepted within their scopes; full M4-P4/P5 remain open | Idempotency, fencing, crash, AOF, memory, and latency evidence passes on disposable infrastructure |
 | M5: Runtime and consumer integration | Blocked by M4 and F4-F6 | Spider, feeder, consumers, Monitoring, Compose, and crawl-admin use only the accepted V2 protocol |
 | M6: Migration, runbooks, and rollback | Blocked by M5 | Stopped migration and rollback rehearsal pass; active docs contain tested V2 commands and no active V1 path |
 | M7: Immutable release gate | Blocked by M6 | Final digests, manifests, images, backups, CI, and authorization/report templates are reviewed |
@@ -2921,15 +2926,73 @@ admission and fails on missed windows rather than manufacturing equality.
 Network-disabled pinned-base arm64 preparation verifies **71 source files/all
 18 recipes**. Four metadata-role containers remained stopped; all four exact
 names and two volumes of fixture `8dd65a0b5ecfdb52d4f81c38431bb174` were independently
-absent. Init/executor image-check peaks are 48,328,704 / 48,459,776 bytes. Redis
-ran only `--version`; no positive-rate acceptance server or case has started.
+absent. Init/executor image-check peaks are 48,328,704 / 48,459,776 bytes. At this
+preparation checkpoint Redis ran only `--version`; no acceptance case had started.
 
 See the [dated checkpoint](crawl-jobs-v2-m4-positive-interval-2026-09-29.md) and
-[exact evidence](evidence/m4-positive-interval-2026-09-29/README.md). Publication,
-protected CI and fresh exact-artifact approval/separate execution decision are
-next. With equal fresh deadlines the group wins; this does not establish a
+[exact evidence](evidence/m4-positive-interval-2026-09-29/README.md). Subsequent
+publication, protected CI and the separately approved real run are recorded below.
+With equal fresh deadlines the group wins; this does not establish a
 distinct origin-block window, shared concurrency, policy tightening, budget
 exhaustion, after-I/O recovery, durability, performance or full-M4 acceptance.
+
+### Positive publication and single real run (2026-09-30)
+
+The owner-approved 47-file checkpoint was published as
+`743159909c89cc63b1a4b67cff4cca323cd85e26` on draft PR #17 from merged `561774f`.
+All fourteen protected checks passed. Downloaded eight-shard reports match all
+478 compiled roots: 477 passes and the one allowed optional native-parity skip.
+Python logs confirm 150 harness/21 script tests. The tested PR merge has the same
+tree `ae159402a52eff94463d6f926ba7d5b9b158c8c9`. CI verification
+`b6bd0294da36a8612c24664e9d43a3d824cd361e68b1d5fb434fb406a647ff55`
+retains the command-block/step-metadata binding that resolves `UNKNOWN STEP`
+labels. The amd64 CI preparer still selects claim/release; selected positive-case
+arm64 evidence remains separate.
+
+The first one-use approval `abf36e51…` expired at 15:52:18.805 UTC before the
+execution request was checked. It was refused without reservation or invocation,
+and its original expired-unused records are preserved. The owner approved renewed
+packet `fe46fded…`, with unchanged source/images/plan/recipe/scope, then separately
+selected **Execute approved case**. Renewed approval `9f71ed8e…` had window
+17:12:43.157–18:12:43.157 UTC. After fresh preflight and exclusive reservation,
+fixture `99e1a00b4804b4e104e4d638cdb81b19` ran once at
+**17:27:10.093–17:27:31.829 UTC**, **21,736 ms**, exit 0, with no automatic retry.
+
+All 24 calls passed: six mutations, four expected errors, eleven replays, one
+rate denial and two integrity passes. Independent formulas match 33 initial
+counter values and 2,376 row before/after/delta values. Robots START establishes
+the exact 8-second group/origin deadline. The denial occurs **7,432 ms before**
+it; four observer-only samples cross it by **818 ms** and admission follows
+**1,793 ms after** it. Document/historical replays remain before the second
+deadline. No replay/FINISH/error/denial/maintenance refunds starts or shortens
+deadlines. The complete Redis measurement spans **12,748 ms**, with **47,401 ms**
+left on the original 60-second lease. Tombstones retain exact FINISH + one-day
+absolute expiry. All 46 authority denials are `NOPERM` with unchanged final state.
+
+Independent correctness/security reviews return **ACCEPT**; source/CI/authority
+provenance passes. Six-role reachable-server revocation, worker-first teardown,
+the original 33-action/3,348-byte journal and exact name/label absence of four
+containers/two volumes are verified. Ten distinct runtime envelopes cover twelve
+completions, with two journal-only ready completions. The five-file original scan
+covers 194,040 bytes with zero findings and no suppressions. Renewed approval:
+**consumed, non-reusable**. The expired original remains unused.
+
+Report: `56fe583637183546b37eb454078255ffa02ba2e56954f46e82176a8de5396653`.
+Postcheck: `d90b55a5de859d6e53eec73a35e361673112a0c76d91790cbaebe98c4c1ad900`.
+See the [dated result](crawl-jobs-v2-m4-positive-run-2026-09-30.md) and
+[byte-identical exports](evidence/m4-positive-run-2026-09-30/README.md).
+
+Seven public reply hashes are independently reconstructed; seventeen
+reservation-bearing replies and unexported START permission bits rely on reviewed
+producer comparisons. Private state/identities and raw inspections cannot be
+reconstructed from hashes. Cleanup evidence is by names/labels, not missing
+container IDs. Observer gaps include stage overhead rather than measured sleep
+duration, and live admission was after the deadline rather than at exact equality.
+The probe precedes START; neither `after_io=1` nor synthetic grants prove network
+I/O or after-START crash durability. Independent origin/shared-concurrency,
+budgets, after-I/O recovery and the remaining full-M4 matrix stay open. The owner
+authorized publishing this 23-file result/status batch on the existing branch and
+draft PR #17, followed by fresh protected CI. The real run stays bound to `7431599`.
 
 ### Full-acceptance design gates
 
@@ -3244,6 +3307,10 @@ Rendering remains disabled unless its separate activation requirements pass.
 | 2026-09-29 | Positive-interval case implemented/reviewed | Closed matching 8-second group/origin policy, 24 calls, group-first denial, observer-only bounded wait and admission/replays; 101-file source inventory `c4c97b76…` independently GO; 150 harness/21 script tests and all five Go race roots PASS after splitting one timed-out regression batch |
 | 2026-09-29 | Positive-interval arm64 preparation | Harness `2d74e37…`, plan `ca4eafd…`, recipe `7ddf115…`; 71-file/18-recipe checks, four stopped-role admissions and six-resource absence PASS; publication/CI and fresh execution decisions remain next |
 | 2026-09-29 | Positive-interval publication authorized | Owner approved the verified 47-file commit/push/fresh-branch/draft-PR/CI scope; branch creation from merged `561774f` preserves all 419 pending paths and clean index, with 372 unrelated files excluded; real-case authority remains separate |
+| 2026-09-30 | Positive publication and protected CI verified | `7431599` published on draft PR #17; 14/14 checks pass, all 478 race roots accounted for, 150 harness/21 script tests and 71-file/18-recipe image evidence verified; fresh exact-artifact approval remains separate |
+| 2026-09-30 | Expired-unused approval and explicit renewal | Original approval expires before execution preflight, with zero reservations/invocations; owner approves unchanged artifacts in renewed packet and separately requests its single bounded execution |
+| 2026-09-30 | Single positive-interval run accepted | Fixture `99e1a00b…` PASS in 21,736 ms: 24 calls, exact group-first deadline/block/wait/admission, 33 counters and 46 denials; independent correctness/security ACCEPT, provenance PASS, six-role revocation, original 33-action journal and six-resource absence verified; renewed approval consumed, full M4 open |
+| 2026-09-30 | Positive-run result publication authorized | Owner approved committing/pushing the verified 23-file result/status batch, including narrow publication-status wording, on the existing positive-interval branch and draft PR #17; combined PR scope is 66 paths, fresh exact-revision CI follows, and original execution bindings remain unchanged |
 
 ## Definition of done
 

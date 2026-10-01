@@ -170,6 +170,55 @@ completions are journal-only. The renewed approval is consumed. See the
 Independent origin blocking, shared concurrency and policy tightening retain
 separate coverage obligations; full M4 remains open.
 
+**Shared group capacity (2026-10-01): GO for offline foundation only.** After
+PR #17's same-tree merge as `7da55b1` and main CI verification, the new
+`shared_capacity_specs.py` / `shared_capacity.py` model two distinct runs/jobs,
+owners/tokens and origins sharing one group slot. The complete union is 90
+positions (89 fixture-owned, 45 setup entries); REQUEST wires stay at 57 keys.
+The 21-call main trace checks pending/started capacity denial, release through
+FINISH, peer-safe replays, independent accounting and both retained leases.
+The nine-call cancellation sibling checks the same `RESERVATION_CANCELLED`
+status on initial/replay without refunding B's held capacity.
+
+Independent Go derives policies/identities/literal wires and validates complete
+state, schemas, counters, per-scope history and proposed ACL trace predicates.
+Five profiles pass **81 canonical Lua invocations under race**. The initial full
+160-test harness and 21 script tests pass; after two test-only improvements, the
+final 11-test shared module, Go race roots and vet pass. Current discovery is 161
+Python tests/480 Go roots; a new full-161 harness invocation is not claimed.
+Both independent reviewers retain scoped offline GO on the 105-file strengthened
+inventory. See the [checkpoint/evidence](../../docs/crawl-jobs-v2-m4-shared-group-capacity-2026-10-01.md).
+
+At the offline foundation checkpoint, scenarios numbered 21 but executable cases
+remained 18 and the reader lacked the 90-position shape. Its immutable evidence
+retains that scope; the subsequent lifecycle implementation is recorded below.
+
+**Shared group lifecycle (2026-10-01): implemented, independent GO for image/CI
+preparation.** The nineteenth case fixes runtime dispatch to the 21-call finish
+trace. `shared_executor.py` verifies BOOT/probe/setup binding, all 90 positions,
+60 distinct counters, safe job/history/expiry/rate projections and 46 authority
+denials. The real worker and `Docker.stage` parser retain only valid failure
+prefixes; ambiguous commands are not retried. Existing four-container/two-volume,
+six-role and 300/30/60-second bounds remain. Cancellation/reversed siblings are
+offline controls, not runtime selectors.
+
+All 171 harness tests, 21 script tests, 81 canonical Go/Lua invocations under race,
+vet and pins pass. Independent correctness/security reviews are GO on 107 frozen
+files, with no actionable findings. Registry/image scope is now **19 cases / 21
+scenarios / 74 image files**. Selected preparation is recorded below; no real
+shared case has run.
+See the [lifecycle checkpoint/evidence](../../docs/crawl-jobs-v2-m4-shared-group-lifecycle-2026-10-01.md).
+
+**Shared-group selected preparation (2026-10-01): PASS.** Pinned-base,
+network-disabled arm64 build yields harness `03bf146…`; explicit shared-case plan
+`52659399…` and recipe `05bfdbbe…` bind all 74 image files/19 recipes to the reviewed
+107-file source. Init/executor image-check memory peaks are 48,857,088 /
+48,828,416 bytes. Four metadata-role containers remained stopped; all four names
+and two volumes were independently absent. Only Python image checks and Redis
+`--version` ran. See the [preparation and exact artifacts](../../docs/crawl-jobs-v2-m4-shared-group-preparation-2026-10-01.md).
+Scoped publication/protected CI, fresh exact-artifact approval and a separate
+execution decision remain required before a real case.
+
 **Final independent re-review (2026-09-21): GO for image preparation only.** The
 four original findings and a closed-peer follow-up are fixed and re-reviewed.
 See the [closure report](../../docs/crawl-jobs-v2-m4-rereview-2026-09-21.md).
@@ -576,7 +625,7 @@ the measured scope and exact evidence identities.
 |---|---|
 | `negative_specs.py` | Closed case IDs, source lists, expected outcomes, extra roles and measured sequences |
 | `negative_cases.py` | Private P/S fixtures, W/B wires, BOOT provenance comparison, independent fresh admin state projections |
-| `bounded_state.py` | Whole-DB 2/58/71-key typed reads, bounded fields/members and absolute expiry comparisons |
+| `bounded_state.py` | Whole-DB 2/58/71/90-position typed reads, bounded fields/members and absolute expiry comparisons |
 | `negative_executor.py` | Setup/role retirement, negative calls, canonical positive-control dispatch, redacted prefix/measurement receipts and strict controller validation |
 | `admission.py` | Closed image environment and process/program predicates, storage emptiness and permitted same-case volume attachments |
 | `recovery_specs.py` / `recovery_oracle.py` | Closed recovery case/phases and independently checked complete state/expiry projections |
@@ -585,18 +634,20 @@ the measured scope and exact evidence identities.
 | `request_specs.py` / `request_oracle.py` | Closed 22-call same-lease robots/document fixture, exact REQUEST wires and full state/history/expiry projections |
 | `request_executor.py` | Synthetic START/FINISH measurement, strict error/time and public-prefix reconstruction, bounded whole-DB comparisons |
 | `rate_specs.py` / `rate_executor.py` | Closed 8-second rate case, three phases, observer-only bounded clock wait, exact cross-phase receipt binding and failure prefixes |
+| `shared_capacity_specs.py` / `shared_capacity.py` | Closed two-run shared-group-capacity oracle and ledger/observer ACL projection; fixed finish trace for runtime, cancellation/reversed offline controls |
+| `shared_executor.py` | Bounded combined setup/90-position reads, 60-counter redacted receipts, exact 21-call execution and strict failed-prefix validation |
 
 The original planning packet remains an immutable, non-executable specification.
 The executable registry separately contains smoke, claim/release, the 13 fixed
-negative cases, pre-I/O recovery, bounded request lifecycle and positive-interval
-admission. There is no arbitrary case, key, mutation, interval or source
+negative cases, pre-I/O recovery, bounded request lifecycle, positive-interval
+admission and shared-group capacity. There is no arbitrary case, key, mutation, interval or source
 parameter. P/S setup is separately labeled invalid stored state; observers may
 read its exact bounded bytes while ledger marker permissions stay restricted.
 Administrative candidate/freeze/retirement/guard states come from canonical
 scripts under separate short-lived release/migration roles. Revocation remains
 worker-first, and the revoker is last even in seven/eight-role cases.
 
-The current execution-image allowlist is **71 files**. All 18 recipes are checked
+The current execution-image allowlist is **74 files**. All 19 recipes are checked
 by `image_check.py`, including their case-specific credential inventories.
 Controller admission binds the exact entrypoint/command and environment digest,
 rejects DNS/host/port/bind/privilege deviations and checks volume attachments
@@ -609,6 +660,9 @@ negatives retain the offline/predicate evidence classes stated above.
 The positive-interval delta now has separately approved real-run PASS at published
 `7431599`, after exact-revision CI and fresh execution decisions. Its approval is
 consumed; old run bindings remain historical and the next case needs fresh gates.
+Shared-group-capacity source now has its own selected arm64 preparation, while
+publication/CI and actual execution remain pending. Prior case execution bindings
+and older image records remain historical.
 
 Read-only recipe inspection, from repository root:
 
@@ -617,7 +671,8 @@ python3 -B tests/crawl-jobs-v2-redis/controller.py recipe --case bootstrap-rejec
 python3 -B tests/crawl-jobs-v2-redis/controller.py recipe --case ledger-promote-denied-v1
 ```
 
-The complete Python suite has **95 tests**, including every planned H/I variant
+At the bootstrap/ACL implementation checkpoint, the complete Python suite had
+**95 tests**, including every planned H/I variant
 and all 13 simulated lifecycles. Four new Go test roots run **70 canonical Lua
 invocations** with independent wire/response/state checks; four additional
 RETIRE/PROMOTE outer-denial checks use the offline selector oracle and do not

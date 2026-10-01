@@ -28,6 +28,9 @@
 !tests/crawl-jobs-v2-redis/test_request_oracle.py
 !tests/crawl-jobs-v2-redis/rate_specs.py
 !tests/crawl-jobs-v2-redis/test_rate_oracle.py
+!tests/crawl-jobs-v2-redis/shared_capacity_specs.py
+!tests/crawl-jobs-v2-redis/shared_capacity.py
+!tests/crawl-jobs-v2-redis/test_shared_capacity.py
 
 **/*.env
 **/.env*

@@ -86,7 +86,7 @@ revocation, the 28-action journal and absence of all six resources were verified
 Its approval is consumed. See the [request run](docs/crawl-jobs-v2-m4-request-run-2026-09-28.md)
 and [implementation/preparation checkpoint](docs/crawl-jobs-v2-m4-request-lifecycle-2026-09-28.md).
 The positive-interval slice now has **accepted scoped real evidence** at published
-`7431599` on draft PR #17, after all fourteen protected checks passed. Its single
+`7431599`, retained through merged PR #17, after all fourteen protected checks passed. Its single
 21,736-ms invocation verifies 24 calls, an exact 8-second group-first block,
 four observer clock samples and due admission/replays, 33 counters and 46 denials.
 Independent correctness/security reviews accept the result; six-role revocation,
@@ -95,6 +95,17 @@ approval expired unused; a separately approved renewal and execution decision
 preceded the run. The renewed approval is consumed. See the
 [positive-interval result](docs/crawl-jobs-v2-m4-positive-run-2026-09-30.md) and
 [preparation checkpoint](docs/crawl-jobs-v2-m4-positive-interval-2026-09-29.md).
+PR #17 merged as `7da55b1` with tree continuity and passing main CI. The next
+shared-group-capacity lifecycle is now **implemented and independently GO for
+image/CI preparation**: two runs/different origins share one group slot, with a
+90-position reader, fixed 21-call runtime trace, 60 counters, strict failure
+receipts and inherited cleanup. All 171 harness/21 script tests and 81 canonical
+Lua calls under race pass. Selected arm64 image preparation now passes on all
+74 files/19 recipes, with four stopped-role admissions and all six preparation
+resources independently absent. Scoped publication/CI and fresh execution
+decisions are next. See the [image preparation](docs/crawl-jobs-v2-m4-shared-group-preparation-2026-10-01.md),
+[lifecycle checkpoint](docs/crawl-jobs-v2-m4-shared-group-lifecycle-2026-10-01.md)
+and [offline foundation](docs/crawl-jobs-v2-m4-shared-group-capacity-2026-10-01.md).
 Full M4 acceptance and application integration remain pending. The
 [Crawl Jobs V2 plan](docs/crawl-jobs-v2-plan.md) owns current progress. Historical
 V1 commands below do not authorize another crawl.

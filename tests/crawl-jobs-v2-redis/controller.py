@@ -33,6 +33,8 @@ import request_specs as qs
 import request_executor as request_worker
 import rate_specs as ps
 import rate_executor as rate_worker
+import shared_capacity_specs as ss
+import shared_executor as shared_worker
 import parked_command
 
 LABEL = "io.mifolyo.cj2.fixture"
@@ -368,6 +370,9 @@ class Docker:
             elif selected == ps.CASE:
                 h.require(stage in ("rate_before", "rate_after"), "STAGE_FAILURE")
                 rate_worker.validate_stage_result(stage, result["result"], request, successful=False)
+            elif selected == ss.CASE:
+                h.require(stage == "measure", "STAGE_FAILURE")
+                shared_worker.validate_stage_result(stage, result["result"], request, successful=False)
             else:
                 h.require(selected == case.CLAIM_CASE and stage == "measure", "STAGE_FAILURE")
                 claim_worker.validate_measurement(result["result"], False)
@@ -536,9 +541,14 @@ def execute(plan, approval, backend, *, revision_check=verify_revision, journal=
     binding = case.fixture(plan, fixture_id, material) if selected != case.CASE else None
     private_values = [*credentials.values(), *material.values()]
     if binding:
-        worker_binding = case.worker_fixture(binding)
-        if worker_binding:
-            private_values += [worker_binding["identities"][label]["reservation_id"] for label in ("a", "b")]
+        if selected == ss.CASE:
+            for actor in binding["actors"].values():
+                private_values += [actor[name] for name in ("run_id", "job_id", "url", "robots_url", "origin")]
+                private_values += [actor["identity"][name] for name in ("reservation_id", "claim_transition_id")]
+        else:
+            worker_binding = case.worker_fixture(binding)
+            if worker_binding:
+                private_values += [worker_binding["identities"][label]["reservation_id"] for label in ("a", "b")]
         if selected in ns.CASES:
             private_values.append(binding["admin_nonce"])
         private_values += [case.claim.URL, case.claim.ROBOTS]
@@ -614,6 +624,8 @@ def execute(plan, approval, backend, *, revision_check=verify_revision, journal=
                 request_worker.validate_stage_result(name, failure.receipt["result"], request, successful=False)
             elif selected == ps.CASE:
                 rate_worker.validate_stage_result(name, failure.receipt["result"], request, successful=False)
+            elif selected == ss.CASE:
+                shared_worker.validate_stage_result(name, failure.receipt["result"], request, successful=False)
             else:
                 claim_worker.validate_measurement(failure.receipt["result"], False)
                 h.require(failure.receipt["result"]["fixture_sha256"] == request["previous"]["fixture_summary"]["fixture_sha256"],
@@ -634,6 +646,8 @@ def execute(plan, approval, backend, *, revision_check=verify_revision, journal=
             request_worker.validate_stage_result(name, result["result"], request)
         elif selected == ps.CASE:
             rate_worker.validate_stage_result(name, result["result"], request)
+        elif selected == ss.CASE:
+            shared_worker.validate_stage_result(name, result["result"], request)
         if name != "ready":
             report["stages"][name] = result
         if name == "lease_clock":

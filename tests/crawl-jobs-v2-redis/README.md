@@ -205,8 +205,8 @@ offline controls, not runtime selectors.
 All 171 harness tests, 21 script tests, 81 canonical Go/Lua invocations under race,
 vet and pins pass. Independent correctness/security reviews are GO on 107 frozen
 files, with no actionable findings. Registry/image scope is now **19 cases / 21
-scenarios / 74 image files**. Selected preparation is recorded below; no real
-shared case has run.
+scenarios / 74 image files**. At this source-review checkpoint no real shared case
+had run; subsequent preparation, publication and execution are recorded below.
 See the [lifecycle checkpoint/evidence](../../docs/crawl-jobs-v2-m4-shared-group-lifecycle-2026-10-01.md).
 
 **Shared-group selected preparation (2026-10-01): PASS.** Pinned-base,
@@ -216,8 +216,31 @@ network-disabled arm64 build yields harness `03bf146…`; explicit shared-case p
 48,828,416 bytes. Four metadata-role containers remained stopped; all four names
 and two volumes were independently absent. Only Python image checks and Redis
 `--version` ran. See the [preparation and exact artifacts](../../docs/crawl-jobs-v2-m4-shared-group-preparation-2026-10-01.md).
-Scoped publication/protected CI, fresh exact-artifact approval and a separate
-execution decision remain required before a real case.
+At this preparation checkpoint, scoped publication/protected CI and fresh
+artifact/execution decisions remained pending. Their completion is recorded below.
+
+**Shared-group single run (2026-10-02): accepted scoped real PASS.** The 49-file
+checkpoint was published as `c381287` on draft PR #18 with 14/14 protected checks.
+Downloaded evidence accounts for 480 compiled race roots (479 passes and the sole
+allowed optional native-parity skip), 171 harness/21 script tests and all 74 image
+files/19 recipes. CI's amd64 preparation explicitly selects claim/release; the
+selected shared-case arm64 preparation remains separate.
+
+The first approval expired unused. After explicit renewal and a subsequent
+execution decision, fixture `e47d57da…` ran once in **15,186 ms**: all 21 calls,
+three capacity denials, 60 counters and 46 authority negatives pass. The complete
+Redis measurement spans 4,508 ms. Independent correctness/security reviews accept
+the scoped evidence. Six-role reachable-server revocation, the original
+28-action/2,904-byte journal and exact name/label absence of four containers/two
+volumes pass. The renewed approval is consumed. See the
+[result and evidence](../../docs/crawl-jobs-v2-m4-shared-group-run-2026-10-02.md).
+
+Seven public response hashes are independently reconstructed; fourteen private
+replies and unexported START permissions remain pinned-runtime attestations.
+Five retained stage envelopes cover seven completions, with two journal-only
+ready completions. This serial logical-owner case does not establish simultaneous
+workers, per-owner credential isolation or independent origin/global saturation.
+Cancellation/reversed traces remain offline controls; full M4 remains open.
 
 **Final independent re-review (2026-09-21): GO for image preparation only.** The
 four original findings and a closed-peer follow-up are fixed and re-reviewed.

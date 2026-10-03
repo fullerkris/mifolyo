@@ -1,0 +1,1 @@
+{"format_version":1,"harness_image":"sha256:03bf14679ffdda67c7940ffca0cfd52d38fcf5b9d8e0ca4f173b3fbe2e76d84d","redis_image":"sha256:24e81cffaba832bcd71068a6ff772a531076bafdbb1d684195766ae9b6511f5c","redis_version":"7.4.11","scenario":"ledger-shared-group-capacity","standin_image":"sha256:03bf14679ffdda67c7940ffca0cfd52d38fcf5b9d8e0ca4f173b3fbe2e76d84d"}

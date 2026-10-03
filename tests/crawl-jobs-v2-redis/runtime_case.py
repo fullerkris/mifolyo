@@ -12,6 +12,8 @@ import recovery_specs as rs
 import request_specs as qs
 import request_oracle as requests
 import rate_specs as ps
+import shared_capacity_specs as ss
+import shared_capacity as shared
 
 CASE = "ledger-smoke-v1"
 CLAIM_CASE = claim.CASE
@@ -20,6 +22,7 @@ CASES.update(ns.CASES)
 CASES[rs.CASE] = rs.SCENARIO
 CASES[qs.CASE] = qs.SCENARIO
 CASES[ps.CASE] = ps.SCENARIO
+CASES[ss.CASE] = ss.SCENARIO
 RATE = h.P + "rate_scopes"
 PROBE = h.AUTH[2]  # Temporary pre-BOOT probe; removed before authority setup.
 WIRE_KEYS = (*h.AUTH, RATE)
@@ -34,7 +37,8 @@ FILES = ("harness.py", "resp.py", "runtime_case.py", "executor.py", "controller.
           "claim_release.py", "claim_executor.py", "negative_specs.py", "negative_cases.py", "negative_executor.py",
           "bounded_state.py", "admission.py", "recovery_specs.py", "recovery_oracle.py", "recovery_executor.py", "parked_command.py",
           "request_specs.py", "request_oracle.py", "request_executor.py",
-          "rate_specs.py", "rate_executor.py",
+           "rate_specs.py", "rate_executor.py",
+           "shared_capacity_specs.py", "shared_capacity.py", "shared_executor.py",
           "redis.conf", "Dockerfile.execution", "Dockerfile.execution.dockerignore")
 CONFIG = {"port": "0", "unixsocket": "/run/cj2/redis.sock", "unixsocketperm": "600",
           "aclfile": "/run/cj2/fixture.acl", "dir": "/data", "appendonly": "yes",
@@ -57,6 +61,8 @@ def case_for_plan(plan):
 
 def sources(case_id=CASE):
     h.require(type(case_id) is str and case_id in CASES, "UNSUPPORTED_CASE")
+    if case_id == ss.CASE:
+        return ss.SOURCES
     if case_id in (qs.CASE, ps.CASE):
         return qs.SOURCES
     if case_id == rs.CASE:
@@ -120,6 +126,9 @@ def validate_revocation(result, targets):
 
 
 def fixture(plan, fixture_id, material, at_ms=1000):
+    if case_for_plan(plan) == ss.CASE:
+        h.exact(material, {"owner_a", "owner_b", "token_a", "token_b", "wrong_token"})
+        return shared.compile_fixture(plan, dict(material, fixture_id=fixture_id, redis_time_ms=at_ms))
     if case_for_plan(plan) in (qs.CASE, ps.CASE):
         h.exact(material, {"owner_a", "owner_b", "token_a", "token_b", "wrong_token"})
         return requests.compile_fixture(plan, dict(material, fixture_id=fixture_id, redis_time_ms=at_ms))
@@ -173,6 +182,16 @@ CLAIM_COMMANDS = {
 
 def acl_rules(case_id=CASE, fixture=None, plan=None):
     sources(case_id)
+    if case_id == ss.CASE:
+        fixture = shared.validate_fixture(plan, fixture)
+        rules = shared.acl_rules(plan, fixture)
+        hashes = [key for key, row in fixture["initial_state"].items() if row is not None and row["type"] == "hash"]
+        sets = [key for key, row in fixture["initial_state"].items() if row is not None and row["type"] == "set"]
+        zsets = [key for key, row in fixture["initial_state"].items() if row is not None and row["type"] == "zset"]
+        return {"setup": (*rules["observer"], "+info|persistence +info|memory +info|cluster +info|replication +config|get",
+                selector("+set +del", (PROBE,), "~"), selector("+hset", hashes, "~"), selector("+sadd", sets, "~"), selector("+zadd", zsets, "~")),
+            "loader": ("+ping +script|load",), "boot": acl_rules()["boot"],
+            "ledger": rules["ledger"], "observer": rules["observer"], "revoker": ("+ping +acl|deluser",)}
     if case_id == rs.CASE:
         rules = acl_rules(CLAIM_CASE, fixture, plan)
         rules["ledger"] = (*rules["ledger"], selector("+hset", (fixture["base_key"] + ":recovery_outcome_counts",), "~"))
@@ -315,6 +334,16 @@ def recipe(case_id=CASE):
                                  "keys": "exact validated fixture identities; no wildcard grants"},
                       possible_keys=58, assertions=[f"CR{i:02}" for i in range(1, 13)], acl_denials=46,
                         measurement_steps=9, request_starts=0, state_expiry="absolute PEXPIRETIME", report_values="redacted")
+    elif case_id == ss.CASE:
+        result.update(wire_keys="closed two-run REQUEST/MAINTAIN templates from shared_capacity.py; fixed finish trace",
+            stored_keys="89 fixture-owned plus BOOT-owned durability", direct_setup_count=45, possible_keys=90,
+            derived_output_keys="two distinct-run reservations, shared global/group and two origin rate blocks, first_request_start",
+            acl_rules={"policy": "shared-group-key-kinds-v1", "keys": "exact combined fixture, shared ledger role, read-only observer"},
+            assertions=[f"SGC{i:02}" for i in range(1, 22)], measurement_steps=21, effective_mutations=6,
+            expected_errors=3, capacity_denials=3, exact_replays=8, maintenance_passes=1, acl_denials=46,
+            runs=2, jobs=2, logical_owners=2, issued_leases=2, request_starts=2, counter_fields=60,
+            external_io_attempts=0, state_expiry="absolute PEXPIRETIME", measurement_span_milliseconds=30000,
+            rate_intervals="zero; global2/group1/origin1; distinct origins and one shared group", report_values="redacted")
     elif case_id in (qs.CASE, ps.CASE):
         result.update(wire_keys="closed REQUEST/MAINTAIN templates from request_oracle.py", stored_keys="57 fixture-owned plus BOOT-owned durability",
             direct_setup_count=26, possible_keys=58, derived_output_keys="two same-lease reservations, first_request_start, three rate blocks",

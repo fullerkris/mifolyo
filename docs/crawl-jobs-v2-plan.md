@@ -2,9 +2,9 @@
 
 **Finding:** F3 - durable crawl-job leases and recovery
 
-**Last updated:** 2026-09-30 (UTC; positive-interval real run independently accepted and approval consumed; owner authorized its 23-file result publication on PR #17, with fresh publication CI next; full M4 open)
+**Last updated:** 2026-10-02 (UTC; single shared-group-capacity run independently accepted, approval consumed and cleanup verified; owner authorized the 22-file result publication and fresh protected CI, full M4 open)
 
-**Working branch:** `feature/crawl-jobs-v2-positive-interval`, executed source checkpoint `7431599` on draft PR #17, based on merged `561774f`; the accepted run-result/status batch is authorized for publication on the same branch and PR
+**Working branch:** `feature/crawl-jobs-v2-shared-group-capacity`, from merged `7da55b1`; executed checkpoint `c381287` on draft PR #18, with owner-authorized result/status publication on the same branch
 
 **Initial checkpoint:** `e4372a66201b8767bcca4d7476c30c5b7999922c`
 
@@ -15,12 +15,13 @@ All 43 canonical operations and the sealed, zero-argument
 bounded real-Redis `ledger-smoke-v1` and `ledger-claim-release-v1` cases pass;
 full M4 acceptance is open.
 
-**Current next gate:** complete the owner-authorized 23-file publication of the
-accepted positive-interval run evidence/status batch and verify fresh protected CI,
-followed by the next reviewed M4 slice. The 47-file source
-checkpoint is published as `7431599`; protected CI and the separately approved
-single positive-interval run pass. Independent origin blocking/shared concurrency,
-budgets and after-I/O recovery remain subsequent implementation/acceptance work.
+**Current next gate:** complete the owner-authorized 22-file shared-group
+result/status publication on existing draft PR #18 and verify fresh exact-revision
+CI. Merge and further real-case decisions remain separate. The single real case at published
+`c381287` has accepted scoped evidence and a consumed approval. Its source/plan/
+recipe/image bindings remain historical execution authority, not permission for
+another run. PR #17 is merged as `7da55b1`; earlier runs retain their original
+bindings and consumed approvals.
 **M4-P3 bootstrap readiness is accepted**
 within frozen checkpoint `963b67b`, following independent correctness/security GO
 on the fourteen real package cases and reconciled H/I evidence. All prior
@@ -55,7 +56,7 @@ and all fourteen main-push checks preceded execution. See the
 [preparation checkpoint](crawl-jobs-v2-m4-request-lifecycle-2026-09-28.md).
 
 `ledger-positive-interval-v1` now has **accepted scoped real evidence** at published
-`7431599` on draft PR #17. Its single 21,736-ms invocation passes 24 calls, exact
+`7431599`, retained through merged PR #17. Its single 21,736-ms invocation passes 24 calls, exact
 8-second group-first blocking, four observer clock samples and due admission,
 33 counters and 46 denials. Both independent reviewers accept the result;
 six-role revocation, the original 33-action journal and exact name/label absence
@@ -65,6 +66,22 @@ is consumed. Source review on 101 files, 150 harness/21 script tests, five focus
 Go race roots, 71-file/18-recipe arm64 preparation and 14/14 protected checks
 preceded execution. See the [positive run](crawl-jobs-v2-m4-positive-run-2026-09-30.md)
 and [preparation checkpoint](crawl-jobs-v2-m4-positive-interval-2026-09-29.md).
+
+`ledger-shared-group-capacity-v1` now has **accepted scoped real evidence** at
+published `c381287` on draft PR #18, after all fourteen protected checks passed.
+Its single 15,186-ms invocation verifies 21 calls, three group-capacity denials,
+60 counters and 46 authority denials across two runs/distinct origins. Both
+independent reviewers accept the result; six-role revocation, original
+28-action/2,904-byte journal and exact six-resource absence pass. The first
+approval expired unused; explicit renewal and a subsequent execution decision
+preceded the run. The renewed approval is consumed. All 107 reviewed source
+hashes remain unchanged. Supporting verification covers 171 harness/21 scripts,
+81 canonical Lua invocations under race and selected arm64 preparation on
+19 cases / 21 scenarios / 74 image files. See the
+[shared-group result](crawl-jobs-v2-m4-shared-group-run-2026-10-02.md),
+[image preparation](crawl-jobs-v2-m4-shared-group-preparation-2026-10-01.md),
+[lifecycle checkpoint](crawl-jobs-v2-m4-shared-group-lifecycle-2026-10-01.md)
+and retained [offline foundation](crawl-jobs-v2-m4-shared-group-capacity-2026-10-01.md).
 
 Internal commit-boundary observation and unreachable-Redis/AOF-failure teardown
 need reviewed design decisions before full acceptance. Longer expiry/benchmark
@@ -89,8 +106,8 @@ Step 3 returned independent
 reviewed file hashes unchanged. See the
 [review report](crawl-jobs-v2-m4-bootstrap-acl-review-2026-09-23.md).
 Step 2's 95 harness/21 script tests, Go/Lua race, vet and digest checks remain
-supporting evidence for the prior scope. The current registry supports 18 cases
-and the new image scope is 71 files; prior executed cases retain their original
+supporting evidence for the prior scope. The current registry supports 19 cases
+and the image scope is 74 files; prior executed cases retain their original
 source/image bindings. Recovery execution used its own newly approved artifacts;
 that approval is now consumed.
 Narrow M4-P3 readiness is now accepted; broader section-17.7 and M4-P4/P5 obligations remain open.
@@ -274,11 +291,11 @@ retains it as a primitive case; guard cases now explicitly bind the complete
 | Ledger validation | Baseline/delivery/fence history, post-abort freeze, exact retained witnesses, strict worker expiry, completed replay, prior retry/backpressure/reason fixes and zero-sentinel checks pass local normal conformance and reviewed counterexample replays |
 | Script sources | All 43 canonical operations are implemented: unchanged BOOT passthrough plus 42 exact generated sources; both strict source/bundle generator checks pass |
 | Authoritative bundle | Complete zero-argument `AuthoritativeScriptBindingSet()` validates embedded sources against fixed generated pins and returns fresh private sealed bindings; no caller-supplied sources, hashes or paths |
-| Local and protected acceptance | Positive `7431599` passes 14/14 protected checks: all 478 race roots accounted for (477 pass/one allowed optional skip), 150 harness/21 script tests and 71-file/18-recipe image evidence. Local five-root race conformance, vet and pins also pass |
-| Runtime behavior | V2 remains dormant in application services; separately authorized disposable Redis smoke, claim/release, all 13 negatives, pre-I/O recovery, bounded request lifecycle and one positive-interval case passed within their original source/image scopes |
-| M4 bounded execution | Positive fixture `99e1a00b…` passes once: 24 calls, exact group-first block/wait/admission, 33 counters and 46 denials. Six-role revocation, original 33-action journal and six-resource absence pass; renewed approval consumed. Full M4-P4/P5 remain open |
-| Review status | Positive source GO is bound to inventory `c4c97b76…`; independent correctness/security ACCEPT and separate provenance PASS are bound to report `56fe5836…`. Prior findings/runs retain their original artifacts |
-| Git state | The 47-file source checkpoint is published as `7431599` on draft PR #17. The owner authorized adding the 23-file accepted-run evidence/status batch on the same branch/PR; the combined PR has 66 paths. Fresh publication CI follows; 372 unrelated files remain preserved |
+| Local and protected acceptance | Published `c381287` passes 14/14 PR checks, 480-root race accounting (479 pass/one allowed optional skip), 171 harness/21 scripts and 74-file/19-recipe image checks. Local 81 canonical race calls, vet and pins also pass; the result/status commit will require fresh CI |
+| Runtime behavior | V2 remains dormant in application services; separately authorized disposable Redis smoke, claim/release, all 13 negatives, pre-I/O recovery, bounded request lifecycle, positive-interval and serial shared-group cases pass within their original source/image scopes |
+| M4 bounded execution | Shared fixture `e47d57da…` passes once: 21 calls, three capacity denials, 60 counters and 46 denials. Six-role revocation, original 28-action journal and six-resource absence pass; renewed approval consumed. Full M4-P4/P5 remain open |
+| Review status | Shared real evidence has independent correctness/security ACCEPT and provenance PASS on unchanged 107-file source. Earlier offline/source reviews and prior real-run verdicts retain their original artifacts |
+| Git state | PR #17 merged as `7da55b1`. The 49-file shared checkpoint is published as `c381287` on draft PR #18; the owner authorized publishing the 22-file result/status batch on that branch and verifying fresh CI. All 372 unrelated files remain preserved |
 
 ### Current source and fixture identities (regenerated 2026-09-21)
 
@@ -364,7 +381,7 @@ The final matrix and final independent reviews used pinned Go 1.25.13 and passed
 | M1: Foundation release gate | Complete and merged | Approved amendment, independent GO reviews, and passing protected PR #9 checks before merge |
 | M2: Reviewed foundation checkpoint | Complete | Scoped 66-file checkpoint secret-scanned, tested from the index export, committed, pushed, and remote identity verified |
 | M3: Authoritative Lua transitions | Complete locally: 43/43 sources, sealed factory, source conformance and full-module race verification; checkpoint `81028ca` pushed, still dormant | Complete source/pin and in-memory Go/Python/Lua checks plus the final current-tree race result, without runtime activation |
-| M4: Real Redis 7 acceptance | M4-P3 bootstrap readiness, one pre-I/O recovery, one bounded request lifecycle and one positive-interval case independently accepted within their scopes; full M4-P4/P5 remain open | Idempotency, fencing, crash, AOF, memory, and latency evidence passes on disposable infrastructure |
+| M4: Real Redis 7 acceptance | M4-P3 bootstrap readiness, pre-I/O recovery, bounded request lifecycle, positive-interval and serial shared-group cases independently accepted within their scopes; full M4-P4/P5 remain open | Idempotency, fencing, crash, AOF, memory, and latency evidence passes on disposable infrastructure |
 | M5: Runtime and consumer integration | Blocked by M4 and F4-F6 | Spider, feeder, consumers, Monitoring, Compose, and crawl-admin use only the accepted V2 protocol |
 | M6: Migration, runbooks, and rollback | Blocked by M5 | Stopped migration and rollback rehearsal pass; active docs contain tested V2 commands and no active V1 path |
 | M7: Immutable release gate | Blocked by M6 | Final digests, manifests, images, backups, CI, and authorization/report templates are reviewed |
@@ -431,6 +448,11 @@ The final matrix and final independent reviews used pinned Go 1.25.13 and passed
   exact-artifact approval.
 - [x] Execute the separately requested corrected ledger smoke case and retain
   its passing probe/BOOT/ACL/revocation and six-resource cleanup evidence.
+- [x] Publish the reviewed shared-group source checkpoint and verify protected CI.
+- [x] Execute the separately approved single shared-group case; obtain independent
+  scoped ACCEPT reviews and verify original journal, revocation and cleanup.
+- [ ] Complete the owner-authorized 22-file shared-group result/status publication
+  and verify the exact new revision's protected CI.
 - [ ] Complete the broader M4 acceptance reviews and later-case approvals.
 
 ## M1: Final foundation release gate
@@ -2994,6 +3016,215 @@ budgets, after-I/O recovery and the remaining full-M4 matrix stay open. The owne
 authorized publishing this 23-file result/status batch on the existing branch and
 draft PR #17, followed by fresh protected CI. The real run stays bound to `7431599`.
 
+### PR #17 merge and shared-group-capacity offline foundation (2026-10-01)
+
+PR #17 merged at 2026-09-30 21:00:20 UTC as
+`7da55b14b32c79ec4b2b95b0a9fd31dda40f0571`. The complete tree is
+`a8234936f9fcaa3e773aa3692e11bcfa8a3e1bf2`, identical to final PR head `b7ef619`.
+The final publication included the 23-file real-run result/status batch and
+separately authorized Laravel/CommonMark and Query Engine Axios security fixes;
+the combined PR had 69 paths/four commits. Source/run evidence retains its original
+bindings, including positive execution at `7431599`.
+
+Local main alignment preserved 372 unrelated files. All 14 main-push protected
+contexts pass; downloaded eight-shard reports match 478 compiled roots
+(477 passes/one allowed optional skip), with 150 harness/21 script tests and
+71-file/all-18-recipe amd64 image evidence. The main image preparer selects
+claim/release, not a new shared case. Main CI gate:
+`ee9f70a199263e4a7037413786a49580e9e00c97e158a7ff0b585cdd1b964ef9`.
+
+The next closed slice isolates **shared group capacity across two runs**. Both
+run-pinned maps use the same immutable lineage/capacity 1 / interval 0; targets have
+different origins, and the normative global tuple stays 2/0. A's pending and
+started reservation must block eligible B with exact group `CAPACITY_BLOCKED`
+tail `[scope_id,1,1,0]`, while global still has spare capacity and B's origin is
+absent. FINISH releases the slot, B can claim/start/finish, and historical A
+replays cannot debit or overwrite B.
+
+The combined fixture has 90 possible positions, 89 fixture-owned positions and 45
+setup entries. Per-operation REQUEST remains 57 keys. Its 21-call finish trace has
+six mutations, three blocks, three errors, eight replays and maintenance; a
+nine-call cancellation sibling has five mutations, one block, two replays and
+maintenance. Canonical `CJ2_CANCEL_RESERVATION` returns `RESERVATION_CANCELLED`
+both initially and on replay. The first design's incorrect cancellation spelling
+was corrected before source freeze, without changing normative or canonical Lua.
+
+The oracle preserves both global run/lease memberships, four durable scopes,
+independent run/job/group accounting, the first-start latch and exact logical/
+physical expiry. Fixed foreign-owner/token controls retain the victim's keys/Q.
+Proposed ledger/observer ACLs use literal key-kind selectors; canonical peer reads
+do not imply peer mutation authority. Both actors share the proposed ledger role;
+this is not per-actor credential isolation or real Redis ACL evidence.
+
+Five offline profiles—spaced, same-millisecond, reversed contender, and two
+cancellation clock profiles—pass **81 canonical Lua invocations under race**.
+The initial full 160-test harness and 21 script tests pass. Two nonblocking review
+recommendations were implemented only in tests: independent Go scope/history
+formulas and delayed 30-second boundary/malformed-prefix controls. Final 11 shared
+Python tests, all 81 Go canonical calls under race and vet pass again. Discovery
+is now 161 Python tests/480 Go roots; a new full-161 invocation is not claimed.
+Strict complete-43-source and bundle checks pass, with implementation/pins unchanged
+across the test-only delta. Both independent reviewers retain offline-only GO.
+
+Strengthened inventory: `13cdf67b113a2254e3a593947aa2420857a36b365c21b953c155b4554902c103`.
+Verification: `0b6ccedce6ba3d601526009d233ffa0aa66fefbae62f6a59164ee55a3f50fe0b`.
+Combined decisions: `6ef794569921564a4766be298289780ac498a4769a7a12d946d98918b7c8c037`.
+See the [dated checkpoint](crawl-jobs-v2-m4-shared-group-capacity-2026-10-01.md)
+and [exact evidence](evidence/m4-shared-group-capacity-2026-10-01/README.md).
+
+At that foundation checkpoint, offline scenarios numbered 21 and executable cases
+remained 18; runtime dispatch rejected the new case and the reader lacked 90.
+The subsequent lifecycle integration and real run are recorded below. At this
+foundation checkpoint no shared-capacity real case had run. Simultaneous
+processes, global saturation, independent origin blocking, tightening, after-I/O recovery, durability,
+maximum-shape performance and full M4 remain open.
+
+### Shared-group-capacity executable lifecycle source gate (2026-10-01)
+
+The registered nineteenth case uses only the fixed 21-call finish trace from the
+reviewed oracle. The nine-call positive-cancellation and reversed-contender traces
+remain offline controls. The runtime request accepts no trace, endpoint, policy,
+wire or expected-state selector. The original 300-second case, 30-second stages
+and measurement, separate 60-second cleanup, unrenewed 60-second leases and
+one-day terminal expiries remain.
+
+`bounded_state.py` adds the closed 90-position shape without raising scan, value,
+field, collection or transport limits. `shared_executor.py` binds probe/restart,
+BOOT/replay, observed setup time and complete 45-entry setup to the private two-run
+fixture. Setup/loader/BOOT are retired early. Every operation compares its exact
+reply and full typed state/absolute expiry before retaining a safe row.
+
+Receipts contain 60 distinct counters: 24 per run/job/per-run-group plus three
+counters for each of four scopes. Job/lease state, reservation expiry/reference
+hashes, first-start history and scope limits/deadlines are also projected safely.
+Group-capacity denials report kind/count/limit/after-I/O fields without raw origin
+witnesses. Owners, tokens, Q/run/job/transition IDs and URLs/origins are checked
+against retained output. Both logical owners share the same ledger credential;
+per-owner credential isolation and physical parallelism are not claimed.
+
+`SharedFailure` retains only verified prefixes through both actual `executor.main`
+serialization and `Docker.stage` parsing. Failed-assertion labels must match their
+prefix; ambiguous mutations dispatch once. Existing worker-first/revoker-last
+teardown and separately bounded cleanup are reused. Simulated reports retain
+`case_evidence_valid=false`; full success requires all 21 calls, 46 denials and
+the entire measurement span within 30 seconds.
+
+Ten new lifecycle test methods cover 15 fault profiles, all 22 prefix boundaries,
+partial setup, interrupts, failed revocation, counterfeit receipts, malformed
+clock/history/expiry data, 90-position readers and real worker/adapter paths.
+The complete **171-test harness**, **21 script tests**, shared/cancellation/
+offline-artifact Go roots under race (**81 canonical calls**), vet and strict
+43-source/bundle checks all pass. Source review covers 107 files with a 13-path
+lifecycle delta; both reviewers return **GO_FOR_IMAGE_CI_PREPARATION**, no
+actionable findings. Builder input closure includes the new modules.
+
+Source inventory: `373f143179c558781922dedd2a90e9f65b461532610ca04e659fdcbe3fdea9d4`.
+Recipe: `05bfdbbea0bf5166b332e8e68225d466dcd1b076bf171fca30d062b946d88dc4`.
+Verification: `ad5e032df2aef45a59026e847f8732f35b9e165d79c62c4cd8e3c092f50bc6cf`.
+Combined reviews: `e917642a301c3c4a4ceb40fa47034a20041bd35b150440346e6a94cf69e85594`.
+See the [dated lifecycle checkpoint](crawl-jobs-v2-m4-shared-group-lifecycle-2026-10-01.md)
+and [exact evidence](evidence/m4-shared-group-lifecycle-2026-10-01/README.md).
+
+Current registry/image scope is 19 cases, 21 scenarios and 74 execution-image files.
+Source changes also alter inherited recipe fingerprints; earlier images and CI
+remain historical. At this source checkpoint selected preparation, publication/CI
+and fresh artifact/execution decisions remained pending; their subsequent
+completion is recorded below. Full M4 remains open.
+
+### Shared-group-capacity selected arm64 preparation (2026-10-01)
+
+The reviewed 107-file source and both source-review GO decisions were revalidated
+before image preparation. The cached Python 3.13.15 arm64 platform manifest
+`sha256:ad4c34ff79289506e235b40dce75d629e25f226b597a2455804220f037e07531`
+and local base `sha256:adc3d531c29fbd69fa9ca49cd8e241c68aaf4e1dd7462be6c2432044b7a39ea8`
+were selected explicitly. Build steps used network none, pull false and arm64.
+
+| Prepared artifact | Identity |
+|---|---|
+| Harness / stand-in | `sha256:03bf14679ffdda67c7940ffca0cfd52d38fcf5b9d8e0ca4f173b3fbe2e76d84d` |
+| Redis 7.4.11 | `sha256:24e81cffaba832bcd71068a6ff772a531076bafdbb1d684195766ae9b6511f5c` |
+| Plan | `526593999b3eefe48bf0492cb5221603d5475ab1686460944253c44668b0f4eb` |
+| Recipe | `05bfdbbea0bf5166b332e8e68225d466dcd1b076bf171fca30d062b946d88dc4` |
+| Image validation | `52000eff058bfa81ae6f1b5722ba7e1225ab4886daefc0ab2ac47e69b48d9875` |
+| Independent postcheck | `00bc44c893d8197bec2081c848bf8e9f2bdedf694bac193f4e710a2594f039ff` |
+
+Preparation explicitly selected `ledger-shared-group-capacity-v1`, and both
+Python image checks matched all 74 files and 19 recipes. Init/executor image-check
+memory peaks were 48,857,088 / 48,828,416 bytes, within their limits. These are
+image checks, not maximum-shape workload measurements.
+
+All four metadata roles of fixture `15019fa1d2e097541bf5643d6ac8ad07` were admitted
+in created/PID0 state. The four exact container names and two volume names were
+independently absent afterward; fixture/case/image-check label listings were empty.
+Only the bounded image checks and Redis `--version` ran. No acceptance server,
+case invocation or execution approval was created. All 107 source hashes, the
+prior 40-file local batch and 372 unrelated files survived preparation unchanged.
+
+See the [dated preparation](crawl-jobs-v2-m4-shared-group-preparation-2026-10-01.md)
+and [exact exports](evidence/m4-shared-group-preparation-2026-10-01/README.md).
+The owner authorized scoped publication of the combined 49-file source/evidence
+checkpoint on the current feature branch, a draft PR to main and exact-revision
+CI. Subsequent publication, exact-artifact approval and the separately requested
+single real run are recorded below. Full M4 remains open.
+
+### Shared-group publication and single real run (2026-10-02)
+
+The 49-file checkpoint was published October 1 as
+`c381287384d41f243516a851dd6ded6f56b9fcad` on draft PR #18 from merged `7da55b1`.
+All fourteen protected contexts passed. Eight downloaded race shards account for
+480 compiled roots: 479 passes and only the allowed optional native-parity skip.
+All seven M4 roots pass once; Python logs confirm 171 harness/21 script tests with
+zero skips. The tested merge `c1ba97ad71cfb4432aaf2d772a4ea37ec18e94a6` has tree
+`7de6991b3987b612d0916e3699fc2bdc66e29d3e`, identical to published source.
+CI gate: `098d5e7f7a918ae6bf23fcc2b5bed35e0e67f82f672f00743194d16bd4b614b9`.
+PHP warning classifications remain explicit in that record. The amd64 preparer
+selects claim/release while checking all 74 files/19 recipes; selected shared-case
+arm64 evidence remains separate.
+
+Original approval `db4f784f…` expired at 20:14:40.961 UTC before execution preflight;
+its refusal and expired-unused disposition retain zero reservations/invocations.
+The owner explicitly approved renewed packet `b4e6deb1…`, with unchanged
+source/images/plan/recipe/scope and a fresh destination, then separately selected
+**Execute approved case**. Approval `1e7732b2…` had window
+20:40:53.472–21:40:53.472 UTC. Fresh preflight and exclusive reservation preceded
+fixture `e47d57da09b95aec8dd2735186574aad`: **20:47:32.508–20:47:47.694 UTC**,
+**15,186 ms**, exit 0, exactly one invocation and no automatic retry.
+
+All 21 calls pass: six mutations, three group-capacity denials, three expected
+errors, eight replays and one maintenance pass. Both pending and started A block
+B with exact group/count/limit/`after_io=0` while global has spare capacity and
+B's distinct origin remains absent. FINISH frees the slot without ending either
+lease or refunding cumulative counts. Independent formulas verify 60 initial and
+3,780 before/after/delta values. First-start history remains A's start; document
+history stays empty. The complete Redis measurement spans **4,508 ms**, within
+30 seconds and both unchanged 60-second leases. Terminal expiries remain exact
+FINISH + 86,400,000 ms. All 46 authority denials are `NOPERM` with unchanged final state.
+
+Independent correctness/security verdicts are **ACCEPT**; authority/source/CI,
+original journal and live-resource provenance pass. Six-role reachable-server
+revocation, worker-first teardown, the **28-action / 2,904-byte original journal**
+and exact name/label absence of four containers/two volumes are verified. Five
+retained runtime envelopes cover seven completions, with two journal-only ready
+completions. The original-five scan covers 192,925 bytes with zero findings and no
+added suppressions. Renewed approval: **consumed, non-reusable**. The original
+approval remains expired-unused.
+
+Report: `36f695ab28e2ec25a15aee93695218519882911df8d0109f4f255ba9cc96a641`.
+Postcheck: `155e516cad81b5df9fec63807cc5b5a20e5323cba2762b39608471e042cb8d16`.
+See the [dated result](crawl-jobs-v2-m4-shared-group-run-2026-10-02.md) and
+[byte-identical exports](evidence/m4-shared-group-run-2026-10-02/README.md).
+
+Seven public reply hashes are reconstructed; fourteen reservation-bearing replies,
+unexported START permissions and private whole-state comparisons rely on the
+pinned producer. This is serial logical-owner shared-group capacity, not physical
+worker simultaneity or per-owner credential isolation. Positive cancellation and
+reversed traces remain offline controls. Neither the unused synthetic grants nor
+the preliminary BOOT probe establish external I/O or after-START durability.
+Independent origin/global saturation, broader concurrency/tightening/budgets and
+the remaining full-M4 matrix stay open. The owner authorized publishing the
+22-file result/status batch on the existing branch/draft PR #18, followed by fresh
+protected CI; the run remains bound to `c381287`.
+
 ### Full-acceptance design gates
 
 **Owner-selected direction:** local Docker observer design and an AOF-failure
@@ -3031,7 +3262,8 @@ confinement and held-boundary precision are still feasibility gates.
   complete large/LIST state readers; current small-case limits are insufficient.
 - **D05: final evidence/CI.** Require exact reviewed published artifacts, required
   real-case coverage without skips, and independent final measurement review.
-  Current new source is local WIP, not covered by the old checkpoint's CI.
+  The published shared-case source passes its exact-revision checks; later
+  changes and the full acceptance matrix still require their own final evidence.
 
 ### Required tests
 
@@ -3311,6 +3543,16 @@ Rendering remains disabled unless its separate activation requirements pass.
 | 2026-09-30 | Expired-unused approval and explicit renewal | Original approval expires before execution preflight, with zero reservations/invocations; owner approves unchanged artifacts in renewed packet and separately requests its single bounded execution |
 | 2026-09-30 | Single positive-interval run accepted | Fixture `99e1a00b…` PASS in 21,736 ms: 24 calls, exact group-first deadline/block/wait/admission, 33 counters and 46 denials; independent correctness/security ACCEPT, provenance PASS, six-role revocation, original 33-action journal and six-resource absence verified; renewed approval consumed, full M4 open |
 | 2026-09-30 | Positive-run result publication authorized | Owner approved committing/pushing the verified 23-file result/status batch, including narrow publication-status wording, on the existing positive-interval branch and draft PR #17; combined PR scope is 66 paths, fresh exact-revision CI follows, and original execution bindings remain unchanged |
+| 2026-09-30 | Positive result publication and dependency gates completed | `dd697b5` publishes the 23-file evidence/status batch; separately approved Composer/Axios fixes produce final `b7ef619`, four commits/69 paths; all 14 checks and downloaded 478-root/71-file/18-recipe evidence pass, with PHP warning summaries retained |
+| 2026-10-01 | PR #17 merged-main gate verified | Owner merge `7da55b1` is tree-identical to final PR head; 14 main contexts, 478-root race accounting, 150 harness/21 scripts and 71-file/18-recipe image evidence verified; local alignment preserves 372 unrelated paths |
+| 2026-10-01 | Shared-group-capacity offline foundation reviewed | Two-run/distinct-origin 90-position oracle, 21-call finish and 9-call cancellation traces implemented; 105-file source review and test-only follow-ups independently GO; initial 160 harness/21 scripts, final 11 targeted tests and 81 Go canonical invocations under race pass; runtime registration/reader/lifecycle remain next |
+| 2026-10-01 | Shared-group lifecycle implemented and reviewed | Closed 90-position setup/reader, 21 calls, 60-counter receipts, 46 denials and actual failure-parser/cleanup integration; 107-file source inventory independently GO for image/CI preparation, all 171 harness/21 scripts and 81 canonical race calls pass; 19 cases/74 image files, selected images and real execution gates remain next |
+| 2026-10-01 | Shared-group selected arm64 image preparation | Harness `03bf146…`, plan `52659399…`, recipe `05bfdbbe…`; 74-file/19-recipe checks, four stopped-role admissions and independent six-resource absence PASS on unchanged 107-file source; no real case, scoped publication/CI and fresh execution decisions next |
+| 2026-10-01 | Shared-group checkpoint publication authorized | Owner approved the exact 49-file source/evidence scope, including narrow plan publication wording, commit/push on the current feature branch, draft PR to main and fresh protected CI; prepared source/images stay bound and real execution remains separately gated |
+| 2026-10-01 | Shared-group source publication and CI complete | `c381287` published on draft PR #18; 14/14 contexts, 480-root race accounting (479 pass/one optional skip), 171 harness/21 scripts and 74-file/19-recipe image evidence verified; 107-source inventory unchanged, real execution remained separately gated |
+| 2026-10-02 | Shared-group expiry refusal and explicit renewal | Original approval expired before reservation with zero invocations; owner approved unchanged artifacts in a fresh 16-artifact packet, then separately selected Execute approved case |
+| 2026-10-02 | Single shared-group run accepted | Fixture `e47d57da…` PASS in 15,186 ms: 21 calls, three group-capacity denials, 60 counters and 46 authority denials; independent correctness/security ACCEPT and provenance PASS, six-role revocation, original 28-action journal and six-resource absence verified; renewed approval consumed, full M4 open |
+| 2026-10-02 | Shared-group result publication authorized | Owner approved the exact 22-file result/status checkpoint, including narrow publication-status wording, commit/push to the existing branch and draft PR #18, then fresh exact-revision CI; 15 byte-identical exports, 67 combined PR paths, original execution bindings retained |
 
 ## Definition of done
 

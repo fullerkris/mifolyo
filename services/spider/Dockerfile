@@ -27,6 +27,7 @@ COPY tests/crawl-jobs-v2-redis/negative_specs.py tests/crawl-jobs-v2-redis/negat
 COPY tests/crawl-jobs-v2-redis/recovery_specs.py tests/crawl-jobs-v2-redis/recovery_oracle.py tests/crawl-jobs-v2-redis/test_recovery_oracle.py /app/tests/crawl-jobs-v2-redis/
 COPY tests/crawl-jobs-v2-redis/request_specs.py tests/crawl-jobs-v2-redis/request_oracle.py tests/crawl-jobs-v2-redis/test_request_oracle.py /app/tests/crawl-jobs-v2-redis/
 COPY tests/crawl-jobs-v2-redis/rate_specs.py tests/crawl-jobs-v2-redis/test_rate_oracle.py /app/tests/crawl-jobs-v2-redis/
+COPY tests/crawl-jobs-v2-redis/shared_capacity_specs.py tests/crawl-jobs-v2-redis/shared_capacity.py tests/crawl-jobs-v2-redis/test_shared_capacity.py /app/tests/crawl-jobs-v2-redis/
 
 # Build the application
 RUN go build -o spider ./cmd/spider/main.go

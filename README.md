@@ -86,7 +86,7 @@ revocation, the 28-action journal and absence of all six resources were verified
 Its approval is consumed. See the [request run](docs/crawl-jobs-v2-m4-request-run-2026-09-28.md)
 and [implementation/preparation checkpoint](docs/crawl-jobs-v2-m4-request-lifecycle-2026-09-28.md).
 The positive-interval slice now has **accepted scoped real evidence** at published
-`7431599` on draft PR #17, after all fourteen protected checks passed. Its single
+`7431599`, retained through merged PR #17, after all fourteen protected checks passed. Its single
 21,736-ms invocation verifies 24 calls, an exact 8-second group-first block,
 four observer clock samples and due admission/replays, 33 counters and 46 denials.
 Independent correctness/security reviews accept the result; six-role revocation,
@@ -95,6 +95,21 @@ approval expired unused; a separately approved renewal and execution decision
 preceded the run. The renewed approval is consumed. See the
 [positive-interval result](docs/crawl-jobs-v2-m4-positive-run-2026-09-30.md) and
 [preparation checkpoint](docs/crawl-jobs-v2-m4-positive-interval-2026-09-29.md).
+PR #17 merged as `7da55b1` with tree continuity and passing main CI. The
+shared-group-capacity case now has **accepted scoped real evidence** at `c381287`
+on draft PR #18, after all fourteen protected checks passed. Two runs/different
+origins share one group slot: the single 15,186-ms invocation verifies 21 calls,
+three capacity denials, 60 counters and 46 authority denials. Independent
+correctness/security reviews accept the result; six-role revocation, the original
+28-action journal and exact name/label absence of four containers/two volumes pass.
+The initial approval expired unused; explicit renewal and a separate execution
+decision preceded the run. The renewed approval is consumed. Reviewed source
+remains 107 files, with 171 harness/21 script tests and 81 canonical race calls;
+selected arm64 preparation binds 74 image files/19 recipes. See the
+[shared-group result](docs/crawl-jobs-v2-m4-shared-group-run-2026-10-02.md),
+[image preparation](docs/crawl-jobs-v2-m4-shared-group-preparation-2026-10-01.md),
+[lifecycle checkpoint](docs/crawl-jobs-v2-m4-shared-group-lifecycle-2026-10-01.md)
+and [offline foundation](docs/crawl-jobs-v2-m4-shared-group-capacity-2026-10-01.md).
 Full M4 acceptance and application integration remain pending. The
 [Crawl Jobs V2 plan](docs/crawl-jobs-v2-plan.md) owns current progress. Historical
 V1 commands below do not authorize another crawl.

@@ -1,4 +1,4 @@
-"""Whole-database reads for the closed 2/58/71-position negative fixtures."""
+"""Whole-database reads for the closed 2/58/71/90-position fixtures."""
 import re
 
 import harness as h
@@ -21,7 +21,7 @@ def number(value):
 
 
 def inventory(client, limit):
-    h.require(type(limit) is int and limit in (2, 58, 71), "STATE_LIMIT")
+    h.require(type(limit) is int and limit in (2, 58, 71, 90), "STATE_LIMIT")
     count = client.call("DBSIZE")
     h.require(type(count) is int and 0 <= count <= limit, "STATE_KEY_COUNT")
     keys, cursor = set(), b"0"
@@ -39,7 +39,7 @@ def inventory(client, limit):
 
 
 def snapshot(client, expected):
-    h.require(type(expected) is dict and len(expected) in (2, 58, 71), "STATE_INVENTORY")
+    h.require(type(expected) is dict and len(expected) in (2, 58, 71, 90), "STATE_INVENTORY")
     h.require(inventory(client, len(expected)) == {key for key, row in expected.items() if row is not None}, "STATE_MEMBERSHIP")
     actual = {}
     for key, row in sorted(expected.items()):

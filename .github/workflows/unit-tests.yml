@@ -3,7 +3,7 @@ name: Unit Tests
 on:
   workflow_dispatch:
   push:
-    branches: ["main", "crawl_seeds-and-url-rules-rebuild"]
+    branches: ["main"]
   pull_request:
     branches: ["main"]
 

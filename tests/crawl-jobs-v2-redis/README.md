@@ -242,6 +242,26 @@ ready completions. This serial logical-owner case does not establish simultaneou
 workers, per-owner credential isolation or independent origin/global saturation.
 Cancellation/reversed traces remain offline controls; full M4 remains open.
 
+**Shared-group publication and merged-main gate (2026-10-03): PASS.** Result
+checkpoint `c8c5ee2` adds 15 byte-identical result exports and status updates.
+PR #18's two-commit/67-file scope was squash-merged as `d3b241e`, with the same
+reviewed tree. All fourteen main-push checks pass; downloaded evidence matches
+480 compiled race roots (479 passes/one allowed optional native-parity skip),
+171 harness/21 script tests without Python skips, and 74 image files/all 19 recipes.
+PHP warning classifications are retained. The CI image preparer still explicitly
+selects claim/release; the original shared-group run remains bound to `c381287`.
+See the [merge checkpoint and exact exports](../../docs/evidence/m4-shared-group-merge-2026-10-03/README.md).
+
+**Next slice: `ledger-shared-group-cancellation-v1` — not implemented or registered.**
+The existing nine-call `CANCEL_STEPS` control covers successful pending cancellation,
+immediate replay, B's admission, and historical A cancellation replay while B holds
+the group slot. Runtime integration must expose a separate fixed case, preserve
+zero starts for A and first-start history for B, and retain exact accounting,
+expiry, failure-prefix and cleanup checks. The current registry remains 19 cases;
+no real cancellation run is claimed. The
+[implementation handoff](../../docs/crawl-jobs-v2-plan.md#next-bounded-slice-shared-group-cancellation)
+owns the remaining source, review, image/CI and execution gates.
+
 **Final independent re-review (2026-09-21): GO for image preparation only.** The
 four original findings and a closed-peer follow-up are fixed and re-reviewed.
 See the [closure report](../../docs/crawl-jobs-v2-m4-rereview-2026-09-21.md).

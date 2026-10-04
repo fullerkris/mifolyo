@@ -2,9 +2,9 @@
 
 **Finding:** F3 - durable crawl-job leases and recovery
 
-**Last updated:** 2026-10-02 (UTC; single shared-group-capacity run independently accepted, approval consumed and cleanup verified; owner authorized the 22-file result publication and fresh protected CI, full M4 open)
+**Last updated:** 2026-10-04 (UTC; PR #18 result publication, same-tree merge and main CI complete; next is the unimplemented shared-group cancellation case, full M4 open)
 
-**Working branch:** `feature/crawl-jobs-v2-shared-group-capacity`, from merged `7da55b1`; executed checkpoint `c381287` on draft PR #18, with owner-authorized result/status publication on the same branch
+**Code baseline:** merged `main` at `d3b241e`; PR #18 is merged, with the reviewed tree and merged-main CI verified
 
 **Initial checkpoint:** `e4372a66201b8767bcca4d7476c30c5b7999922c`
 
@@ -15,13 +15,17 @@ All 43 canonical operations and the sealed, zero-argument
 bounded real-Redis `ledger-smoke-v1` and `ledger-claim-release-v1` cases pass;
 full M4 acceptance is open.
 
-**Current next gate:** complete the owner-authorized 22-file shared-group
-result/status publication on existing draft PR #18 and verify fresh exact-revision
-CI. Merge and further real-case decisions remain separate. The single real case at published
-`c381287` has accepted scoped evidence and a consumed approval. Its source/plan/
-recipe/image bindings remain historical execution authority, not permission for
-another run. PR #17 is merged as `7da55b1`; earlier runs retain their original
-bindings and consumed approvals.
+**Current next gate:** implement and independently review the fixed
+`ledger-shared-group-cancellation-v1` executable slice from the existing nine-call
+offline control. It is not implemented or registered and has no real-case evidence.
+The [implementation handoff](#next-bounded-slice-shared-group-cancellation) defines
+its scope and later image/CI/artifact/execution gates.
+
+PR #18 result publication `c8c5ee2`, squash merge `d3b241e` and exact merged-main CI
+are **complete**. The merge has the same tree as the reviewed PR head. See the
+[merge checkpoint](evidence/m4-shared-group-merge-2026-10-03/README.md).
+The accepted real shared-group run remains bound to executed `c381287` and its
+consumed approval; earlier runs likewise retain their original bindings.
 **M4-P3 bootstrap readiness is accepted**
 within frozen checkpoint `963b67b`, following independent correctness/security GO
 on the fourteen real package cases and reconciled H/I evidence. All prior
@@ -67,8 +71,9 @@ Go race roots, 71-file/18-recipe arm64 preparation and 14/14 protected checks
 preceded execution. See the [positive run](crawl-jobs-v2-m4-positive-run-2026-09-30.md)
 and [preparation checkpoint](crawl-jobs-v2-m4-positive-interval-2026-09-29.md).
 
-`ledger-shared-group-capacity-v1` now has **accepted scoped real evidence** at
-published `c381287` on draft PR #18, after all fourteen protected checks passed.
+`ledger-shared-group-capacity-v1` has **accepted scoped real evidence** at
+executed `c381287`, retained through result publication `c8c5ee2` and merged PR #18
+at `d3b241e`. All fourteen protected checks passed before the original run.
 Its single 15,186-ms invocation verifies 21 calls, three group-capacity denials,
 60 counters and 46 authority denials across two runs/distinct origins. Both
 independent reviewers accept the result; six-role revocation, original
@@ -291,11 +296,12 @@ retains it as a primitive case; guard cases now explicitly bind the complete
 | Ledger validation | Baseline/delivery/fence history, post-abort freeze, exact retained witnesses, strict worker expiry, completed replay, prior retry/backpressure/reason fixes and zero-sentinel checks pass local normal conformance and reviewed counterexample replays |
 | Script sources | All 43 canonical operations are implemented: unchanged BOOT passthrough plus 42 exact generated sources; both strict source/bundle generator checks pass |
 | Authoritative bundle | Complete zero-argument `AuthoritativeScriptBindingSet()` validates embedded sources against fixed generated pins and returns fresh private sealed bindings; no caller-supplied sources, hashes or paths |
-| Local and protected acceptance | Published `c381287` passes 14/14 PR checks, 480-root race accounting (479 pass/one allowed optional skip), 171 harness/21 scripts and 74-file/19-recipe image checks. Local 81 canonical race calls, vet and pins also pass; the result/status commit will require fresh CI |
+| Local and protected acceptance | Result head `c8c5ee2` and same-tree merged main `d3b241e` both pass 14/14 required checks. Main evidence accounts for 480 race roots (479 passes/one allowed optional skip), 171 harness/21 script tests and 74 image files/19 recipes. Original local 81 canonical race calls, vet and pins retain their source-bound evidence |
 | Runtime behavior | V2 remains dormant in application services; separately authorized disposable Redis smoke, claim/release, all 13 negatives, pre-I/O recovery, bounded request lifecycle, positive-interval and serial shared-group cases pass within their original source/image scopes |
 | M4 bounded execution | Shared fixture `e47d57da…` passes once: 21 calls, three capacity denials, 60 counters and 46 denials. Six-role revocation, original 28-action journal and six-resource absence pass; renewed approval consumed. Full M4-P4/P5 remain open |
 | Review status | Shared real evidence has independent correctness/security ACCEPT and provenance PASS on unchanged 107-file source. Earlier offline/source reviews and prior real-run verdicts retain their original artifacts |
-| Git state | PR #17 merged as `7da55b1`. The 49-file shared checkpoint is published as `c381287` on draft PR #18; the owner authorized publishing the 22-file result/status batch on that branch and verifying fresh CI. All 372 unrelated files remain preserved |
+| Git state | PR #18's two-commit/67-file source/result checkpoint was squash-merged as `d3b241e` from `7da55b1`; tree-identical to reviewed head `c8c5ee2`. Local `main` matches the merge; all 372 unrelated files remain preserved |
+| Next bounded slice | `ledger-shared-group-cancellation-v1`: existing nine-call offline control selected for executable integration and independent review; not implemented/registered, no real run. Runtime registry remains 19 cases |
 
 ### Current source and fixture identities (regenerated 2026-09-21)
 
@@ -380,7 +386,7 @@ The final matrix and final independent reviews used pinned Go 1.25.13 and passed
 | M0: Protocol and dormant foundation | Complete | Normative contract, fixture, Go package, Python verifier, and initial WIP checkpoint exist |
 | M1: Foundation release gate | Complete and merged | Approved amendment, independent GO reviews, and passing protected PR #9 checks before merge |
 | M2: Reviewed foundation checkpoint | Complete | Scoped 66-file checkpoint secret-scanned, tested from the index export, committed, pushed, and remote identity verified |
-| M3: Authoritative Lua transitions | Complete locally: 43/43 sources, sealed factory, source conformance and full-module race verification; checkpoint `81028ca` pushed, still dormant | Complete source/pin and in-memory Go/Python/Lua checks plus the final current-tree race result, without runtime activation |
+| M3: Authoritative Lua transitions | Complete and merged through PR #10 as `ff2457e`: 43/43 sources, sealed factory and reviewed conformance/race evidence; still dormant | Complete source/pin and in-memory Go/Python/Lua checks plus the final current-tree race result, without runtime activation |
 | M4: Real Redis 7 acceptance | M4-P3 bootstrap readiness, pre-I/O recovery, bounded request lifecycle, positive-interval and serial shared-group cases independently accepted within their scopes; full M4-P4/P5 remain open | Idempotency, fencing, crash, AOF, memory, and latency evidence passes on disposable infrastructure |
 | M5: Runtime and consumer integration | Blocked by M4 and F4-F6 | Spider, feeder, consumers, Monitoring, Compose, and crawl-admin use only the accepted V2 protocol |
 | M6: Migration, runbooks, and rollback | Blocked by M5 | Stopped migration and rollback rehearsal pass; active docs contain tested V2 commands and no active V1 path |
@@ -451,8 +457,12 @@ The final matrix and final independent reviews used pinned Go 1.25.13 and passed
 - [x] Publish the reviewed shared-group source checkpoint and verify protected CI.
 - [x] Execute the separately approved single shared-group case; obtain independent
   scoped ACCEPT reviews and verify original journal, revocation and cleanup.
-- [ ] Complete the owner-authorized 22-file shared-group result/status publication
+- [x] Complete the owner-authorized 22-file shared-group result/status publication
   and verify the exact new revision's protected CI.
+- [x] Merge PR #18 with reviewed-tree continuity, align local `main`, and verify
+  the actual squash commit's main-push checks and downloaded evidence.
+- [ ] Implement and independently review `ledger-shared-group-cancellation-v1`
+  from the existing fixed nine-call offline control.
 - [ ] Complete the broader M4 acceptance reviews and later-case approvals.
 
 ## M1: Final foundation release gate
@@ -3223,7 +3233,83 @@ the preliminary BOOT probe establish external I/O or after-START durability.
 Independent origin/global saturation, broader concurrency/tightening/budgets and
 the remaining full-M4 matrix stay open. The owner authorized publishing the
 22-file result/status batch on the existing branch/draft PR #18, followed by fresh
-protected CI; the run remains bound to `c381287`.
+protected CI; that publication and the subsequent merge/main-CI gate are complete
+as recorded below. The run remains bound to `c381287`.
+
+### Shared-group result publication, merge and main CI (2026-10-03)
+
+Result checkpoint `c8c5ee2bb4d7ce8b61546dbea2a98529542d8265` publishes the 22-file
+result/status batch, including 15 byte-identical run exports. All fourteen PR
+checks pass on that head. The tested merge
+`7b1fe0a3fc10ae142bddd3690efd52820208caa8` has the same tree as the head; the
+publication gate is `954e6a42a48385a91cc13c8ddb31f1d241df479ac6fa5c1507c6cb508706f4d2`.
+
+After owner-authorized merge review, PR #18 was squash-merged at
+**2026-10-03 13:35:55 UTC** as `d3b241e8790614957b68e2106d9dd1bda91dfae4`,
+with parent `7da55b14b32c79ec4b2b95b0a9fd31dda40f0571`. Its tree
+`6a42a0331da9e4ab59baee02b20d07e85fc24b64` exactly matches reviewed `c8c5ee2`.
+The complete PR has two commits/67 paths; all 107 source hashes are unchanged.
+Local `main` alignment preserved the empty index and all 372 unrelated pending
+files. The alignment receipt records that local `main` had already advanced to
+the verified merge before checkout, correcting an earlier pre-alignment assumption.
+
+Both main-push workflows pass on the actual squash commit:
+[Required Checks 37126728098](https://github.com/fullerkris/mifolyo/actions/runs/37126728098)
+and [Unit Tests 37126728079](https://github.com/fullerkris/mifolyo/actions/runs/37126728079).
+All **14 required contexts**, the downloaded **480-root** race inventory
+(479 passes/one allowed optional native-parity skip), **171 harness/21 script
+tests** without Python skips, and **74-file/19-recipe** amd64 image evidence are
+verified. All seven M4 roots pass once. CI preparation still selects claim/release;
+the original shared-case arm64 preparation remains separate.
+
+Forum CI completed 129 tests/547 assertions with 85 warning results and 44
+warning-free passes. Query completed 31 tests/193 assertions with 30 warning
+results and one warning-free pass. Neither suite has failures/skips; the warning
+classifications are retained. Main-CI gate:
+`db86bef93ff6930007ef7e5d971bd663a9b26b76626db294fc67a0b10c51afc7`.
+Combined merge closeout:
+`1fa82c2d15afc1822e55e3a3d816beb04a1eb58ed1cadacded4696015d7931bb`.
+See the [seven exact checkpoint exports](evidence/m4-shared-group-merge-2026-10-03/README.md).
+
+Publication and merge do not rebind or repeat the original `c381287` real run.
+Its approval remains consumed. Full M4 remains open.
+
+### Next bounded slice: shared-group cancellation
+
+**Not implemented or registered.** Proposed case:
+`ledger-shared-group-cancellation-v1`, based on merged `d3b241e`. The existing
+`shared_capacity_specs.CANCEL_STEPS` and `TestM4SharedGroupCancellationOffline`
+already provide a closed nine-call model and independent spaced/same-ms Go
+profiles. The accepted real finish trace measured cancellation rejections, not
+successful pending cancellation. The current registry remains 19 cases.
+
+| Calls | Existing offline control to integrate |
+|---|---|
+| 1–2 | A claim; B blocked by A's pending shared-group reservation |
+| 3–4 | A cancels its pending reservation; immediate exact CANCEL replay |
+| 5–6 | B claims the freed slot; historical A CANCEL replay preserves B's reservation |
+| 7–9 | B START, FINISH and four-scope maintenance |
+
+The nine calls comprise five mutations, one capacity denial, two cancellation
+replays and one maintenance pass. Only B records a synthetic start. A's initial
+and replay replies are all `RESERVATION_CANCELLED`; replay classification cannot
+be inferred from status alone. Required checks preserve A's zero-start history,
+both leased jobs, reservation-creation accounting, B's capacity and first-start
+history, and exact cancellation/finish tombstone expiry.
+
+Implement this as a separate fixed case, retaining the combined 90-position
+fixture and planned 60-counter/46-denial checks. Keep caller-selected traces,
+policies, wires and expected-state inputs outside runtime admission. Review the
+actual worker/adapter failure-prefix path and inherited cleanup. Proposed bounds
+remain 300 seconds per case, 30 seconds per stage/measurement and separate
+60-second cleanup, with four networkless containers, two volumes and six roles.
+
+The source implementation and regressions need independent review, then new
+immutable image/preparation and exact published-CI bindings. Fresh artifact
+approval and a separate execution decision precede any real invocation. There
+is currently no cancellation-case execution evidence or new execution approval.
+The [source-grounded handoff](evidence/m4-shared-group-merge-2026-10-03/next-slice.json)
+is retained as a dated planning record, not completed implementation or full-M4 acceptance.
 
 ### Full-acceptance design gates
 
@@ -3552,7 +3638,11 @@ Rendering remains disabled unless its separate activation requirements pass.
 | 2026-10-01 | Shared-group source publication and CI complete | `c381287` published on draft PR #18; 14/14 contexts, 480-root race accounting (479 pass/one optional skip), 171 harness/21 scripts and 74-file/19-recipe image evidence verified; 107-source inventory unchanged, real execution remained separately gated |
 | 2026-10-02 | Shared-group expiry refusal and explicit renewal | Original approval expired before reservation with zero invocations; owner approved unchanged artifacts in a fresh 16-artifact packet, then separately selected Execute approved case |
 | 2026-10-02 | Single shared-group run accepted | Fixture `e47d57da…` PASS in 15,186 ms: 21 calls, three group-capacity denials, 60 counters and 46 authority denials; independent correctness/security ACCEPT and provenance PASS, six-role revocation, original 28-action journal and six-resource absence verified; renewed approval consumed, full M4 open |
-| 2026-10-02 | Shared-group result publication authorized | Owner approved the exact 22-file result/status checkpoint, including narrow publication-status wording, commit/push to the existing branch and draft PR #18, then fresh exact-revision CI; 15 byte-identical exports, 67 combined PR paths, original execution bindings retained |
+| 2026-10-03 | Shared-group result publication authorized | Owner approved the exact 22-file result/status checkpoint, including narrow publication-status wording, commit/push to the existing branch and draft PR #18, then fresh exact-revision CI; 15 byte-identical exports, 67 combined PR paths, original execution bindings retained |
+| 2026-10-03 | Shared-group result publication and exact-head CI complete | `c8c5ee2` publishes the 22-file result/status batch; all 14 PR checks, downloaded 480-root/74-file/19-recipe evidence and 171 harness/21 script tests verified; actual PHP warnings retained, original run still bound to `c381287` |
+| 2026-10-03 | PR #18 merge and merged-main gate complete | Squash `d3b241e` matches reviewed head `c8c5ee2` by tree; both main-push workflows and all 14 contexts pass with downloaded evidence verified; 107 source hashes and 372 unrelated files preserved, no real-case rerun |
+| 2026-10-03 | Shared-group cancellation handoff identified | Existing nine-call offline control selected for a separate closed executable case; positive pending cancellation and peer-safe replay are next, implementation/registration/review and real execution remain pending |
+| 2026-10-04 | Current documentation synchronized | Four status documents now reflect completed publication/merge/main CI and the unimplemented cancellation handoff; seven exact checkpoint records added with index/manifest, original dated run/source evidence preserved |
 
 ## Definition of done
 

@@ -2,7 +2,7 @@
 
 **Original review date:** 2026-09-01
 
-**Last updated:** 2026-10-02 (UTC; single shared-group-capacity run independently accepted, approval consumed and cleanup verified; result publication is next, full M4 open)
+**Last updated:** 2026-10-04 (UTC; PR #18 publication, same-tree merge and main CI complete; shared-group cancellation is the next unimplemented slice, full M4 open)
 
 **Reviewed baseline:** `main` / `44d8b09a364a1f60032e1f4faccf160813f4dd04`
 
@@ -110,7 +110,7 @@ retained Mongo records still incorrectly say `enabled: true`.
 |---|---|---|
 | F1 seed reconciliation | Not started | Retained evidence remains 70 enabled records; execute only during the matched freeze/backup/reset sequence |
 | F2 disposable Redis reset | Not started | Retained V1 state remains historical post-test evidence and must not be reused or selectively repaired |
-| F3 durable Crawl Jobs V2 | Shared-group real case and prior scoped cases accepted; application V2 remains dormant | Published `c381287` on draft PR #18 passes all 14 protected checks. Its separately approved single run verifies 21 calls, 60 counters and 46 denials; independent correctness/security ACCEPT, six-role revocation, original journal and six-resource absence pass, approval consumed. Result/status publication is next; full M4-P4/P5 remains open in [`crawl-jobs-v2-plan.md`](crawl-jobs-v2-plan.md) |
+| F3 durable Crawl Jobs V2 | Shared-group real case and prior scoped cases accepted; PR #18 merged as `d3b241e` with main CI verified; application V2 remains dormant | Executed `c381287` retains its accepted 21-call/60-counter/46-denial result and consumed approval. Result publication `c8c5ee2`, same-tree merge and all 14 main checks are complete. Next: implement/review `ledger-shared-group-cancellation-v1` from the existing nine-call offline control. Full M4-P4/P5 remains open in [`crawl-jobs-v2-plan.md`](crawl-jobs-v2-plan.md) |
 | F4 exact crawl scope | Not started | No crawl-policy V2 schema or approved exact-URL policy is present |
 | F5 backlink persistence | Code acceptance passed and merged | PR #9 passed protected checks and merged as `d914a93`; no retained datastore reconciliation or V2 consumer activation is implied |
 | F6 JavaScript-shell indexing | Not started | No static-extraction policy schema or approved metadata-fallback configuration is present |
@@ -255,10 +255,9 @@ wire grammar, limits, transitions, records, Redis configuration, and evidence.
 ### Current roll-up
 
 - The digest-bound protocol, shared fixture, independent Go/Python verifier, and
-  dormant Go foundation were merged through PR #9 as `d914a93`. Current M3 work
-  uses `feature/crawl-jobs-v2-lua`; its scoped checkpoint was committed and pushed
-  as `81028ca12a1763d46df72fc54759d99a0ea3b561` on 2026-09-18, with matching
-  local/remote identity. No M3 PR was created or merge/activation authorized.
+  dormant Go foundation were merged through PR #9 as `d914a93`. The historical
+  M3 checkpoint `81028ca12a1763d46df72fc54759d99a0ea3b561` was pushed on
+  2026-09-18; its subsequent merge through PR #10 is recorded below.
 - The initial WIP checkpoint is commit
   `e4372a66201b8767bcca4d7476c30c5b7999922c`. The reviewed amendment and foundation
   remediation are preserved in remote-verified checkpoint
@@ -303,6 +302,13 @@ wire grammar, limits, transitions, records, Redis configuration, and evidence.
   absent. Full M4 remains open; this small case does not authorize runtime
   integration, retained datastore mutation, application/service activation,
   migration, deployment, candidate promotion or crawling.
+- **Current M4 checkpoint:** PR #18's 67-file source/result scope is merged as
+  `d3b241e`, with the same tree as reviewed head `c8c5ee2` and all fourteen
+  merged-main checks passing. The accepted shared-group run remains bound to
+  `c381287`; its approval is consumed. See the
+  [merge/main-CI evidence](evidence/m4-shared-group-merge-2026-10-03/README.md).
+  The next slice, `ledger-shared-group-cancellation-v1`, has an existing offline
+  control but no executable registration or real-case evidence. Full M4 remains open.
 
 ### Parent-plan acceptance gate
 

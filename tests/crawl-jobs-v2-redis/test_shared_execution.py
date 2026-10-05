@@ -102,15 +102,16 @@ class SharedDocker(base.FakeDocker):
         if self.fail == "interrupt" and stage == "measure":
             raise KeyboardInterrupt()
         worker.validate_request(request, stage)
-        envelope = {"stage": stage, "status": "PASS", "recipe_sha256": case.recipe_sha256(spec.CASE), "isolation": base.fake_isolation(stage)}
+        selected = case.case_for_plan(request["plan"])
+        envelope = {"stage": stage, "status": "PASS", "recipe_sha256": case.recipe_sha256(selected), "isolation": base.fake_isolation(stage)}
         if stage == "init":
             binding = case.fixture(request["plan"], request["fixture_id"], request["claim_material"])
-            self.redis.rules = case.acl_rules(spec.CASE, binding, request["plan"])
+            self.redis.rules = case.acl_rules(selected, binding, request["plan"])
             for actor in binding["actors"].values():
                 self.private.update(actor[name] for name in ("run_id", "job_id", "url", "robots_url", "origin"))
                 self.private.update(actor["identity"][name] for name in ("reservation_id", "claim_transition_id"))
             envelope["result"] = {"empty_volumes_verified": True, "config_sha256": request["plan"]["redis_config"]["sha256"],
-                "acl_file_sha256": h.digest(case.acl_file(request["credentials"], spec.CASE, binding, request["plan"]))}
+                "acl_file_sha256": h.digest(case.acl_file(request["credentials"], selected, binding, request["plan"]))}
         else:
             if stage == "resume":
                 self.redis.configure(request)

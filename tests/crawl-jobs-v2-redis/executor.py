@@ -296,7 +296,7 @@ def resume(request):
             return recovery_worker.resume(request, setup_client, current, evidence, epoch, sys.modules[__name__])
         if selected in (qs.CASE, ps.CASE):
             return request_worker.resume(request, setup_client, current, evidence, epoch, sys.modules[__name__])
-        if selected == ss.CASE:
+        if selected in ss.CASES:
             return shared_worker.resume(request, setup_client, current, evidence, epoch, sys.modules[__name__])
         boot_request = case.boot_request(current["run_id"], epoch, evidence_sha, at)
         with connect("boot", credentials) as boot:
@@ -334,7 +334,7 @@ def resume(request):
 
 def measure(request):
     previous, credentials = request["previous"], request["credentials"]
-    if case.case_for_plan(request["plan"]) == ss.CASE:
+    if case.case_for_plan(request["plan"]) in ss.CASES:
         return shared_worker.measure(request, sys.modules[__name__])
     if case.case_for_plan(request["plan"]) == qs.CASE:
         return request_worker.measure(request, sys.modules[__name__])
@@ -447,7 +447,7 @@ def main():
                 result, status = failure.result, "FAIL"
                 rate_worker.validate_stage_result(stage, result, request, successful=False)
             except shared_worker.SharedFailure as failure:
-                h.require(stage == "measure" and case.case_for_plan(request["plan"]) == ss.CASE, "SHARED_FAILURE")
+                h.require(stage == "measure" and case.case_for_plan(request["plan"]) in ss.CASES, "SHARED_FAILURE")
                 result, status = failure.result, "FAIL"
                 shared_worker.validate_stage_result(stage, result, request, successful=False)
             output = {"stage": stage, "status": status, "recipe_sha256": case.recipe_sha256(case.case_for_plan(request["plan"])),

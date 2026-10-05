@@ -15,10 +15,10 @@ PROFILES = {"spaced": ("finish", True), "same-ms": ("finish", False), "reversed"
     "cancel-spaced": ("cancel", True), "cancel-same-ms": ("cancel", False)}
 
 
-def context(profile="spaced"):
+def context(profile="spaced", scenario=spec.SCENARIO):
     h.require(type(profile) is str and profile in PROFILES, "SHARED_VECTOR_PROFILE")
     trace, spaced = PROFILES[profile]
-    plan = h.compile_plan(inputs(spec.SCENARIO))
+    plan = h.compile_plan(inputs(scenario))
     fixture = oracle.compile_fixture(plan, captured())
     observations = []
     for index, (_, _, status, _) in enumerate(spec.SEQUENCES[trace]):
@@ -30,7 +30,8 @@ def context(profile="spaced"):
 
 
 def go_packet(profile):
-    plan, fixture, observations, trace = context(profile)
+    h.require(type(profile) is str and profile in PROFILES, "SHARED_VECTOR_PROFILE")
+    plan, fixture, observations, trace = context(profile, spec.CANCEL_SCENARIO if profile.startswith("cancel-") else spec.SCENARIO)
     value = {"purpose": "offline_public_shared_capacity_vectors", "execution_authorized": False, "profile": profile, "trace": trace,
         "fixture": fixture, "observations": observations, "expected": oracle.expected_sequence(plan, fixture, observations, trace),
         "acl_rules": oracle.acl_rules(plan, fixture), "wires": [

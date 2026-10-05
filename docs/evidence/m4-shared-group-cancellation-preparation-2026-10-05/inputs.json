@@ -1,0 +1,1 @@
+{"format_version":1,"harness_image":"sha256:e57da19e8b99ffbd630545730b3883d00f6088a5f56068ca0b5aed2bba32d0ee","redis_image":"sha256:24e81cffaba832bcd71068a6ff772a531076bafdbb1d684195766ae9b6511f5c","redis_version":"7.4.11","scenario":"ledger-shared-group-cancellation","standin_image":"sha256:e57da19e8b99ffbd630545730b3883d00f6088a5f56068ca0b5aed2bba32d0ee"}

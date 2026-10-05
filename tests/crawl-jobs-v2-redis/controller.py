@@ -370,7 +370,7 @@ class Docker:
             elif selected == ps.CASE:
                 h.require(stage in ("rate_before", "rate_after"), "STAGE_FAILURE")
                 rate_worker.validate_stage_result(stage, result["result"], request, successful=False)
-            elif selected == ss.CASE:
+            elif selected in ss.CASES:
                 h.require(stage == "measure", "STAGE_FAILURE")
                 shared_worker.validate_stage_result(stage, result["result"], request, successful=False)
             else:
@@ -541,7 +541,7 @@ def execute(plan, approval, backend, *, revision_check=verify_revision, journal=
     binding = case.fixture(plan, fixture_id, material) if selected != case.CASE else None
     private_values = [*credentials.values(), *material.values()]
     if binding:
-        if selected == ss.CASE:
+        if selected in ss.CASES:
             for actor in binding["actors"].values():
                 private_values += [actor[name] for name in ("run_id", "job_id", "url", "robots_url", "origin")]
                 private_values += [actor["identity"][name] for name in ("reservation_id", "claim_transition_id")]
@@ -624,7 +624,7 @@ def execute(plan, approval, backend, *, revision_check=verify_revision, journal=
                 request_worker.validate_stage_result(name, failure.receipt["result"], request, successful=False)
             elif selected == ps.CASE:
                 rate_worker.validate_stage_result(name, failure.receipt["result"], request, successful=False)
-            elif selected == ss.CASE:
+            elif selected in ss.CASES:
                 shared_worker.validate_stage_result(name, failure.receipt["result"], request, successful=False)
             else:
                 claim_worker.validate_measurement(failure.receipt["result"], False)
@@ -646,7 +646,7 @@ def execute(plan, approval, backend, *, revision_check=verify_revision, journal=
             request_worker.validate_stage_result(name, result["result"], request)
         elif selected == ps.CASE:
             rate_worker.validate_stage_result(name, result["result"], request)
-        elif selected == ss.CASE:
+        elif selected in ss.CASES:
             shared_worker.validate_stage_result(name, result["result"], request)
         if name != "ready":
             report["stages"][name] = result

@@ -104,8 +104,8 @@ three capacity denials, 60 counters and 46 authority denials. Independent
 correctness/security reviews accept the result; six-role revocation, the original
 28-action journal and exact name/label absence of four containers/two volumes pass.
 The initial approval expired unused; explicit renewal and a separate execution
-decision preceded the run. The renewed approval is consumed. Reviewed source
-remains 107 files, with 171 harness/21 script tests and 81 canonical race calls;
+decision preceded the run. The renewed approval is consumed. That checkpoint's
+reviewed scope covers 107 files, with 171 harness/21 script tests and 81 canonical race calls;
 selected arm64 preparation binds 74 image files/19 recipes. See the
 [shared-group result](docs/crawl-jobs-v2-m4-shared-group-run-2026-10-02.md),
 [image preparation](docs/crawl-jobs-v2-m4-shared-group-preparation-2026-10-01.md),
@@ -116,9 +116,25 @@ squash merge has the same tree as reviewed `c8c5ee2`; all fourteen main-push che
 pass, with 480 race roots accounted for (479 passes/one allowed optional skip),
 171 harness/21 script tests and 74-file/19-recipe image evidence. The
 [merge checkpoint](docs/evidence/m4-shared-group-merge-2026-10-03/README.md)
-retains the exact records. Next is executable integration and independent review
-of **`ledger-shared-group-cancellation-v1`**, based on its existing nine-call
-offline control; that case is not implemented or registered yet.
+retains the exact records. PR #19 subsequently merged documentation/CI cleanup as
+`e80d005`, with exact main CI verified and the historical branches archived.
+**`ledger-shared-group-cancellation-v1` is now implemented locally** as a separate
+fixed nine-call case. It checks successful pending cancellation, peer-safe replays,
+A's zero starts, B's first-start history, 60 counters and 46 authority denials.
+The full 183-test pre-guard harness, 21 scripts and 81 canonical Go/Lua race invocations
+pass; a final ACL case-binding guard then passes all 33 shared-family regressions.
+Independent correctness/security reviews now both return **GO for image/CI
+preparation**, with all 108 source hashes unchanged. Fresh selected arm64 image
+preparation also **passes**: both checks match 74 files/all 20 recipes, stopped-role
+admission passes, and all six metadata resources are independently absent.
+Registry scope is 20 cases/22 scenarios; scoped publication and exact-revision CI
+are next. See the [cancellation image preparation](docs/crawl-jobs-v2-m4-shared-group-cancellation-preparation-2026-10-05.md).
+See the [local cancellation checkpoint](docs/crawl-jobs-v2-m4-shared-group-cancellation-2026-10-05.md).
+The [source-review result](docs/crawl-jobs-v2-m4-shared-group-cancellation-review-2026-10-05.md)
+retains the final-byte checks and the pre-/post-ACL-guard verification chronology.
+Parallel D01/D02 static/design reviews on the isolated design worktree both return
+GO for scoped C0 implementation preparation, with the actual-end hold-timing
+requirement carried forward. Observer feasibility and D02 owner decisions remain open.
 Full M4 acceptance and application integration remain pending. The
 [Crawl Jobs V2 plan](docs/crawl-jobs-v2-plan.md) owns current progress. Historical
 V1 commands below do not authorize another crawl.

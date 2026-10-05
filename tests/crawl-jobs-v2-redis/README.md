@@ -252,15 +252,47 @@ PHP warning classifications are retained. The CI image preparer still explicitly
 selects claim/release; the original shared-group run remains bound to `c381287`.
 See the [merge checkpoint and exact exports](../../docs/evidence/m4-shared-group-merge-2026-10-03/README.md).
 
-**Next slice: `ledger-shared-group-cancellation-v1` — not implemented or registered.**
-The existing nine-call `CANCEL_STEPS` control covers successful pending cancellation,
-immediate replay, B's admission, and historical A cancellation replay while B holds
-the group slot. Runtime integration must expose a separate fixed case, preserve
-zero starts for A and first-start history for B, and retain exact accounting,
-expiry, failure-prefix and cleanup checks. The current registry remains 19 cases;
-no real cancellation run is claimed. The
-[implementation handoff](../../docs/crawl-jobs-v2-plan.md#next-bounded-slice-shared-group-cancellation)
-owns the remaining source, review, image/CI and execution gates.
+**Shared-group cancellation local implementation checkpoint (2026-10-05).**
+`ledger-shared-group-cancellation-v1` is the twentieth closed case. Its fixed
+nine-call `CANCEL_STEPS` trace checks successful pending cancellation, immediate
+replay, B's admission and historical A replay while B holds the group slot. A
+records zero starts; B establishes first-start history. Complete 90-position state,
+60 counters, exact lease/tombstone expiry and 46 authority denials remain bounded.
+
+The case has its own fixture/policy identity and `SGCANCEL01`–`SGCANCEL09` receipt
+prefix. The plan's closed case selects the trace; request profiles/selectors remain
+rejected. The original 21-call finish case retains its semantics. Actual worker
+serialization and adapter parsing validate partial prefixes, including ambiguous
+cancellation/replays without retry. An explicit ACL case-id/fixture guard rejects
+cross-case builder substitution.
+
+Local checks pass the full 183-test pre-guard harness, 21 scripts, 81 canonical Lua
+invocations under Go race, vet and strict pins. After the final ACL guard/two
+cross-case assertions, all 33 shared-family tests pass; no second full 183-test run is
+claimed. Twelve new methods cover eighteen state/reply faults, five ambiguous
+operation profiles and all ten prefix boundaries. Registry/scenario/image-path
+counts are **20/22/74**; existing image COPY inputs already contain the runtime
+modules. Source hashes changed, so new image/CI evidence is required.
+
+See the [local implementation and verification](../../docs/crawl-jobs-v2-m4-shared-group-cancellation-2026-10-05.md).
+At that implementation checkpoint independent source review was pending. The
+subsequent correctness/security reviews both return **GO for image/CI preparation**
+on the same 108-file inventory. Independent checks include 33 final-byte family
+tests, 18 canonical cancellation race calls, 22 artifact scenarios and 88 security
+controls. No final-byte full 183-test run is claimed. See the
+[review result and exact records](../../docs/crawl-jobs-v2-m4-shared-group-cancellation-review-2026-10-05.md).
+At that source-review checkpoint fresh selected images were next. The subsequent
+preparation result follows; no real cancellation case has run and full M4 is open.
+
+**Cancellation selected arm64 image preparation (2026-10-05): PASS.** New
+harness/stand-in `sha256:e57da19e8b99ffbd630545730b3883d00f6088a5f56068ca0b5aed2bba32d0ee`
+matches all 74 image files and all 20 recipes. The preparer explicitly selected
+`ledger-shared-group-cancellation-v1`; its plan recompiles exactly and the reviewed
+recipe/108-file source remain unchanged. Four metadata containers stayed stopped;
+all six metadata resources are independently absent. Only networkless image
+validation and Redis `--version` executed. See the
+[preparation report and exports](../../docs/crawl-jobs-v2-m4-shared-group-cancellation-preparation-2026-10-05.md).
+Scoped publication/exact CI and separate artifact/execution decisions are next.
 
 **Final independent re-review (2026-09-21): GO for image preparation only.** The
 four original findings and a closed-peer follow-up are fixed and re-reviewed.

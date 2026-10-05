@@ -2,9 +2,11 @@
 
 **Finding:** F3 - durable crawl-job leases and recovery
 
-**Last updated:** 2026-10-04 (UTC; PR #18 result publication, same-tree merge and main CI complete; next is the unimplemented shared-group cancellation case, full M4 open)
+**Last updated:** 2026-10-05 (UTC; selected cancellation arm64 preparation passes; owner-authorized publication checkpoint, exact-revision CI pending; independent D01/D02 static/design reviews GO for scoped implementation preparation; full M4 open)
 
-**Code baseline:** merged `main` at `d3b241e`; PR #18 is merged, with the reviewed tree and merged-main CI verified
+**Code baseline:** merged `main` at `e80d005`; PR #19 documentation/CI cleanup and exact main CI are verified
+
+**Working branch:** `feature/crawl-jobs-v2-shared-group-cancellation`; owner-authorized 39-file publication checkpoint for a draft PR to `main`; exact-revision CI verification pending
 
 **Initial checkpoint:** `e4372a66201b8767bcca4d7476c30c5b7999922c`
 
@@ -15,17 +17,36 @@ All 43 canonical operations and the sealed, zero-argument
 bounded real-Redis `ledger-smoke-v1` and `ledger-claim-release-v1` cases pass;
 full M4 acceptance is open.
 
-**Current next gate:** implement and independently review the fixed
-`ledger-shared-group-cancellation-v1` executable slice from the existing nine-call
-offline control. It is not implemented or registered and has no real-case evidence.
-The [implementation handoff](#next-bounded-slice-shared-group-cancellation) defines
-its scope and later image/CI/artifact/execution gates.
+**Current next gate:** exact-revision protected CI for the owner-authorized scoped
+publication of `ledger-shared-group-cancellation-v1`. Fresh selected arm64 image/artifact
+preparation **passes**, following independent correctness and security
+**GO_FOR_IMAGE_CI_PREPARATION** on the unchanged 108-file source snapshot.
+Its fixed nine-call runtime, case-bound fixture/ACL/receipts and bounded failure cleanup are implemented.
+Local verification includes a full 183-test pre-guard harness, 21 scripts and
+81 canonical Lua invocations under Go race; the final ACL case-id guard passes
+all 33 affected-family tests. Independent final-byte review checks also pass;
+their chronology is in the [source-review result](crawl-jobs-v2-m4-shared-group-cancellation-review-2026-10-05.md).
+Both image checks match 74 files/all 20 recipes; stopped-role admission and
+independent six-resource absence pass. See the
+[preparation result](crawl-jobs-v2-m4-shared-group-cancellation-preparation-2026-10-05.md).
+Separate artifact/execution decisions follow publication/CI. No real cancellation
+case has run.
+
+**Parallel M4 work:** independent correctness/security static/design reviews of
+D01/D02 both return **GO_FOR_SCOPED_IMPLEMENTATION_PREPARATION** on the isolated
+`docs/crawl-jobs-v2-m4-design-gates` worktree. C0-only synthetic artifact and D02
+contract preparation is the recommended next commission. Actual-end hold timing,
+no-regrant ACL lifecycle and independent client closure remain explicit artifact
+requirements. Observer feasibility, execution and normative decisions remain open.
 
 PR #18 result publication `c8c5ee2`, squash merge `d3b241e` and exact merged-main CI
 are **complete**. The merge has the same tree as the reviewed PR head. See the
 [merge checkpoint](evidence/m4-shared-group-merge-2026-10-03/README.md).
 The accepted real shared-group run remains bound to executed `c381287` and its
 consumed approval; earlier runs likewise retain their original bindings.
+PR #19 subsequently merged documentation/CI cleanup as `e80d005`, with exact main
+CI verified. Completed branch tips are retained in 22 archive tags; the new
+cancellation work starts from that consolidated baseline.
 **M4-P3 bootstrap readiness is accepted**
 within frozen checkpoint `963b67b`, following independent correctness/security GO
 on the fourteen real package cases and reconciled H/I evidence. All prior
@@ -79,8 +100,8 @@ Its single 15,186-ms invocation verifies 21 calls, three group-capacity denials,
 independent reviewers accept the result; six-role revocation, original
 28-action/2,904-byte journal and exact six-resource absence pass. The first
 approval expired unused; explicit renewal and a subsequent execution decision
-preceded the run. The renewed approval is consumed. All 107 reviewed source
-hashes remain unchanged. Supporting verification covers 171 harness/21 scripts,
+preceded the run. The renewed approval is consumed. Its 107-file source review
+and original image bindings remain historical evidence. Supporting verification covers 171 harness/21 scripts,
 81 canonical Lua invocations under race and selected arm64 preparation on
 19 cases / 21 scenarios / 74 image files. See the
 [shared-group result](crawl-jobs-v2-m4-shared-group-run-2026-10-02.md),
@@ -94,7 +115,8 @@ profiles, maximum-shape transport/readers and final protected CI also remain.
 The owner selected local Docker observer design and requested the AOF-failure
 proposal. The corrected proposal has independent intake GO; its normative
 amendment is not approved/applied. Static inspection found target ELF debug/symbol
-sections, but no source/address map or tracing precision is proven.
+sections; the October 5 follow-up maps static native candidates, while canonical
+runtime Proto/PC correlation and held-stop precision remain unproven.
 **M4-P4/P5 and full M4 remain open.** See the
 [September 25 readiness assessment](crawl-jobs-v2-m4-readiness-2026-09-25.md) and
 [review/check evidence](evidence/m4-readiness-2026-09-25/README.md).
@@ -111,8 +133,8 @@ Step 3 returned independent
 reviewed file hashes unchanged. See the
 [review report](crawl-jobs-v2-m4-bootstrap-acl-review-2026-09-23.md).
 Step 2's 95 harness/21 script tests, Go/Lua race, vet and digest checks remain
-supporting evidence for the prior scope. The current registry supports 19 cases
-and the image scope is 74 files; prior executed cases retain their original
+supporting evidence for the prior scope. The current local registry supports 20 cases
+and the image path set is 74 files; prior executed cases retain their original
 source/image bindings. Recovery execution used its own newly approved artifacts;
 that approval is now consumed.
 Narrow M4-P3 readiness is now accepted; broader section-17.7 and M4-P4/P5 obligations remain open.
@@ -296,12 +318,12 @@ retains it as a primitive case; guard cases now explicitly bind the complete
 | Ledger validation | Baseline/delivery/fence history, post-abort freeze, exact retained witnesses, strict worker expiry, completed replay, prior retry/backpressure/reason fixes and zero-sentinel checks pass local normal conformance and reviewed counterexample replays |
 | Script sources | All 43 canonical operations are implemented: unchanged BOOT passthrough plus 42 exact generated sources; both strict source/bundle generator checks pass |
 | Authoritative bundle | Complete zero-argument `AuthoritativeScriptBindingSet()` validates embedded sources against fixed generated pins and returns fresh private sealed bindings; no caller-supplied sources, hashes or paths |
-| Local and protected acceptance | Result head `c8c5ee2` and same-tree merged main `d3b241e` both pass 14/14 required checks. Main evidence accounts for 480 race roots (479 passes/one allowed optional skip), 171 harness/21 script tests and 74 image files/19 recipes. Original local 81 canonical race calls, vet and pins retain their source-bound evidence |
+| Local and protected acceptance | Baseline `e80d005` passes 14/14 main checks, 480 race roots (479 passes/one allowed optional skip), 171 harness/21 scripts and 74-file/19-recipe image evidence. New cancellation source passes full 183 pre-guard harness/21 scripts, 81 canonical race calls, vet/pins and final 33 shared-family tests; new source is not covered by baseline CI |
 | Runtime behavior | V2 remains dormant in application services; separately authorized disposable Redis smoke, claim/release, all 13 negatives, pre-I/O recovery, bounded request lifecycle, positive-interval and serial shared-group cases pass within their original source/image scopes |
 | M4 bounded execution | Shared fixture `e47d57da…` passes once: 21 calls, three capacity denials, 60 counters and 46 denials. Six-role revocation, original 28-action journal and six-resource absence pass; renewed approval consumed. Full M4-P4/P5 remain open |
-| Review status | Shared real evidence has independent correctness/security ACCEPT and provenance PASS on unchanged 107-file source. Earlier offline/source reviews and prior real-run verdicts retain their original artifacts |
-| Git state | PR #18's two-commit/67-file source/result checkpoint was squash-merged as `d3b241e` from `7da55b1`; tree-identical to reviewed head `c8c5ee2`. Local `main` matches the merge; all 372 unrelated files remain preserved |
-| Next bounded slice | `ledger-shared-group-cancellation-v1`: existing nine-call offline control selected for executable integration and independent review; not implemented/registered, no real run. Runtime registry remains 19 cases |
+| Review status | Cancellation source reviews GO on unchanged 108-file inventory; selected image gate passes. D01/D02 static/design reviews both GO for scoped implementation preparation, zero blockers; COR-01 actual-end timing and five informational security prerequisites carried forward; owner/execution decisions remain |
+| Git state | PR #19 merged as `e80d005`; completed branches archived/retired. New cancellation branch has twelve local source/test changes plus its documentation checkpoint; all 372 unrelated files remain preserved |
+| Current bounded slice | `ledger-shared-group-cancellation-v1` is the twentieth case: nine fixed calls, 60 counters and 46 denials. Selected arm64 preparation passes on 74 image files/all 20 recipes; 22 offline scenarios. Exact publication/CI and real evidence pending |
 
 ### Current source and fixture identities (regenerated 2026-09-21)
 
@@ -461,8 +483,20 @@ The final matrix and final independent reviews used pinned Go 1.25.13 and passed
   and verify the exact new revision's protected CI.
 - [x] Merge PR #18 with reviewed-tree continuity, align local `main`, and verify
   the actual squash commit's main-push checks and downloaded evidence.
-- [ ] Implement and independently review `ledger-shared-group-cancellation-v1`
-  from the existing fixed nine-call offline control.
+- [x] Implement `ledger-shared-group-cancellation-v1` from the fixed nine-call
+  control and complete local verification, including the final ACL case-id guard.
+- [x] Obtain independent correctness/security source review of the cancellation
+  implementation; both returned GO for image/CI preparation without source changes.
+- [x] Prepare fresh selected-case arm64 images and verify exact source/recipe,
+  stopped-role admission and independent cleanup.
+- [ ] Complete scoped cancellation publication/exact CI before artifact/execution
+  decisions.
+- [x] Advance D01 static mapping and D02 teardown research into an isolated
+  review-ready package without normative changes or tracing experiments.
+- [x] Obtain independent static/design correctness/security GO on the D01/D02
+  package; carry actual-end hold timing and informational security prerequisites.
+- [ ] Commission the next bounded C0-only implementation/D02 contract scope and
+  decide any required normative interpretation/amendment separately.
 - [ ] Complete the broader M4 acceptance reviews and later-case approvals.
 
 ## M1: Final foundation release gate
@@ -3276,14 +3310,15 @@ Its approval remains consumed. Full M4 remains open.
 
 ### Next bounded slice: shared-group cancellation
 
-**Not implemented or registered.** Proposed case:
-`ledger-shared-group-cancellation-v1`, based on merged `d3b241e`. The existing
+**Implemented locally; source GO and selected arm64 image preparation PASS.** Case:
+`ledger-shared-group-cancellation-v1`, based on verified merged `e80d005`. The existing
 `shared_capacity_specs.CANCEL_STEPS` and `TestM4SharedGroupCancellationOffline`
 already provide a closed nine-call model and independent spaced/same-ms Go
 profiles. The accepted real finish trace measured cancellation rejections, not
-successful pending cancellation. The current registry remains 19 cases.
+successful pending cancellation. The current local registry has 20 cases and
+22 scenarios; the runtime image path set remains 74 files.
 
-| Calls | Existing offline control to integrate |
+| Calls | Fixed cancellation runtime sequence |
 |---|---|
 | 1–2 | A claim; B blocked by A's pending shared-group reservation |
 | 3–4 | A cancels its pending reservation; immediate exact CANCEL replay |
@@ -3297,15 +3332,56 @@ be inferred from status alone. Required checks preserve A's zero-start history,
 both leased jobs, reservation-creation accounting, B's capacity and first-start
 history, and exact cancellation/finish tombstone expiry.
 
-Implement this as a separate fixed case, retaining the combined 90-position
-fixture and planned 60-counter/46-denial checks. Keep caller-selected traces,
-policies, wires and expected-state inputs outside runtime admission. Review the
-actual worker/adapter failure-prefix path and inherited cleanup. Proposed bounds
+This is implemented as a separate fixed case, retaining the combined 90-position
+fixture and 60-counter/46-denial checks. Caller-selected traces, policies, wires
+and expected-state inputs remain outside runtime admission. The actual
+worker/adapter failure-prefix path and inherited cleanup are exercised. Bounds
 remain 300 seconds per case, 30 seconds per stage/measurement and separate
 60-second cleanup, with four networkless containers, two volumes and six roles.
 
-The source implementation and regressions need independent review, then new
-immutable image/preparation and exact published-CI bindings. Fresh artifact
+Case-specific policy/run/group identities and `SGCANCEL01`–`SGCANCEL09` assertions
+bind the new trace. Initial/replay status equality is checked against whole state,
+counter deltas and exact expiry. An explicit ACL case-id/fixture guard rejects
+cross-case substitution. The old finish case retains its 21-call program; all
+nineteen inherited recipe semantics match the baseline apart from source hashes.
+
+The full **183-test harness**, **21 script tests**, **81 canonical Lua invocations
+under race**, vet and strict source/bundle checks pass before the final one-line
+ACL guard and two cross-case assertions. The resulting two-file delta then passes
+all **33 shared-family tests**. No second full 183-test invocation after that guard is
+claimed. Twelve new methods cover eighteen state/reply/ACL faults, five ambiguous
+operation profiles, all ten prefix boundaries, cross-case bindings and cleanup.
+
+Final source inventory (108 files):
+`2221812ca56635055b8acb6271b2fd0fbf27f8d603703171c54fc58bb14062d4`.
+Recipe: `b36d4bb7d2a4e657afbcda6a9cc3160b68678b19d590f7fb8c75b1f4de6d7a4f`.
+Verification: `2175c6e26ee0b2a36d60af08db66283bc31f2461e46990235c8a6610a71e6a2b`.
+See the [dated implementation checkpoint](crawl-jobs-v2-m4-shared-group-cancellation-2026-10-05.md)
+and [exact evidence](evidence/m4-shared-group-cancellation-2026-10-05/README.md).
+
+Independent correctness and security reviews both return
+**GO_FOR_IMAGE_CI_PREPARATION**, with no actionable findings and all 108 source
+hashes unchanged. Correctness review independently passes 33 final-byte family
+tests, 18 cancellation canonical race calls, 22 artifact scenarios, vet and
+adversarial state/receipt/failure controls. Security review passes 88 final-byte
+checks and verifies all 1,452 snapshot files unchanged. No final-byte full 183-test
+invocation is claimed. Combined review decisions:
+`80606aaeed151b2713764a0f3a3cb89069269e0ca2e76996817cdac665b3723e`.
+See the [review report](crawl-jobs-v2-m4-shared-group-cancellation-review-2026-10-05.md)
+and [exact review records](evidence/m4-shared-group-cancellation-review-2026-10-05/README.md).
+
+Selected preparation passes with harness/stand-in
+`sha256:e57da19e8b99ffbd630545730b3883d00f6088a5f56068ca0b5aed2bba32d0ee`
+and unchanged pinned Redis `sha256:24e81cffaba832bcd71068a6ff772a531076bafdbb1d684195766ae9b6511f5c`.
+The plan is `da7ab623673d9b221a8e47a9f4c77fcf983af3636badb90016a03af37542d7c3`;
+recipe and all 108 source hashes remain unchanged. Both Python checks match
+74 files/all 20 recipes, four roles pass stopped admission, and six exact metadata
+resources are independently absent. Single build/preparation commands took
+1,945/18,250 ms; no acceptance Redis server or case ran. See the
+[preparation report](crawl-jobs-v2-m4-shared-group-cancellation-preparation-2026-10-05.md)
+and [exact exports](evidence/m4-shared-group-cancellation-preparation-2026-10-05/README.md).
+
+Next are scoped publication and exact published-CI bindings. Fresh artifact
 approval and a separate execution decision precede any real invocation. There
 is currently no cancellation-case execution evidence or new execution approval.
 The [source-grounded handoff](evidence/m4-shared-group-merge-2026-10-03/next-slice.json)
@@ -3329,6 +3405,51 @@ build ID `a6678635938881e640c42ca2824a014aea114c4f`) with debug/symbol sections.
 The inspection container was removed and checked absent by name and ID. No Redis
 process, tracing or new capability was used. Exact address mapping, observer
 confinement and held-boundary precision are still feasibility gates.
+
+**Parallel research increment (2026-10-05): review-ready, not execution authority.**
+An isolated design worktree at `e80d005` recovered the exact cached-image ELF
+through image inspect/save, with no new container or Redis execution. Its
+16,892,616-byte SHA/build ID match the prior evidence. Static analysis decoded
+37 function bodies and found native dispatch/AOF/reply candidates, including the
+inlined AOF write path. Lua VM line-DWARF and actual canonical Proto/PC/ordinal
+binding remain incomplete; ELF-relative addresses are not runtime stop proof.
+A finite 276-trial synthetic OBS1 calibration plan is proposed, not run.
+
+D02 identifies a future restart gap: current live `ACL DELUSER` retirement leaves
+the startup ACL file unchanged, so a later restart can reload old grants. Existing
+cases restart before retirement and retain their original evidence. The new
+19-row matrix separates acknowledgment, loading, reachability, state/BOOT and
+cleanup. It proposes a limited prefault-retired corruption-admission route and,
+only if needed, a narrower teardown-only extinction exception for exact known-
+pre-acknowledgment unmodified-AOF COMMIT faults. Neither route is implemented or
+approved as a normative change; earlier acknowledged effects retain their obligations.
+
+The branch-local package is `docs/crawl-jobs-v2-m4-design-gates-2026-10-05.md` on
+`docs/crawl-jobs-v2-m4-design-gates`. D01 evidence:
+`487af0243d96240f400bedae2e7465676e527749bae06fd94136e1f3e239b5b0`;
+D02 evidence: `e28e9278831e9709a10e0635832668b766ea5b2236729f2fc54f261435c70e70`.
+Parent integration distinguishes preapproved static seccomp/template identities
+from runtime TID-specific filter receipts, requires post-entrypoint capability
+observation, and keeps independent client acknowledgment closure separate from
+selected-thread holds. D01/D02 and full M4 remain open.
+
+**Independent static/design review (2026-10-05): both GO for scoped implementation
+preparation.** Reviewers independently verified the 1,460-file frozen snapshot,
+16 design additions and 114 indexed research artifacts. Correctness reproduced
+effective ELF recovery, 37 native bodies/302 PLT joins and semantic ordinals;
+security passed 66 static checks and reconciled the D02 authority/receipt matrix.
+There are zero blockers, one non-blocking timing clarification and five
+informational implementation prerequisites. No runtime feasibility is inferred.
+
+COR-01 requires a conservative hold interval ending in an independent
+post-continuation witness/effective-release bound or confirmed actual target
+stop/exit, including clock uncertainty. Dispatch remains a separate timestamp.
+Late or missing effective completion must fail the timing claim. The next
+recommended commission is C0-only synthetic artifact preparation plus closed D02
+contracts; owner sequencing and any optional extinction amendment remain separate.
+Combined decisions: `283dc44fed5d90de7b053b8d18d387de4f7aa7bb974357fcc16e3c616821aa41`.
+The branch-local follow-up is `docs/crawl-jobs-v2-m4-design-review-2026-10-05.md`
+on `docs/crawl-jobs-v2-m4-design-gates`; original research exports remain unchanged.
 
 - **D01: precise internal crash observation.** A reviewed observed method must
   preserve canonical Lua and target Redis semantics. Random/MONITOR-triggered
@@ -3643,6 +3764,12 @@ Rendering remains disabled unless its separate activation requirements pass.
 | 2026-10-03 | PR #18 merge and merged-main gate complete | Squash `d3b241e` matches reviewed head `c8c5ee2` by tree; both main-push workflows and all 14 contexts pass with downloaded evidence verified; 107 source hashes and 372 unrelated files preserved, no real-case rerun |
 | 2026-10-03 | Shared-group cancellation handoff identified | Existing nine-call offline control selected for a separate closed executable case; positive pending cancellation and peer-safe replay are next, implementation/registration/review and real execution remain pending |
 | 2026-10-04 | Current documentation synchronized | Four status documents now reflect completed publication/merge/main CI and the unimplemented cancellation handoff; seven exact checkpoint records added with index/manifest, original dated run/source evidence preserved |
+| 2026-10-04 | Documentation/CI cleanup and branch consolidation complete | PR #19 merged as `e80d005` with reviewed-tree continuity and passing PR/main CI; 22 archive tags retain historical tips, 18 remote/18 local branches retired and two stale refs pruned; all 372 unrelated files preserved |
+| 2026-10-05 | Shared-group cancellation locally implemented | Twentieth fixed case, nine calls, 60 counters/46 denials, distinct fixture identity, case-bound success/failure receipts and shared cleanup; full 183-test pre-guard harness/21 scripts and 81 canonical race calls pass, final ACL guard passes 33 shared-family tests; independent review/images/CI/real execution pending |
+| 2026-10-05 | Cancellation independent source gate complete | Correctness/security GO for image/CI preparation on the exact 108-file snapshot, no actionable findings/source corrections; independent final-byte tests/probes retained, image/preparation and new CI/execution gates remain |
+| 2026-10-05 | Parallel D01/D02 research increment | Exact cached ELF recovered and static boundary candidates mapped; finite OBS1 calibration draft and 19-row AOF/teardown matrix produced in isolated worktree. Review-ready proposals only, no tracing, normative amendment or real acceptance; cancellation snapshot preserved |
+| 2026-10-05 | Cancellation selected arm64 preparation complete | New harness `e57da19e…`, exact plan/recipe, 74 files/all 20 recipes, stopped-role admission and six-resource absence pass; 108 reviewed sources and 372 unrelated files preserved; scoped publication/exact CI next, no real case run |
+| 2026-10-05 | D01/D02 independent static/design review complete | Correctness/security GO for scoped C0 implementation preparation, zero blockers; COR-01 actual-end timing and five informational security prerequisites retained; 1,460-file snapshot/16 additions/114 research artifacts preserved, no experiment or normative approval |
 
 ## Definition of done
 

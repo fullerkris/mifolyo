@@ -2,7 +2,7 @@
 
 **Original review date:** 2026-09-01
 
-**Last updated:** 2026-10-04 (UTC; PR #18 publication, same-tree merge and main CI complete; shared-group cancellation is the next unimplemented slice, full M4 open)
+**Last updated:** 2026-10-05 (UTC; cancellation selected arm64 preparation passes, scoped publication/exact CI next; D01/D02 independent static/design reviews GO for scoped implementation preparation; full M4 open)
 
 **Reviewed baseline:** `main` / `44d8b09a364a1f60032e1f4faccf160813f4dd04`
 
@@ -110,7 +110,7 @@ retained Mongo records still incorrectly say `enabled: true`.
 |---|---|---|
 | F1 seed reconciliation | Not started | Retained evidence remains 70 enabled records; execute only during the matched freeze/backup/reset sequence |
 | F2 disposable Redis reset | Not started | Retained V1 state remains historical post-test evidence and must not be reused or selectively repaired |
-| F3 durable Crawl Jobs V2 | Shared-group real case and prior scoped cases accepted; PR #18 merged as `d3b241e` with main CI verified; application V2 remains dormant | Executed `c381287` retains its accepted 21-call/60-counter/46-denial result and consumed approval. Result publication `c8c5ee2`, same-tree merge and all 14 main checks are complete. Next: implement/review `ledger-shared-group-cancellation-v1` from the existing nine-call offline control. Full M4-P4/P5 remains open in [`crawl-jobs-v2-plan.md`](crawl-jobs-v2-plan.md) |
+| F3 durable Crawl Jobs V2 | Prior scoped real cases accepted; cancellation source GO and selected arm64 image preparation PASS; application V2 remains dormant | The fixed nine-call case retains 60 counters/46 denials and its 108-file source. Both image checks match 74 files/all 20 recipes; stopped-role admission and cleanup pass. Scoped publication/exact CI is next. D01/D02 independent static/design reviews GO for scoped C0 implementation preparation, with actual-end timing and authority prerequisites retained; full M4 stays open. See [`crawl-jobs-v2-plan.md`](crawl-jobs-v2-plan.md) |
 | F4 exact crawl scope | Not started | No crawl-policy V2 schema or approved exact-URL policy is present |
 | F5 backlink persistence | Code acceptance passed and merged | PR #9 passed protected checks and merged as `d914a93`; no retained datastore reconciliation or V2 consumer activation is implied |
 | F6 JavaScript-shell indexing | Not started | No static-extraction policy schema or approved metadata-fallback configuration is present |
@@ -307,8 +307,18 @@ wire grammar, limits, transitions, records, Redis configuration, and evidence.
   merged-main checks passing. The accepted shared-group run remains bound to
   `c381287`; its approval is consumed. See the
   [merge/main-CI evidence](evidence/m4-shared-group-merge-2026-10-03/README.md).
-  The next slice, `ledger-shared-group-cancellation-v1`, has an existing offline
-  control but no executable registration or real-case evidence. Full M4 remains open.
+  PR #19 later merged documentation/CI cleanup as `e80d005`, with verified main CI.
+  `ledger-shared-group-cancellation-v1` is now implemented locally as a separate
+  nine-call case; independent correctness/security source reviews are GO for
+  image/CI preparation. Fresh selected arm64 preparation now passes on 74 files/all
+  20 recipes, with stopped-role admission and independent cleanup. Scoped
+  publication/exact CI and real-case evidence remain pending. See the
+  [preparation result](crawl-jobs-v2-m4-shared-group-cancellation-preparation-2026-10-05.md).
+  Parallel D01/D02 research is isolated on `docs/crawl-jobs-v2-m4-design-gates`;
+  independent static/design reviewers both GO for scoped C0 implementation
+  preparation. Actual-end hold timing, no-regrant ACL lifecycle and client closure
+  are explicit next-artifact requirements; experiments and normative decisions
+  remain separate. Full M4 remains open.
 
 ### Parent-plan acceptance gate
 

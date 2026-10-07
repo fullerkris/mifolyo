@@ -292,7 +292,55 @@ recipe/108-file source remain unchanged. Four metadata containers stayed stopped
 all six metadata resources are independently absent. Only networkless image
 validation and Redis `--version` executed. See the
 [preparation report and exports](../../docs/crawl-jobs-v2-m4-shared-group-cancellation-preparation-2026-10-05.md).
-Scoped publication/exact CI and separate artifact/execution decisions are next.
+At that preparation checkpoint, scoped publication/CI was next. Subsequent exact
+publication verification is recorded below; artifact/execution decisions remain.
+
+**Cancellation publication and CI (2026-10-06): PASS.** The 39-file checkpoint
+`22317dc` is published on draft PR #20 with all fourteen protected contexts passing.
+Downloaded reports account for 480 compiled Go roots, 479 passes/one allowed
+optional skip, all eleven M4-prefixed roots and 74 image files/all 20 recipes.
+The full **183-test harness and 21 script tests pass on the final published bytes**,
+including the ACL guard. This supersedes the earlier local chronology only for
+that new CI observation; original records remain unchanged. Hosted-runner startup
+failures and failed-job retries are retained. See the
+[exact-revision CI result](../../docs/crawl-jobs-v2-m4-cancellation-ci-2026-10-06.md).
+No real cancellation case has run; fresh artifact approval and a separate execution
+decision are still required.
+
+**Cancellation artifact-review request (2026-10-06): ready, unapproved.** The
+16-artifact packet binds `22317dc`, selected arm64 images, exact plan/recipe,
+operator, destination and unchanged 300/30/60-second bounds. Request
+`0deedc21b8fe5d8297deb7858cafc3a1cb21302bf1ac98d8b0c4c87856940003`
+proposes expiry 2026-10-06 20:21:00.864 UTC. Its `approved=false` template is refused
+by the runtime validator; prospective approved bytes are not materialized.
+Owner artifact approval, a separate execution decision and exclusive one-use
+reservation remain ahead. Expiry/drift requires a fresh request. See the
+[exact decision scope](../../docs/crawl-jobs-v2-m4-cancellation-artifacts-2026-10-06.md).
+
+**Owner artifact approval (2026-10-06): recorded; execution pending.** Explicit
+owner approval materialized the exact `8a1714be…` bytes after fresh source, CI,
+image/resource and destination checks. Expiry remains 20:21:00.864 UTC; the full
+300-second budget requires a start before 20:16:00.864 UTC. No reservation or
+invocation has occurred. See the
+[approval record](../../docs/crawl-jobs-v2-m4-cancellation-approval-2026-10-06.md).
+
+**Cancellation single real run (2026-10-06; reviews finalized 2026-10-07): PASS,
+scoped evidence accepted.** The original approval was refused before reservation
+when the full case window no longer fit. Explicit renewed artifact approval and
+a fresh separate execution decision authorized fixture
+`cda9d3372d72a70b1bf3349b6ee2462f` once on `22317dc`, in 14,130 ms. All nine calls,
+60 counter fields/1,680 independent integer comparisons, 46 authority denials,
+peer-safe replays and exact expiry/history projections pass. A records no starts;
+B records one synthetic unused start. Both jobs remain leased.
+
+Independent correctness/security reviews ACCEPT the bounded evidence. Six roles
+were retired, the original 28-action/2,904-byte journal reconciled by bytes and
+file identity, and four containers/two volumes independently found absent by
+exact names and labels. Five original outputs / 97,810 bytes scan clean. The
+renewed approval is consumed, with no automatic retry or broader M4 acceptance.
+Two public normalized response hashes are reconstructed; seven private-bearing
+responses and raw-state comparisons remain pinned-runtime attestations. See the
+[run and exact records](../../docs/crawl-jobs-v2-m4-cancellation-run-2026-10-06.md).
 
 **Final independent re-review (2026-09-21): GO for image preparation only.** The
 four original findings and a closed-peer follow-up are fixed and re-reviewed.

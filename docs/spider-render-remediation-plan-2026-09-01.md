@@ -2,7 +2,7 @@
 
 **Original review date:** 2026-09-01
 
-**Last updated:** 2026-10-05 (UTC; cancellation selected arm64 preparation passes, scoped publication/exact CI next; D01/D02 independent static/design reviews GO for scoped implementation preparation; full M4 open)
+**Last updated:** 2026-10-07 (UTC; single cancellation run accepted within scope, renewed approval consumed; result/status publication next; C0 adapter layer GO with 78 tests, full M4 open)
 
 **Reviewed baseline:** `main` / `44d8b09a364a1f60032e1f4faccf160813f4dd04`
 
@@ -110,7 +110,7 @@ retained Mongo records still incorrectly say `enabled: true`.
 |---|---|---|
 | F1 seed reconciliation | Not started | Retained evidence remains 70 enabled records; execute only during the matched freeze/backup/reset sequence |
 | F2 disposable Redis reset | Not started | Retained V1 state remains historical post-test evidence and must not be reused or selectively repaired |
-| F3 durable Crawl Jobs V2 | Prior scoped real cases accepted; cancellation source GO and selected arm64 image preparation PASS; application V2 remains dormant | The fixed nine-call case retains 60 counters/46 denials and its 108-file source. Both image checks match 74 files/all 20 recipes; stopped-role admission and cleanup pass. Scoped publication/exact CI is next. D01/D02 independent static/design reviews GO for scoped C0 implementation preparation, with actual-end timing and authority prerequisites retained; full M4 stays open. See [`crawl-jobs-v2-plan.md`](crawl-jobs-v2-plan.md) |
+| F3 durable Crawl Jobs V2 | Cancellation has accepted scoped real PASS at `22317dc`; application V2 remains dormant | One 14,130-ms invocation verifies nine calls, 60 counters/46 denials and peer-safe cancellation replays. Independent ACCEPT, original journal, six-role revocation and six-resource absence pass; renewed approval consumed, result/status publication next. C0 adapters retain 78-test source GO; native/runtime assembly and full M4 remain open. See [`crawl-jobs-v2-plan.md`](crawl-jobs-v2-plan.md) |
 | F4 exact crawl scope | Not started | No crawl-policy V2 schema or approved exact-URL policy is present |
 | F5 backlink persistence | Code acceptance passed and merged | PR #9 passed protected checks and merged as `d914a93`; no retained datastore reconciliation or V2 consumer activation is implied |
 | F6 JavaScript-shell indexing | Not started | No static-extraction policy schema or approved metadata-fallback configuration is present |
@@ -311,14 +311,26 @@ wire grammar, limits, transitions, records, Redis configuration, and evidence.
   `ledger-shared-group-cancellation-v1` is now implemented locally as a separate
   nine-call case; independent correctness/security source reviews are GO for
   image/CI preparation. Fresh selected arm64 preparation now passes on 74 files/all
-  20 recipes, with stopped-role admission and independent cleanup. Scoped
-  publication/exact CI and real-case evidence remain pending. See the
+  20 recipes, with stopped-role admission and independent cleanup. Publication
+  `22317dc` on draft PR #20 now passes all fourteen protected checks, with full
+  final-source harness/race/image evidence verified. The
+  [artifact proposal](crawl-jobs-v2-m4-cancellation-artifacts-2026-10-06.md)
+  retained a false template at its recorded review checkpoint. Subsequent
+  [owner approval](crawl-jobs-v2-m4-cancellation-approval-2026-10-06.md) materialized
+  the exact approved bytes with that expiry unchanged. That initial window later
+  failed the full-budget check before reservation. Explicit renewal and a separate
+  execution decision then authorized one 14,130-ms run: nine calls, 60 counters,
+  46 denials, original journal/revocation/cleanup and independent scoped ACCEPT.
+  The renewed approval is consumed. See the
+  [run/evidence result](crawl-jobs-v2-m4-cancellation-run-2026-10-06.md),
+  [CI result](crawl-jobs-v2-m4-cancellation-ci-2026-10-06.md) and
   [preparation result](crawl-jobs-v2-m4-shared-group-cancellation-preparation-2026-10-05.md).
   Parallel D01/D02 research is isolated on `docs/crawl-jobs-v2-m4-design-gates`;
-  independent static/design reviewers both GO for scoped C0 implementation
-  preparation. Actual-end hold timing, no-regrant ACL lifecycle and client closure
-  are explicit next-artifact requirements; experiments and normative decisions
-  remain separate. Full M4 remains open.
+  design reviews permitted implementation preparation. The owner-selected third
+  worktree now includes owned-resource, bounded-stream and host-watchdog adapters:
+  78 tests and final correctness/security GO after remediation. Native runtime
+  admission, oracle/client closure and full trial/image/approval integration remain
+  incomplete; experiments and normative decisions remain separate. Full M4 is open.
 
 ### Parent-plan acceptance gate
 

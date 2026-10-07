@@ -52,6 +52,7 @@ SCENARIOS[requests.SCENARIO] = ("ledger", "fresh")
 SCENARIOS[rates.SCENARIO] = ("ledger", "fresh")
 # Closed combined-state scenario; execution still requires separate case approval.
 SCENARIOS["ledger-shared-group-capacity"] = ("ledger", "fresh")
+SCENARIOS["ledger-shared-group-cancellation"] = ("ledger", "fresh")
 CANDIDATE_RUN_OPS = frozenset(("CJ2_CREATE_RUN", "CJ2_ENQUEUE_BATCH",
     "CJ2_BEGIN_RUN_AUDIT", "CJ2_AUDIT_RUN_BATCH", "CJ2_SEAL_RUN",
     "CJ2_CANCEL_RUN", "CJ2_CANCEL_BATCH", "CJ2_PURGE_RUN_BATCH"))

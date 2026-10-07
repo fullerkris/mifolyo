@@ -1,6 +1,9 @@
-"""Closed two-run capacity case; cancellation/reversed traces are offline controls."""
+"""Closed two-run capacity/cancellation cases; reversed order is offline only."""
 CASE = "ledger-shared-group-capacity-v1"
 SCENARIO = "ledger-shared-group-capacity"
+CANCEL_CASE = "ledger-shared-group-cancellation-v1"
+CANCEL_SCENARIO = "ledger-shared-group-cancellation"
+CASES = {CASE: SCENARIO, CANCEL_CASE: CANCEL_SCENARIO}
 CLAIM, START, FINISH = "CJ2_TRY_CLAIM", "CJ2_START_REQUEST", "CJ2_FINISH_REQUEST"
 CANCEL, MAINTAIN = "CJ2_CANCEL_RESERVATION", "CJ2_MAINTAIN_RATE_SCOPES"
 SOURCES = ("CJ2_APPROVE_BOOT", CLAIM, START, FINISH, CANCEL, MAINTAIN)
@@ -47,6 +50,8 @@ SEQUENCES = {"finish": FINISH_STEPS, "cancel": CANCEL_STEPS,
     "finish-reversed": tuple((op, "b" if actor == "a" else "a", status, fault) for op, actor, status, fault in FINISH_STEPS)}
 MUTATIONS = {"finish": frozenset((0, 5, 10, 11, 15, 17)), "finish-reversed": frozenset((0, 5, 10, 11, 15, 17)),
     "cancel": frozenset((0, 2, 4, 6, 7))}
-# Runtime has no trace/profile selector: only this reviewed sequence is admitted.
+# Existing finish-case aliases remain fixed; runtime selects only by closed case.
 STEPS = FINISH_STEPS
 ERRORS = frozenset((4, 8, 9))
+RUNTIME_TRACES = {CASE: "finish", CANCEL_CASE: "cancel"}
+ASSERTION_PREFIXES = {CASE: "SGC", CANCEL_CASE: "SGCANCEL"}

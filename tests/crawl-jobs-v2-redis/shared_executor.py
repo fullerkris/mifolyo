@@ -19,8 +19,14 @@ class SharedFailure(h.InvalidArtifact):
 
 
 def fixture(request, at):
-    h.require(case.case_for_plan(request["plan"]) == spec.CASE, "SHARED_CASE")
+    _case(request)
     return case.fixture(request["plan"], request["fixture_id"], request["claim_material"], at)
+
+
+def _case(request):
+    selected = case.case_for_plan(request["plan"])
+    h.require(selected in spec.CASES, "SHARED_CASE")
+    return selected
 
 
 def with_boot(expected, boot):
@@ -75,13 +81,13 @@ def projection(observed, f):
 
 
 def validate_resume(result, request, previous=None):
-    h.require(case.case_for_plan(request["plan"]) == spec.CASE, "SHARED_RESUME_CASE")
+    selected = _case(request)
     h.exact(result, {"probe_evidence", "probe_evidence_sha256", "boot_epoch", "boot_record", "setup_time_ms", "setup_time_observed",
         "fixture_summary", "setup_state_sha256", "setup_counters", "early_revocation"})
     proof, plan, fid = result["probe_evidence"], request["plan"], request["fixture_id"]
     h.exact(proof, {"case", "fixture_id", "plan_sha256", "old_run_id", "new_run_id", "acknowledged_probe_sha256", "verified_at_ms", "acknowledged_loss_bound"})
     probe = "m4-probe:" + fid + ":" + h.digest(h.canonical(plan))
-    h.require(proof["case"] == spec.CASE and proof["fixture_id"] == fid and proof["plan_sha256"] == h.digest(h.canonical(plan)) and
+    h.require(proof["case"] == selected and proof["fixture_id"] == fid and proof["plan_sha256"] == h.digest(h.canonical(plan)) and
         proof["acknowledged_probe_sha256"] == h.digest(probe.encode()) and result["probe_evidence_sha256"] == h.digest(h.canonical(proof)) and
         type(proof["verified_at_ms"]) is int and 0 < proof["verified_at_ms"] <= h.MAX_EXACT and
         type(proof["acknowledged_loss_bound"]) is int and proof["acknowledged_loss_bound"] == 0 and
@@ -109,7 +115,7 @@ def validate_resume(result, request, previous=None):
 
 
 def resume(request, setup, current, proof, epoch, api):
-    h.require(case.case_for_plan(request["plan"]) == spec.CASE, "SHARED_RESUME_CASE")
+    selected = _case(request)
     credentials, plan = request["credentials"], request["plan"]
     proof_sha = h.digest(h.canonical(proof))
     with api.connect("boot", credentials) as client:
@@ -126,7 +132,7 @@ def resume(request, setup, current, proof, epoch, api):
         h.require(api.read_hash(setup, h.AUTH[0], case.BOOT_FIELDS) == boot, "SHARED_BOOT_REPLAY")
     at = api.clock(setup)
     f, binding = fixture(request, at), fixture(request, 1000)
-    h.require(case.acl_rules(spec.CASE, f, plan) == case.acl_rules(spec.CASE, binding, plan), "SHARED_ACL_BINDING")
+    h.require(case.acl_rules(selected, f, plan) == case.acl_rules(selected, binding, plan), "SHARED_ACL_BINDING")
     snapshot(setup, dict.fromkeys(f["initial_state"]), boot)
     for key, row in sorted(f["initial_state"].items()):
         if row is None:
@@ -152,19 +158,22 @@ def resume(request, setup, current, proof, epoch, api):
 def _row(index, observation, expected, observed, f, before_counts):
     public = projection(observed, f)
     counts = public.pop("counters")
-    status = spec.STEPS[index][2]
-    return {"sequence": index, "assertion_id": expected["assertion_id"], "operation": spec.STEPS[index][0], "actor": spec.STEPS[index][1],
-        "response_kind": "error" if index in spec.ERRORS else "reply", "response_status": status, **observation,
+    operation, actor, status, _ = spec.SEQUENCES[spec.RUNTIME_TRACES[f["case"]]][index]
+    return {"sequence": index, "assertion_id": expected["assertion_id"], "operation": operation, "actor": actor,
+        "response_kind": "error" if status.startswith("CRAWL_V2_") else "reply", "response_status": status, **observation,
         "response_sha256": h.digest(h.canonical(expected["reply"])), **public,
         "capacity_denial": {"blocking_scope_kind": "group", "active_count": 1, "effective_concurrency": 1, "after_io": 0} if status == "CAPACITY_BLOCKED" else None,
         "counters": {"before": before_counts, "after": counts, "delta": {key: counts[key] - before_counts[key] for key in counts}}}
 
 
 def measure(request, api):
+    selected = _case(request)
+    trace = spec.RUNTIME_TRACES[selected]
+    steps, prefix = spec.SEQUENCES[trace], spec.ASSERTION_PREFIXES[selected]
     resumed = request["previous"]
     f = validate_resume(resumed, request)
     boot = resumed["boot_record"]
-    result = {"scope": spec.CASE, "fixture_sha256": resumed["fixture_summary"]["fixture_sha256"], "steps": [], "acl_negatives": [], "clock_reference_ms": None}
+    result = {"scope": selected, "fixture_sha256": resumed["fixture_summary"]["fixture_sha256"], "steps": [], "acl_negatives": [], "clock_reference_ms": None}
     assertion = "STATE"
     try:
         with api.connect("observer", request["credentials"]) as observer, api.connect("ledger", request["credentials"]) as ledger:
@@ -173,16 +182,17 @@ def measure(request, api):
             h.require(h.digest(h.canonical(actual)) == resumed["setup_state_sha256"], "SHARED_SETUP_CHANGED")
             counts, observations = counters(actual, f), []
             result["clock_reference_ms"] = api.clock(observer)
-            # No caller trace/operation selector: cancellation/reversed siblings
-            # are offline controls and can never replace this runtime sequence.
-            for index, wire in enumerate(oracle.wire_requests(request["plan"], f, resumed["boot_epoch"])):
-                assertion = f"SGC{index + 1:02}"
+            # The source-bound case selects its sole runtime trace. The request
+            # accepts no trace/profile selector; reversed order stays offline.
+            for index, wire in enumerate(oracle.wire_requests(request["plan"], f, resumed["boot_epoch"], trace)):
+                assertion = prefix + f"{index + 1:02}"
                 before, now = api.clock(observer), None
-                if index in spec.ERRORS:
+                is_error = steps[index][2].startswith("CRAWL_V2_")
+                if is_error:
                     try:
                         ledger.call(*wire)
                     except RedisError as error:
-                        h.require(error.code == spec.STEPS[index][2], "SHARED_REJECTION")
+                        h.require(error.code == steps[index][2], "SHARED_REJECTION")
                     else:
                         raise h.InvalidArtifact("SHARED_UNEXPECTED_SUCCESS")
                 else:
@@ -191,8 +201,8 @@ def measure(request, api):
                     now = claim._number(reply[1])
                 observation = {"started_at_ms": before, "now_ms": now, "finished_at_ms": api.clock(observer)}
                 candidate = [*observations, observation]
-                expected = oracle._expected_validated(f, candidate)[index]
-                if index not in spec.ERRORS:
+                expected = oracle._expected_validated(f, candidate, trace)[index]
+                if not is_error:
                     negative.exact_reply(reply, expected["reply"])
                 actual = snapshot(observer, expected["state"], boot)
                 row = _row(index, observation, expected, actual, f, counts)
@@ -219,7 +229,9 @@ def measure(request, api):
 
 
 def validate_stage_result(stage, result, request, successful=True):
-    h.require(case.case_for_plan(request["plan"]) == spec.CASE, "SHARED_STAGE_CASE")
+    selected = _case(request)
+    trace = spec.RUNTIME_TRACES[selected]
+    total, prefix = len(spec.SEQUENCES[trace]), spec.ASSERTION_PREFIXES[selected]
     if stage == "resume":
         h.require(successful, "SHARED_RESUME_FAILED")
         validate_resume(result, request, request["previous"])
@@ -230,18 +242,18 @@ def validate_stage_result(stage, result, request, successful=True):
         if stage == "init":
             f = fixture(request, 1000)
             h.require(result["empty_volumes_verified"] is True and result["config_sha256"] == request["plan"]["redis_config"]["sha256"] and
-                result["acl_file_sha256"] == h.digest(case.acl_file(request["credentials"], spec.CASE, f, request["plan"])), "SHARED_INIT_BINDING")
+                result["acl_file_sha256"] == h.digest(case.acl_file(request["credentials"], selected, f, request["plan"])), "SHARED_INIT_BINDING")
         elif stage == "ready":
             h.require(type(result["run_id"]) is str and re.fullmatch(r"[0-9a-f]{40}", result["run_id"]), "SHARED_READY_BINDING")
         elif stage == "revoke":
-            case.validate_revocation(result["revocation"], case.roles(spec.CASE))
+            case.validate_revocation(result["revocation"], case.roles(selected))
         return
     resumed = request["previous"]
     f = validate_resume(resumed, request)
     h.exact(result, {"scope", "fixture_sha256", "steps", "acl_negatives", "clock_reference_ms"} |
         ({"final_state_sha256", "finished_at_ms"} if successful else {"failed_assertion"}))
-    h.require(result["scope"] == spec.CASE and result["fixture_sha256"] == resumed["fixture_summary"]["fixture_sha256"] and
-        type(result["steps"]) is list and len(result["steps"]) <= 21 and type(result["acl_negatives"]) is list and len(result["acl_negatives"]) <= 46, "SHARED_EVIDENCE_BOUND")
+    h.require(result["scope"] == selected and result["fixture_sha256"] == resumed["fixture_summary"]["fixture_sha256"] and
+        type(result["steps"]) is list and len(result["steps"]) <= total and type(result["acl_negatives"]) is list and len(result["acl_negatives"]) <= 46, "SHARED_EVIDENCE_BOUND")
     reference = result["clock_reference_ms"]
     h.require((reference is None and not result["steps"] and not successful) or
         (type(reference) is int and resumed["setup_time_ms"] <= reference <= resumed["setup_time_ms"] + cr.CASE_MS), "SHARED_CLOCK_REFERENCE")
@@ -249,7 +261,7 @@ def validate_stage_result(stage, result, request, successful=True):
     for row in result["steps"]:
         h.require(type(row) is dict and all(name in row for name in ("started_at_ms", "now_ms", "finished_at_ms")), "SHARED_STEP")
         observations.append({name: row[name] for name in ("started_at_ms", "now_ms", "finished_at_ms")})
-    projected = oracle._expected_validated(f, observations)
+    projected = oracle._expected_validated(f, observations, trace)
     boot = resumed["boot_record"]
     counts = counters(with_boot(f["initial_state"], boot), f)
     for index, (row, expected) in enumerate(zip(result["steps"], projected)):
@@ -258,12 +270,12 @@ def validate_stage_result(stage, result, request, successful=True):
         h.require(reference <= row["started_at_ms"] <= row["finished_at_ms"] <= reference + cr.STAGE_MS, "SHARED_MEASURE_TIME")
         counts = wanted["counters"]["after"]
     probes = claim.acl_probes(f["actors"]["a"])
-    final_sha = h.digest(h.canonical(with_boot(projected[-1]["state"], boot))) if len(projected) == 21 else None
+    final_sha = h.digest(h.canonical(with_boot(projected[-1]["state"], boot))) if len(projected) == total else None
     for index, row in enumerate(result["acl_negatives"]):
         wanted = {"authority_role": probes[index][0], "command": probes[index][1][0], "result": "NOPERM", "state_sha256": final_sha}
         h.require(final_sha is not None and cr._bounded(row) == h.canonical(wanted), "SHARED_ACL_EVIDENCE")
     if successful:
-        h.require(len(projected) == 21 and len(result["acl_negatives"]) == 46 and result["final_state_sha256"] == final_sha and
+        h.require(len(projected) == total and len(result["acl_negatives"]) == 46 and result["final_state_sha256"] == final_sha and
             type(result["finished_at_ms"]) is int and observations[-1]["finished_at_ms"] <= result["finished_at_ms"] <= reference + cr.STAGE_MS, "SHARED_INCOMPLETE")
     else:
         failed, completed = result["failed_assertion"], len(projected)
@@ -271,6 +283,6 @@ def validate_stage_result(stage, result, request, successful=True):
         if failed == "STATE":
             h.require(completed == 0 and not result["acl_negatives"], "SHARED_FAILURE_EVIDENCE")
         elif failed == "ACL":
-            h.require(completed == 21, "SHARED_FAILURE_EVIDENCE")
+            h.require(completed == total, "SHARED_FAILURE_EVIDENCE")
         else:
-            h.require(reference is not None and completed < 21 and failed == f"SGC{completed + 1:02}" and not result["acl_negatives"], "SHARED_FAILURE_EVIDENCE")
+            h.require(reference is not None and completed < total and failed == prefix + f"{completed + 1:02}" and not result["acl_negatives"], "SHARED_FAILURE_EVIDENCE")

@@ -252,15 +252,95 @@ PHP warning classifications are retained. The CI image preparer still explicitly
 selects claim/release; the original shared-group run remains bound to `c381287`.
 See the [merge checkpoint and exact exports](../../docs/evidence/m4-shared-group-merge-2026-10-03/README.md).
 
-**Next slice: `ledger-shared-group-cancellation-v1` — not implemented or registered.**
-The existing nine-call `CANCEL_STEPS` control covers successful pending cancellation,
-immediate replay, B's admission, and historical A cancellation replay while B holds
-the group slot. Runtime integration must expose a separate fixed case, preserve
-zero starts for A and first-start history for B, and retain exact accounting,
-expiry, failure-prefix and cleanup checks. The current registry remains 19 cases;
-no real cancellation run is claimed. The
-[implementation handoff](../../docs/crawl-jobs-v2-plan.md#next-bounded-slice-shared-group-cancellation)
-owns the remaining source, review, image/CI and execution gates.
+**Shared-group cancellation local implementation checkpoint (2026-10-05).**
+`ledger-shared-group-cancellation-v1` is the twentieth closed case. Its fixed
+nine-call `CANCEL_STEPS` trace checks successful pending cancellation, immediate
+replay, B's admission and historical A replay while B holds the group slot. A
+records zero starts; B establishes first-start history. Complete 90-position state,
+60 counters, exact lease/tombstone expiry and 46 authority denials remain bounded.
+
+The case has its own fixture/policy identity and `SGCANCEL01`–`SGCANCEL09` receipt
+prefix. The plan's closed case selects the trace; request profiles/selectors remain
+rejected. The original 21-call finish case retains its semantics. Actual worker
+serialization and adapter parsing validate partial prefixes, including ambiguous
+cancellation/replays without retry. An explicit ACL case-id/fixture guard rejects
+cross-case builder substitution.
+
+Local checks pass the full 183-test pre-guard harness, 21 scripts, 81 canonical Lua
+invocations under Go race, vet and strict pins. After the final ACL guard/two
+cross-case assertions, all 33 shared-family tests pass; no second full 183-test run is
+claimed. Twelve new methods cover eighteen state/reply faults, five ambiguous
+operation profiles and all ten prefix boundaries. Registry/scenario/image-path
+counts are **20/22/74**; existing image COPY inputs already contain the runtime
+modules. Source hashes changed, so new image/CI evidence is required.
+
+See the [local implementation and verification](../../docs/crawl-jobs-v2-m4-shared-group-cancellation-2026-10-05.md).
+At that implementation checkpoint independent source review was pending. The
+subsequent correctness/security reviews both return **GO for image/CI preparation**
+on the same 108-file inventory. Independent checks include 33 final-byte family
+tests, 18 canonical cancellation race calls, 22 artifact scenarios and 88 security
+controls. No final-byte full 183-test run is claimed. See the
+[review result and exact records](../../docs/crawl-jobs-v2-m4-shared-group-cancellation-review-2026-10-05.md).
+At that source-review checkpoint fresh selected images were next. The subsequent
+preparation result follows; no real cancellation case has run and full M4 is open.
+
+**Cancellation selected arm64 image preparation (2026-10-05): PASS.** New
+harness/stand-in `sha256:e57da19e8b99ffbd630545730b3883d00f6088a5f56068ca0b5aed2bba32d0ee`
+matches all 74 image files and all 20 recipes. The preparer explicitly selected
+`ledger-shared-group-cancellation-v1`; its plan recompiles exactly and the reviewed
+recipe/108-file source remain unchanged. Four metadata containers stayed stopped;
+all six metadata resources are independently absent. Only networkless image
+validation and Redis `--version` executed. See the
+[preparation report and exports](../../docs/crawl-jobs-v2-m4-shared-group-cancellation-preparation-2026-10-05.md).
+At that preparation checkpoint, scoped publication/CI was next. Subsequent exact
+publication verification is recorded below; artifact/execution decisions remain.
+
+**Cancellation publication and CI (2026-10-06): PASS.** The 39-file checkpoint
+`22317dc` is published on draft PR #20 with all fourteen protected contexts passing.
+Downloaded reports account for 480 compiled Go roots, 479 passes/one allowed
+optional skip, all eleven M4-prefixed roots and 74 image files/all 20 recipes.
+The full **183-test harness and 21 script tests pass on the final published bytes**,
+including the ACL guard. This supersedes the earlier local chronology only for
+that new CI observation; original records remain unchanged. Hosted-runner startup
+failures and failed-job retries are retained. See the
+[exact-revision CI result](../../docs/crawl-jobs-v2-m4-cancellation-ci-2026-10-06.md).
+No real cancellation case has run; fresh artifact approval and a separate execution
+decision are still required.
+
+**Cancellation artifact-review request (2026-10-06): ready, unapproved.** The
+16-artifact packet binds `22317dc`, selected arm64 images, exact plan/recipe,
+operator, destination and unchanged 300/30/60-second bounds. Request
+`0deedc21b8fe5d8297deb7858cafc3a1cb21302bf1ac98d8b0c4c87856940003`
+proposes expiry 2026-10-06 20:21:00.864 UTC. Its `approved=false` template is refused
+by the runtime validator; prospective approved bytes are not materialized.
+Owner artifact approval, a separate execution decision and exclusive one-use
+reservation remain ahead. Expiry/drift requires a fresh request. See the
+[exact decision scope](../../docs/crawl-jobs-v2-m4-cancellation-artifacts-2026-10-06.md).
+
+**Owner artifact approval (2026-10-06): recorded; execution pending.** Explicit
+owner approval materialized the exact `8a1714be…` bytes after fresh source, CI,
+image/resource and destination checks. Expiry remains 20:21:00.864 UTC; the full
+300-second budget requires a start before 20:16:00.864 UTC. No reservation or
+invocation has occurred. See the
+[approval record](../../docs/crawl-jobs-v2-m4-cancellation-approval-2026-10-06.md).
+
+**Cancellation single real run (2026-10-06; reviews finalized 2026-10-07): PASS,
+scoped evidence accepted.** The original approval was refused before reservation
+when the full case window no longer fit. Explicit renewed artifact approval and
+a fresh separate execution decision authorized fixture
+`cda9d3372d72a70b1bf3349b6ee2462f` once on `22317dc`, in 14,130 ms. All nine calls,
+60 counter fields/1,680 independent integer comparisons, 46 authority denials,
+peer-safe replays and exact expiry/history projections pass. A records no starts;
+B records one synthetic unused start. Both jobs remain leased.
+
+Independent correctness/security reviews ACCEPT the bounded evidence. Six roles
+were retired, the original 28-action/2,904-byte journal reconciled by bytes and
+file identity, and four containers/two volumes independently found absent by
+exact names and labels. Five original outputs / 97,810 bytes scan clean. The
+renewed approval is consumed, with no automatic retry or broader M4 acceptance.
+Two public normalized response hashes are reconstructed; seven private-bearing
+responses and raw-state comparisons remain pinned-runtime attestations. See the
+[run and exact records](../../docs/crawl-jobs-v2-m4-cancellation-run-2026-10-06.md).
 
 **Final independent re-review (2026-09-21): GO for image preparation only.** The
 four original findings and a closed-peer follow-up are fixed and re-reviewed.

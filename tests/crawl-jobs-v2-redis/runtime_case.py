@@ -22,7 +22,7 @@ CASES.update(ns.CASES)
 CASES[rs.CASE] = rs.SCENARIO
 CASES[qs.CASE] = qs.SCENARIO
 CASES[ps.CASE] = ps.SCENARIO
-CASES[ss.CASE] = ss.SCENARIO
+CASES.update(ss.CASES)
 RATE = h.P + "rate_scopes"
 PROBE = h.AUTH[2]  # Temporary pre-BOOT probe; removed before authority setup.
 WIRE_KEYS = (*h.AUTH, RATE)
@@ -61,7 +61,7 @@ def case_for_plan(plan):
 
 def sources(case_id=CASE):
     h.require(type(case_id) is str and case_id in CASES, "UNSUPPORTED_CASE")
-    if case_id == ss.CASE:
+    if case_id in ss.CASES:
         return ss.SOURCES
     if case_id in (qs.CASE, ps.CASE):
         return qs.SOURCES
@@ -126,7 +126,7 @@ def validate_revocation(result, targets):
 
 
 def fixture(plan, fixture_id, material, at_ms=1000):
-    if case_for_plan(plan) == ss.CASE:
+    if case_for_plan(plan) in ss.CASES:
         h.exact(material, {"owner_a", "owner_b", "token_a", "token_b", "wrong_token"})
         return shared.compile_fixture(plan, dict(material, fixture_id=fixture_id, redis_time_ms=at_ms))
     if case_for_plan(plan) in (qs.CASE, ps.CASE):
@@ -182,8 +182,9 @@ CLAIM_COMMANDS = {
 
 def acl_rules(case_id=CASE, fixture=None, plan=None):
     sources(case_id)
-    if case_id == ss.CASE:
+    if case_id in ss.CASES:
         fixture = shared.validate_fixture(plan, fixture)
+        h.require(fixture["case"] == case_id, "SHARED_ACL_CASE")
         rules = shared.acl_rules(plan, fixture)
         hashes = [key for key, row in fixture["initial_state"].items() if row is not None and row["type"] == "hash"]
         sets = [key for key, row in fixture["initial_state"].items() if row is not None and row["type"] == "set"]
@@ -334,7 +335,7 @@ def recipe(case_id=CASE):
                                  "keys": "exact validated fixture identities; no wildcard grants"},
                       possible_keys=58, assertions=[f"CR{i:02}" for i in range(1, 13)], acl_denials=46,
                         measurement_steps=9, request_starts=0, state_expiry="absolute PEXPIRETIME", report_values="redacted")
-    elif case_id == ss.CASE:
+    elif case_id in ss.CASES:
         result.update(wire_keys="closed two-run REQUEST/MAINTAIN templates from shared_capacity.py; fixed finish trace",
             stored_keys="89 fixture-owned plus BOOT-owned durability", direct_setup_count=45, possible_keys=90,
             derived_output_keys="two distinct-run reservations, shared global/group and two origin rate blocks, first_request_start",
@@ -344,6 +345,10 @@ def recipe(case_id=CASE):
             runs=2, jobs=2, logical_owners=2, issued_leases=2, request_starts=2, counter_fields=60,
             external_io_attempts=0, state_expiry="absolute PEXPIRETIME", measurement_span_milliseconds=30000,
             rate_intervals="zero; global2/group1/origin1; distinct origins and one shared group", report_values="redacted")
+        if case_id == ss.CANCEL_CASE:
+            result.update(wire_keys="closed two-run REQUEST/MAINTAIN templates from shared_capacity.py; fixed cancellation trace",
+                assertions=[f"SGCANCEL{i:02}" for i in range(1, 10)], measurement_steps=9, effective_mutations=5,
+                expected_errors=0, capacity_denials=1, exact_replays=2, request_starts=1)
     elif case_id in (qs.CASE, ps.CASE):
         result.update(wire_keys="closed REQUEST/MAINTAIN templates from request_oracle.py", stored_keys="57 fixture-owned plus BOOT-owned durability",
             direct_setup_count=26, possible_keys=58, derived_output_keys="two same-lease reservations, first_request_start, three rate blocks",

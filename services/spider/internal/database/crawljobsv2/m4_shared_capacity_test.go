@@ -55,7 +55,7 @@ func TestM4SharedGroupCancellationOffline(t *testing.T) {
 // command facade is not target Redis, runtime ACL or simultaneous-worker proof.
 func m4SharedProfile(t *testing.T, profile string) {
 	t.Helper()
-	const caseID = "ledger-shared-group-capacity-v1"
+	caseID, domain, prefix := "ledger-shared-group-capacity-v1", "mifolyo:m4:shared-group-capacity", "SGC"
 	ops := []OperationName{OperationTryClaim, OperationTryClaim, OperationTryClaim, OperationTryClaim,
 		OperationCancelReservation, OperationStartRequest, OperationStartRequest, OperationTryClaim,
 		OperationCancelReservation, OperationFinishRequest, OperationFinishRequest, OperationTryClaim,
@@ -69,6 +69,7 @@ func m4SharedProfile(t *testing.T, profile string) {
 	faults := map[int]string{4: "owner", 9: "token"}
 	trace := "finish"
 	if strings.HasPrefix(profile, "cancel-") {
+		caseID, domain, prefix = "ledger-shared-group-cancellation-v1", "mifolyo:m4:shared-group-cancellation", "SGCANCEL"
 		trace = "cancel"
 		ops = []OperationName{OperationTryClaim, OperationTryClaim, OperationCancelReservation, OperationCancelReservation,
 			OperationTryClaim, OperationCancelReservation, OperationStartRequest, OperationFinishRequest, OperationMaintainRateScopes}
@@ -143,7 +144,7 @@ func m4SharedProfile(t *testing.T, profile string) {
 		t.Fatal(err)
 	}
 	contract, _ := ContractSHA256()
-	lineage := RateScopeID(digestFramed("mifolyo:m4:shared-group-capacity:lineage:v1", []byte(f.Inputs.FixtureID))[:32])
+	lineage := RateScopeID(digestFramed(domain+":lineage:v1", []byte(f.Inputs.FixtureID))[:32])
 	groupScope, _ := DeriveGroupScopeID(lineage)
 	group := PolicyGroup{GroupID: "fixture", RateScopeID: lineage, GroupScopeID: groupScope, RequestStartLimit: 10, Concurrency: 1, IntervalMS: 0}
 	groupRecord, _ := policyGroupRecord(group)
@@ -158,7 +159,7 @@ func m4SharedProfile(t *testing.T, profile string) {
 	allKeys := map[string]bool{}
 	for _, label := range []string{"a", "b"} {
 		a := f.Actors[label]
-		rid := RunID(digestFramed("mifolyo:m4:shared-group-capacity:run:v1", []byte(f.Inputs.FixtureID), []byte(label))[:32])
+		rid := RunID(digestFramed(domain+":run:v1", []byte(f.Inputs.FixtureID), []byte(label))[:32])
 		document, robots := "https://m4-capacity-"+label+".invalid/document", "https://m4-capacity-"+label+".invalid/robots.txt"
 		jid := JobID(utils.URLIDV1(document))
 		if a.RunID != string(rid) || a.JobID != string(jid) || a.URL != document || a.Robots != robots || a.Origin != "https://m4-capacity-"+label+".invalid:443" ||
@@ -385,7 +386,7 @@ func m4SharedProfile(t *testing.T, profile string) {
 		}
 		result := workerLuaRun(t, r, canonical, keys, args)
 		expected := vector.Expected[i]
-		if result.runtimeErr != nil || expected.ID != fmt.Sprintf("SGC%02d", i+1) || expected.Operation != op {
+		if result.runtimeErr != nil || expected.ID != fmt.Sprintf("%s%02d", prefix, i+1) || expected.Operation != op {
 			t.Fatal("canonical shared execution", i, result.runtimeErr)
 		}
 		if errorStep {

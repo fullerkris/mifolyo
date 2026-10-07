@@ -2,7 +2,7 @@
 
 Captured identities/time only; no connection, clock, randomness or execution API.
 Synthetic test vectors may expose fixed test material. Public summaries never do.
-Runtime callers use only the fixed finish trace; other traces are offline controls.
+Runtime callers bind a fixed finish or cancellation trace to its own closed case.
 """
 import copy
 import hashlib
@@ -21,15 +21,18 @@ def sequence(name):
 
 def compile_fixture(plan, inputs):
     plan = h.validate_plan(plan)
-    h.require(plan["inputs"]["scenario"] == spec.SCENARIO, "SHARED_SCENARIO")
+    scenario = plan["inputs"]["scenario"]
+    h.require(scenario in spec.CASES.values(), "SHARED_SCENARIO")
+    selected = next(name for name, value in spec.CASES.items() if value == scenario)
+    domain = "mifolyo:m4:" + scenario.removeprefix("ledger-")
     cr._inputs(inputs)
     now, fixture_id = inputs["redis_time_ms"], inputs["fixture_id"]
-    lineage = cr._framed_digest("mifolyo:m4:shared-group-capacity:lineage:v1", fixture_id)[:32]
+    lineage = cr._framed_digest(domain + ":lineage:v1", fixture_id)[:32]
     global_scope = cr._framed_digest("mifolyo:rate:global:v2")
     group_scope = cr._framed_digest("mifolyo:rate:group:v2", lineage)
     group = [("group_id", spec.GROUP), ("rate_scope_id", lineage), ("group_scope_id", group_scope),
         ("request_start_limit", "10"), ("concurrency", "1"), ("interval_ms", "0")]
-    descriptors = {name: {"purpose": "conformance_only", "case": spec.CASE, "kind": name, "release_eligible": False}
+    descriptors = {name: {"purpose": "conformance_only", "case": selected, "kind": name, "release_eligible": False}
         for name in ("authorization", "authorization_scope", "canonicalization", "crawl_policy", "render_policy")}
     descriptors["crawl_policy"].update(global_concurrency=2, global_interval_ms=0, group_concurrency=1,
         group_interval_ms=0, origin_concurrency=1, origin_interval_ms=0)
@@ -37,7 +40,7 @@ def compile_fixture(plan, inputs):
     actors, states = {}, {}
     keys = set((*h.AUTH, *cr.LIVE))
     for label in ("a", "b"):
-        rid = cr._framed_digest("mifolyo:m4:shared-group-capacity:run:v1", fixture_id, label)[:32]
+        rid = cr._framed_digest(domain + ":run:v1", fixture_id, label)[:32]
         origin = "https://m4-capacity-" + label + ".invalid:443"
         url = "https://m4-capacity-" + label + ".invalid/document"
         robots_url = "https://m4-capacity-" + label + ".invalid/robots.txt"
@@ -111,7 +114,7 @@ def compile_fixture(plan, inputs):
     for key in (h.P + "active_runs", h.P + "unarchived_runs"):
         state[key] = cr._set(runs)
     h.require(len(state) == 89 and sum(row is not None for row in state.values()) == 45, "SHARED_SETUP_COUNT")
-    result = {"version": 1, "case": spec.CASE, "artifact_kind": "private_offline_shared_capacity_fixture",
+    result = {"version": 1, "case": selected, "artifact_kind": "private_offline_shared_capacity_fixture",
         "purpose": "conformance_only", "execution_authorized": False, "release_eligible": False,
         "measurement_status": "not_measured", "time_observation_verified": False,
         "compiler_sha256": h.digest(Path(__file__).read_bytes()), "plan_sha256": h.digest(h.canonical(plan)), "inputs": dict(inputs),
@@ -207,6 +210,7 @@ def expected_sequence(plan, fixture, observations, trace="finish"):
 
 def _expected_validated(f, observations, trace="finish"):
     steps = sequence(trace)
+    prefix = spec.ASSERTION_PREFIXES[f["case"]]
     h.require(type(observations) is list and 0 <= len(observations) <= len(steps), "SHARED_OBSERVATIONS")
     state, rows, minimum = copy.deepcopy(f["initial_state"]), [], f["inputs"]["redis_time_ms"]
     for index, observation in enumerate(observations):
@@ -282,7 +286,7 @@ def _expected_validated(f, observations, trace="finish"):
         for other in f["actors"].values():
             job = dict(state[other["job_key"]]["fields"])
             h.require(job["state"] != "leased" or after < int(job["lease_expires_at_ms"]), "SHARED_LEASE_SPAN")
-        rows.append({"assertion_id": "SGC" + f"{index + 1:02}", "operation": operation, "reply": reply, "state": copy.deepcopy(state)})
+        rows.append({"assertion_id": prefix + f"{index + 1:02}", "operation": operation, "reply": reply, "state": copy.deepcopy(state)})
     return rows
 
 
@@ -318,6 +322,6 @@ def public_summary(plan, fixture):
 
 
 def _public_summary_validated(f):
-    return {"case": spec.CASE, "purpose": "conformance_only", "execution_authorized": False, "release_eligible": False,
+    return {"case": f["case"], "purpose": "conformance_only", "execution_authorized": False, "release_eligible": False,
         "measurement_status": "not_measured", "fixture_sha256": h.digest(h.canonical(f)), "compiler_sha256": f["compiler_sha256"],
         "plan_sha256": f["plan_sha256"], "possible_keys": 90, "fixture_owned_keys": 89, "runs": 2, "jobs": 2, "scopes": 4}

@@ -2,7 +2,7 @@
 
 **Original review date:** 2026-09-01
 
-**Last updated:** 2026-10-07 (UTC; single cancellation run accepted within scope, renewed approval consumed; result/status publication next; C0 adapter layer GO with 78 tests, full M4 open)
+**Last updated:** 2026-10-07 (UTC; PR #20 merged as `ab5f21a`, exact main CI verified; cancellation approval consumed; C0 native-runtime admission/oracle integration next, full M4 open)
 
 **Reviewed baseline:** `main` / `44d8b09a364a1f60032e1f4faccf160813f4dd04`
 
@@ -110,7 +110,7 @@ retained Mongo records still incorrectly say `enabled: true`.
 |---|---|---|
 | F1 seed reconciliation | Not started | Retained evidence remains 70 enabled records; execute only during the matched freeze/backup/reset sequence |
 | F2 disposable Redis reset | Not started | Retained V1 state remains historical post-test evidence and must not be reused or selectively repaired |
-| F3 durable Crawl Jobs V2 | Cancellation has accepted scoped real PASS at `22317dc`; application V2 remains dormant | One 14,130-ms invocation verifies nine calls, 60 counters/46 denials and peer-safe cancellation replays. Independent ACCEPT, original journal, six-role revocation and six-resource absence pass; renewed approval consumed, result/status publication next. C0 adapters retain 78-test source GO; native/runtime assembly and full M4 remain open. See [`crawl-jobs-v2-plan.md`](crawl-jobs-v2-plan.md) |
+| F3 durable Crawl Jobs V2 | PR #20 merged as `ab5f21a` with verified main CI; accepted cancellation evidence remains scoped to `22317dc`; application V2 stays dormant | The merge matches reviewed `4e699ec`, with all 14 required contexts / 23 jobs and exact test/image evidence passing. The single 14,130-ms cancellation run and consumed approval retain their original bindings. C0 native-runtime admission and oracle/client-closure implementation are next; full M4 remains open. See [`crawl-jobs-v2-plan.md`](crawl-jobs-v2-plan.md) |
 | F4 exact crawl scope | Not started | No crawl-policy V2 schema or approved exact-URL policy is present |
 | F5 backlink persistence | Code acceptance passed and merged | PR #9 passed protected checks and merged as `d914a93`; no retained datastore reconciliation or V2 consumer activation is implied |
 | F6 JavaScript-shell indexing | Not started | No static-extraction policy schema or approved metadata-fallback configuration is present |
@@ -302,26 +302,19 @@ wire grammar, limits, transitions, records, Redis configuration, and evidence.
   absent. Full M4 remains open; this small case does not authorize runtime
   integration, retained datastore mutation, application/service activation,
   migration, deployment, candidate promotion or crawling.
-- **Current M4 checkpoint:** PR #18's 67-file source/result scope is merged as
-  `d3b241e`, with the same tree as reviewed head `c8c5ee2` and all fourteen
-  merged-main checks passing. The accepted shared-group run remains bound to
-  `c381287`; its approval is consumed. See the
-  [merge/main-CI evidence](evidence/m4-shared-group-merge-2026-10-03/README.md).
-  PR #19 later merged documentation/CI cleanup as `e80d005`, with verified main CI.
-  `ledger-shared-group-cancellation-v1` is now implemented locally as a separate
-  nine-call case; independent correctness/security source reviews are GO for
-  image/CI preparation. Fresh selected arm64 preparation now passes on 74 files/all
-  20 recipes, with stopped-role admission and independent cleanup. Publication
-  `22317dc` on draft PR #20 now passes all fourteen protected checks, with full
-  final-source harness/race/image evidence verified. The
-  [artifact proposal](crawl-jobs-v2-m4-cancellation-artifacts-2026-10-06.md)
-  retained a false template at its recorded review checkpoint. Subsequent
-  [owner approval](crawl-jobs-v2-m4-cancellation-approval-2026-10-06.md) materialized
-  the exact approved bytes with that expiry unchanged. That initial window later
-  failed the full-budget check before reservation. Explicit renewal and a separate
-  execution decision then authorized one 14,130-ms run: nine calls, 60 counters,
-  46 denials, original journal/revocation/cleanup and independent scoped ACCEPT.
-  The renewed approval is consumed. See the
+- **Current M4 checkpoint:** PR #20 is merged as `ab5f21a`, with the same tree as
+  reviewed final head `4e699ec`. Both actual main-push workflows pass on attempt 1:
+  all fourteen required contexts, twenty-three jobs, 480 race roots, 183 harness /
+  21 script tests and 74-file/20-recipe image evidence are verified. Its four-commit /
+  98-path scope includes accepted cancellation results and separately approved
+  Query Engine dependency fixes. See the
+  [merge/main-CI closeout](crawl-jobs-v2-m4-cancellation-merge-2026-10-07.md).
+  This follows the verified PR #18 shared-group merge `d3b241e` and PR #19
+  documentation/CI baseline `e80d005`; their earlier records remain unchanged.
+  The single cancellation run remains bound to `22317dc`: explicit renewal and a
+  separate execution decision authorized one 14,130-ms invocation, with nine calls,
+  60 counters, 46 denials, original journal/revocation/cleanup and independent scoped
+  ACCEPT. Its renewed approval is consumed. See the
   [run/evidence result](crawl-jobs-v2-m4-cancellation-run-2026-10-06.md),
   [CI result](crawl-jobs-v2-m4-cancellation-ci-2026-10-06.md) and
   [preparation result](crawl-jobs-v2-m4-shared-group-cancellation-preparation-2026-10-05.md).
@@ -330,7 +323,9 @@ wire grammar, limits, transitions, records, Redis configuration, and evidence.
   worktree now includes owned-resource, bounded-stream and host-watchdog adapters:
   78 tests and final correctness/security GO after remediation. Native runtime
   admission, oracle/client closure and full trial/image/approval integration remain
-  incomplete; experiments and normative decisions remain separate. Full M4 is open.
+  incomplete. Native-runtime admission and oracle/client-closure integration are
+  the next implementation increment; experiments and normative decisions remain
+  separate. Full M4 is open.
 
 ### Parent-plan acceptance gate
 

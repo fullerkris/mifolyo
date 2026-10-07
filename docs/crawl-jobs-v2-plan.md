@@ -2,11 +2,11 @@
 
 **Finding:** F3 - durable crawl-job leases and recovery
 
-**Last updated:** 2026-10-07 (UTC; single cancellation run at `22317dc` accepted by independent evidence reviews, renewed approval consumed; result/status publication next; C0 adapter layer GO with 78 tests, full M4 open)
+**Last updated:** 2026-10-07 (UTC; PR #20 merged as `ab5f21a`, exact merged-main CI and evidence verified; cancellation approval consumed; C0 native-runtime admission/oracle integration next, full M4 open)
 
-**Code baseline:** merged `main` at `e80d005`; PR #19 documentation/CI cleanup and exact main CI are verified
+**Code baseline:** merged `main` at `ab5f21a`; PR #20's 98-path checkpoint and exact main CI are verified
 
-**Working branch:** `feature/crawl-jobs-v2-shared-group-cancellation`; 39-file checkpoint `22317dc` published on draft PR #20 with exact CI verified; post-CI, approval and accepted-run evidence/status updates remain local
+**Working branch:** `docs/crawl-jobs-v2-cancellation-merge-checkpoint`, based at `ab5f21a`; merge/main-CI closeout documentation remains local, with C0 implementation preserved in its separate worktree
 
 **Initial checkpoint:** `e4372a66201b8767bcca4d7476c30c5b7999922c`
 
@@ -17,8 +17,13 @@ All 43 canonical operations and the sealed, zero-argument
 bounded real-Redis `ledger-smoke-v1` and `ledger-claim-release-v1` cases pass;
 full M4 acceptance is open.
 
-**Current next gate:** scoped publication of the accepted cancellation result /
-status records, followed by exact new-revision CI and separate merge authorization.
+**Current next gate:** C0 native-runtime admission and oracle/client-closure
+implementation, starting by reconciling the preserved C0 worktree with merged
+`ab5f21a`. The [merge/main-CI checkpoint](crawl-jobs-v2-m4-cancellation-merge-2026-10-07.md)
+is complete: reviewed final PR head `4e699ec` and actual squash `ab5f21a` have the
+same tree, and all fourteen required main checks / twenty-three workflow jobs pass.
+The 60-path result publication and separately approved Query Engine dependency
+fixes are included in PR #20's four-commit / 98-path scope.
 The [single run](crawl-jobs-v2-m4-cancellation-run-2026-10-06.md) on `22317dc` passed
 in 14,130 ms: nine calls, 60 counters and 46 denials. Independent correctness and
 security reviews accept the scoped evidence; original journal, six-role revocation
@@ -26,9 +31,9 @@ and six-resource absence are verified. Renewed approval `ea6fb96a…` is consume
 The initial `8a1714be…` approval was refused before reservation because its full
 budget no longer fit. Explicit renewal and a fresh separate execution decision
 preceded the sole invocation. There is no reusable or pending execution authority.
-Publication `22317dc` on [draft PR #20](https://github.com/fullerkris/mifolyo/pull/20)
-passes all fourteen protected checks, with downloaded evidence verified. Fresh
-selected arm64 image/artifact preparation **passes**, following correctness and security
+The original publication `22317dc` passed its protected checks before execution;
+[PR #20](https://github.com/fullerkris/mifolyo/pull/20) is now merged. Selected arm64
+image/artifact preparation **passes**, following correctness and security
 **GO_FOR_IMAGE_CI_PREPARATION** on the unchanged 108-file source snapshot.
 Its fixed nine-call runtime, case-bound fixture/ACL/receipts and bounded failure cleanup are implemented.
 Local verification includes a full 183-test pre-guard harness, 21 scripts and
@@ -38,11 +43,12 @@ their chronology is in the [source-review result](crawl-jobs-v2-m4-shared-group-
 Both image checks match 74 files/all 20 recipes; stopped-role admission and
 independent six-resource absence pass. See the
 [preparation result](crawl-jobs-v2-m4-shared-group-cancellation-preparation-2026-10-05.md).
-The [CI gate](crawl-jobs-v2-m4-cancellation-ci-2026-10-06.md) accounts for 480 Go
-roots, all eleven M4-prefixed roots and the full final-source 183-test harness /
-21 script tests. Hosted-runner startup failures and bounded failed-job retries
-retain their original records. The subsequent real run retains its own approval,
-execution, review and cleanup evidence; full M4 remains open.
+The original [source CI gate](crawl-jobs-v2-m4-cancellation-ci-2026-10-06.md) and
+subsequent final-PR/main gates account for 480 Go roots, all eleven M4-prefixed
+roots and the full final-source 183-test harness / 21 script tests. Both actual
+merged-main workflows passed on attempt 1. Earlier dependency-audit failures and
+the PR's missing-Spider workflow retry retain their original records. The real
+run retains its own approval, execution, review and cleanup evidence; full M4 is open.
 
 **Parallel M4 work:** the isolated `feature/crawl-jobs-v2-c0-observer` package now
 has 22 files, adding owned-resource, bounded-stream and independent host-watchdog
@@ -331,12 +337,12 @@ retains it as a primitive case; guard cases now explicitly bind the complete
 | Ledger validation | Baseline/delivery/fence history, post-abort freeze, exact retained witnesses, strict worker expiry, completed replay, prior retry/backpressure/reason fixes and zero-sentinel checks pass local normal conformance and reviewed counterexample replays |
 | Script sources | All 43 canonical operations are implemented: unchanged BOOT passthrough plus 42 exact generated sources; both strict source/bundle generator checks pass |
 | Authoritative bundle | Complete zero-argument `AuthoritativeScriptBindingSet()` validates embedded sources against fixed generated pins and returns fresh private sealed bindings; no caller-supplied sources, hashes or paths |
-| Local and protected acceptance | Published cancellation `22317dc` passes 14/14 PR checks, 480 race roots (479 passes/one allowed optional skip), full final-source 183 harness/21 script tests and 74-file/20-recipe amd64 image evidence. Original pre-/post-guard local checks retain their chronology; baseline `e80d005` main CI remains independently verified |
+| Local and protected acceptance | Merged `ab5f21a` passes 14/14 main checks and all 23 workflow jobs, with 480 race roots (479 passes/one allowed optional skip), 183 harness/21 script tests and 74-file/20-recipe amd64 image evidence. Its tree matches reviewed `4e699ec`; earlier local/source-CI observations retain their chronology |
 | Runtime behavior | V2 remains dormant in application services; separately authorized disposable Redis smoke, claim/release, all 13 negatives, pre-I/O recovery, bounded request lifecycle, positive-interval and serial shared-group cases pass within their original source/image scopes |
 | M4 bounded execution | Cancellation fixture `cda9d337…` passes once: nine calls, one group-capacity denial, two peer-safe replays, 60 counters and 46 denials. Six-role revocation, original 28-action journal and six-resource absence pass; renewed approval consumed. Earlier shared-capacity evidence retains its own scope; full M4-P4/P5 stay open |
 | Review status | Cancellation has independent correctness/security ACCEPT for the single real case on unchanged 108-file source. C0 adapter layer retains final source GO, 78 tests and all seven findings closed; full runtime assembly/proof remains pending |
-| Git state | Cancellation `22317dc` remains the published/executed PR #20 head, tree `914a46ab…`, exact CI verified. Post-CI/approval/result records, 22-file design worktree and C0 implementation remain local; all 372 unrelated files preserved |
-| Current bounded slice | `ledger-shared-group-cancellation-v1`: accepted scoped real PASS with A zero/B one synthetic start, exact accounting/expiry and peer-safe cancellation replays; approval `ea6fb96a…` consumed. Result/status publication is next; no rerun or broader M4 acceptance follows |
+| Git state | PR #20 is merged as `ab5f21a`, with the same tree as final reviewed `4e699ec`; exact main CI is verified. Merge-closeout documentation is local on its docs branch. The C0/design worktrees retain 72/22 local paths; all 372 unrelated files are preserved |
+| Current bounded slice | Cancellation execution, result publication and merge/main-CI gates are complete within case scope; approval `ea6fb96a…` remains consumed. C0 native-runtime admission and oracle/client-closure integration are next; full M4 stays open |
 
 ### Current source and fixture identities (regenerated 2026-09-21)
 
@@ -512,8 +518,10 @@ The final matrix and final independent reviews used pinned Go 1.25.13 and passed
   renewed artifact approval and a fresh separate execution decision.
 - [x] Reserve and execute the renewed cancellation case once; reconcile original
   journal, revocation, cleanup and independent scoped evidence acceptance.
-- [ ] Publish the scoped result/status checkpoint and verify the exact new
-  revision's protected CI before requesting merge.
+- [x] Publish the 60-path result/status checkpoint as `8fb7f59`; complete separately
+  approved MongoDB/npm security fixes and verify final PR head `4e699ec`.
+- [x] Verify PR #20's actual squash `ab5f21a`, reviewed-tree continuity and exact
+  merged-main push CI / downloaded evidence; both workflows pass on attempt 1.
 - [x] Advance D01 static mapping and D02 teardown research into an isolated
   review-ready package without normative changes or tracing experiments.
 - [x] Obtain independent static/design correctness/security GO on the D01/D02
@@ -523,8 +531,10 @@ The final matrix and final independent reviews used pinned Go 1.25.13 and passed
   independent GO after remediation.
 - [x] Implement and independently review the C0 owned-resource/stream/watchdog
   layer: 78 tests pass, all four correctness/three security findings closed.
-- [ ] Continue native runtime admission, oracle/client closure, full trial dispatch,
-  image/approval and timing/resource integration; decide normative changes separately.
+- [ ] Reconcile preserved C0 work with the merged baseline, then implement native
+  runtime admission and the independent oracle/client-closure worker with source review.
+- [ ] Complete full trial dispatch, image/approval and timing/resource integration;
+  decide normative changes and runtime experiments separately.
 - [ ] Complete the broader M4 acceptance reviews and later-case approvals.
 
 ## M1: Final foundation release gate
@@ -3338,7 +3348,7 @@ Its approval remains consumed. Full M4 remains open.
 
 ### Next bounded slice: shared-group cancellation
 
-**Single real run on `22317dc` accepted within case scope.** Case:
+**Execution, publication and merge/main-CI checkpoint complete within case scope.** Case:
 `ledger-shared-group-cancellation-v1`, based on verified merged `e80d005`. The existing
 `shared_capacity_specs.CANCEL_STEPS` and `TestM4SharedGroupCancellationOffline`
 already provide a closed nine-call model and independent spaced/same-ms Go
@@ -3409,8 +3419,8 @@ resources are independently absent. Single build/preparation commands took
 [preparation report](crawl-jobs-v2-m4-shared-group-cancellation-preparation-2026-10-05.md)
 and [exact exports](evidence/m4-shared-group-cancellation-preparation-2026-10-05/README.md).
 
-The 39-file checkpoint is published on draft PR #20. All fourteen protected
-checks pass on `22317dc`; tested merge ref `f7a5d3ff…` has the same tree. Downloaded
+The initial 39-file checkpoint was published on draft PR #20. All fourteen protected
+checks passed on `22317dc`; tested merge ref `f7a5d3ff…` has the same tree. Downloaded
 evidence verifies 480 Go roots / all eleven M4 roots, 183 final-source harness
 tests, 21 scripts and 74 image files/all 20 recipes. Required Checks attempt 4 and
 Unit Tests attempt 2 retain the preceding hosted-runner acquisition failures;
@@ -3445,8 +3455,16 @@ not real I/O, elapsed aging, concurrent workers, all-state AOF or performance pr
 
 See the [run/evidence report](crawl-jobs-v2-m4-cancellation-run-2026-10-06.md).
 Consumed disposition: `edfc4508721f46ac56efff2920725bf67dca6bb8f79b75d1835497eb47ad74d7`.
-The approval cannot be reused. Local result/status publication is next; full M4
-and the C0 implementation/runtime gates remain open.
+The approval cannot be reused. The 60-path result/status checkpoint was published
+as `8fb7f59`. Separately approved dependency fixes produced final PR head `4e699ec`,
+with exact PR CI verified. PR #20 then merged as `ab5f21a`, retaining the reviewed
+tree `1d9abb85…` across all 98 paths. The actual main-push workflows both pass on
+attempt 1: fourteen required contexts, twenty-three jobs and independently checked
+test/image evidence. See the
+[merge closeout](crawl-jobs-v2-m4-cancellation-merge-2026-10-07.md) and
+[seven exact records](evidence/m4-cancellation-merge-2026-10-07/README.md).
+C0 native-runtime admission and oracle/client-closure integration are the next
+implementation increment; full M4 and runtime-experiment gates remain open.
 The [source-grounded handoff](evidence/m4-shared-group-merge-2026-10-03/next-slice.json)
 is retained as a dated planning record, not completed implementation or full-M4 acceptance.
 
@@ -3883,6 +3901,8 @@ Rendering remains disabled unless its separate activation requirements pass.
 | 2026-10-06 | Cancellation window refusal and explicit renewal | Original approval could not fit its full case budget and was refused before reservation/invocation; closed-unused disposition retained. Owner approved renewed 16-artifact request `69e70525…`, then separately requested one execution under `ea6fb96a…` |
 | 2026-10-06 | Single cancellation invocation passed | Fixture `cda9d337…` returned PASS once in 14,130 ms: nine calls, 60 counters/46 denials, A zero/B one start, peer-safe replays; original journal/revocation/resource postcheck passed, renewed approval non-reusable |
 | 2026-10-07 | Cancellation scoped evidence accepted | Independent correctness/security ACCEPT; interrupted correctness work preserved and independently finalized; 1,680 counter comparisons, original 28-action journal identity, six-name/six-label absence and zero original-output scan findings verified; final consumed disposition recorded |
+| 2026-10-07 | Cancellation result and dependency-fix publication complete | Sixty-path checkpoint `8fb7f59` plus separately approved MongoDB/npm fixes yield reviewed `4e699ec`; final PR CI verifies 14 contexts and exact artifacts. The missing-Spider workflow failure and full unchanged retry remain retained |
+| 2026-10-07 | PR #20 merge and main-CI checkpoint complete | Actual squash `ab5f21a` has the reviewed `1d9abb85…` tree and 98-path scope; both main-push workflows pass on attempt 1, all 14 required contexts / 23 jobs and downloaded evidence verified; original case approval remains consumed, C0 native admission/oracle integration next |
 
 ## Definition of done
 

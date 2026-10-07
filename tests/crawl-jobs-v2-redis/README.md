@@ -342,6 +342,24 @@ Two public normalized response hashes are reconstructed; seven private-bearing
 responses and raw-state comparisons remain pinned-runtime attestations. See the
 [run and exact records](../../docs/crawl-jobs-v2-m4-cancellation-run-2026-10-06.md).
 
+**Cancellation result publication, merge and main CI (2026-10-07): complete.**
+The 60-path result checkpoint `8fb7f59` and separately approved Query Engine
+dependency fixes produced reviewed final head `4e699ec`. PR #20 merged as
+`ab5f21a`, retaining the same tree across all 98 paths. Both actual main-push
+workflows pass on attempt 1: fourteen required contexts and twenty-three jobs.
+Downloaded reports account for 480 race roots (479 passes/one allowed optional
+skip), all eleven M4 roots, 183 harness/21 script tests and 74 files/all 20 recipes.
+Composer and built-image npm audits pass. PHP warning classifications remain
+explicit, with zero failures/skips.
+
+The accepted cancellation run keeps its original `22317dc` bindings and consumed
+approval. Seven byte-identical checkpoint records preserve the earlier publication,
+merge and alignment states alongside the final closeout. C0 native-runtime
+admission and independent oracle/client-closure implementation are next; full M4
+remains open. See the
+[merge report](../../docs/crawl-jobs-v2-m4-cancellation-merge-2026-10-07.md) and
+[evidence index](../../docs/evidence/m4-cancellation-merge-2026-10-07/README.md).
+
 **Final independent re-review (2026-09-21): GO for image preparation only.** The
 four original findings and a closed-peer follow-up are fixed and re-reviewed.
 See the [closure report](../../docs/crawl-jobs-v2-m4-rereview-2026-09-21.md).

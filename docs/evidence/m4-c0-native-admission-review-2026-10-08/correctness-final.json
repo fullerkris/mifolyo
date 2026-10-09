@@ -1,0 +1,260 @@
+{
+  "reviewer": "correctness",
+  "review_kind": "independent remediation re-review",
+  "review_date": "2026-10-08",
+  "decision": "GO_FOR_CONTINUED_IMPLEMENTATION",
+  "decision_scope": "GO applies only to continued preparation/source implementation of the frozen v2 C0 native-runtime admission increment. It is not permission to execute native actors, trace, mutate Docker, run Redis cases, or accept full M4.",
+  "execution_authorized": false,
+  "runtime_feasibility_proven": false,
+  "m4_accepted": false,
+  "delegation_performed": false,
+  "summary": "COR-01, COR-02, and COR-03 are closed for this implementation scope. Adapted independent real-pipe counterexamples now refuse A/G with zero attempted and zero newly received command bytes, while positive sequencing still passes. Late authorizer/poll expiry and postflight collection loss are refused. Exact uint64 timestamps now pass admission and immediate C0 hold/witness consumers without widening counters, relative timing limits, or accepted numeric types. No new actionable in-scope correctness defect was identified. The original review, probes, logs, and results remain unchanged.",
+  "scope": {
+    "workspace": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-native-admission-review-2026-10-08",
+    "snapshot": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-native-admission-review-2026-10-08/source-v2",
+    "package": "tests/crawl-jobs-v2-observer/",
+    "output_directory": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-native-admission-review-2026-10-08/correctness/rereview",
+    "method": "Static inspection of the complete remediation diff and affected control/validation paths, a fresh full offline suite, adapted copies of the original independent Python pipe probes, extended callback/poll/clock boundary probes, and read-only ELF/artifact joins. No old checkpoint script was executed or imported.",
+    "changed_files_reviewed": [
+      "README.md",
+      "contracts.py",
+      "docker_backend.py",
+      "oracle.py",
+      "runtime_admission.py",
+      "streams.py",
+      "test_contracts.py",
+      "test_runtime_admission.py",
+      "test_streams.py"
+    ],
+    "added_file_reviewed": "test_admission_dispatch.py",
+    "boundary": "Actor bytes and asynchronous channel failure are untrusted. Trusted callbacks may consume time. The review does not posit an all-powerful malicious Python/Docker controller. Security's separate disposition is not issued by this report.",
+    "inventory_authority": "The new workspace-root source-inventory-v2.json and review-intake-v2.json source_files were used, not the historical initial implementation inventory exported under source-v2/docs."
+  },
+  "bindings": {
+    "base_commit": "ab5f21a7421f3ed48cfb32481613fa5656dcb8a4",
+    "base_archive_sha256": "bc958d07f117dae61114dc85da0d48fc5242bdd78a4c62f5f4123a2d4d68bf2e",
+    "intake_v2_sha256": "cfff9627e121cca682dee0747bdd72e4a8a04a0261b9d0f03962783b4b150cfb",
+    "source_inventory_v2_sha256": "f488d5fbfbec00166eccc21c68d38c67aa8905bcd8a828ecf936cc87fb79cf83",
+    "verification_v2_sha256": "fc4aaddc72323336730b436a33f90a7196111e651f2f97287427246219fc4fc6",
+    "build_v2_sha256": "defa0273f33bb84971c58cefb0b13b60857c0d4c3ecbe3a9c9b81b7c5ff7fdd6",
+    "snapshot_manifest_sha256": "ef3544abd62dd347e978101aca1ac4008bd8d2712c0f86bdd682d15608dd8a02",
+    "snapshot_manifest_hash_definition": "SHA256 of the v2 intake snapshot_files map encoded as sorted-key compact JSON without a newline; all corresponding actual files were rehashed before and after.",
+    "snapshot_files": 1616,
+    "overlay_paths": 92,
+    "package_files": 26,
+    "native_artifacts": 11,
+    "native_build_inputs": 9,
+    "target_elf_sha256": "45f78ae0bce897a430b78e4e5c02908308d0432dcc959f8b20380dbea0f7bef5",
+    "observer_elf_sha256": "77576d303391c7e0dcaf6fe2efcef85beee0f73dae70ca93341ea3d599e5021f",
+    "v2_toolchain_sha256": "dc2ca2d735123f05a93bf994eeea54a749b6aa29ef29475c24b64147a11ce02b",
+    "rebound_contracts_py_sha256": "e71d981d425a00c7215857974e09f2b180a14822b7e0bddf8461f0b1f57a85bf",
+    "only_native_artifact_changed_since_original": "toolchain.json",
+    "original_intake_sha256": "945fa7c3962b7edf67a055ad940fecd7760f00af38c82ae7916d9d96ae230900",
+    "original_review_sha256": "915a93b18429c750be5ee1a66c67b59449d56bfb74f1aeb4b2b18013a7d3b22a",
+    "original_review_preserved_mode": "0400"
+  },
+  "prior_findings": [
+    {
+      "id": "COR-01",
+      "original_severity": "high",
+      "status": "CLOSED",
+      "title": "A/G dispatch trusts stale peer phase and misses EOF or already-pending peer output",
+      "remediation_locations": [
+        {"file": "tests/crawl-jobs-v2-observer/streams.py", "line_start": 170, "line_end": 187},
+        {"file": "tests/crawl-jobs-v2-observer/docker_backend.py", "line_start": 250, "line_end": 271},
+        {"file": "tests/crawl-jobs-v2-observer/docker_backend.py", "line_start": 273, "line_end": 290},
+        {"file": "tests/crawl-jobs-v2-observer/docker_backend.py", "line_start": 360, "line_end": 370}
+      ],
+      "reason_closed": "The backend now nonblockingly checks the expected peer READY/ARMED phase and actual quiet transport after the final authorizer and again after sender polling. The check does not consume protocol frames, rejects EOF/stderr/queued/partial output, closes a failed peer, and invalidates both pre-dispatch admission entries when the guard fails. Collection also repeats current/peer live-ready checks after postflight work.",
+      "independent_evidence": [
+        "Original target EOF before A: rejected with NATIVE_ADMISSION_TRANSPORT, no A write attempted or received.",
+        "Original observer INVALID before G: rejected with NATIVE_ADMISSION_TRANSPORT, no G write attempted or received.",
+        "Original already-pumped observer stdout_eof=True before G: rejected, peer closed, no G byte.",
+        "Original HELD already queued and pumped before G: rejected, peer closed, no G byte, and subsequent receive('HELD') rejected.",
+        "Both A and G refused all six peer fault kinds: EOF, stderr, partial output, extra frame, INVALID, and HELD.",
+        "Peer faults introduced by the final authorizer or during sender polling were still detected at dispatch.",
+        "Final collection authorizer faults on either current or peer transport, and postflight metadata-triggered EOF, prevented admission."
+      ],
+      "probe_references": [
+        "test_original_COR01_counterexamples_now_block",
+        "test_all_peer_fault_kinds_block_both_directions",
+        "test_peer_fault_after_final_authorizer_and_during_sender_poll",
+        "test_final_collection_current_or_peer_loss_and_latency_reject",
+        "test_postflight_metadata_loss_is_not_hidden_by_buffered_readiness"
+      ],
+      "scope_caveat": "A nonblocking poll observes currently available loss/output; it is not an atomic guarantee of future peer lifetime. The updated source and README explicitly preserve that distinction.",
+      "remaining_requested_fix": null
+    },
+    {
+      "id": "COR-02",
+      "original_severity": "medium",
+      "status": "CLOSED",
+      "title": "The final authorization callback can consume the remaining deadline and still be followed by an input write",
+      "remediation_locations": [
+        {"file": "tests/crawl-jobs-v2-observer/streams.py", "line_start": 124, "line_end": 145},
+        {"file": "tests/crawl-jobs-v2-observer/docker_backend.py", "line_start": 250, "line_end": 290}
+      ],
+      "reason_closed": "Own and peer captured admission expiries are checked after the final authorizer and peer polling. The before_write guard repeats those checks after sender polling. ProcessStream checks its own deadline immediately before each os.write, including when a generic callback returns late.",
+      "independent_evidence": [
+        "The original fake-clock final-authorizer case, with expiry 5.0 and return at 6.0, now rejects without attempting or delivering G.",
+        "Both A and G reject own-only, peer-only, and simultaneous expiry after the final authorizer; the sender still had positive remaining time in peer-only scenarios.",
+        "Peer expiry during sender polling and during peer polling rejects without A/G writes.",
+        "Own expiry after a returning final before_write callback is caught by the generic immediate pre-write deadline check.",
+        "A generic late before_input callback and final authorization revocation reject with no G write.",
+        "Final collection own or peer expiry also prevents a successful admission result."
+      ],
+      "probe_references": [
+        "test_original_COR02_and_independent_peer_expiry_now_block",
+        "test_expiry_during_sender_or_peer_poll_and_final_write_callback",
+        "test_generic_before_input_and_revoked_authority_block",
+        "test_final_collection_current_or_peer_loss_and_latency_reject"
+      ],
+      "scope_caveat": "Independent timing probes model elapsed callback/poll time with per-role fake clocks; actual write-attempt spying and local pipe receipts are real. They do not establish hard real-time scheduling guarantees.",
+      "remaining_requested_fix": null
+    },
+    {
+      "id": "COR-03",
+      "original_severity": "medium",
+      "status": "CLOSED",
+      "title": "Raw Linux monotonic nanoseconds exceed the validator's numeric range after about 104.25 days",
+      "remediation_locations": [
+        {"file": "tests/crawl-jobs-v2-observer/contracts.py", "line_start": 32, "line_end": 39},
+        {"file": "tests/crawl-jobs-v2-observer/runtime_admission.py", "line_start": 70, "line_end": 92},
+        {"file": "tests/crawl-jobs-v2-observer/contracts.py", "line_start": 144, "line_end": 160},
+        {"file": "tests/crawl-jobs-v2-observer/oracle.py", "line_start": 13, "line_end": 27}
+      ],
+      "reason_closed": "clock_ns preserves exact Python integer validation while extending only absolute native clock values to uint64. It is consistently used for CLOCK frames, trusted observation window endpoints, C0 hold endpoints, and pre/post witness words. Counters and relative limits retain their previous bounds.",
+      "independent_evidence": [
+        "The original 105-day timestamp 9072000000000000 now passes full target/observer validation with a coherent trusted context.",
+        "Full target/observer pairs passed at 1, 2^53-1, 2^53, 2^53+1, 105 days, 2^63-1, 2^63, 2^64-2, and 2^64-1; integer values round-tripped exactly and summaries stayed bounded.",
+        "Booleans, floats, negative values, strings, None, and uint64 overflow were rejected for clocks; general counters still reject 2^53.",
+        "At large origins and near uint64 maximum, inclusive freshness endpoints and the maximum 10-second context window remained enforced without wrap.",
+        "Resume and kill hold endpoints retained ordering, uncertainty accounting, the 20ms conservative bound, and exact types at large clock values.",
+        "Packed native-format witness words passed pure held/completed checks through uint64 maximum; invalid types, overflow, timestamp order violations, and widened heartbeat counters rejected.",
+        "Static extracted native CLOCK formats remained canonical and bounded with 20-digit uint64 values."
+      ],
+      "probe_references": [
+        "test_original_COR03_and_full_uint64_clock_pairs_now_pass",
+        "test_clock_types_uint64_overflow_and_counter_limits",
+        "test_window_freshness_and_ten_second_limit_at_large_origins",
+        "test_large_hold_endpoints_preserve_duration_uncertainty_and_order",
+        "test_oracle_witness_words_share_uint64_clock_domain_only",
+        "static_probes.py"
+      ],
+      "scope_caveat": "Upper-range synthetic values exercise the wire/numeric contract, not a claim that Linux currently produces every uint64 timestamp or that the native collector was run.",
+      "remaining_requested_fix": null
+    }
+  ],
+  "new_findings": [],
+  "actionable_in_scope_findings_remaining": 0,
+  "positive_controls_and_regression_assessment": [
+    "A normally admitted pair accepted A then G, followed by a synthetic post-G HELD and R. No backend Docker metadata reads were added during A/G/R dispatch, including the HELD/resume path.",
+    "The original own-stream INVALID rejection remains intact.",
+    "The original stale generation control remains intact: five frames already buffered before collection were rejected before validation after PID/StartedAt changed.",
+    "Non-clock schemas, resource/capability constraints, nonce/case/binary bindings, and relative limits were not relaxed by the remediation diff.",
+    "ProcessStream.close has an identical AST to the original reviewed production implementation. Fixture-specific cleanup handling does not weaken production refusal behavior.",
+    "No full-snapshot delta exists outside the identified package changes. Native sources, ELFs, profiles, BPF, and normative Redis files remain unchanged."
+  ],
+  "checks": {
+    "environment": {
+      "cwd": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-native-admission-review-2026-10-08/source-v2",
+      "TMPDIR": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-native-admission-review-2026-10-08/correctness/rereview/tmp/",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "python_flags": ["-B", "-W", "error::ResourceWarning"]
+    },
+    "reproducible_commands_from_cwd": [
+      "python3 -B -W error::ResourceWarning ../correctness/rereview/verify_inputs.py before",
+      "python3 -B -W error::ResourceWarning ../correctness/rereview/run_tests.py",
+      "python3 -B -W error::ResourceWarning ../correctness/rereview/probes.py",
+      "python3 -B -W error::ResourceWarning ../correctness/rereview/static_probes.py",
+      "python3 -B -W error::ResourceWarning ../correctness/rereview/verify_inputs.py after"
+    ],
+    "preservation": {"before": "PASS", "after": "PASS", "evidence": ["verify_inputs.py", "integrity-before.json", "integrity-after.json", "original-correctness-manifest.json"]},
+    "full_suite": {
+      "actual_child_command": "python3 -B -W error::ResourceWarning -m unittest discover -s tests/crawl-jobs-v2-observer -v",
+      "tests_run": 112,
+      "passed": 112,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 10.384,
+      "exit_code": 0,
+      "ResourceWarnings_seen": false,
+      "evidence": ["run_tests.py", "existing-tests.log", "existing-tests.json"]
+    },
+    "independent_probes": {
+      "tests_run": 15,
+      "passed": 15,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 2.705,
+      "recorded_scenarios": 59,
+      "dispatch_rejection_scenarios_with_zero_attempted_and_received_new_commands": 35,
+      "fixture_disposal": "All recorded fixture processes reaped and all local pipes closed; no known LOCAL_PROCESS_CLEANUP teardown refusal was recorded in this independent run.",
+      "evidence": ["fixtures.py", "pipe_actor.py", "probes.py", "probes.log", "probes.json", "tmp/"]
+    },
+    "static_artifacts": {
+      "outcome": "PASS",
+      "ELF_files_checked": 2,
+      "ELF_identity": "AArch64 ET_DYN, no interpreter segment, no writable-executable load segments; both byte-identical to original artifacts",
+      "target_symbol_instruction_manifest": "matched",
+      "compiled_observer_filter": "matched retained BPF and frozen generator bytes",
+      "profile_artifacts_matched": 3,
+      "case_table_entries_matched": 276,
+      "native_cases": 264,
+      "static_template_joins": 4224,
+      "variants_per_role_case_phase": 2,
+      "maximum_clock_ns_tested": 18446744073709551615,
+      "maximum_frame_bytes": {"IDENTITY": 783, "CONFINEMENT": 386, "RESOURCES": 434, "CLOCK": 504},
+      "toolchain_inputs_matched_to_v2": 9,
+      "contracts_py_rebound_in_toolchain": true,
+      "production_cleanup_AST_unchanged": true,
+      "evidence": ["static_probes.py", "static-probes.json", "remediation.diff"]
+    },
+    "historical_failed_attempt": {
+      "record_reviewed": "remediation-initial-test-note.json",
+      "disposition": "The retained note describes a prior 112-test attempt with a Darwin teardown refusal and skipped fixture cleanup. This was not an execution performed by this reviewer. The fixture-only correction was inspected, production cleanup was statically confirmed unchanged, and the fresh complete suite passed without ResourceWarnings. The earlier failed attempt was not erased or treated as a passing run."
+    }
+  },
+  "preserved_source_and_original_review": {
+    "status": "PASS",
+    "intake_v2_before_sha256": "cfff9627e121cca682dee0747bdd72e4a8a04a0261b9d0f03962783b4b150cfb",
+    "intake_v2_after_sha256": "cfff9627e121cca682dee0747bdd72e4a8a04a0261b9d0f03962783b4b150cfb",
+    "immutable_content_mode_manifest_before_sha256": "2e96d837630159ef2933da3eef681eb093c352e29fbbac04e3617aada1d5b42e",
+    "immutable_content_mode_manifest_after_sha256": "2e96d837630159ef2933da3eef681eb093c352e29fbbac04e3617aada1d5b42e",
+    "original_correctness_files": 38,
+    "original_correctness_manifest_before_sha256": "cd86d8b84f578e8e2c3d2735844c84fa411a5ff7632dc72009bdf788c6b55fa5",
+    "original_correctness_manifest_after_sha256": "cd86d8b84f578e8e2c3d2735844c84fa411a5ff7632dc72009bdf788c6b55fa5",
+    "verified": [
+      "All 1615 v1 and 1616 v2 source snapshot files, both sets of 11 native artifacts, and their recorded file modes were checked before and after.",
+      "Both intake hashes, v2 inventory/verification/build records, base archive, source/overlay/design maps, and native build inputs matched.",
+      "All 38 original correctness files, including original review/probes/logs/results and their modes, matched the before manifest and original seal evidence hashes.",
+      "Exactly nine package files changed and one was added; only toolchain.json changed among native artifacts. All nine compiler inputs match the v2 toolchain record."
+    ],
+    "application_source_edits": false,
+    "frozen_snapshot_or_artifact_permission_changes": false,
+    "original_review_or_probe_changes": false,
+    "writes_only_under_correctness_rereview": true,
+    "git_worktree_index_branch_or_shared_document_mutations": false,
+    "other_review_directory_accessed": false
+  },
+  "limitations": [
+    "No native actor, native --help, ptrace/native experiment, Docker command/build/mutation, Redis case, or git mutation was performed.",
+    "Synthetic Docker metadata and independently constructed fixture contexts are not observations of an actual Docker/Linux runtime. The exercised children are benign local Python pipe fixtures.",
+    "Static wire joins interpolate extracted C format strings in Python; they do not execute the collector or prove kernel file availability, native library initialization, seccomp/ptrace feasibility, hardware debug support, or actual timing precision.",
+    "The peer transport checks are bounded point-in-time observations, not future liveness, remote absence, or atomic cross-stream lifetime guarantees.",
+    "The upper uint64 clock cases test exact representation and arithmetic rejection boundaries, not physical uptime feasibility.",
+    "This targeted re-review does not comprehensively re-audit unrelated repository code, D02, watchdog behavior, or security. The original review's explicitly deferred scope remains deferred.",
+    "The base commit identifier is accepted from the hash-verified intake; the base archive was rehashed, not regenerated from git.",
+    "The full-suite, independent-probe, and static-result scripts use exclusive log/result creation to avoid clobbering prior runs. Re-executing those scripts in-place would deliberately refuse existing result filenames; retain each execution in a fresh authorized output directory."
+  ],
+  "remaining_runtime_prerequisites": [
+    "Independently trusted Linux kernel/clock-context acquisition and freshness/clock-domain establishment, not expectations derived from the actor frames being checked.",
+    "Oracle/client-closure worker integration, exact runtime images, full trial dispatch and receipt assembly, and separate outer approval/execution integration.",
+    "Independent security review disposition and a separate explicit runtime execution decision before any native calibration.",
+    "Under future authorization only: establish accessibility of required Linux observations and actual capless attachment/hardware breakpoint feasibility, with no C1 fallback or added privileges for refusal.",
+    "Whole-trial resource/task confinement, actual continuation/stop timing, oracle/client closure, and independent remote cleanup/absence evidence; pre-case admission and local CLI disposal do not replace them."
+  ],
+  "next_step": "The scoped remediation is sound on the independently reviewed evidence. Continue the deferred implementation work under the existing preparation-only boundary; seek separate review and explicit authorization before runtime execution or full M4 acceptance."
+}

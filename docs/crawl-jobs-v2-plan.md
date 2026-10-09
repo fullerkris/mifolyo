@@ -2,11 +2,11 @@
 
 **Finding:** F3 - durable crawl-job leases and recovery
 
-**Last updated:** 2026-10-07 (UTC; PR #20 merged as `ab5f21a`, exact merged-main CI and evidence verified; cancellation approval consumed; C0 native-runtime admission/oracle integration next, full M4 open)
+**Last updated:** 2026-10-09 (UTC; PR #22 merged as `5859f61` with exact main CI verified; C0 admission source GO and 113-test fixture successor restored for authorized publication; full M4 open)
 
-**Code baseline:** merged `main` at `ab5f21a`; PR #20's 98-path checkpoint and exact main CI are verified
+**Code baseline:** merged `main` at `5859f61`; PR #21 documentation and PR #22 Go security update are merged, with PR #22's reviewed-tree continuity and exact main CI verified
 
-**Working branch:** `docs/crawl-jobs-v2-cancellation-merge-checkpoint`, based at `ab5f21a`; merge/main-CI closeout documentation remains local, with C0 implementation preserved in its separate worktree
+**Working branch:** `feature/crawl-jobs-v2-c0-publication`, based at `5859f61`; fresh publication worktree reconstructed from the checksum-verified C0 snapshot, with a reconciled current plan and one successor baseline/recovery record
 
 **Initial checkpoint:** `e4372a66201b8767bcca4d7476c30c5b7999922c`
 
@@ -17,9 +17,14 @@ All 43 canonical operations and the sealed, zero-argument
 bounded real-Redis `ledger-smoke-v1` and `ledger-claim-release-v1` cases pass;
 full M4 acceptance is open.
 
-**Current next gate:** C0 native-runtime admission and oracle/client-closure
-implementation, starting by reconciling the preserved C0 worktree with merged
-`ab5f21a`. The [merge/main-CI checkpoint](crawl-jobs-v2-m4-cancellation-merge-2026-10-07.md)
+**Current next gate:** publish the owner-authorized C0 source/evidence checkpoint
+and verify its exact revision's protected CI, including the retained 113-test C0
+report. Merge remains a separate decision. The
+[publication refresh](evidence/m4-c0-publication-preparation-2026-10-08/publication-refresh-2026-10-09.json)
+binds the 125-path candidate to verified `5859f61`; the
+[original preparation](crawl-jobs-v2-m4-c0-publication-preparation-2026-10-08.md)
+retains its recording-time state. The earlier cancellation
+[merge/main-CI checkpoint](crawl-jobs-v2-m4-cancellation-merge-2026-10-07.md)
 is complete: reviewed final PR head `4e699ec` and actual squash `ab5f21a` have the
 same tree, and all fourteen required main checks / twenty-three workflow jobs pass.
 The 60-path result publication and separately approved Query Engine dependency
@@ -50,13 +55,25 @@ merged-main workflows passed on attempt 1. Earlier dependency-audit failures and
 the PR's missing-Spider workflow retry retain their original records. The real
 run retains its own approval, execution, review and cleanup evidence; full M4 is open.
 
-**Parallel M4 work:** the isolated `feature/crawl-jobs-v2-c0-observer` package now
-has 22 files, adding owned-resource, bounded-stream and independent host-watchdog
-adapters to the reviewed foundation. All 78 tests pass; final correctness/security
-reviews return **GO_FOR_CONTINUED_IMPLEMENTATION** with their findings closed.
-The tests use fake Docker and bounded benign Python processes. Native runtime
-admission, oracle/client closure, full trial dispatch and exact runtime image /
-approval assembly remain incomplete. No native actor or tracing experiment ran.
+**C0 preparation:** the 26-file package includes owned-resource, stream, watchdog
+and native-runtime admission collection/validation. Independent correctness and
+security [review](crawl-jobs-v2-m4-c0-native-admission-review-2026-10-08.md) returns
+**GO_FOR_CONTINUED_IMPLEMENTATION** on the 112-test snapshot after closing
+dispatch-readiness, final-expiry and clock-range findings. The subsequent
+[fixture-only synchronization fix](crawl-jobs-v2-m4-c0-fixture-sync-2026-10-08.md)
+passes 113 tests and preserves production bytes and native artifacts. Publication
+adds fail-closed offline C0 coverage to `required-tests`; hosted C0 evidence awaits
+the published revision. Tests use simulated Docker and benign Python processes.
+Trusted runtime-context acquisition, oracle/client closure, full trial dispatch
+and exact runtime image/approval assembly remain incomplete. No native actor or
+tracing experiment ran.
+
+The separately authorized [Go security fix](go-http2-security-2026-10-09.md) uses
+Go 1.26.9 and x/net v0.60.0, with an exact Spider normalization compatibility pin.
+Its reviewed PR and actual main merge both pass all fourteen required contexts /
+23 jobs. The normative protocol, canonical Lua and sealed Unicode data retain
+their identities. Earlier source/image/execution records keep their original
+version bindings; the old cancellation inventory is not a new security-fix review.
 
 PR #18 result publication `c8c5ee2`, squash merge `d3b241e` and exact merged-main CI
 are **complete**. The merge has the same tree as the reviewed PR head. See the
@@ -337,12 +354,12 @@ retains it as a primitive case; guard cases now explicitly bind the complete
 | Ledger validation | Baseline/delivery/fence history, post-abort freeze, exact retained witnesses, strict worker expiry, completed replay, prior retry/backpressure/reason fixes and zero-sentinel checks pass local normal conformance and reviewed counterexample replays |
 | Script sources | All 43 canonical operations are implemented: unchanged BOOT passthrough plus 42 exact generated sources; both strict source/bundle generator checks pass |
 | Authoritative bundle | Complete zero-argument `AuthoritativeScriptBindingSet()` validates embedded sources against fixed generated pins and returns fresh private sealed bindings; no caller-supplied sources, hashes or paths |
-| Local and protected acceptance | Merged `ab5f21a` passes 14/14 main checks and all 23 workflow jobs, with 480 race roots (479 passes/one allowed optional skip), 183 harness/21 script tests and 74-file/20-recipe amd64 image evidence. Its tree matches reviewed `4e699ec`; earlier local/source-CI observations retain their chronology |
+| Local and protected acceptance | Merged `5859f61` passes 14/14 main contexts and 23 jobs, with 480 race roots (479 passes/one allowed optional skip), 183 harness/21 script tests and 74-file/20-recipe amd64 image evidence. Its tree matches reviewed `8940367`. C0's 113-test offline suite and added CI step require their own exact published-revision verification |
 | Runtime behavior | V2 remains dormant in application services; separately authorized disposable Redis smoke, claim/release, all 13 negatives, pre-I/O recovery, bounded request lifecycle, positive-interval and serial shared-group cases pass within their original source/image scopes |
 | M4 bounded execution | Cancellation fixture `cda9d337…` passes once: nine calls, one group-capacity denial, two peer-safe replays, 60 counters and 46 denials. Six-role revocation, original 28-action journal and six-resource absence pass; renewed approval consumed. Earlier shared-capacity evidence retains its own scope; full M4-P4/P5 stay open |
-| Review status | Cancellation has independent correctness/security ACCEPT for the single real case on unchanged 108-file source. C0 adapter layer retains final source GO, 78 tests and all seven findings closed; full runtime assembly/proof remains pending |
-| Git state | PR #20 is merged as `ab5f21a`, with the same tree as final reviewed `4e699ec`; exact main CI is verified. Merge-closeout documentation is local on its docs branch. The C0/design worktrees retain 72/22 local paths; all 372 unrelated files are preserved |
-| Current bounded slice | Cancellation execution, result publication and merge/main-CI gates are complete within case scope; approval `ea6fb96a…` remains consumed. C0 native-runtime admission and oracle/client-closure integration are next; full M4 stays open |
+| Review status | Cancellation retains independent scoped evidence ACCEPT. C0 admission has final source GO on the 112-test snapshot; its fixture-only successor passes 113 tests. The CI integration is a later delta, not an additional independent review; full runtime proof remains pending |
+| Git state | PR #21 merged as `2bdb3e5`; PR #22 merged as `5859f61` with verified main CI. C0 publication uses a fresh worktree and the complete frozen candidate after missing files were detected in the older temporary worktrees. Existing old-directory contents and all 372 unrelated primary paths are preserved |
+| Current bounded slice | Authorized C0 source/design/review/evidence publication with an offline CI gate. The accepted cancellation run retains its consumed approval and exact executed revision; full M4 and native execution remain separate gates |
 
 ### Current source and fixture identities (regenerated 2026-09-21)
 
@@ -531,8 +548,17 @@ The final matrix and final independent reviews used pinned Go 1.25.13 and passed
   independent GO after remediation.
 - [x] Implement and independently review the C0 owned-resource/stream/watchdog
   layer: 78 tests pass, all four correctness/three security findings closed.
-- [ ] Reconcile preserved C0 work with the merged baseline, then implement native
-  runtime admission and the independent oracle/client-closure worker with source review.
+- [x] Implement and independently review native admission; close dispatch-readiness,
+  final-expiry and clock-range findings on the 112-test snapshot.
+- [x] Fix the reproduced fixture-publication race; pass 113 tests while preserving
+  production source, native artifacts, timeouts and existing assertions.
+- [x] Prepare the dedicated offline C0 CI gate and obtain scoped publication authorization.
+- [x] Merge the separately approved Go security fix and verify actual `5859f61` main CI.
+- [x] Recover the approved 124-path C0 snapshot into a fresh publication worktree;
+  reconcile the plan and add one successor baseline/recovery record.
+- [ ] Publish C0 and verify its exact revision's protected CI before a separate merge decision.
+- [ ] Implement trusted Linux runtime-context acquisition and the independent
+  oracle/client-closure worker with source review.
 - [ ] Complete full trial dispatch, image/approval and timing/resource integration;
   decide normative changes and runtime experiments separately.
 - [ ] Complete the broader M4 acceptance reviews and later-case approvals.
@@ -3573,6 +3599,32 @@ The branch-local report is `docs/crawl-jobs-v2-m4-c0-adapters-2026-10-06.md`.
 Native kernel admission, oracle/client bridge, full trial assembly and exact
 runtime image/approval integration remain next; the eight native build inputs
 and eleven native artifacts are unchanged.
+
+**C0 admission and fixture follow-up (2026-10-08).** The native fixed-path admission
+exchange joins externally trusted kernel/clock context to owned role/process/image/
+resource identities. The final independent 112-test review closes readable peer
+loss/prequeued output, final dispatch expiry and absolute-clock-range findings.
+The [review report](crawl-jobs-v2-m4-c0-native-admission-review-2026-10-08.md) retains
+initial refusals and final GO decisions. A subsequent atomic fault-publication fix
+adds one regression, for 113 tests, while preserving the other 25 package files,
+nine native inputs and eleven artifacts. Current package inventory:
+`01c5a7318274d26d3868d40ff71205f1193de123914dc9907ffb62eb0f3693ac`.
+
+**C0 publication refresh (2026-10-09).** The owner authorized publication and
+exact-revision CI. PR #21's documentation merged first; newly published Go
+security findings then required the separately approved PR #22. Actual merge
+`5859f61` has reviewed tree `8596dc8d…` and passes all fourteen main contexts /
+23 jobs. The complete 124-path frozen C0 candidate and eleven native artifacts
+verify exactly. The old C0 directory has 26 candidate files missing; its other
+candidate files match, and the original design worktree is empty. Their remaining
+contents are retained as found. The fresh publication worktree restores the
+approved snapshot, preserves 123 original candidate paths byte-for-byte, reconciles
+this plan with the merged history, and adds the
+[successor record](evidence/m4-c0-publication-preparation-2026-10-08/publication-refresh-2026-10-09.json)
+for a 125-path publication. The 26-file package and its historical reviews are
+unchanged. The CI step runs offline/benign-process Python checks and retains test
+IDs and source hashes. Trusted context production, oracle/client closure and full
+runtime assembly remain open; publication grants no native execution authority.
 
 - **D01: precise internal crash observation.** A reviewed observed method must
   preserve canonical Lua and target Redis semantics. Random/MONITOR-triggered

@@ -1,0 +1,278 @@
+{
+  "schema_version": 1,
+  "reviewer": "security",
+  "date": "2026-10-08",
+  "independent": true,
+  "delegated": false,
+  "verdict": "NEEDS_REMEDIATION",
+  "verdict_scope": "Frozen C0 native-runtime admission source/preparation only; not experiment authorization, full M4 acceptance, native feasibility, or production readiness.",
+  "execution_authorized": false,
+  "native_execution_authorized": false,
+  "m4_accepted": false,
+  "production_ready": false,
+  "scope": {
+    "workspace": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-native-admission-review-2026-10-08",
+    "source": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-native-admission-review-2026-10-08/source",
+    "package": "tests/crawl-jobs-v2-observer/",
+    "package_files": 25,
+    "output": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-native-admission-review-2026-10-08/security",
+    "reviewed_boundaries": [
+      "Native fixed-path observations to bounded canonical frames",
+      "Externally trusted preparation/kernel context versus actor-supplied values",
+      "Case, scope nonce, role, image, container generation and peer bindings",
+      "Backend-owned streams and snapshots to admission records",
+      "Admission records, live peer state, authorizers and deadlines to A/G input dispatch",
+      "Default-deny OCI/BPF policy and native pre-ptrace ordering",
+      "Value-free diagnostics, bounded channels, local cleanup versus independent remote absence proof"
+    ],
+    "trust_assumption": "The outer Python controller/Docker owner and independently supplied expected context/preparation are trusted. Arbitrary malicious mutation of their private records is not an attack assumed by either finding.",
+    "deferred_not_counted_as_findings": [
+      "Trusted kernel/clock-context acquisition",
+      "Oracle/client-closure worker",
+      "Full trial dispatch, runtime image and approval/evidence assembly",
+      "Actual native/Docker Desktop/LSM/Yama/hardware-breakpoint feasibility"
+    ]
+  },
+  "input_bindings": {
+    "review_intake": {"path": "review-intake.json", "sha256": "945fa7c3962b7edf67a055ad940fecd7760f00af38c82ae7916d9d96ae230900"},
+    "base_commit": "ab5f21a7421f3ed48cfb32481613fa5656dcb8a4",
+    "base_archive_sha256": "bc958d07f117dae61114dc85da0d48fc5242bdd78a4c62f5f4123a2d4d68bf2e",
+    "snapshot_files": 1615,
+    "overlay_paths": 91,
+    "full_snapshot_manifest": "Exact snapshot_files mapping in the hash-bound review-intake.json; independently verified before tests and after all probes.",
+    "source_inventory": {"path": "source/docs/evidence/m4-c0-native-admission-2026-10-08/source-inventory.json", "sha256": "a24bb741c5b22de576ca62abff8d133e675eaf1ee059509349d4138d12bfcf12"},
+    "verification": {"path": "source/docs/evidence/m4-c0-native-admission-2026-10-08/verification.json", "sha256": "5bd44ff6c645e2e2b4298580fdae76d81262815051383c00b031f42c7d2f7e2e", "claimed_tests": 99, "claimed_skips": 0, "claimed_static_wire_joins": 16, "native_execution": false},
+    "build": {"path": "source/docs/evidence/m4-c0-native-admission-2026-10-08/build.json", "sha256": "f228da9b431cd953ba75fe8fbc3dfe5695f2540729d7bb62f13bd57a0e792723"},
+    "native_artifacts": {
+      "cases.h": "64591020572e8af5afae67856ba79e053afacaf41d08ba10a98f489558e383f4",
+      "observer": "77576d303391c7e0dcaf6fe2efcef85beee0f73dae70ca93341ea3d599e5021f",
+      "observer-seccomp.json": "abf581851c19631ba5125ac03443f4ad72c6e8fd7b92fa086218060e07b56bf2",
+      "oracle-seccomp.json": "203e1fdad05bf288630371628ae8817569bde76d46fd3964893e989c5a97a26e",
+      "target": "45f78ae0bce897a430b78e4e5c02908308d0432dcc959f8b20380dbea0f7bef5",
+      "target-filter.bpf": "701824ff5f8ccafa359f711d2714b23c8a303789cd1987a3a85aba19a3667b93",
+      "target-manifest.json": "3b9766b9cca6eeecef38468ee25f00d0a8d259869bcab2fba2475bd7cc99fcd2",
+      "target-seccomp.json": "6a1ffdf7326ae1370bd55cc2edb2bcfb49b2d65ce7090205576d3b6e9496ab3e",
+      "target_filter.h": "8a1c8f5941860b7acd92f3dc53952aa746fa9d1c57098b214a691fa8a6380b1d",
+      "target_manifest.h": "8faea7d944b617eb221556db3fe524df6d991260f1d77a465647e75aaf68f3e1",
+      "toolchain.json": "575c2d2ae279f52ed5f3cb2081f26042954f8a8d2dc2f5bd2dafbf6e1e28626a"
+    },
+    "compiler_input_sha256": {
+      ".dockerignore": "25170fdb33082a47a01bdc344bfabe8ef4460eed2da175e6dd1159557fcaa13d",
+      "Dockerfile": "20849b651a90ad097cc102da321f0fe8958e518d93c7c9ead448d26ec9e8eaa2",
+      "build_tools.py": "bbc4329ac905a7d7a865b59e754357bc8d4c195d15547f047983ff3dfd7ebbda",
+      "contracts.py": "70b54b7d415614dee25c8b939e09e15ecbd69306bfbb082a1ccc0e20284290fe",
+      "native/admission.h": "d763f988f5fa5caf96c573f0e350369bef8b351a362a720f6471fdfdb59c7d35",
+      "native/common.h": "283b34333fa5692c1fe265d4915a005e8ffa659e2495957fc7aba333bf323c33",
+      "native/observer.c": "16899c419a9ab4696d22e0b515c56be511eaa77ff80941de3fa899eac1dd1e9c",
+      "native/target.c": "feb94778757ae05268417c1cd76a383f5339bfa701feababda972a5e077451fd",
+      "profiles.py": "54d721a7aa3e82fd47f27c88ad94b8dde5436c6c72bca60a8fac3d5e172887ef"
+    },
+    "principal_python_boundary_sha256": {
+      "docker_backend.py": "fc6b97b5834693eac4561888e3165bc2d405dad53e4afdbb2dfc2d6f0b327c79",
+      "runtime_admission.py": "c69d8c71198456e40ef0a2764119b792ee3f6cb14c8b05c8fcffba0f9101bf82",
+      "streams.py": "ce9e8390a2373935f554c7547ea717f7b1211afed6b0fd9552dd690b476f4f9c"
+    }
+  },
+  "findings": [
+    {
+      "id": "SEC-01",
+      "severity": "Medium",
+      "title": "Cached peer readiness permits A/G dispatch after an already-observable peer transport failure",
+      "classification": ["CWE-367", "CWE-754"],
+      "confidence": "High: reproduced through the real backend and ProcessStream with simulated Docker metadata and real benign local pipes",
+      "locations": [
+        {"file": "tests/crawl-jobs-v2-observer/docker_backend.py", "start_line": 263, "end_line": 273, "purpose": "Peer admission use checks closed/phase cache, not current transport state"},
+        {"file": "tests/crawl-jobs-v2-observer/docker_backend.py", "start_line": 339, "end_line": 350, "purpose": "Collection performs slow postflight work after its last current-stream readiness check"},
+        {"file": "tests/crawl-jobs-v2-observer/streams.py", "start_line": 123, "end_line": 134, "purpose": "Dispatch pumps the sender only"},
+        {"file": "tests/crawl-jobs-v2-observer/native/observer.c", "start_line": 201, "end_line": 208, "purpose": "A advances the compiled observer toward ptrace SEIZE/INTERRUPT"},
+        {"file": "tests/crawl-jobs-v2-observer/native/target.c", "start_line": 86, "end_line": 91, "purpose": "G advances the target past its admission barrier"}
+      ],
+      "root_cause": "ProcessStream.closed means that local close() was called, not that its peer pipe remains live. stdout_eof is updated only by pumping. before_input trusts cached peer phase and closed without pumping the peer; _send pumps only the stream being written. collect_native_admission also stores an admission after metadata/attachment/authorization work without a final live-ready check.",
+      "evidence": {
+        "script": "offline_probes.py",
+        "result": "offline-probes-confirmation.json",
+        "result_sha256": "5b8039c57a5253afa8699cbcb3ad757e893546d12d6c0be38c70e4676a17cb03",
+        "tests": [
+          "test_sec01_arm_sent_after_target_peer_pipe_fault",
+          "test_sec01_start_sent_after_armed_observer_pipe_fault",
+          "test_sec01_admission_returned_after_eof_during_postflight_metadata"
+        ],
+        "observed": [
+          "After normal target and observer admission, a synchronized Python peer closed stdout, wrote stderr, wrote a partial frame, or wrote an extra complete frame. The fixture confirmed the affected selector was readable before dispatch.",
+          "In all four target-peer variants, observer.arm_observer() wrote A and the benign observer recorded it; target remained cached READY/closed=false.",
+          "In all four ARMED-observer-peer variants, target.start_target() wrote G and the benign target recorded it; observer remained cached ARMED/closed=false.",
+          "EOF introduced during the postflight container-inspection pass still returned phase=native_admission_validated; a subsequent explicit require_admission_ready() rejected the same stream.",
+          "No backend admission/private stream fields were forged to obtain these results. The same EOF on the sender stream was rejected as a negative control."
+        ],
+        "reproduction_command": "PYTHONDONTWRITEBYTECODE=1 TMPDIR=<security>/tmp python3 -B -W error::ResourceWarning <security>/offline_probes.py"
+      },
+      "impact": "The implemented admission-to-command boundary can arm the scope-owned observer or start the scope-owned target after losing the peer control channel or with already-pending protocol failure. If native feasibility is later established, A is the pre-ptrace release byte. This defeats the claimed lost-peer fail-closed dispatch invariant; an expired/lost external Docker CLI is not itself tracer death, so EXITKILL does not establish safety here.",
+      "blast_radius": "The current authorized C0 target/observer invocation and integrity of its admission evidence. No arbitrary PID access, host escape, actual ptrace execution, production compromise, or verified failure of the independent watchdog is claimed.",
+      "severity_rationale": "A concrete safety/admission-gate bypass within an externally authorized, tightly scoped preparation component. No additional OS privilege or cross-scope access was demonstrated.",
+      "minimal_fix": {
+        "description": "After the final input-authorizer callback, nonblockingly pump the required peer and reject EOF, stderr, queued/partial output or wrong phase before A/G. Recheck live readiness after all collection postflight work and before recording admission. Preserve existing cleanup/refusal and do not add Docker inspection to HELD/resume.",
+        "code_file": "remediation.md",
+        "code_section": "SEC-01: check actual peer transport at the point of use",
+        "core_code": "def require_quiet_live(self, expected_phase):\n    require(expected_phase in ('READY', 'ADMISSION_READY', 'ARMED'), 'NATIVE_ADMISSION_TRANSPORT')\n    require(not self.closed and self.phase == expected_phase, 'NATIVE_ADMISSION_TRANSPORT')\n    self._pump(0)\n    require(not self.stdout_eof and not self.frames and not self.decoder.partial, 'NATIVE_ADMISSION_TRANSPORT')\n",
+        "regression_acceptance": "All eight A/G peer-fault variants must refuse with zero command bytes; the postflight EOF case must not return admission. Preserve the live positive control.",
+        "applied": false
+      }
+    },
+    {
+      "id": "SEC-02",
+      "severity": "Medium",
+      "title": "Final authorization latency bypasses own and peer admission expiry checks",
+      "classification": ["CWE-367", "CWE-613"],
+      "confidence": "High: reproduced with real monotonic time and a trusted callback that returns True after bounded latency",
+      "locations": [
+        {"file": "tests/crawl-jobs-v2-observer/docker_backend.py", "start_line": 266, "end_line": 275, "purpose": "Own/peer expiry checks precede the last authorizer call"},
+        {"file": "tests/crawl-jobs-v2-observer/streams.py", "start_line": 127, "end_line": 136, "purpose": "No deadline recheck after callback/output pump immediately before write"},
+        {"file": "tests/crawl-jobs-v2-observer/docker_backend.py", "start_line": 348, "end_line": 350, "purpose": "Admission records retain the deadline end as their expiry"}
+      ],
+      "root_cause": "before_input checks admitted and peer expires_at, then invokes the final potentially slow authorizer. _send checked its deadline before calling before_input and writes without a post-callback deadline check. A True callback result does not renew the independent admission evidence window.",
+      "evidence": {
+        "script": "offline_probes.py",
+        "result": "offline-probes-confirmation.json",
+        "result_sha256": "5b8039c57a5253afa8699cbcb3ad757e893546d12d6c0be38c70e4676a17cb03",
+        "tests": [
+          "test_sec02_final_authorizer_latency_allows_expired_arm",
+          "test_sec02_final_authorizer_latency_allows_expired_start",
+          "test_sec02_peer_expiry_is_missed_even_with_live_sender_deadline"
+        ],
+        "observed": [
+          "With ordinary 1.5-second deadlines and admitted live peers, the final actor_input authorization callback slept until 30ms past the recorded deadline and returned True. A was received 34.97ms after expiry; G was received 34.49ms after expiry.",
+          "With independently constructed target and observer deadlines, A was also received 30.46ms after the target peer expired while the observer sender still had approximately 4.5 seconds remaining. An own-stream-only deadline fix is insufficient.",
+          "The probes used time.monotonic, did not change bound Deadline objects or admission records, and did not revoke approval. Already-expired entry and a final callback returning False both rejected in negative controls."
+        ],
+        "reproduction_command": "PYTHONDONTWRITEBYTECODE=1 TMPDIR=<security>/tmp python3 -B -W error::ResourceWarning <security>/offline_probes.py"
+      },
+      "impact": "Commands cross the pre-arm/pre-start boundary using admission evidence outside its independently bounded lifetime. A slow but valid trusted authorization service is sufficient; a malicious controller is not required. The native ten-second control wait is a separate ceiling and does not enforce shorter controller/peer admission expiries.",
+      "blast_radius": "The current C0 invocation's admission freshness and dispatch safety, not arbitrary execution authority or expanded privileges.",
+      "severity_rationale": "Deterministic stale-evidence dispatch under plausible callback latency, limited by the scoped actor protocol and independent native/controller ceilings.",
+      "minimal_fix": {
+        "description": "Recheck both immutable own and peer admission expiries after the last authorizer callback and peer polling; also check the stream deadline after the callback/pump immediately before each os.write. Do not extend the evidence window to accommodate callback latency.",
+        "code_file": "remediation.md",
+        "code_section": "SEC-02: enforce expiry after slow work, directly before write",
+        "core_code": "# After the last authorization callback and peer polling:\nrequire(deadline.clock() < admitted['expires_at'], 'NATIVE_ADMISSION_EXPIRED')\nrequire(peer['stream'].deadline.clock() < peer['expires_at'], 'NATIVE_ADMISSION_EXPIRED')\n# In ProcessStream._send after callback and output pumping, before os.write:\nself.deadline.check()\n",
+        "regression_acceptance": "Slow-True-authorizer tests for A, G and peer-only expiry must refuse and emit zero bytes; retain explicit-revocation, already-expired and live-positive controls.",
+        "applied": false
+      }
+    }
+  ],
+  "checks": [
+    {
+      "id": "CHECK-01",
+      "name": "Input provenance and preservation",
+      "status": "PASS",
+      "actual": "Intake SHA checked first; all 1615 source hashes, 91 overlays, 22 design bindings, 25 scoped inventory entries and 11 artifact hashes matched the intake before tests and after probes. All nine actual compiler-input hashes also match native-artifacts/toolchain.json. Base archive, inventory, verification and build hashes match.",
+      "artifacts": ["verify_bindings.py", "bindings-before.json", "bindings-check.json", "bindings-after.json", "bindings-summary-after.json"]
+    },
+    {
+      "id": "CHECK-02",
+      "name": "Static boundary review",
+      "status": "FINDINGS",
+      "actual": "Traced native collectors and A/G barriers, Python exact schemas/context/peer revalidation, owned metadata/attachments/generation checks, stream ordering, authorizers, deadline use, policy generation and cleanup separation. The two findings are in implemented dispatch/collection paths, not deferred workers.",
+      "positive_observations": [
+        "Raw validation requires exact canonical bounded JSON, nonzero lowercase 64-hex identities, exact integers rather than bool coercions, singleton tasks/processes, zero capabilities, UID/GID 999, fixed resource ceilings and externally supplied context.",
+        "Observer validation revalidates original target frames; summaries retain execution_authorized=false and runtime_evidence=false.",
+        "Generation anchoring before case dispatch and metadata comparisons during collection reject the tested precollection PID/start change and image substitution.",
+        "Native observer source waits for A before PTRACE_SEIZE; target source waits for G. No caller PID/address selectors or privileged fallback were introduced in the inspected paths.",
+        "Local CLI closure is not promoted to remote absence. Existing independent watchdog/ownership cleanup contracts remain separate."
+      ]
+    },
+    {
+      "id": "CHECK-03",
+      "name": "Existing offline suite",
+      "status": "PASS",
+      "command": "python3 -B -W error::ResourceWarning -m unittest discover -s tests/crawl-jobs-v2-observer -v",
+      "cwd": "<workspace>/source",
+      "environment": {"TMPDIR": "<workspace>/security/tmp", "PYTHONDONTWRITEBYTECODE": "1"},
+      "tests": 99,
+      "skips": 0,
+      "failures": 0,
+      "errors": 0,
+      "observed_seconds": 4.657,
+      "log": "existing-suite.log",
+      "log_sha256": "82b14e2f041690f10d6c510ef4c5a21c8ac72a2d3e7c4c078c4b9a414780307c",
+      "note": "Offline contract/metadata tests and benign Python process fixtures only. Not 99 native experiments."
+    },
+    {
+      "id": "CHECK-04",
+      "name": "Independently authored offline security probes",
+      "status": "REPRODUCED_FINDINGS_AND_PASSING_CONTROLS",
+      "scripts": ["offline_probes.py", "fixture_actor.py"],
+      "tests_in_final_confirmation": 17,
+      "failures_in_final_confirmation": 0,
+      "errors_in_final_confirmation": 0,
+      "observed_seconds": 7.001,
+      "actual": "24 strict frame mutations and 9 malformed wire inputs rejected; case/nonce/peer receipt replay controls, default deny, missing admission, generation/image substitution, sender EOF, revocation, already-expired and live-positive controls exercised. Nine SEC-01 variants and three SEC-02 variants reproduced. Tests for findings deliberately assert the vulnerable behavior; green probe output is not a security clearance.",
+      "final_result": "offline-probes-confirmation.json",
+      "final_result_sha256": "5b8039c57a5253afa8699cbcb3ad757e893546d12d6c0be38c70e4676a17cb03",
+      "retained_attempts": [
+        "offline-probes.log/json: initial 14-test attempt had two harness/cleanup errors; peer-gate reproductions already succeeded. One input-log existence/read race was corrected in the private probe only; Darwin LOCAL_PROCESS_CLEANUP was handled only after confirming the child was reaped and every pipe closed. No application error was silently converted to an acceptance result.",
+        "offline-probes-final.log/json: 16-test rerun passed and reproduced both findings.",
+        "offline-probes-confirmation.log/json: 17-test final run passed, adding the separate peer-expiry case. Per-fixture config, received-input, fault-trigger and metadata/authorization logs remain under security/tmp/."
+      ]
+    },
+    {
+      "id": "CHECK-05",
+      "name": "Static ELF, compiled BPF, profile and format-template checks",
+      "status": "PASS_STATIC_ONLY",
+      "script": "static_artifact_checks.py",
+      "result": "static-artifacts.json",
+      "result_sha256": "61011ebaa717a344cabe5f7b5e4354b39a13c84599cfddcaacd44d59e2618ab8",
+      "actual": "Two AArch64 ET_DYN ELFs have no PT_INTERP, no writable-executable load segment, non-executable GNU_STACK and GNU_RELRO. Five target manifest symbol/instruction joins matched. Observer .obs_filter bytes match the retained BPF and deterministic generator; independent BPF interpretation passed 4680 bounded architecture/syscall/request/TID/regset cases, including high-bit aliases and exec denial. All three retained OCI profiles exactly match current generation and default-deny policy. PRCTL allowlists are target [3,21,39], observer [3,21,22,39], oracle [39]; observer 22 remains the reviewed filter installer. Eight extracted format strings were rendered into 16 independent Python-frame joins, including the longest native case; largest frame for these independently chosen values was 662 bytes, below 1024.",
+      "native_programs_executed": false,
+      "compilation_performed": false,
+      "note": "Wire-template matching and BPF interpretation are static/simulated checks, not collector execution or installed-kernel-filter readback."
+    },
+    {
+      "id": "CHECK-06",
+      "name": "Scoped secrets scan and checksum classification",
+      "status": "NO_REPORTED_LEAKS",
+      "binary_sha256": "af9afd0ae3a0ff6d7f08c4ec4e28686b7e4de6962fe1eadecc497d15cdf731e2",
+      "version": "8.24.3",
+      "scope_files": 25,
+      "actual": "Pinned Gitleaks dir scan returned 0 and []; explicit embedded-default config, empty ignore, --ignore-gitleaks-allow, --max-decode-depth 2, redacted output. No custom suppression. Independent literal search found only two occurrences of the GCC FROM manifest checksum, classified as a non-credential image digest; no inline allow comments found.",
+      "artifacts": ["run_gitleaks.py", "gitleaks-run.json", "gitleaks.log", "gitleaks-findings.json", "gitleaks-default.toml", "gitleaks-empty.ignore", "checksum-classification.json"]
+    },
+    {
+      "id": "CHECK-07",
+      "name": "Targeted authoritative research",
+      "status": "COMPLETED",
+      "actual": "Consulted Linux pipe EOF/nonblocking semantics, PID-namespace init termination and ptrace EXITKILL semantics to distinguish local transport loss from tracer death and remote cleanup. No private source or workspace data was supplied to web research.",
+      "artifact": "research.md",
+      "urls": ["https://man7.org/linux/man-pages/man7/pipe.7.html", "https://man7.org/linux/man-pages/man7/pid_namespaces.7.html", "https://man7.org/linux/man-pages/man2/ptrace.2.html", "https://docs.docker.com/reference/cli/docker/container/attach/"]
+    }
+  ],
+  "source_preservation": {
+    "passed": true,
+    "intake_sha256_before_and_after": "945fa7c3962b7edf67a055ad940fecd7760f00af38c82ae7916d9d96ae230900",
+    "before_manifest": "bindings-before.json",
+    "after_manifest": "bindings-after.json",
+    "before_manifest_sha256": "30060f11b8f56f6d052bc6a87bbaacf1bd028430e0f9e55bc17c5bcd7989b0a5",
+    "after_manifest_sha256": "30060f11b8f56f6d052bc6a87bbaacf1bd028430e0f9e55bc17c5bcd7989b0a5",
+    "actual": "Exact same full source/artifact file inventories, SHA256 hashes, sizes and recorded descendant file/directory modes. No source additions, modifications or deletions; no snapshot permission mutation. Base archive and intake unchanged.",
+    "writes_confined_to_security": true,
+    "application_source_edited": false,
+    "git_or_worktrees_mutated": false,
+    "correctness_directory_accessed": false,
+    "old_private_writer_scripts_imported": false
+  },
+  "limits": [
+    "No target or observer execution, including --help; no ptrace, native experiment, Docker invocation/build/mutation, Redis process/network experiment, or production access.",
+    "No commits, pushes, PRs, shared-original/worktree changes, source permission changes or further delegation.",
+    "Synthetic metadata and real local Python pipes establish Python boundary behavior only; they do not prove Linux/Docker Desktop admission feasibility or actual native ptrace effects.",
+    "The trusted context producer, oracle/client-closure worker, runtime images, full evidence/approval assembly and all deferred experiments were not counted as bugs.",
+    "Static artifact analysis does not constitute a full compiler/libc/OpenSSL CVE audit, binary equivalence proof, runtime seccomp bytecode readback, or whole-trial confinement/resource proof.",
+    "Remediation code is supplied for implementation by the owner; no application changes or remediation retest were performed.",
+    "No finite static/probe review proves the absence of all security defects. Nonblocking liveness checks can reject already-observable loss but cannot guarantee future channel lifetime atomically."
+  ],
+  "retained_artifacts": {
+    "remediation": "remediation.md",
+    "probes_and_logs": "security/ files and security/tmp/security-probe-* fixtures",
+    "manifest": "artifact-manifest.json",
+    "seal_record": "seal.json",
+    "review_mode_required": "0400"
+  }
+}

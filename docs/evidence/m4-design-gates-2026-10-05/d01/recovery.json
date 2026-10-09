@@ -1,0 +1,73 @@
+{
+  "binary": {
+    "bytes": 16892616,
+    "path": "redis-server.elf",
+    "sha256": "772f79e9154598fe509961928dc4d7c1ac577a948be6e86b793fdb7b0599e1b6"
+  },
+  "build_id_pending_elf_analysis": true,
+  "class": "verified_exact_cached_image_bytes",
+  "config_sha256": "24e81cffaba832bcd71068a6ff772a531076bafdbb1d684195766ae9b6511f5c",
+  "containers_created": 0,
+  "image": "sha256:24e81cffaba832bcd71068a6ff772a531076bafdbb1d684195766ae9b6511f5c",
+  "layers": [
+    {
+      "archive_member": "blobs/sha256/055ab12bd547e17a0630037f06a186cf405e3f61bb03a614562ca8f5ab52a8be",
+      "bytes": 100239360,
+      "diff_id": "sha256:055ab12bd547e17a0630037f06a186cf405e3f61bb03a614562ca8f5ab52a8be",
+      "index": 0,
+      "relevant_entries": []
+    },
+    {
+      "archive_member": "blobs/sha256/2c4603ad08e4b057abbcdc00e6ebd913e6ef3c27c84503f4f558356f138760cb",
+      "bytes": 10752,
+      "diff_id": "sha256:2c4603ad08e4b057abbcdc00e6ebd913e6ef3c27c84503f4f558356f138760cb",
+      "index": 1,
+      "relevant_entries": []
+    },
+    {
+      "archive_member": "blobs/sha256/b916c5d86bb4078ff8b9f47c8157cbfb3c927516d19b806205a390dac5e4c83f",
+      "bytes": 10752,
+      "diff_id": "sha256:b916c5d86bb4078ff8b9f47c8157cbfb3c927516d19b806205a390dac5e4c83f",
+      "index": 2,
+      "relevant_entries": []
+    },
+    {
+      "archive_member": "blobs/sha256/d01fd0ed8d5c8a93d8e818722c2e205ee149d2205b80df14ab0142fdb3827500",
+      "bytes": 38388736,
+      "diff_id": "sha256:d01fd0ed8d5c8a93d8e818722c2e205ee149d2205b80df14ab0142fdb3827500",
+      "index": 3,
+      "relevant_entries": [
+        {
+          "gid": 0,
+          "member": "usr/local/bin/redis-server",
+          "mode": "0o755",
+          "sha256": "772f79e9154598fe509961928dc4d7c1ac577a948be6e86b793fdb7b0599e1b6",
+          "size": 16892616,
+          "uid": 0
+        }
+      ]
+    },
+    {
+      "archive_member": "blobs/sha256/141724682871bfdba9493ff19f2e33c0f974575a2b3b5dfe8b903100fab77b54",
+      "bytes": 1536,
+      "diff_id": "sha256:141724682871bfdba9493ff19f2e33c0f974575a2b3b5dfe8b903100fab77b54",
+      "index": 4,
+      "relevant_entries": []
+    },
+    {
+      "archive_member": "blobs/sha256/5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+      "bytes": 1024,
+      "diff_id": "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+      "index": 5,
+      "relevant_entries": []
+    },
+    {
+      "archive_member": "blobs/sha256/973dd2b02fe6a7b938af49dd95e7afa7a36f007d24c8e631d6392ba47a78c9e9",
+      "bytes": 4096,
+      "diff_id": "sha256:973dd2b02fe6a7b938af49dd95e7afa7a36f007d24c8e631d6392ba47a78c9e9",
+      "index": 6,
+      "relevant_entries": []
+    }
+  ],
+  "target_executed": false
+}

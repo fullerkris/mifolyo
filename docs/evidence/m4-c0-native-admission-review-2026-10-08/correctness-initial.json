@@ -1,0 +1,257 @@
+{
+  "reviewer": "correctness",
+  "review_date": "2026-10-08",
+  "decision": "NEEDS_REMEDIATION",
+  "decision_scope": "Independent correctness review of the frozen C0 native-runtime admission implementation increment only. This report is not execution authorization, native-runtime feasibility evidence, a security-review disposition, or full M4 approval.",
+  "execution_authorized": false,
+  "m4_accepted": false,
+  "delegation_performed": false,
+  "scope": {
+    "workspace": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-native-admission-review-2026-10-08",
+    "source_snapshot": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-native-admission-review-2026-10-08/source",
+    "implementation": "tests/crawl-jobs-v2-observer/",
+    "output_directory": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-native-admission-review-2026-10-08/correctness",
+    "focus": [
+      "Fixed-path native startup collection, C parsing/formatting, measurement stability, and finite wire bounds",
+      "Case, scope nonce, prepared executable, external kernel/clock context, and current/peer identity binding",
+      "Owned Docker metadata generation anchoring before case dispatch and before/after collection",
+      "Real ProcessStream buffering, EOF/error handling, pre-A/pre-G peer state, and deadline ordering",
+      "Static retained ELF, generated filter/profile/case-table, and wire-template joins",
+      "Separation of pre-case observations from whole-trial and runtime-execution evidence"
+    ],
+    "principal_files_inspected": [
+      "native/admission.h",
+      "native/common.h",
+      "native/target.c",
+      "native/observer.c",
+      "runtime_admission.py",
+      "streams.py",
+      "docker_backend.py",
+      "owned_resources.py",
+      "contracts.py",
+      "controller.py",
+      "profiles.py",
+      "build_tools.py",
+      "Dockerfile",
+      "README.md",
+      "test_runtime_admission.py",
+      "test_streams.py"
+    ],
+    "boundary": "Findings concern asynchronous/untrusted actor output, observable transport state, and ordinary passage of time during trusted callbacks. They do not depend on an all-powerful malicious Python or Docker controller. Synthetic Docker metadata was injected only for offline testing; no Docker command was executed."
+  },
+  "immutable_inputs": {
+    "base_commit": "ab5f21a7421f3ed48cfb32481613fa5656dcb8a4",
+    "base_archive_sha256": "bc958d07f117dae61114dc85da0d48fc5242bdd78a4c62f5f4123a2d4d68bf2e",
+    "intake_sha256": "945fa7c3962b7edf67a055ad940fecd7760f00af38c82ae7916d9d96ae230900",
+    "snapshot_manifest_sha256": "398185521b488d7a94da9fd48b4f2ea0f3ad6c75e8bb043796a355c6928747e0",
+    "snapshot_manifest_hash_definition": "Reviewer-computed SHA256 of the intake snapshot_files map serialized as JSON with sorted keys, compact separators, and no trailing newline; every corresponding snapshot file was independently rehashed before and after review.",
+    "snapshot_files": 1615,
+    "overlay_paths": 91,
+    "source_inventory_sha256": "a24bb741c5b22de576ca62abff8d133e675eaf1ee059509349d4138d12bfcf12",
+    "implementation_files": 25,
+    "retained_verification_sha256": "5bd44ff6c645e2e2b4298580fdae76d81262815051383c00b031f42c7d2f7e2e",
+    "retained_verification_claim": "99 tests, zero skips, and 16 static compiled-format/Python-fixture joins; not native collector execution",
+    "artifact_build_sha256": "f228da9b431cd953ba75fe8fbc3dfe5695f2540729d7bb62f13bd57a0e792723",
+    "native_artifact_files": 11,
+    "native_build_inputs_matched": 9,
+    "target_elf_sha256": "45f78ae0bce897a430b78e4e5c02908308d0432dcc959f8b20380dbea0f7bef5",
+    "observer_elf_sha256": "77576d303391c7e0dcaf6fe2efcef85beee0f73dae70ca93341ea3d599e5021f"
+  },
+  "summary": "The collector/schema/artifact path is carefully bounded, peer target frames are revalidated instead of trusting digest-shaped assertions, and the pre-dispatch generation anchor closes the reproduced pre-collection restart/buffer case. However, the cross-stream dispatch gate confuses a stream's last consumed phase and local closed flag with current peer transport health. Independent real-pipe probes reproduced both lost-peer dispatch and acceptance of pre-G HELD output. A second probe reproduced a G write after the final authorizer returned beyond admission expiry. The clock schema also has an undocumented 104.25-day Linux uptime ceiling inconsistent with the native uint64 nanosecond producer. These issues warrant remediation despite all 99 retained tests passing.",
+  "findings": [
+    {
+      "id": "COR-01",
+      "severity": "high",
+      "priority": "blocker",
+      "marker": "🔴",
+      "title": "A/G dispatch trusts stale peer phase and misses EOF or already-pending peer output",
+      "category": "Correctness: cross-stream state and phase ordering",
+      "locations": [
+        {"file": "tests/crawl-jobs-v2-observer/docker_backend.py", "line_start": 263, "line_end": 273},
+        {"file": "tests/crawl-jobs-v2-observer/streams.py", "line_start": 106, "line_end": 121},
+        {"file": "tests/crawl-jobs-v2-observer/streams.py", "line_start": 123, "line_end": 138},
+        {"file": "tests/crawl-jobs-v2-observer/streams.py", "line_start": 166, "line_end": 178}
+      ],
+      "counterexample": "After a normally admitted target/observer pair, arm the observer and consume ARMED. If the observer then closes stdout, ProcessStream records stdout_eof=True but closed remains False and phase remains ARMED. The backend's peer predicate still passes and target.start_target() writes G. Likewise, queued observer INVALID or HELD output is not pumped or rejected by target dispatch, because _send() pumps only the stream receiving input. In the opposite direction, an admitted target can close stdout before observer.arm_observer(), yet A is delivered.",
+      "evidence": {
+        "files": ["probes.py", "pipe_actor.py", "probes.log", "probes.json"],
+        "probes": [
+          "test_peer_eof_does_not_prevent_A",
+          "test_peer_eof_does_not_prevent_G",
+          "test_peer_pending_invalid_does_not_prevent_G",
+          "test_peer_early_HELD_is_accepted_after_G"
+        ],
+        "observed": [
+          "A was received by the Python observer after the Python target had closed stdout.",
+          "G was received by the Python target even after observer.stdout_eof was explicitly pumped and true.",
+          "G was received while an observer INVALID frame was pending.",
+          "A complete HELD frame queued and pumped before G was subsequently accepted by receive('HELD') after G.",
+          "Control: an INVALID pending on the target's own stream correctly blocked G."
+        ],
+        "fixture_nature": "Actual ProcessStream instances and benign local Python pipes; only Docker metadata and external context were synthetic. No native actor or Docker process ran."
+      },
+      "impact": "A lost or failed peer can satisfy the pre-attachment/pre-start gate, and pre-start observer evidence can be relabelled as post-start evidence. This contradicts the in-scope claim that lost peers reject dispatch. Later native refusal, EXITKILL behavior, or watchdog cleanup cannot establish the missing ordering invariant.",
+      "minimal_requested_fix": "Consider a bounded, nonblocking peer-transport check immediately at each A/G dispatch: require the expected peer phase, pump its owned stream, and reject closed/EOF, stderr, partial bytes, or any unexpected queued frames before sending input. The observer's ARMED gate needs a quiet-transport check that does not accept an already-buffered HELD. Invalidate failed admissions and add real-ProcessStream regressions in both directions; checking FakeStream.closed alone is insufficient.",
+      "confidence": "high"
+    },
+    {
+      "id": "COR-02",
+      "severity": "medium",
+      "priority": "blocker",
+      "marker": "🔴",
+      "title": "The final authorization callback can consume the remaining deadline and still be followed by an input write",
+      "category": "Correctness: expiry and dispatch ordering",
+      "locations": [
+        {"file": "tests/crawl-jobs-v2-observer/docker_backend.py", "line_start": 263, "line_end": 275},
+        {"file": "tests/crawl-jobs-v2-observer/streams.py", "line_start": 123, "line_end": 138}
+      ],
+      "counterexample": "before_input() checks own/peer admission expiry and deadline, then invokes _authorize('actor_input') at line 275. ProcessStream._send() does not check its deadline again after this callback or immediately before os.write. A legitimate authorizer that returns True after a slow check can therefore cause A/G (and the generic send path) to dispatch after expiry.",
+      "evidence": {
+        "files": ["probes.py", "pipe_actor.py", "probes.log", "probes.json"],
+        "probe": "test_slow_final_authorizer_can_dispatch_past_deadline",
+        "observed": "With both admissions and the shared Deadline expiring at 5.0, the second actor_input authorization call returned True after the simulated monotonic clock advanced to 6.0. target.start_target() succeeded and the real Python pipe child recorded G.",
+        "fixture_nature": "The clock models ordinary elapsed time during the trusted callback; no admission or stream phase was manually forged to bypass the gate. The G write and child receipt were real local pipe operations."
+      },
+      "impact": "The current expiry check is not a dispatch-time invariant: input may start observation or target activity after the admission window has expired. This is an existing gate-ordering defect, not a request to implement the deferred approval subsystem.",
+      "minimal_requested_fix": "Consider placing the final authorization call before the final own/peer expiry checks, and rechecking the stream deadline after before_input/pumping and immediately before each os.write. Preserve the peer's independent expiry bound when peer and current deadlines differ. Add a delayed-success authorizer regression that requires refusal and no delivered byte.",
+      "confidence": "high"
+    },
+    {
+      "id": "COR-03",
+      "severity": "medium",
+      "priority": "suggestion",
+      "marker": "🟡",
+      "title": "Raw Linux monotonic nanoseconds exceed the validator's numeric range after about 104.25 days",
+      "category": "Correctness: native/wire numeric compatibility",
+      "locations": [
+        {"file": "tests/crawl-jobs-v2-observer/runtime_admission.py", "line_start": 70, "line_end": 75},
+        {"file": "tests/crawl-jobs-v2-observer/runtime_admission.py", "line_start": 90, "line_end": 92},
+        {"file": "tests/crawl-jobs-v2-observer/contracts.py", "line_start": 32, "line_end": 34},
+        {"file": "tests/crawl-jobs-v2-observer/native/common.h", "line_start": 42, "line_end": 46},
+        {"file": "tests/crawl-jobs-v2-observer/native/admission.h", "line_start": 231, "line_end": 231}
+      ],
+      "counterexample": "The native collector emits mono_ns() using uint64_t/PRIu64, but CLOCK.monotonic_ns and the trusted not_before_ns/not_after_ns context use integer()'s default maximum 2^53-1. Linux CLOCK_MONOTONIC measures elapsed host runtime, not process age. At 105 days it is 9072000000000000 ns, so even a fresh two-second observation window and a canonical 481-byte CLOCK frame are rejected with INTEGER.",
+      "evidence": {
+        "files": ["probes.py", "probes.log", "probes.json", "research.json"],
+        "probe": "test_long_uptime_native_clock_is_rejected",
+        "observed": "The ordinary synthetic frame/context pair passed. Replacing the timestamp and context with a coherent 105-day monotonic value caused both native_frame(CLOCK) and validate_context() to reject. Canonical JSON decoding retained the integer exactly and the frame was within 1024 bytes.",
+        "research_source": "https://man7.org/linux/man-pages/man2/clock_gettime.2.html",
+        "threshold_days": 104.24999137431702
+      },
+      "impact": "Otherwise eligible C0 processes on a long-running Linux host are deterministically refused. Fresh containers do not reset this clock, and trusted context acquisition cannot repair the mismatch while preserving the stated zero-offset clock domain. No maximum host uptime is documented for the increment.",
+      "minimal_requested_fix": "Consider a dedicated bounded 64-bit clock-integer validator matching the native representation for both wire and context fields, retaining strict rejection of bool/float/coercions. If safe-number interoperability is mandatory, use an explicit exact representation or trusted origin plus bounded relative timestamps. Add boundary tests around 2^53 and a long-uptime case; alternatively, explicitly commission and enforce an intentional uptime prerequisite rather than leaving it implicit.",
+      "confidence": "high"
+    }
+  ],
+  "positive_observations": [
+    "The self-review's pre-case generation anchor is effective in the reproduced stale pre-collection case: all four admission frames plus READY were already in a real ProcessStream buffer, then a synthetic Docker PID/StartedAt change caused rejection before any admission frame was validated.",
+    "Own-stream pending INVALID output blocks input; the identified missing check is the peer stream, not absence of all transport defenses.",
+    "The validator uses exact canonical schemas, strict integer typing, case/scope/role bindings, prepared executable hashes, and original peer-frame revalidation rather than accepting a transferable digest-only admission capability.",
+    "Retained artifact identity, target symbol/instruction joins, compiled observer filter bytes, generated profiles, and the fixed case table matched in static checks.",
+    "All 264 native cases, both roles, four phases, and two numeric/group variants matched extracted ELF format templates and remained within the wire limit. The largest tested frame was 783 bytes.",
+    "The source explicitly retains zero C0 privileges, refusal on unavailable observations, no C1 fallback, and false execution/runtime-evidence flags. Pre-case evidence is not presented as whole-trial confinement or timing proof."
+  ],
+  "checks": {
+    "execution_environment": {
+      "cwd": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-native-admission-review-2026-10-08/source",
+      "TMPDIR": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-native-admission-review-2026-10-08/correctness/tmp/",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "python_flags": ["-B", "-W", "error::ResourceWarning"],
+      "probe_script_path_base": "../correctness/"
+    },
+    "immutable_verification": {
+      "commands": [
+        "python3 -B -W error::ResourceWarning ../correctness/verify_inputs.py before",
+        "python3 -B -W error::ResourceWarning ../correctness/verify_inputs.py after"
+      ],
+      "outcome": "PASS before and after; no mismatches",
+      "evidence": ["verify_inputs.py", "integrity-before.json", "integrity-after.json"]
+    },
+    "existing_tests": {
+      "wrapper_command": "python3 -B -W error::ResourceWarning ../correctness/run_tests.py",
+      "actual_test_command": "python3 -B -W error::ResourceWarning -m unittest discover -s tests/crawl-jobs-v2-observer -v",
+      "tests_run": 99,
+      "passed": 99,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "elapsed_seconds": 4.652,
+      "exit_code": 0,
+      "resource_warnings_seen": false,
+      "evidence": ["run_tests.py", "existing-tests.log", "existing-tests.json"]
+    },
+    "independent_probes": {
+      "command": "python3 -B -W error::ResourceWarning ../correctness/probes.py",
+      "tests_run": 9,
+      "assertions_confirmed": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "elapsed_seconds": 0.474,
+      "counterexample_probes": 6,
+      "positive_or_rejection_controls": 3,
+      "interpretation": "Passing probes confirm the recorded behavior, including defects; they are not a correctness PASS for the implementation.",
+      "evidence": ["probes.py", "pipe_actor.py", "probes.log", "probes.json", "tmp/"]
+    },
+    "static_artifacts_and_wire": {
+      "command": "python3 -B -W error::ResourceWarning ../correctness/static_probes.py",
+      "outcome": "PASS",
+      "elf_files_checked": 2,
+      "elf_architecture": "AArch64",
+      "elf_type": "ET_DYN, no interpreter segment",
+      "writable_executable_load_segments": 0,
+      "target_manifest_symbol_instruction_join": "matched",
+      "compiled_observer_filter_join": "matched retained BPF and frozen generator bytes",
+      "profile_artifacts_matched": 3,
+      "case_table_entries_matched": 276,
+      "native_cases_checked": 264,
+      "independent_static_template_joins": 4224,
+      "maximum_frame_bytes": {"IDENTITY": 783, "CONFINEMENT": 386, "RESOURCES": 434, "CLOCK": 500},
+      "native_collector_executions": 0,
+      "evidence": ["static_probes.py", "static-probes.json"]
+    },
+    "research": {
+      "method": "Web search and direct read-only retrieval of Linux source/manual semantics; no downloaded code executed",
+      "outcome": "Confirmed CLOCK_MONOTONIC origin relevant to COR-03 and inspected actual timens_offsets formatting; no separate parsing defect alleged",
+      "evidence": ["research.json"]
+    }
+  },
+  "preserved_source_verification": {
+    "status": "PASS",
+    "intake_before_sha256": "945fa7c3962b7edf67a055ad940fecd7760f00af38c82ae7916d9d96ae230900",
+    "intake_after_sha256": "945fa7c3962b7edf67a055ad940fecd7760f00af38c82ae7916d9d96ae230900",
+    "snapshot_and_native_content_mode_manifest_before_sha256": "9247dc1e16d6f75293a26f7209963528cc3ed0b858a723144019dbfec93fc8d9",
+    "snapshot_and_native_content_mode_manifest_after_sha256": "9247dc1e16d6f75293a26f7209963528cc3ed0b858a723144019dbfec93fc8d9",
+    "verified": [
+      "All 1615 listed source snapshot files and all 11 native artifacts rehashed before and after",
+      "Snapshot/native regular-file sets matched the intake; all checked file modes remained nonwritable and unchanged",
+      "All 25 source-inventory entries, 91 overlay entries, intake-listed design files, and nine native build inputs matched",
+      "Base archive, source-inventory, retained verification, build record, and intake hashes matched before and after"
+    ],
+    "application_or_source_files_edited": false,
+    "snapshot_or_binary_permissions_changed": false,
+    "writes_confined_to_correctness_directory": true,
+    "git_index_branch_worktree_or_shared_document_mutations": false,
+    "other_review_directory_accessed": false
+  },
+  "limitations": [
+    "No native actor was executed, including --help. No ptrace, native runtime experiment, Docker command/build/mutation, Redis case, commit, push, or PR was performed.",
+    "No claim is made that Linux kernel reads, native C library initialization, seccomp installation, ptrace access, or hardware-debug operations succeed. ELF-template joins interpolate static strings in Python and do not execute C.",
+    "The independent probes use synthetic trusted context and Docker metadata. The real ProcessStream transport and input writes are exercised with benign local Python children only.",
+    "A fake monotonic clock models elapsed time during authorization for COR-02; it does not measure a real six-second authorizer invocation.",
+    "The existing full test suite ran, but this is a targeted admission correctness review, not a comprehensive re-review of every unrelated oracle/D02/watchdog implementation path or the 1615-file repository.",
+    "The immutable base commit identifier is accepted from the hash-verified intake; the supplied base archive was rehashed, not rebuilt from git history.",
+    "Security is a separate review. Observations of fail-closed behavior and artifact joins here do not substitute for that review.",
+    "The probe scripts preserve their output directories and logs. The main pipe probe uses exclusive per-test directory creation to avoid silently reusing stale gates."
+  ],
+  "remaining_runtime_prerequisites": [
+    "Remediate dispatch peer-health/ordering and post-callback expiry checks, and resolve the clock representation/uptime contract; rerun regression tests and independent review.",
+    "Provide independently trusted Linux kernel/clock-context acquisition, freshness, namespace/mapping expectations, and a clock-domain bridge; never infer expectations from the same untrusted frames.",
+    "Complete and independently admit the oracle/client-closure worker, full trial dispatch and receipt assembly, exact runtime images, and outer approval/execution integration.",
+    "Obtain a separate explicit execution decision before any native runtime calibration. This review does not authorize tracing, Docker mutations, C1 privileges, or Redis experiments.",
+    "Under that future authority, establish access to required LSM/Yama/cgroup/time files, actual capless attachment and hardware breakpoint feasibility, native stable collection, and clock precision. Refusal remains refusal; no fallback privilege grant is implied.",
+    "Establish whole-trial resource/task confinement, actual continuation/stop timing, oracle/client closure, and independent remote cleanup/absence proof; pre-case admission and local CLI EOF cannot replace them."
+  ],
+  "deferred_components_disposition": "Trusted context acquisition, oracle/client closure, full runtime image/trial/approval assembly, and runtime feasibility were treated as explicitly deferred prerequisites, not defects in this limited increment. The reported dispatch failures concern gates already implemented and currently claimed complete.",
+  "next_step": "The bounded collector and generation-binding work provide a useful base. Please close COR-01 and COR-02, resolve COR-03's exact clock contract, and request a scoped re-review before relying on this increment's admission gates for continued integration."
+}

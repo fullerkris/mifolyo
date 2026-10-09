@@ -1,0 +1,312 @@
+{
+  "layout_variants": [
+    {
+      "members": {
+        "argc": 88,
+        "argv": 96,
+        "argv_len": 104,
+        "argv_len_sum": 120,
+        "auth_callback": 632,
+        "auth_callback_privdata": 640,
+        "auth_module": 648,
+        "authenticated": 256,
+        "bstate": 464,
+        "buf": 776,
+        "buf_peak": 744,
+        "buf_peak_last_reset_time": 752,
+        "buf_usable_size": 768,
+        "bufpos": 760,
+        "bulklen": 168,
+        "client_list_node": 592,
+        "client_tracking_prefixes": 664,
+        "client_tracking_redirection": 656,
+        "clients_pending_write_node": 720,
+        "cmd": 128,
+        "conn": 16,
+        "ctime": 208,
+        "cur_script": 232,
+        "db": 32,
+        "deferred_reply_errors": 192,
+        "duration": 216,
+        "flags": 8,
+        "id": 0,
+        "last_memory_type": 680,
+        "last_memory_usage": 672,
+        "lastcmd": 136,
+        "lastinteraction": 240,
+        "lib_name": 48,
+        "lib_ver": 56,
+        "mem_usage_bucket": 696,
+        "mem_usage_bucket_node": 688,
+        "module_auth_ctx": 624,
+        "module_blocked_client": 616,
+        "mstate": 424,
+        "multibulklen": 164,
+        "name": 40,
+        "obuf_soft_limit_reached_time": 248,
+        "original_argc": 108,
+        "original_argv": 112,
+        "peerid": 576,
+        "pending_read_list_node": 608,
+        "postponed_list_node": 600,
+        "psync_initial_offset": 352,
+        "pubsub_channels": 552,
+        "pubsub_patterns": 560,
+        "pubsubshard_channels": 568,
+        "qb_pos": 72,
+        "querybuf": 64,
+        "querybuf_peak": 80,
+        "read_reploff": 296,
+        "realcmd": 144,
+        "ref_block_pos": 712,
+        "ref_repl_buf_node": 704,
+        "repl_ack_off": 320,
+        "repl_ack_time": 336,
+        "repl_aof_off": 328,
+        "repl_applied": 312,
+        "repl_last_partial_write": 344,
+        "repl_start_cmd_stream_on_ack": 264,
+        "repldbfd": 268,
+        "repldboff": 272,
+        "repldbsize": 280,
+        "replid": 360,
+        "reploff": 304,
+        "replpreamble": 288,
+        "replstate": 260,
+        "reply": 176,
+        "reply_bytes": 184,
+        "reqtype": 160,
+        "resp": 24,
+        "sentlen": 200,
+        "slave_addr": 408,
+        "slave_capa": 416,
+        "slave_listening_port": 404,
+        "slave_req": 420,
+        "slot": 224,
+        "sockname": 584,
+        "user": 152,
+        "watched_keys": 544,
+        "woff": 536
+      },
+      "name": "client",
+      "size": 784
+    },
+    {
+      "members": {
+        "c": 8,
+        "flags": 24,
+        "funcname": 0,
+        "original_client": 16,
+        "repl_flags": 28,
+        "slot": 40,
+        "start_time": 32
+      },
+      "name": "scriptRunCtx",
+      "size": 48
+    },
+    {
+      "members": {
+        "allowhook": 101,
+        "base": 24,
+        "baseCcalls": 98,
+        "base_ci": 80,
+        "basehookcount": 104,
+        "ci": 40,
+        "end_ci": 72,
+        "env": 136,
+        "errfunc": 176,
+        "errorJmp": 168,
+        "gclist": 160,
+        "hook": 112,
+        "hookcount": 108,
+        "hookmask": 100,
+        "l_G": 32,
+        "l_gt": 120,
+        "marked": 9,
+        "nCcalls": 96,
+        "next": 0,
+        "openupval": 152,
+        "savedpc": 48,
+        "size_ci": 92,
+        "stack": 64,
+        "stack_last": 56,
+        "stacksize": 88,
+        "status": 10,
+        "top": 16,
+        "tt": 8
+      },
+      "name": "lua_State",
+      "size": 184
+    },
+    {
+      "members": {
+        "tt": 8,
+        "value": 0
+      },
+      "name": "lua_TValue",
+      "size": 16
+    },
+    {
+      "members": {
+        "code": 24,
+        "gclist": 104,
+        "is_vararg": 114,
+        "k": 16,
+        "lastlinedefined": 100,
+        "linedefined": 96,
+        "lineinfo": 40,
+        "locvars": 48,
+        "marked": 9,
+        "maxstacksize": 115,
+        "next": 0,
+        "numparams": 113,
+        "nups": 112,
+        "p": 32,
+        "sizecode": 80,
+        "sizek": 76,
+        "sizelineinfo": 84,
+        "sizelocvars": 92,
+        "sizep": 88,
+        "sizeupvalues": 72,
+        "source": 64,
+        "tt": 8,
+        "upvalues": 56
+      },
+      "name": "Proto",
+      "size": 120
+    },
+    {
+      "members": {
+        "env": 24,
+        "gclist": 16,
+        "isC": 10,
+        "marked": 9,
+        "next": 0,
+        "nupvalues": 11,
+        "p": 32,
+        "tt": 8,
+        "upvals": 40
+      },
+      "name": "LClosure",
+      "size": 48
+    },
+    {
+      "members": {
+        "c": 0,
+        "l": 0
+      },
+      "name": "Closure",
+      "size": 56
+    },
+    {
+      "members": {
+        "base": 0,
+        "func": 8,
+        "nresults": 32,
+        "savedpc": 24,
+        "tailcalls": 36,
+        "top": 16
+      },
+      "name": "CallInfo",
+      "size": 40
+    }
+  ],
+  "relevant_cus": [
+    {
+      "DW_AT_comp_dir": {
+        "form": "DW_FORM_line_strp",
+        "value": "/usr/src/redis/src"
+      },
+      "DW_AT_name": {
+        "form": "DW_FORM_line_strp",
+        "value": "server.c"
+      },
+      "DW_AT_producer": {
+        "form": "DW_FORM_strp",
+        "value": "GNU C11 12.2.0 -mlittle-endian -mabi=lp64 -g -ggdb -O3 -std=gnu11 -flto -fno-omit-frame-pointer -funwind-tables -fasynchronous-unwind-tables"
+      },
+      "cu_offset": 2257102,
+      "dwarf_version": 5
+    },
+    {
+      "DW_AT_comp_dir": {
+        "form": "DW_FORM_line_strp",
+        "value": "/usr/src/redis/src"
+      },
+      "DW_AT_name": {
+        "form": "DW_FORM_line_strp",
+        "value": "networking.c"
+      },
+      "DW_AT_producer": {
+        "form": "DW_FORM_strp",
+        "value": "GNU C11 12.2.0 -mlittle-endian -mabi=lp64 -g -ggdb -O3 -std=gnu11 -flto -fno-omit-frame-pointer -funwind-tables -fasynchronous-unwind-tables"
+      },
+      "cu_offset": 2325609,
+      "dwarf_version": 5
+    },
+    {
+      "DW_AT_comp_dir": {
+        "form": "DW_FORM_line_strp",
+        "value": "/usr/src/redis/src"
+      },
+      "DW_AT_name": {
+        "form": "DW_FORM_line_strp",
+        "value": "aof.c"
+      },
+      "DW_AT_producer": {
+        "form": "DW_FORM_strp",
+        "value": "GNU C11 12.2.0 -mlittle-endian -mabi=lp64 -g -ggdb -O3 -std=gnu11 -flto -fno-omit-frame-pointer -funwind-tables -fasynchronous-unwind-tables"
+      },
+      "cu_offset": 2682687,
+      "dwarf_version": 5
+    },
+    {
+      "DW_AT_comp_dir": {
+        "form": "DW_FORM_line_strp",
+        "value": "/usr/src/redis/src"
+      },
+      "DW_AT_name": {
+        "form": "DW_FORM_line_strp",
+        "value": "redis-check-aof.c"
+      },
+      "DW_AT_producer": {
+        "form": "DW_FORM_strp",
+        "value": "GNU C11 12.2.0 -mlittle-endian -mabi=lp64 -g -ggdb -O3 -std=gnu11 -flto -fno-omit-frame-pointer -funwind-tables -fasynchronous-unwind-tables"
+      },
+      "cu_offset": 3146959,
+      "dwarf_version": 5
+    },
+    {
+      "DW_AT_comp_dir": {
+        "form": "DW_FORM_line_strp",
+        "value": "/usr/src/redis/src"
+      },
+      "DW_AT_name": {
+        "form": "DW_FORM_line_strp",
+        "value": "script_lua.c"
+      },
+      "DW_AT_producer": {
+        "form": "DW_FORM_strp",
+        "value": "GNU C11 12.2.0 -mlittle-endian -mabi=lp64 -g -ggdb -O3 -std=gnu11 -flto -fno-omit-frame-pointer -funwind-tables -fasynchronous-unwind-tables"
+      },
+      "cu_offset": 3575910,
+      "dwarf_version": 5
+    },
+    {
+      "DW_AT_comp_dir": {
+        "form": "DW_FORM_line_strp",
+        "value": "/usr/src/redis/src"
+      },
+      "DW_AT_name": {
+        "form": "DW_FORM_line_strp",
+        "value": "script.c"
+      },
+      "DW_AT_producer": {
+        "form": "DW_FORM_strp",
+        "value": "GNU C11 12.2.0 -mlittle-endian -mabi=lp64 -g -ggdb -O3 -std=gnu11 -flto -fno-omit-frame-pointer -funwind-tables -fasynchronous-unwind-tables"
+      },
+      "cu_offset": 3602557,
+      "dwarf_version": 5
+    }
+  ]
+}

@@ -84,6 +84,22 @@ jobs:
           python -B -m unittest discover -s scripts/tests -v
           python -B -m unittest discover -s tests/crawl-jobs-v2-redis -v
 
+      - name: Run C0 offline preparation tests
+        working-directory: .
+        timeout-minutes: 5
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+          TMPDIR: ${{ runner.temp }}
+        run: python -B -W error::ResourceWarning scripts/test-crawl-jobs-v2-observer.py --report "${{ runner.temp }}/c0-offline-tests.json"
+
+      - name: Retain C0 offline test evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: c0-offline-tests
+          path: ${{ runner.temp }}/c0-offline-tests.json
+          if-no-files-found: error
+
       - name: Run required Backlinks Processor tests
         working-directory: services/backlinks-processor
         run: |

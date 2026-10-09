@@ -1,0 +1,16 @@
+{
+  "base_commit": "ab5f21a7421f3ed48cfb32481613fa5656dcb8a4",
+  "byte_identical_exports": 3,
+  "candidate_paths": 124,
+  "files": {
+    "c0-offline-tests.json": "be5850259e9b03e5bcecc1c48ded2238aca83575d54397601ac4a0dd9cef11c6",
+    "publication-scope.json": "e9b5a368c73e64ac7028cdc975b32b254985db6436eec6774eb4601b6d8a3ffa",
+    "verification.json": "cb1edb12de0f5606cc2e55996d42c9aa2bb39ef857d3a947bb1004243a868ab6"
+  },
+  "hosted_ci_pending": true,
+  "kind": "c0_scoped_publication_preparation",
+  "m4_accepted": false,
+  "publication_authorized": false,
+  "runtime_execution_authorized": false,
+  "version": 1
+}

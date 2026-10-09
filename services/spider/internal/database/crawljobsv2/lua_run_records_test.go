@@ -18,8 +18,8 @@ import (
 // network, Redis process, Go semantic callback, or private framework substitute.
 func recordsLuaCore(t *testing.T) string {
 	t.Helper()
-	if runtime.Version() != "go1.25.13" {
-		t.Fatalf("run-record oracle requires Go 1.25.13, got %s", runtime.Version())
+	if runtime.Version() != "go1.26.9" {
+		t.Fatalf("run-record oracle requires Go 1.26.9, got %s", runtime.Version())
 	}
 	return sharedLuaCore(t) +
 		"local D=(function()\n" + string(primitiveLuaRead(t, "lua_src/unicode_data.lua")) + "\nend)()\n" +

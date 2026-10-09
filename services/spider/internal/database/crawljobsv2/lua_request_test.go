@@ -21,7 +21,7 @@ const requestLuaPrefix = "mifolyo:crawl:v2:"
 
 func requestLuaNew(t *testing.T) *requestLuaVM {
 	t.Helper()
-	vm := &requestLuaVM{jobLuaNew(t)} // also requires the Go 1.25.13 oracle
+	vm := &requestLuaVM{jobLuaNew(t)} // also requires the Go 1.26.9 oracle
 	vm.load(t, "Request", "ledger_request")
 	vm.cj.RawSetString("Rate", vm.cj.RawGetString("Request").(*lua.LTable).RawGetString("Rate"))
 	return vm

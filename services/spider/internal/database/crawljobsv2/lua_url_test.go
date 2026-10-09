@@ -39,8 +39,8 @@ type urlLuaVM struct {
 
 func urlLuaNew(t *testing.T, internals bool) *urlLuaVM {
 	t.Helper()
-	if runtime.Version() != "go1.25.13" || unicode.Version != "15.0.0" || norm.Version != "15.0.0" || bidi.UnicodeVersion != "15.0.0" || idna.UnicodeVersion != "15.0.0" {
-		t.Fatal("URL oracle requires pinned Go 1.25.13 and Unicode 15.0.0")
+	if runtime.Version() != "go1.26.9" || unicode.Version != "15.0.0" || norm.Version != "15.0.0" || bidi.UnicodeVersion != "15.0.0" || idna.UnicodeVersion != "15.0.0" {
+		t.Fatal("URL oracle requires pinned Go 1.26.9 and Unicode 15.0.0")
 	}
 	vm := primitiveLuaNew(t, true) // Includes this test's context and deadline.
 	load := func(source []byte, name string, args ...lua.LValue) lua.LValue {
@@ -497,8 +497,8 @@ func TestURLLuaUnicodeGenerationAndExhaustiveProperties(t *testing.T) {
 // in a separate interpreter; neither implementation supplies its own oracle.
 func TestPythonURLGoOracle(t *testing.T) {
 	t.Parallel()
-	if runtime.Version() != "go1.25.13" || unicode.Version != "15.0.0" || norm.Version != "15.0.0" || idna.UnicodeVersion != "15.0.0" || bidi.UnicodeVersion != "15.0.0" {
-		t.Fatal("Python differential oracle requires Go 1.25.13 / Unicode 15.0.0")
+	if runtime.Version() != "go1.26.9" || unicode.Version != "15.0.0" || norm.Version != "15.0.0" || idna.UnicodeVersion != "15.0.0" || bidi.UnicodeVersion != "15.0.0" {
+		t.Fatal("Python differential oracle requires Go 1.26.9 / Unicode 15.0.0")
 	}
 	var urls, normalizations, chunks []map[string]any
 	seen := make(map[string]bool)

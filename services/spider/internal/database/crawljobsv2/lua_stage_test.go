@@ -17,7 +17,7 @@ import (
 // service, Redis process, runtime registration, or replacement Lua validator.
 func stageLuaNew(t *testing.T) *jobLuaVM {
 	t.Helper()
-	vm := jobLuaNew(t) // also pins the Go oracle to 1.25.13
+	vm := jobLuaNew(t) // also pins the Go oracle to 1.26.9
 	vm.load(t, "StageOutput", "stage_output")
 	vm.load(t, "Stage", "ledger_stage")
 	return vm

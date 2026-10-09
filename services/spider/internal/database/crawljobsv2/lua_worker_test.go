@@ -17,8 +17,8 @@ import (
 // replacement Wire, Context, Read, Stage, Plan, admission or digest functions.
 func workerLuaCore(t *testing.T) string {
 	t.Helper()
-	if runtime.Version() != "go1.25.13" {
-		t.Fatal("worker differential oracle requires Go 1.25.13")
+	if runtime.Version() != "go1.26.9" {
+		t.Fatal("worker differential oracle requires Go 1.26.9")
 	}
 	s := sharedLuaCore(t)
 	s += "local D=(function()\n" + string(primitiveLuaRead(t, "lua_src/unicode_data.lua")) + "\nend)()\n"

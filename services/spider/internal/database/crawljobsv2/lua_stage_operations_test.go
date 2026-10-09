@@ -19,8 +19,8 @@ var stageOpsInventory = []OperationName{OperationBeginStage, OperationStagePageF
 
 func stageOpsCore(t *testing.T) string {
 	t.Helper()
-	if runtime.Version() != "go1.25.13" {
-		t.Fatal("Stage operation oracles require Go 1.25.13")
+	if runtime.Version() != "go1.26.9" {
+		t.Fatal("Stage operation oracles require Go 1.26.9")
 	}
 	return recordsLuaCore(t) +
 		"local actualStageSHA=P.sha256\nP.sha256=function(s) if #s>1048576 then error('bulk Lua SHA is forbidden') end return actualStageSHA(s) end\n" +

@@ -13,8 +13,8 @@ import (
 // canonical sources, a shadow implementation, or a production script binding.
 func runLuaCore(t *testing.T) string {
 	t.Helper()
-	if runtime.Version() != "go1.25.13" {
-		t.Fatalf("Run Lua conformance requires pinned Go 1.25.13, got %s", runtime.Version())
+	if runtime.Version() != "go1.26.9" {
+		t.Fatalf("Run Lua conformance requires pinned Go 1.26.9, got %s", runtime.Version())
 	}
 	return sharedLuaCore(t) + "CJ.Run = (function()\n" + string(primitiveLuaRead(t, "lua_src/ledger_run.lua")) + "\nend)()\n"
 }

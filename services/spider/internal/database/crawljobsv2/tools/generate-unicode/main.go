@@ -1,5 +1,5 @@
 // Command generate-unicode emits the dormant Lua URL validator's pinned data.
-// Run from services/spider with Go 1.25.13, GOPROXY=off and GOSUMDB=off:
+// Run from services/spider with Go 1.26.9, GOPROXY=off and GOSUMDB=off:
 //
 //	go run ./internal/database/crawljobsv2/tools/generate-unicode -work <private-temp-directory>
 //
@@ -32,7 +32,12 @@ import (
 	"golang.org/x/text/unicode/norm"
 )
 
+// This is the sealed data artifact's historical identity, not the current
+// verifier's toolchain identity. The exact oracle/data hashes below must survive
+// compatibility regeneration; current toolchain/module provenance is separate.
 const identity = "cj2-url-v1/go1.25.13/x-net-v0.58.0/x-text-v0.41.0/unicode-15.0.0/data-1"
+const oracleSHA256 = "b728aa7ae09b7e577fead2845d3489daf7e20d427b2a23ef0ffcd7b1722d5981"
+const dataSHA256 = "07243776f0a5b1691e872cf92bddaf60cebf292175f25e2146a65220f20e849e"
 
 // These are hashes of the unmodified, selected upstream source bytes, not of
 // their private instrumented copies. A different compiler/table is an error.
@@ -97,18 +102,24 @@ func main() {
 	oracle := flag.String("oracle", "", "write exhaustive raw Go properties to this temporary file")
 	acquire := flag.Bool("acquire-licenses", false, "explicit network-only acquisition of the two authoritative notices")
 	flag.Parse()
-	if runtime.Version() != "go1.25.13" || unicode.Version != "15.0.0" || idna.UnicodeVersion != "15.0.0" || norm.Version != "15.0.0" || bidi.UnicodeVersion != "15.0.0" {
+	if runtime.Version() != "go1.26.9" || unicode.Version != "15.0.0" || idna.UnicodeVersion != "15.0.0" || norm.Version != "15.0.0" || bidi.UnicodeVersion != "15.0.0" {
 		panic("wrong compiler or Unicode tables")
 	}
 	info, ok := debug.ReadBuildInfo()
 	if !ok {
 		panic("no build identity")
 	}
-	modules := map[string]string{"golang.org/x/net": "v0.58.0", "golang.org/x/text": "v0.41.0"}
-	sums := map[string]string{"golang.org/x/net": "h1:ynWG7rqYi4ccpTEuPZ2QGWHktVEM9DMCj9yzDE0Q7To=", "golang.org/x/text": "h1:vz/seA0lnX87Othu2f/0L24RcgrXD9/YFTSuGjj3rH8="}
+	modules := map[string]string{"golang.org/x/net": "v0.60.0", "golang.org/x/text": "v0.41.0"}
+	sums := map[string]string{"golang.org/x/net": "h1:79p50tfZlm0J9YfoDsSi639qSXNGVwEzOPLCxM2FsYU=", "golang.org/x/text": "h1:vz/seA0lnX87Othu2f/0L24RcgrXD9/YFTSuGjj3rH8="}
 	seen := 0
 	for _, d := range info.Deps {
 		if v, ok := modules[d.Path]; ok {
+			if d.Path == "golang.org/x/text" {
+				if d.Version != "v0.42.0" || d.Replace == nil || d.Replace.Path != d.Path {
+					panic("wrong normalization compatibility replacement")
+				}
+				d = d.Replace
+			}
 			if d.Version != v || d.Sum != sums[d.Path] || d.Replace != nil {
 				panic("wrong module identity")
 			}
@@ -182,16 +193,22 @@ func main() {
 			write(filepath.Join(tmp, pkg, filepath.Base(name)), b)
 		}
 	}
-	write(filepath.Join(tmp, "go.mod"), []byte("module cj2unicode\n\ngo 1.25.0\nrequire golang.org/x/text v0.41.0\n"))
+	write(filepath.Join(tmp, "go.mod"), []byte("module cj2unicode\n\ngo 1.26.0\nrequire golang.org/x/text v0.41.0\n"))
 	write(filepath.Join(tmp, "go.sum"), read(filepath.Join(root, "go.sum")))
 	write(filepath.Join(tmp, "idna", "cj2_export.go"), []byte(idnaExport))
 	write(filepath.Join(tmp, "norm", "cj2_export.go"), []byte(normExport))
 	write(filepath.Join(tmp, "main.go"), []byte(oracleMain))
 	raw := run(tmp, "run", "-mod=readonly", ".")
+	if hash(raw) != oracleSHA256 {
+		panic("sealed Unicode property oracle changed")
+	}
 	if *oracle != "" {
 		write(*oracle, raw)
 	}
 	lua, counts := generate(raw)
+	if hash(lua) != dataSHA256 {
+		panic("sealed Unicode data changed")
+	}
 	_, self, _, ok := runtime.Caller(0)
 	if !ok {
 		panic("generator source")
@@ -206,11 +223,12 @@ func main() {
 	provenance := map[string]any{
 		"identity": identity, "toolchain": runtime.Version(), "unicode_version": unicode.Version,
 		"module_versions": modules, "module_sums": sums, "source_sha256": pins,
-		"generator_sha256": hash(read(self)), "unicode_data_lua_sha256": hash(lua),
+		"module_replacements": map[string]string{"golang.org/x/text@v0.42.0": "golang.org/x/text@v0.41.0"},
+		"generator_sha256":    hash(read(self)), "unicode_data_lua_sha256": hash(lua),
 		"exhaustive_go_oracle_sha256": hash(raw), "counts": counts,
 		"licenses_sha256": notices, "unicode_notice_sources": licenses,
 		"profile": []string{"ValidateForRegistration", "MapForLookup", "Transitional(false)", "StrictDomainName(true)", "ValidateLabels(true)", "CheckHyphens(true)", "CheckJoiners(true)", "BidiRule", "VerifyDNSLength(true)"},
-		"notes":   []string{"Unicode 15.0.0 selected by !go1.27; stdlib unicode16 branch is false", "No ContextO; preserve byte-indexed hyphens, exact ContextJ DFA and stream-safe NFC", "Unicode release notice is dated 2022; license.txt is the separately retrieved current authoritative license, not a reconstructed historical notice", "Dormant support; final operation assembly must bind these exact bytes in its source identity"},
+		"notes":   []string{"Historical data identity retained only after exact sealed oracle/data hash checks under the current toolchain", "x/text v0.41.0 is an exact compatibility replacement; v0.42.0 changes the sealed NFC/composition behavior", "Unicode 15.0.0 selected by !go1.27; stdlib unicode16 branch is false", "No ContextO; preserve byte-indexed hyphens, exact ContextJ DFA and stream-safe NFC", "Unicode release notice is dated 2022; license.txt is the separately retrieved current authoritative license, not a reconstructed historical notice", "Dormant support; final operation assembly must bind these exact bytes in its source identity"},
 	}
 	manifest, err := json.MarshalIndent(provenance, "", "  ")
 	must(err)

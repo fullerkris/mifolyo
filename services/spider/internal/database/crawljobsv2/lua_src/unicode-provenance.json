@@ -9,7 +9,7 @@
     "ranges": 6461
   },
   "exhaustive_go_oracle_sha256": "b728aa7ae09b7e577fead2845d3489daf7e20d427b2a23ef0ffcd7b1722d5981",
-  "generator_sha256": "b3849e8bcd855c64e1bdc0163160b49ff63c7e20fcbb12f45cd8b56a2faf917f",
+  "generator_sha256": "cd9453c7b056785f6575b9bd524d7ca30111153e5a9fa507534351da1a940735",
   "identity": "cj2-url-v1/go1.25.13/x-net-v0.58.0/x-text-v0.41.0/unicode-15.0.0/data-1",
   "licenses_sha256": {
     "Go-BSD-3-Clause.txt": "911f8f5782931320f5b8d1160a76365b83aea6447ee6c04fa6d5591467db9dad",
@@ -17,15 +17,20 @@
     "UNICODE-15-ReadMe.txt": "53672c0d0b5185e3cf04c8e970d544c3af81ae7c8eeba0b9cf6d355aa954ae1f",
     "UNICODE-LICENSE.txt": "e7a93b009565cfce55919a381437ac4db883e9da2126fa28b91d12732bc53d96"
   },
+  "module_replacements": {
+    "golang.org/x/text@v0.42.0": "golang.org/x/text@v0.41.0"
+  },
   "module_sums": {
-    "golang.org/x/net": "h1:ynWG7rqYi4ccpTEuPZ2QGWHktVEM9DMCj9yzDE0Q7To=",
+    "golang.org/x/net": "h1:79p50tfZlm0J9YfoDsSi639qSXNGVwEzOPLCxM2FsYU=",
     "golang.org/x/text": "h1:vz/seA0lnX87Othu2f/0L24RcgrXD9/YFTSuGjj3rH8="
   },
   "module_versions": {
-    "golang.org/x/net": "v0.58.0",
+    "golang.org/x/net": "v0.60.0",
     "golang.org/x/text": "v0.41.0"
   },
   "notes": [
+    "Historical data identity retained only after exact sealed oracle/data hash checks under the current toolchain",
+    "x/text v0.41.0 is an exact compatibility replacement; v0.42.0 changes the sealed NFC/composition behavior",
     "Unicode 15.0.0 selected by !go1.27; stdlib unicode16 branch is false",
     "No ContextO; preserve byte-indexed hyphens, exact ContextJ DFA and stream-safe NFC",
     "Unicode release notice is dated 2022; license.txt is the separately retrieved current authoritative license, not a reconstructed historical notice",
@@ -65,7 +70,7 @@
     "text/unicode/norm/transform.go": "6f8014595643e2acae76d47ed6abe8ace969a0c9070dbfa5a89c86bebcec812d",
     "text/unicode/norm/trie.go": "d87793d558251ee8824954f0b7bc5564803e4c9d59a8c4eebb4c3c5cfbd19492"
   },
-  "toolchain": "go1.25.13",
+  "toolchain": "go1.26.9",
   "unicode_data_lua_sha256": "07243776f0a5b1691e872cf92bddaf60cebf292175f25e2146a65220f20e849e",
   "unicode_notice_sources": [
     {

@@ -25,8 +25,8 @@ type jobLuaVM struct {
 
 func jobLuaNew(t *testing.T) *jobLuaVM {
 	t.Helper()
-	if runtime.Version() != "go1.25.13" {
-		t.Fatal("job differential oracle requires Go 1.25.13")
+	if runtime.Version() != "go1.26.9" {
+		t.Fatal("job differential oracle requires Go 1.26.9")
 	}
 	u := urlLuaNew(t, false)
 	l := u.state
@@ -1779,8 +1779,8 @@ func jobLuaQuote(s []byte) string {
 
 func TestJobLuaNativeFactoryParity(t *testing.T) {
 	t.Parallel()
-	if runtime.Version() != "go1.25.13" {
-		t.Fatal("native Lua oracle requires Go 1.25.13")
+	if runtime.Version() != "go1.26.9" {
+		t.Fatal("native Lua oracle requires Go 1.26.9")
 	}
 	executable, err := exec.LookPath("luajit")
 	if err != nil {

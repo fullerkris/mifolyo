@@ -1,0 +1,1031 @@
+{
+  "address_domain": "ELF-relative virtual addresses and PT_LOAD-derived file offsets ONLY",
+  "all_common_binding_requirements": [
+    "approved case/client/invocation binding",
+    "exact ELF and verified runtime load bias",
+    "correct main execution TID and start-time identity",
+    "calibrated hardware-stop PC semantics",
+    "bounded private reads, time and receipt integrity"
+  ],
+  "boundaries": [
+    {
+      "confidence": "static_bytes_and_dwarf_source_candidate",
+      "held_stop_proven": false,
+      "id": "D01.EVALSHA.entry",
+      "locations": [],
+      "meaning": "Outer EVALSHA entry, not inner mutation or Lua prevalidation",
+      "missing_evidence": [
+        "approved case/client/invocation binding",
+        "exact ELF and verified runtime load bias",
+        "correct main execution TID and start-time identity",
+        "calibrated hardware-stop PC semantics",
+        "bounded private reads, time and receipt integrity",
+        "EVALSHA SHA/client equality; rejection and cache-miss path discrimination"
+      ],
+      "source": [
+        {
+          "lines": [
+            646,
+            663
+          ],
+          "path": "src/eval.c",
+          "sha256": "5644c8de9b8aded70c3aabfb745a51a8b670285401adbbfd7146e88f89e2ddf9",
+          "url": "https://github.com/redis/redis/blob/aaf0ce63b3239f4b51f86ca1da8711b055721993/src/eval.c#L646-L663"
+        }
+      ],
+      "symbol": "evalShaCommand"
+    },
+    {
+      "confidence": "static_disassembly_inference_without_lua_vm_line_dwarf",
+      "held_stop_proven": false,
+      "id": "D01.VM.before_fetch",
+      "locations": [
+        {
+          "elf_va": 2068600,
+          "elf_va_hex": "0x1f9078",
+          "file_offset": 2068600,
+          "file_offset_hex": "0x1f9078",
+          "instruction_bytes": "734740b8",
+          "mnemonic": "ldr",
+          "operands": "w19, [x27], #4"
+        }
+      ],
+      "meaning": "Candidate before bytecode fetch, not a source-line breakpoint",
+      "missing_evidence": [
+        "approved case/client/invocation binding",
+        "exact ELF and verified runtime load bias",
+        "correct main execution TID and start-time identity",
+        "calibrated hardware-stop PC semantics",
+        "bounded private reads, time and receipt integrity",
+        "No lvm.c CU/line rows found in inspected DWARF",
+        "All incoming control-flow paths and register roles require independent review",
+        "Candidate x20=L, x26=LClosure, x27=next bytecode pointer; runtime validation absent",
+        "Canonical Proto tree/code/lineinfo/locvars/stack-slot binding absent; savedpc may be stale between protected calls",
+        "Current-PC versus next-PC off-by-one tests and pure-Lua branch-specific cuts absent",
+        "Per-bytecode trapping overhead may exceed unchanged deadlines"
+      ],
+      "source": [
+        {
+          "lines": [
+            379,
+            408
+          ],
+          "path": "deps/lua/src/lvm.c",
+          "sha256": "0c08a5debd90217df50d85dae26fba9c96f9725949696834a048e8af88a8f23f",
+          "url": "https://github.com/redis/redis/blob/aaf0ce63b3239f4b51f86ca1da8711b055721993/deps/lua/src/lvm.c#L379-L408"
+        }
+      ],
+      "symbol": "luaV_execute"
+    },
+    {
+      "confidence": "static_bytes_and_dwarf_source_candidate",
+      "held_stop_proven": false,
+      "id": "D01.REDIS_CALL.bridge",
+      "locations": [
+        {
+          "elf_va": 1881872,
+          "elf_va_hex": "0x1cb710",
+          "file_offset": 1881872,
+          "file_offset_hex": "0x1cb710",
+          "instruction_bytes": "3cfeff97",
+          "mnemonic": "bl",
+          "operands": "#0x1cb000"
+        }
+      ],
+      "meaning": "Pre scriptCall after argv conversion, before Redis-side checks",
+      "missing_evidence": [
+        "approved case/client/invocation binding",
+        "exact ELF and verified runtime load bias",
+        "correct main execution TID and start-time identity",
+        "calibrated hardware-stop PC semantics",
+        "bounded private reads, time and receipt integrity",
+        "Differentiate prevalidation reads from mutation loop, redis.call versus redis.pcall and other scripts",
+        "Private command digest and execution.count/i binding required"
+      ],
+      "source": [
+        {
+          "lines": [
+            878,
+            981
+          ],
+          "path": "src/script_lua.c",
+          "sha256": "a6872b5e98638cb9547a0b403cbb5d82f17eca8888f6e85c7b1f498b80ac9f2a",
+          "url": "https://github.com/redis/redis/blob/aaf0ce63b3239f4b51f86ca1da8711b055721993/src/script_lua.c#L878-L981"
+        }
+      ],
+      "symbol": "luaRedisGenericCommand"
+    },
+    {
+      "confidence": "static_bytes_and_dwarf_source_candidate",
+      "held_stop_proven": false,
+      "id": "D01.CALL.before",
+      "locations": [
+        {
+          "elf_va": 1880520,
+          "elf_va_hex": "0x1cb1c8",
+          "file_offset": 1880520,
+          "file_offset_hex": "0x1cb1c8",
+          "instruction_bytes": "be62fb97",
+          "mnemonic": "bl",
+          "operands": "#0xa3cc0"
+        }
+      ],
+      "meaning": "Before call() after script-side runtime checks, not all pure-Lua checks",
+      "missing_evidence": [
+        "approved case/client/invocation binding",
+        "exact ELF and verified runtime load bias",
+        "correct main execution TID and start-time identity",
+        "calibrated hardware-stop PC semantics",
+        "bounded private reads, time and receipt integrity",
+        "Original client/fake client/ordinal correlation"
+      ],
+      "source": [
+        {
+          "lines": [
+            575,
+            635
+          ],
+          "path": "src/script.c",
+          "sha256": "6ec9e4ca368180bee6f7abc9f3137b5dca864d84048e6a7a3c375a5582e0fcfd",
+          "url": "https://github.com/redis/redis/blob/aaf0ce63b3239f4b51f86ca1da8711b055721993/src/script.c#L575-L635"
+        }
+      ],
+      "symbol": "scriptCall"
+    },
+    {
+      "confidence": "static_bytes_and_dwarf_source_candidate",
+      "held_stop_proven": false,
+      "id": "D01.NATIVE.before",
+      "locations": [
+        {
+          "elf_va": 671244,
+          "elf_va_hex": "0xa3e0c",
+          "file_offset": 671244,
+          "file_offset_hex": "0xa3e0c",
+          "instruction_bytes": "20003fd6",
+          "mnemonic": "blr",
+          "operands": "x1"
+        }
+      ],
+      "meaning": "Immediately before indirect command procedure invocation",
+      "missing_evidence": [
+        "approved case/client/invocation binding",
+        "exact ELF and verified runtime load bias",
+        "correct main execution TID and start-time identity",
+        "calibrated hardware-stop PC semantics",
+        "bounded private reads, time and receipt integrity",
+        "At this instruction x0 is candidate client and x1 candidate command proc; verify private argv and intended ordinal",
+        "Same site handles outer EVALSHA, prevalidation reads and inner commands; hit count alone is not ordinal"
+      ],
+      "source": [
+        {
+          "lines": [
+            3553,
+            3577
+          ],
+          "path": "src/server.c",
+          "sha256": "cc9adb1d9307719a9ddb36b1728107fff56da9306d89eabfbdad1e700ea49392",
+          "url": "https://github.com/redis/redis/blob/aaf0ce63b3239f4b51f86ca1da8711b055721993/src/server.c#L3553-L3577"
+        }
+      ],
+      "symbol": "call"
+    },
+    {
+      "confidence": "static_bytes_and_dwarf_source_candidate",
+      "held_stop_proven": false,
+      "id": "D01.NATIVE.after",
+      "locations": [
+        {
+          "elf_va": 671248,
+          "elf_va_hex": "0xa3e10",
+          "file_offset": 671248,
+          "file_offset_hex": "0xa3e10",
+          "instruction_bytes": "810740f9",
+          "mnemonic": "ldr",
+          "operands": "x1, [x28, #8]"
+        }
+      ],
+      "meaning": "Immediately after native procedure returns; call bookkeeping and Lua conversion not completed",
+      "missing_evidence": [
+        "approved case/client/invocation binding",
+        "exact ELF and verified runtime load bias",
+        "correct main execution TID and start-time identity",
+        "calibrated hardware-stop PC semantics",
+        "bounded private reads, time and receipt integrity",
+        "Native return is not success: validate command outcome and no unexpected error",
+        "No persistence/client-ack implication"
+      ],
+      "source": [
+        {
+          "lines": [
+            3571,
+            3599
+          ],
+          "path": "src/server.c",
+          "sha256": "cc9adb1d9307719a9ddb36b1728107fff56da9306d89eabfbdad1e700ea49392",
+          "url": "https://github.com/redis/redis/blob/aaf0ce63b3239f4b51f86ca1da8711b055721993/src/server.c#L3571-L3599"
+        }
+      ],
+      "symbol": "call"
+    },
+    {
+      "confidence": "static_bytes_and_dwarf_source_candidate",
+      "held_stop_proven": false,
+      "id": "D01.CALL.after",
+      "locations": [
+        {
+          "elf_va": 1880524,
+          "elf_va_hex": "0x1cb1cc",
+          "file_offset": 1880524,
+          "file_offset_hex": "0x1cb1cc",
+          "instruction_bytes": "600640f9",
+          "mnemonic": "ldr",
+          "operands": "x0, [x19, #8]"
+        }
+      ],
+      "meaning": "call() returned to scriptCall; before subsequent error checks/conversion/cleanup",
+      "missing_evidence": [
+        "approved case/client/invocation binding",
+        "exact ELF and verified runtime load bias",
+        "correct main execution TID and start-time identity",
+        "calibrated hardware-stop PC semantics",
+        "bounded private reads, time and receipt integrity",
+        "Private no-error proof and same ordinal; still not completed Lua redis.call conversion"
+      ],
+      "source": [
+        {
+          "lines": [
+            628,
+            635
+          ],
+          "path": "src/script.c",
+          "sha256": "6ec9e4ca368180bee6f7abc9f3137b5dca864d84048e6a7a3c375a5582e0fcfd",
+          "url": "https://github.com/redis/redis/blob/aaf0ce63b3239f4b51f86ca1da8711b055721993/src/script.c#L628-L635"
+        }
+      ],
+      "symbol": "scriptCall"
+    },
+    {
+      "confidence": "source_only_no_exact_canonical_vm_pc",
+      "held_stop_proven": false,
+      "id": "D01.LUA.after_redis_call",
+      "locations": [],
+      "meaning": "Candidate VM continuation after exactly ordinal i returns; required between-loop cut",
+      "missing_evidence": [
+        "approved case/client/invocation binding",
+        "exact ELF and verified runtime load bias",
+        "correct main execution TID and start-time identity",
+        "calibrated hardware-stop PC semantics",
+        "bounded private reads, time and receipt integrity",
+        "No supported canonical bytecode PC/stack location yet",
+        "Bind root prototype, count, i, calls[i].argc and framed private argv digest"
+      ],
+      "source": [
+        {
+          "canonical_lines": [
+            9101,
+            9106
+          ],
+          "module": "ops/cj2_commit.lua",
+          "module_lines": [
+            3,
+            8
+          ],
+          "sha256": "98f5fecc5933e3fda823045adb114d7fe4452ae7eabff1cae36863085d1352c6"
+        },
+        {
+          "lines": [
+            586,
+            639
+          ],
+          "path": "deps/lua/src/lvm.c",
+          "sha256": "0c08a5debd90217df50d85dae26fba9c96f9725949696834a048e8af88a8f23f",
+          "url": "https://github.com/redis/redis/blob/aaf0ce63b3239f4b51f86ca1da8711b055721993/deps/lua/src/lvm.c#L586-L639"
+        }
+      ],
+      "symbol": "luaV_execute"
+    },
+    {
+      "confidence": "static_bytes_and_dwarf_source_candidate",
+      "held_stop_proven": false,
+      "id": "D01.PROPAGATE.unit",
+      "locations": [],
+      "meaning": "Execution-unit effects propagation; not a 1:1 descriptor/AOF mapping",
+      "missing_evidence": [
+        "approved case/client/invocation binding",
+        "exact ELF and verified runtime load bias",
+        "correct main execution TID and start-time identity",
+        "calibrated hardware-stop PC semantics",
+        "bounded private reads, time and receipt integrity",
+        "Verify outer execution_nesting=0 and exact also_propagate effect list and MULTI/EXEC wrapping",
+        "No-op commands, side effects and rewrites can change propagation cardinality"
+      ],
+      "source": [
+        {
+          "lines": [
+            3389,
+            3459
+          ],
+          "path": "src/server.c",
+          "sha256": "cc9adb1d9307719a9ddb36b1728107fff56da9306d89eabfbdad1e700ea49392",
+          "url": "https://github.com/redis/redis/blob/aaf0ce63b3239f4b51f86ca1da8711b055721993/src/server.c#L3389-L3459"
+        }
+      ],
+      "symbol": "propagatePendingCommands.lto_priv.0"
+    },
+    {
+      "confidence": "static_bytes_and_dwarf_source_candidate",
+      "held_stop_proven": false,
+      "id": "D01.AOF.buffer",
+      "locations": [],
+      "meaning": "Feed serialized effects to in-memory AOF buffer, not durable storage",
+      "missing_evidence": [
+        "approved case/client/invocation binding",
+        "exact ELF and verified runtime load bias",
+        "correct main execution TID and start-time identity",
+        "calibrated hardware-stop PC semantics",
+        "bounded private reads, time and receipt integrity",
+        "Selected multipart-AOF file/offset and invocation byte interval binding"
+      ],
+      "source": [
+        {
+          "lines": [
+            1307,
+            1345
+          ],
+          "path": "src/aof.c",
+          "sha256": "e2bb132463edee1a673ca3fd2bd397eb0f7138d9f49c241ffd44212e54dc40a2",
+          "url": "https://github.com/redis/redis/blob/aaf0ce63b3239f4b51f86ca1da8711b055721993/src/aof.c#L1307-L1345"
+        }
+      ],
+      "symbol": "feedAppendOnlyFile"
+    },
+    {
+      "confidence": "static_bytes_and_dwarf_source_candidate",
+      "held_stop_proven": false,
+      "id": "D01.AOF.before_write",
+      "locations": [
+        {
+          "elf_va": 1164676,
+          "elf_va_hex": "0x11c584",
+          "file_offset": 1164676,
+          "file_offset_hex": "0x11c584",
+          "instruction_bytes": "1f88fd97",
+          "mnemonic": "bl",
+          "operands": "#0x7e600"
+        }
+      ],
+      "meaning": "Inline aofWrite loop's write@plt call in flushAppendOnlyFile",
+      "missing_evidence": [
+        "approved case/client/invocation binding",
+        "exact ELF and verified runtime load bias",
+        "correct main execution TID and start-time identity",
+        "calibrated hardware-stop PC semantics",
+        "bounded private reads, time and receipt integrity",
+        "Standalone aofWrite entry misses this inline path",
+        "Identify AOF fd/offset, total expected bytes and possible short-write/EINTR iteration",
+        "Pre-write does not establish prior background I/O is stopped"
+      ],
+      "source": [
+        {
+          "lines": [
+            1007,
+            1024
+          ],
+          "path": "src/aof.c",
+          "sha256": "e2bb132463edee1a673ca3fd2bd397eb0f7138d9f49c241ffd44212e54dc40a2",
+          "url": "https://github.com/redis/redis/blob/aaf0ce63b3239f4b51f86ca1da8711b055721993/src/aof.c#L1007-L1024"
+        },
+        {
+          "lines": [
+            1115,
+            1117
+          ],
+          "path": "src/aof.c",
+          "sha256": "e2bb132463edee1a673ca3fd2bd397eb0f7138d9f49c241ffd44212e54dc40a2",
+          "url": "https://github.com/redis/redis/blob/aaf0ce63b3239f4b51f86ca1da8711b055721993/src/aof.c#L1115-L1117"
+        }
+      ],
+      "symbol": "flushAppendOnlyFile"
+    },
+    {
+      "confidence": "static_bytes_and_dwarf_source_candidate",
+      "held_stop_proven": false,
+      "id": "D01.AOF.after_write_iteration",
+      "locations": [
+        {
+          "elf_va": 1164680,
+          "elf_va_hex": "0x11c588",
+          "file_offset": 1164680,
+          "file_offset_hex": "0x11c588",
+          "instruction_bytes": "800af8b7",
+          "mnemonic": "tbnz",
+          "operands": "x0, #0x3f, #0x11c6d8"
+        }
+      ],
+      "meaning": "A write iteration returned; not proof of complete buffer or sync",
+      "missing_evidence": [
+        "approved case/client/invocation binding",
+        "exact ELF and verified runtime load bias",
+        "correct main execution TID and start-time identity",
+        "calibrated hardware-stop PC semantics",
+        "bounded private reads, time and receipt integrity",
+        "Inspect bounded return/expected-length/loop completion/error outcome; success cannot be inferred from PC alone"
+      ],
+      "source": [
+        {
+          "lines": [
+            1007,
+            1024
+          ],
+          "path": "src/aof.c",
+          "sha256": "e2bb132463edee1a673ca3fd2bd397eb0f7138d9f49c241ffd44212e54dc40a2",
+          "url": "https://github.com/redis/redis/blob/aaf0ce63b3239f4b51f86ca1da8711b055721993/src/aof.c#L1007-L1024"
+        },
+        {
+          "lines": [
+            1135,
+            1208
+          ],
+          "path": "src/aof.c",
+          "sha256": "e2bb132463edee1a673ca3fd2bd397eb0f7138d9f49c241ffd44212e54dc40a2",
+          "url": "https://github.com/redis/redis/blob/aaf0ce63b3239f4b51f86ca1da8711b055721993/src/aof.c#L1135-L1208"
+        }
+      ],
+      "symbol": "flushAppendOnlyFile"
+    },
+    {
+      "confidence": "static_bytes_and_dwarf_source_candidate",
+      "held_stop_proven": false,
+      "id": "D01.AOF.before_fdatasync",
+      "locations": [
+        {
+          "elf_va": 1165460,
+          "elf_va_hex": "0x11c894",
+          "file_offset": 1165460,
+          "file_offset_hex": "0x11c894",
+          "instruction_bytes": "f383fd97",
+          "mnemonic": "bl",
+          "operands": "#0x7d860"
+        }
+      ],
+      "meaning": "Before Linux fdatasync@plt on always-fsync branch",
+      "missing_evidence": [
+        "approved case/client/invocation binding",
+        "exact ELF and verified runtime load bias",
+        "correct main execution TID and start-time identity",
+        "calibrated hardware-stop PC semantics",
+        "bounded private reads, time and receipt integrity",
+        "Verify appendfsync always, no-appendfsync-on-rewrite no and selected AOF file context",
+        "PLT mapping only; libc/kernel syscall instruction mapping not supplied"
+      ],
+      "source": [
+        {
+          "lines": [
+            1221,
+            1252
+          ],
+          "path": "src/aof.c",
+          "sha256": "e2bb132463edee1a673ca3fd2bd397eb0f7138d9f49c241ffd44212e54dc40a2",
+          "url": "https://github.com/redis/redis/blob/aaf0ce63b3239f4b51f86ca1da8711b055721993/src/aof.c#L1221-L1252"
+        },
+        {
+          "lines": [
+            96,
+            103
+          ],
+          "path": "src/config.h",
+          "sha256": "8ba3f58128144a06e26bcb17f02d14ef04c9dc7e069dba3c238d2ad163911d00",
+          "url": "https://github.com/redis/redis/blob/aaf0ce63b3239f4b51f86ca1da8711b055721993/src/config.h#L96-L103"
+        }
+      ],
+      "symbol": "flushAppendOnlyFile"
+    },
+    {
+      "confidence": "static_bytes_and_dwarf_source_candidate",
+      "held_stop_proven": false,
+      "id": "D01.AOF.after_fdatasync",
+      "locations": [
+        {
+          "elf_va": 1165464,
+          "elf_va_hex": "0x11c898",
+          "file_offset": 1165464,
+          "file_offset_hex": "0x11c898",
+          "instruction_bytes": "1f040031",
+          "mnemonic": "cmn",
+          "operands": "w0, #1"
+        }
+      ],
+      "meaning": "fdatasync returned, BEFORE its error test; w0=0 required",
+      "missing_evidence": [
+        "approved case/client/invocation binding",
+        "exact ELF and verified runtime load bias",
+        "correct main execution TID and start-time identity",
+        "calibrated hardware-stop PC semantics",
+        "bounded private reads, time and receipt integrity",
+        "A -1 result reaches this PC too",
+        "Successful sync return is not client receipt or a crash/restart durability measurement"
+      ],
+      "source": [
+        {
+          "lines": [
+            1235,
+            1244
+          ],
+          "path": "src/aof.c",
+          "sha256": "e2bb132463edee1a673ca3fd2bd397eb0f7138d9f49c241ffd44212e54dc40a2",
+          "url": "https://github.com/redis/redis/blob/aaf0ce63b3239f4b51f86ca1da8711b055721993/src/aof.c#L1235-L1244"
+        }
+      ],
+      "symbol": "flushAppendOnlyFile"
+    },
+    {
+      "confidence": "static_bytes_and_dwarf_source_candidate",
+      "held_stop_proven": false,
+      "id": "D01.REPLY.convert",
+      "locations": [
+        {
+          "elf_va": 1877512,
+          "elf_va_hex": "0x1ca608",
+          "file_offset": 1877512,
+          "file_offset_hex": "0x1ca608",
+          "instruction_bytes": "cefbff97",
+          "mnemonic": "bl",
+          "operands": "#0x1c9540"
+        }
+      ],
+      "meaning": "Successful Lua result conversion to original client's Redis reply buffer",
+      "missing_evidence": [
+        "approved case/client/invocation binding",
+        "exact ELF and verified runtime load bias",
+        "correct main execution TID and start-time identity",
+        "calibrated hardware-stop PC semantics",
+        "bounded private reads, time and receipt integrity",
+        "Frame/branch bound to tested invocation",
+        "Buffer creation can precede propagation and fsync; no network acknowledgment implied"
+      ],
+      "source": [
+        {
+          "lines": [
+            1699,
+            1742
+          ],
+          "path": "src/script_lua.c",
+          "sha256": "a6872b5e98638cb9547a0b403cbb5d82f17eca8888f6e85c7b1f498b80ac9f2a",
+          "url": "https://github.com/redis/redis/blob/aaf0ce63b3239f4b51f86ca1da8711b055721993/src/script_lua.c#L1699-L1742"
+        }
+      ],
+      "symbol": "luaCallFunction"
+    },
+    {
+      "confidence": "static_bytes_and_dwarf_source_candidate",
+      "held_stop_proven": false,
+      "id": "D01.REPLY.write",
+      "locations": [],
+      "meaning": "Client output transport candidates, may be threaded/partial",
+      "missing_evidence": [
+        "approved case/client/invocation binding",
+        "exact ELF and verified runtime load bias",
+        "correct main execution TID and start-time identity",
+        "calibrated hardware-stop PC semantics",
+        "bounded private reads, time and receipt integrity",
+        "Original connection identity, fd/session and response byte interval",
+        "Socket return only shows kernel acceptance, not full client receipt",
+        "Main-thread stop does not hold I/O threads, kernel buffers or client"
+      ],
+      "source": [
+        {
+          "lines": [
+            1936,
+            2068
+          ],
+          "path": "src/networking.c",
+          "sha256": "0ed207f003c35589f97e6375bcf589c5fb22a1f905b3c2e9ec6a08d67984893c",
+          "url": "https://github.com/redis/redis/blob/aaf0ce63b3239f4b51f86ca1da8711b055721993/src/networking.c#L1936-L2068"
+        },
+        {
+          "lines": [
+            1733,
+            1757
+          ],
+          "path": "src/server.c",
+          "sha256": "cc9adb1d9307719a9ddb36b1728107fff56da9306d89eabfbdad1e700ea49392",
+          "url": "https://github.com/redis/redis/blob/aaf0ce63b3239f4b51f86ca1da8711b055721993/src/server.c#L1733-L1757"
+        }
+      ],
+      "symbol": "writeToClient"
+    },
+    {
+      "confidence": "external_receipt_required_no_elf_location",
+      "held_stop_proven": false,
+      "id": "D01.CLIENT.ack",
+      "locations": [],
+      "meaning": "Independent exact-client full protocol acknowledgment observation",
+      "missing_evidence": [
+        "approved case/client/invocation binding",
+        "exact ELF and verified runtime load bias",
+        "correct main execution TID and start-time identity",
+        "calibrated hardware-stop PC semantics",
+        "bounded private reads, time and receipt integrity",
+        "No redis-server ELF location can establish client receipt",
+        "Positive independent evidence needed for known_pre_acknowledgment or acknowledged; else unknown"
+      ],
+      "source": [],
+      "symbol": null
+    }
+  ],
+  "canonical_sha256": "e6d9f14ccc566cff43148790af96f1b2d65e890a2a4e7b33e3bb475c1427d4fe",
+  "elf_sha256": "772f79e9154598fe509961928dc4d7c1ac577a948be6e86b793fdb7b0599e1b6",
+  "evidence_class": "static_candidates_not_held_stops",
+  "prevalidation_classes": [
+    {
+      "anchors": [
+        {
+          "canonical_lines": [
+            9101,
+            9102
+          ],
+          "module": "ops/cj2_commit.lua",
+          "module_lines": [
+            3,
+            4
+          ],
+          "sha256": "98f5fecc5933e3fda823045adb114d7fe4452ae7eabff1cae36863085d1352c6"
+        }
+      ],
+      "coverage_proven": false,
+      "exact_canonical_vm_pc": null,
+      "id": "PV00",
+      "limitation": "All generated chunk setup precedes Stage.prepare; no VM PCs assigned.",
+      "name": "canonical chunk/module initialization"
+    },
+    {
+      "anchors": [
+        {
+          "canonical_lines": [
+            1789,
+            1822
+          ],
+          "module": "context.lua",
+          "module_lines": [
+            429,
+            462
+          ],
+          "sha256": "0d6f9a63822f4efbc6997a834e4519d0b133ff944850dd7eae373b9c59920e44"
+        },
+        {
+          "canonical_lines": [
+            2361,
+            2439
+          ],
+          "module": "gate.lua",
+          "module_lines": [
+            64,
+            142
+          ],
+          "sha256": "76a9ec19ff49140db86f1f0a285be8c3da83456587e8b4c78ffdadbe742bdbf4"
+        },
+        {
+          "canonical_lines": [
+            9057,
+            9062
+          ],
+          "module": "ledger_stage.lua",
+          "module_lines": [
+            1546,
+            1551
+          ],
+          "sha256": "f9ca9907d2b7e3bb38b2e85690a1ad7a8ec035c88a3ed1d2e7160d387b6c2864"
+        }
+      ],
+      "coverage_proven": false,
+      "exact_canonical_vm_pc": null,
+      "id": "PV01",
+      "limitation": "Includes pure-Lua validation plus reads.",
+      "name": "wire/key/argument/one-TIME context and boot/markers/guard"
+    },
+    {
+      "anchors": [
+        {
+          "canonical_lines": [
+            8606,
+            8622
+          ],
+          "module": "ledger_stage.lua",
+          "module_lines": [
+            1095,
+            1111
+          ],
+          "sha256": "f9ca9907d2b7e3bb38b2e85690a1ad7a8ec035c88a3ed1d2e7160d387b6c2864"
+        },
+        {
+          "canonical_lines": [
+            9063,
+            9076
+          ],
+          "module": "ledger_stage.lua",
+          "module_lines": [
+            1552,
+            1565
+          ],
+          "sha256": "f9ca9907d2b7e3bb38b2e85690a1ad7a8ec035c88a3ed1d2e7160d387b6c2864"
+        }
+      ],
+      "coverage_proven": false,
+      "exact_canonical_vm_pc": null,
+      "id": "PV02",
+      "limitation": "Replay must precede live checks, zero mutation.",
+      "name": "lease input, retained job, purge and early completed receipt"
+    },
+    {
+      "anchors": [
+        {
+          "canonical_lines": [
+            7823,
+            7841
+          ],
+          "module": "ledger_stage.lua",
+          "module_lines": [
+            312,
+            330
+          ],
+          "sha256": "f9ca9907d2b7e3bb38b2e85690a1ad7a8ec035c88a3ed1d2e7160d387b6c2864"
+        },
+        {
+          "canonical_lines": [
+            9075,
+            9090
+          ],
+          "module": "ledger_stage.lua",
+          "module_lines": [
+            1564,
+            1579
+          ],
+          "sha256": "f9ca9907d2b7e3bb38b2e85690a1ad7a8ec035c88a3ed1d2e7160d387b6c2864"
+        }
+      ],
+      "coverage_proven": false,
+      "exact_canonical_vm_pc": null,
+      "id": "PV03",
+      "limitation": "Run/Job subchecks and pure-Lua relations require distinct cuts.",
+      "name": "live run/authorization/lease/state indexes and request reservation"
+    },
+    {
+      "anchors": [
+        {
+          "canonical_lines": [
+            8092,
+            8139
+          ],
+          "module": "ledger_stage.lua",
+          "module_lines": [
+            581,
+            628
+          ],
+          "sha256": "f9ca9907d2b7e3bb38b2e85690a1ad7a8ec035c88a3ed1d2e7160d387b6c2864"
+        },
+        {
+          "canonical_lines": [
+            8575,
+            8603
+          ],
+          "module": "ledger_stage.lua",
+          "module_lines": [
+            1064,
+            1092
+          ],
+          "sha256": "f9ca9907d2b7e3bb38b2e85690a1ad7a8ec035c88a3ed1d2e7160d387b6c2864"
+        },
+        {
+          "canonical_lines": [
+            8682,
+            8700
+          ],
+          "module": "ledger_stage.lua",
+          "module_lines": [
+            1171,
+            1189
+          ],
+          "sha256": "f9ca9907d2b7e3bb38b2e85690a1ad7a8ec035c88a3ed1d2e7160d387b6c2864"
+        },
+        {
+          "canonical_lines": [
+            9036,
+            9044
+          ],
+          "module": "ledger_stage.lua",
+          "module_lines": [
+            1525,
+            1533
+          ],
+          "sha256": "f9ca9907d2b7e3bb38b2e85690a1ad7a8ec035c88a3ed1d2e7160d387b6c2864"
+        }
+      ],
+      "coverage_proven": false,
+      "exact_canonical_vm_pc": null,
+      "id": "PV04",
+      "limitation": "Needs nested bundle helper branch inventory before OBS3.",
+      "name": "stage ownership, B/G/fence/slot/time/bounds, complete sealed payload"
+    },
+    {
+      "anchors": [
+        {
+          "canonical_lines": [
+            8906,
+            8946
+          ],
+          "module": "ledger_stage.lua",
+          "module_lines": [
+            1395,
+            1435
+          ],
+          "sha256": "f9ca9907d2b7e3bb38b2e85690a1ad7a8ec035c88a3ed1d2e7160d387b6c2864"
+        }
+      ],
+      "coverage_proven": false,
+      "exact_canonical_vm_pc": null,
+      "id": "PV05",
+      "limitation": "Each repeated item requires item ordinal; pure-Lua URL/policy/collision checks not dispatch-only.",
+      "name": "destinations/backlinks, existing versus fresh discovery, group counts"
+    },
+    {
+      "anchors": [
+        {
+          "canonical_lines": [
+            8947,
+            8969
+          ],
+          "module": "ledger_stage.lua",
+          "module_lines": [
+            1436,
+            1458
+          ],
+          "sha256": "f9ca9907d2b7e3bb38b2e85690a1ad7a8ec035c88a3ed1d2e7160d387b6c2864"
+        },
+        {
+          "canonical_lines": [
+            9045,
+            9046
+          ],
+          "module": "ledger_stage.lua",
+          "module_lines": [
+            1534,
+            1535
+          ],
+          "sha256": "f9ca9907d2b7e3bb38b2e85690a1ad7a8ec035c88a3ed1d2e7160d387b6c2864"
+        }
+      ],
+      "coverage_proven": false,
+      "exact_canonical_vm_pc": null,
+      "id": "PV06",
+      "limitation": "Unchanged/depth-only/new aliases are distinct.",
+      "name": "alias collision/depth/witness, queue admission"
+    },
+    {
+      "anchors": [
+        {
+          "canonical_lines": [
+            8970,
+            9035
+          ],
+          "module": "ledger_stage.lua",
+          "module_lines": [
+            1459,
+            1524
+          ],
+          "sha256": "f9ca9907d2b7e3bb38b2e85690a1ad7a8ec035c88a3ed1d2e7160d387b6c2864"
+        },
+        {
+          "canonical_lines": [
+            4731,
+            4824
+          ],
+          "module": "ledger_run.lua",
+          "module_lines": [
+            720,
+            813
+          ],
+          "sha256": "b4841a7521651d0f1aa5f2c8b7625b6773529e2a533b3c305373cebd20f0dc0a"
+        },
+        {
+          "canonical_lines": [
+            3031,
+            3069
+          ],
+          "module": "plan.lua",
+          "module_lines": [
+            80,
+            118
+          ],
+          "sha256": "ad10f4ca7e323331d515f1fbaec295b1890fc187cdbf2a88b3fbc8f7b181fda6"
+        }
+      ],
+      "coverage_proven": false,
+      "exact_canonical_vm_pc": null,
+      "id": "PV07",
+      "limitation": "add(plan,...) is not Redis mutation; splitting/omission changes count.",
+      "name": "all inert descriptors, run aggregation and residual-expiry construction"
+    },
+    {
+      "anchors": [
+        {
+          "canonical_lines": [
+            3252,
+            3311
+          ],
+          "module": "plan.lua",
+          "module_lines": [
+            301,
+            360
+          ],
+          "sha256": "ad10f4ca7e323331d515f1fbaec295b1890fc187cdbf2a88b3fbc8f7b181fda6"
+        },
+        {
+          "canonical_lines": [
+            3375,
+            3457
+          ],
+          "module": "plan.lua",
+          "module_lines": [
+            424,
+            506
+          ],
+          "sha256": "ad10f4ca7e323331d515f1fbaec295b1890fc187cdbf2a88b3fbc8f7b181fda6"
+        },
+        {
+          "canonical_lines": [
+            9048,
+            9051
+          ],
+          "module": "ledger_stage.lua",
+          "module_lines": [
+            1537,
+            1540
+          ],
+          "sha256": "f9ca9907d2b7e3bb38b2e85690a1ad7a8ec035c88a3ed1d2e7160d387b6c2864"
+        }
+      ],
+      "coverage_proven": false,
+      "exact_canonical_vm_pc": null,
+      "id": "PV08",
+      "limitation": "Queue/memory refusal can switch to separate 3-call bookkeeping plan.",
+      "name": "simulation, stage-slot settlement, integer/growth/headroom admission"
+    },
+    {
+      "anchors": [
+        {
+          "canonical_lines": [
+            3459,
+            3486
+          ],
+          "module": "plan.lua",
+          "module_lines": [
+            508,
+            535
+          ],
+          "sha256": "ad10f4ca7e323331d515f1fbaec295b1890fc187cdbf2a88b3fbc8f7b181fda6"
+        },
+        {
+          "canonical_lines": [
+            8664,
+            8671
+          ],
+          "module": "ledger_stage.lua",
+          "module_lines": [
+            1153,
+            1160
+          ],
+          "sha256": "f9ca9907d2b7e3bb38b2e85690a1ad7a8ec035c88a3ed1d2e7160d387b6c2864"
+        }
+      ],
+      "coverage_proven": false,
+      "exact_canonical_vm_pc": null,
+      "id": "PV09",
+      "limitation": "execution table creation at plan:525 is BEFORE ACL loop; not first-write-ready by itself.",
+      "name": "complete response, execution table and ACL preflight, final seal"
+    },
+    {
+      "anchors": [
+        {
+          "canonical_lines": [
+            9101,
+            9104
+          ],
+          "module": "ops/cj2_commit.lua",
+          "module_lines": [
+            3,
+            6
+          ],
+          "sha256": "98f5fecc5933e3fda823045adb114d7fe4452ae7eabff1cae36863085d1352c6"
+        }
+      ],
+      "coverage_proven": false,
+      "exact_canonical_vm_pc": null,
+      "id": "PV10",
+      "limitation": "Canonical 9101-9104; one line never proves every ordinal or branch.",
+      "name": "mutation-loop admission after prepare success, before i=1"
+    }
+  ],
+  "schema": "d01-boundary-candidates-v1",
+  "source_commit": "aaf0ce63b3239f4b51f86ca1da8711b055721993"
+}

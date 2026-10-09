@@ -1,0 +1,375 @@
+All addresses are ELF VAs/file offsets, never runtime addresses.
+_writeToClient: ELF VA 0xc1ed0, file offset 0xc1ed0, size 956, STB_GLOBAL
+addReply: ELF VA 0xbd084, file offset 0xbd084, size 220, STB_GLOBAL
+addReplyProto: ELF VA 0xbc1e4, file offset 0xbc1e4, size 80, STB_GLOBAL
+afterCommand: ELF VA 0xa3bc0, file offset 0xa3bc0, size 252, STB_GLOBAL
+alsoPropagate: ELF VA 0xa2510, file offset 0xa2510, size 372, STB_GLOBAL
+aofWrite: ELF VA 0x1152e0, file offset 0x1152e0, size 144, STB_GLOBAL
+beforeSleep: ELF VA 0x9dff4, file offset 0x9dff4, size 1252, STB_GLOBAL
+bioCreateFsyncJob: ELF VA 0x14b2b0, file offset 0x14b2b0, size 204, STB_GLOBAL
+bioProcessBackgroundJobs: ELF VA 0x14f6f0, file offset 0x14f6f0, size 1172, STB_GLOBAL
+call: ELF VA 0xa3cc0, file offset 0xa3cc0, size 1756, STB_GLOBAL
+connSocketWrite: ELF VA 0x1b8da0, file offset 0x1b8da0, size 100, STB_LOCAL
+connSocketWritev: ELF VA 0x1b92a0, file offset 0x1b92a0, size 100, STB_LOCAL
+evalGenericCommand: ELF VA 0x14a460, file offset 0x14a460, size 836, STB_GLOBAL
+evalShaCommand: ELF VA 0x14a7a4, file offset 0x14a7a4, size 288, STB_GLOBAL
+feedAppendOnlyFile: ELF VA 0x11d180, file offset 0x11d180, size 496, STB_GLOBAL
+flushAppendOnlyFile: ELF VA 0x11c4a0, file offset 0x11c4a0, size 2124, STB_GLOBAL
+handleClientsWithPendingWrites: ELF VA 0xc1cd0, file offset 0xc1cd0, size 276, STB_GLOBAL
+handleClientsWithPendingWritesUsingThreads: ELF VA 0xc5ec4, file offset 0xc5ec4, size 868, STB_GLOBAL
+luaCallFunction: ELF VA 0x1ca490, file offset 0x1ca490, size 812, STB_GLOBAL
+luaD_call: ELF VA 0x1efe40, file offset 0x1efe40, size 204, STB_LOCAL
+luaD_poscall: ELF VA 0x1ef660, file offset 0x1ef660, size 292, STB_LOCAL
+luaD_precall: ELF VA 0x1ef784, file offset 0x1ef784, size 1560, STB_LOCAL
+luaF_newproto: ELF VA 0x1f0ae4, file offset 0x1f0ae4, size 100, STB_LOCAL
+luaRedisCallCommand: ELF VA 0x1cb920, file offset 0x1cb920, size 8, STB_LOCAL
+luaRedisGenericCommand: ELF VA 0x1cb5b0, file offset 0x1cb5b0, size 880, STB_LOCAL
+luaReplyToRedisReply: ELF VA 0x1c9540, file offset 0x1c9540, size 1720, STB_LOCAL
+luaV_execute: ELF VA 0x1f9024, file offset 0x1f9024, size 4736, STB_LOCAL
+lua_load: ELF VA 0x1ed360, file offset 0x1ed360, size 92, STB_GLOBAL
+lua_pcall: ELF VA 0x1ed280, file offset 0x1ed280, size 160, STB_GLOBAL
+postExecutionUnitOperations: ELF VA 0xa3970, file offset 0xa3970, size 140, STB_GLOBAL
+prepareClientToWrite: ELF VA 0xbbf10, file offset 0xbbf10, size 232, STB_GLOBAL
+propagateNow: ELF VA 0xa3500, file offset 0xa3500, size 312, STB_LOCAL
+propagatePendingCommands.lto_priv.0: ELF VA 0xa3640, file offset 0xa3640, size 496, STB_LOCAL
+scriptCall: ELF VA 0x1cb000, file offset 0x1cb000, size 1456, STB_GLOBAL
+scriptPrepareForRun: ELF VA 0x1cabb4, file offset 0x1cabb4, size 864, STB_GLOBAL
+scriptResetRun: ELF VA 0x1caf14, file offset 0x1caf14, size 236, STB_GLOBAL
+server: ELF VA 0x388ec0, file offset None, size 5776, STB_GLOBAL
+writeToClient: ELF VA 0xc3680, file offset 0xc3680, size 664, STB_GLOBAL
+
+Control transfers: beforeSleep
+0x9e054 9f9e0094 bl #0xc5ad0 ['handleClientsWithPendingReadsUsingThreads.part.0'] networking.c:4544
+0x9e078 00003fd6 blr x0 [] connection.c:183
+0x9e0a8 00003fd6 blr x0 [] connection.c:166
+0x9e0cc e2340394 bl #0x16b454 ['blockedBeforeSleep'] server.c:1679
+0x9e0d4 00003fd6 blr x0 [] server.c:1684
+0x9e104 db0d0194 bl #0xe1870 ['updateFailoverStatus'] server.c:1714
+0x9e138 fe8f0494 bl #0x1c2130 ['trackingBroadcastInvalidationMessages.part.0'] tracking.c:590
+0x9e140 00003fd6 blr x0 [] server.c:1727
+0x9e160 00003fd6 blr x0 [] server.c:1740
+0x9e1a0 499f0094 bl #0xc5ec4 ['handleClientsWithPendingWritesUsingThreads'] server.c:1757
+0x9e1a8 00003fd6 blr x0 [] server.c:1760
+0x9e1b0 ec940094 bl #0xc3560 ['freeClientsInAsyncFreeQueue'] server.c:1763
+0x9e1c0 90f10094 bl #0xda800 ['incrementalTrimReplicationBacklog'] server.c:1768
+0x9e1c4 7fa60094 bl #0xc7bc0 ['evictClients'] server.c:1771
+0x9e1cc 00003fd6 blr x0 [] server.c:1774
+0x9e1e0 00003fd6 blr x0 [] server.c:1778
+0x9e2bc c0035fd6 ret  [] server.c:1803
+0x9e2f4 dff10094 bl #0xdaa70 ['replicationFeedSlaves'] server.c:1618
+0x9e2fc 82ffff17 b #0x9e104 [] server.c:1708
+0x9e30c baa30394 bl #0x1871f4 ['moduleFireServerEvent'] server.c:1692
+0x9e318 eaffff17 b #0x9e2c0 [] server.c:1706
+0x9e330 f4e90394 bl #0x198b00 ['activeExpireCycle'] server.c:1689
+0x9e334 6cffff17 b #0x9e0e4 [] server.c:1689
+0x9e340 c1840294 bl #0x13f644 ['clusterBeforeSleep'] server.c:1674
+0x9e344 44340394 bl #0x16b454 ['blockedBeforeSleep'] server.c:1679
+0x9e34c 00003fd6 blr x0 [] server.c:1684
+0x9e35c f0ffff17 b #0x9e31c [] server.c:1688
+0x9e370 d89d0094 bl #0xc5ad0 ['handleClientsWithPendingReadsUsingThreads.part.0'] networking.c:4544
+0x9e3a0 00003fd6 blr x0 [] connection.c:183
+0x9e3c8 428e0094 bl #0xc1cd0 ['handleClientsWithPendingWrites'] server.c:1655
+0x9e3d0 64940094 bl #0xc3560 ['freeClientsInAsyncFreeQueue'] server.c:1656
+0x9e400 c0035fd6 ret  [] server.c:1803
+0x9e434 5affff17 b #0x9e19c [] server.c:1752
+0x9e43c 19f80194 bl #0x11c4a0 ['flushAppendOnlyFile'] server.c:1737
+0x9e440 47ffff17 b #0x9e15c [] server.c:1737
+0x9e454 b6ffff17 b #0x9e32c [] server.c:6861
+0x9e458 62850094 bl #0xbf9e0 ['updatePausedActions'] networking.c:4178
+0x9e464 99ffff17 b #0x9e2c8 [] server.c:1706
+0x9e488 067eff17 b #0x7dca0 ['pthread_mutex_unlock@plt'] module.c:8637
+0x9e498 a8ffff17 b #0x9e338 [] server.c:1674
+0x9e4a0 00f80194 bl #0x11c4a0 ['flushAppendOnlyFile'] server.c:1654
+0x9e4a4 c9ffff17 b #0x9e3c8 [] server.c:1654
+0x9e4bc 2e300294 bl #0x12a574 ['_serverAssert'] server.c:1719
+0x9e4d4 28300294 bl #0x12a574 ['_serverAssert'] server.c:1720
+
+Control transfers: call
+0xa3d50 5468ff97 bl #0x7dea0 ['gettimeofday@plt'] server.c:205
+0xa3df8 20003fd6 blr x1 [] server.c:3569
+0xa3e0c 20003fd6 blr x1 [] server.c:3571
+0xa3e3c 00003fd6 blr x0 [] server.c:3583
+0xa3f34 db95ff97 bl #0x896a0 ['listDelNode'] slowlog.c:110
+0xa3f98 26fa0094 bl #0xe2830 ['replicationFeedMonitors.part.0'] replication.c:556
+0xa3fc8 eea50094 bl #0xcd780 ['decrRefCount'] networking.c:1418
+0xa3fdc a5220094 bl #0xaca70 ['zfree'] networking.c:1419
+0xa4098 cafeff97 bl #0xa3bc0 ['afterCommand'] server.c:3730
+0xa40e4 c0035fd6 ret  [] server.c:3744
+0xa4100 5fffff17 b #0xa3e7c [] server.c:3598
+0xa41a4 dbf8ff97 bl #0xa2510 ['alsoPropagate'] server.c:3694
+0xa41b0 9affff17 b #0xa4018 [] server.c:3706
+0xa41bc 3967ff97 bl #0x7dea0 ['gettimeofday@plt'] server.c:205
+0xa41d4 1dffff17 b #0xa3e48 [] server.c:3585
+0xa41e4 71ffff17 b #0xa3fa8 [] networking.c:1415
+0xa420c ba730494 bl #0x1c10f4 ['trackingRememberKeys'] server.c:3716
+0xa4214 95ffff17 b #0xa4068 [] server.c:3720
+0xa4220 2067ff97 bl #0x7dea0 ['gettimeofday@plt'] server.c:205
+0xa422c d4feff17 b #0xa3d7c [] server.c:208
+0xa4274 63ffff17 b #0xa4000 [] server.c:3655
+0xa4278 8a170394 bl #0x16a0a0 ['latencyAddSample'] server.c:3618
+0xa4280 17ffff17 b #0xa3edc [] server.c:3625
+0xa428c 3affff17 b #0xa3f74 [] server.c:3635
+0xa42a0 5effff17 b #0xa4018 [] server.c:3687
+0xa42ac 3fffff17 b #0xa3fa8 [] server.c:3641
+0xa42b4 d3feff17 b #0xa3e00 [] server.c:3567
+0xa42c4 4fffff17 b #0xa4000 [] networking.c:1415
+0xa42f0 fdfeff17 b #0xa3ee4 [] latency.c:716
+0xa4330 d19c0594 bl #0x20b674 ['hdr_record_value'] server.c:3386
+0xa4334 2effff17 b #0xa3fec [] server.c:3387
+0xa4340 85ffff17 b #0xa4154 [] server.c:3672
+0xa4348 92ffff17 b #0xa4190 [] server.c:3689
+0xa4354 ecfeff17 b #0xa3f04 [] server.c:3372
+0xa4360 487f0294 bl #0x144080 ['slowlogCreateEntry'] slowlog.c:106
+0xa436c 45a1ff97 bl #0x8c880 ['listAddNodeHead'] slowlog.c:105
+0xa4374 eafeff17 b #0xa3f1c [] slowlog.c:109
+0xa4384 589c0594 bl #0x20b4e4 ['hdr_init'] server.c:3385
+0xa438c e8ffff17 b #0xa432c [] server.c:3386
+0xa4398 a7ffff17 b #0xa4234 [] server.c:3641
+
+Control transfers: flushAppendOnlyFile
+0x11c534 7387fd97 bl #0x7e300 ['usleep@plt'] aof.c:1112
+0x11c584 1f88fd97 bl #0x7e600 ['write@plt'] aof.c:1011
+0x11c630 35e9fd97 bl #0x96b04 ['sdsavail.lto_priv.0.lto_priv.0', 'sdsavail.lto_priv.1.lto_priv.0', 'sdsavail.lto_priv.2.lto_priv.0', 'sdsavail.lto_priv.3.lto_priv.0', 'sdsavail.lto_priv.4.lto_priv.0', 'sdsavail.lto_priv.5.lto_priv.0'] aof.c:1214
+0x11c644 ec43fe97 bl #0xad5f4 ['sdsclear'] aof.c:1215
+0x11c688 0b000014 b #0x11c6b4 [] aof.c:1251
+0x11c6c0 c0035fd6 ret  [] aof.c:1253
+0x11c6d4 eeffff17 b #0x11c68c [] aof.c:1050
+0x11c6d8 3287fd97 bl #0x7e3a0 ['__errno_location@plt'] aof.c:1014
+0x11c704 2be9fd97 bl #0x96bb0 ['mstime'] aof.c:1117
+0x11c738 5a360194 bl #0x16a0a0 ['latencyAddSample'] aof.c:1124
+0x11c758 52360194 bl #0x16a0a0 ['latencyAddSample'] aof.c:1130
+0x11c75c 95ffff17 b #0x11c5b0 [] aof.c:1130
+0x11c77c 9984fd97 bl #0x7d9e0 ['pthread_mutex_lock@plt'] bio.c:369
+0x11c78c 4585fd97 bl #0x7dca0 ['pthread_mutex_unlock@plt'] bio.c:371
+0x11c7a0 c3ffff17 b #0x11c6ac [] aof.c:1075
+0x11c7b0 70ffff17 b #0x11c570 [] sds.h:70
+0x11c7c0 89ffff17 b #0x11c5e4 [] sds.h:70
+0x11c7d4 89ffff17 b #0x11c5f8 [] aof.c:1206
+0x11c7f0 8fffff17 b #0x11c62c [] sds.h:76
+0x11c808 4affff17 b #0x11c530 [] sds.h:76
+0x11c840 6c86fd97 bl #0x7e1f0 ['ftruncate64@plt'] aof.c:1161
+0x11c87c c0035fd6 ret  [] aof.c:1253
+0x11c894 f383fd97 bl #0x7d860 ['fdatasync@plt'] aof.c:1235
+0x11c8d4 c0035fd6 ret  [] aof.c:1253
+0x11c8e0 6bffff17 b #0x11c68c [] aof.c:1050
+0x11c8ec 68ffff17 b #0x11c68c [] aof.c:1050
+0x11c8f0 b0e8fd97 bl #0x96bb0 ['mstime'] aof.c:1115
+0x11c8f8 12ffff17 b #0x11c540 [] aof.c:1115
+0x11c908 6bffff17 b #0x11c6b4 [] aof.c:1224
+0x11c90c 6940fe97 bl #0xacab0 ['sdsfree'] aof.c:1217
+0x11c910 7941fe97 bl #0xacef4 ['sdsempty'] aof.c:1218
+0x11c920 4cffff17 b #0x11c650 [] aof.c:1218
+0x11c92c 2d84fd97 bl #0x7d9e0 ['pthread_mutex_lock@plt'] bio.c:369
+0x11c93c d984fd97 bl #0x7dca0 ['pthread_mutex_unlock@plt'] bio.c:371
+0x11c95c eafeff17 b #0x11c504 [] aof.c:1084
+0x11c968 1e84fd97 bl #0x7d9e0 ['pthread_mutex_lock@plt'] bio.c:369
+0x11c978 ca84fd97 bl #0x7dca0 ['pthread_mutex_unlock@plt'] bio.c:371
+0x11c980 ceffff17 b #0x11c8b8 [] aof.c:1058
+0x11c988 17ffff17 b #0x11c5e4 [] sds.h:72
+0x11c990 f8feff17 b #0x11c570 [] sds.h:74
+0x11c998 f6feff17 b #0x11c570 [] sds.h:72
+0x11c9a0 11ffff17 b #0x11c5e4 [] sds.h:74
+0x11c9c8 0a86fd97 bl #0x7e1f0 ['ftruncate64@plt'] aof.c:1161
+0x11ca34 0f050314 b #0x1dde70 ['sdsrange.constprop.0'] aof.c:1196
+0x11ca3c fcfeff17 b #0x11c62c [] sds.h:72
+0x11ca74 f7ec0294 bl #0x1d7e50 ['_serverLog.constprop.0'] aof.c:1154
+0x11ca78 d2ffff17 b #0x11c9c0 [] aof.c:1154
+0x11ca88 1bed0294 bl #0x1d7ef4 ['_serverLog.constprop.1'] aof.c:1204
+0x11ca94 d9feff17 b #0x11c5f8 [] aof.c:1206
+0x11ca98 4286fd97 bl #0x7e3a0 ['__errno_location@plt'] aof.c:1014
+0x11cad0 3487fd97 bl #0x7e7a0 ['exit@plt'] aof.c:1184
+0x11cae0 f4b90094 bl #0x14b2b0 ['bioCreateFsyncJob'] aof.c:906
+0x11caf4 f0feff17 b #0x11c6b4 [] aof.c:1251
+0x11caf8 2a86fd97 bl #0x7e3a0 ['__errno_location@plt'] aof.c:1014
+0x11cb00 ebffff17 b #0x11caac [] aof.c:1014
+0x11cb20 60350194 bl #0x16a0a0 ['latencyAddSample'] aof.c:1126
+0x11cb24 06ffff17 b #0x11c73c [] aof.c:1126
+0x11cb28 22e8fd97 bl #0x96bb0 ['mstime'] aof.c:1240
+0x11cb48 56350194 bl #0x16a0a0 ['latencyAddSample'] aof.c:1241
+0x11cb4c 57ffff17 b #0x11c8a8 [] aof.c:1241
+0x11cb50 18e8fd97 bl #0x96bb0 ['mstime'] aof.c:1231
+0x11cb58 4effff17 b #0x11c890 [] aof.c:1231
+0x11cb60 b3feff17 b #0x11c62c [] sds.h:74
+0x11cb68 72feff17 b #0x11c530 [] sds.h:74
+0x11cb70 70feff17 b #0x11c530 [] sds.h:72
+0x11cb8c b6ffff17 b #0x11ca64 [] sds.h:76
+0x11cba0 40350194 bl #0x16a0a0 ['latencyAddSample'] aof.c:1128
+0x11cba4 e6feff17 b #0x11c73c [] aof.c:1128
+0x11cbe4 48feff17 b #0x11c504 [] aof.c:1047
+0x11cbf8 bfec0294 bl #0x1d7ef4 ['_serverLog.constprop.1'] aof.c:1102
+0x11cbfc 42feff17 b #0x11c504 [] aof.c:1102
+0x11cc08 abfeff17 b #0x11c6b4 [] aof.c:1093
+0x11cc10 8084fd97 bl #0x7de10 ['strerror@plt'] aof.c:1148
+0x11cc24 8bec0294 bl #0x1d7e50 ['_serverLog.constprop.0'] aof.c:1148
+0x11cc28 a1ffff17 b #0x11caac [] aof.c:1148
+0x11cc30 a1feff17 b #0x11c6b4 [] aof.c:1148
+0x11cc34 db85fd97 bl #0x7e3a0 ['__errno_location@plt'] aof.c:1163
+0x11cc3c 7584fd97 bl #0x7de10 ['strerror@plt'] aof.c:1163
+0x11cc50 80ec0294 bl #0x1d7e50 ['_serverLog.constprop.0'] aof.c:1163
+0x11cc54 63ffff17 b #0x11c9e0 [] aof.c:1163
+0x11cc5c 82ffff17 b #0x11ca64 [] sds.h:72
+0x11cc64 80ffff17 b #0x11ca64 [] sds.h:74
+0x11cc70 91feff17 b #0x11c6b4 [] sds.h:74
+0x11cc88 91ffff17 b #0x11cacc [] aof.c:1236
+0x11cc94 43feff17 b #0x11c5a0 [] sds.h:66
+0x11cc98 c285fd97 bl #0x7e3a0 ['__errno_location@plt'] aof.c:1236
+0x11cca0 5c84fd97 bl #0x7de10 ['strerror@plt'] aof.c:1236
+0x11ccb4 67ec0294 bl #0x1d7e50 ['_serverLog.constprop.0'] aof.c:1236
+0x11ccc0 83ffff17 b #0x11cacc [] aof.c:1236
+0x11ccd4 33feff17 b #0x11c5a0 [] aof.c:1115
+0x11cce4 5bec0294 bl #0x1d7e50 ['_serverLog.constprop.0'] aof.c:1183
+0x11cce8 79ffff17 b #0x11cacc [] aof.c:1183
+
+Control transfers: luaCallFunction
+0x1ca4d8 1a870094 bl #0x1ec140 ['lua_pushstring'] script_lua.c:144
+0x1ca4e4 cc870094 bl #0x1ec414 ['lua_pushlightuserdata'] script_lua.c:146
+0x1ca4f0 80890094 bl #0x1ecaf0 ['lua_settable'] script_lua.c:150
+0x1ca524 b38f0094 bl #0x1ee3f0 ['lua_sethook'] script_lua.c:1671
+0x1ca538 a6e3ff97 bl #0x1c33d0 ['luaCreateArray'] script_lua.c:1677
+0x1ca550 a0e3ff97 bl #0x1c33d0 ['luaCreateArray'] script_lua.c:1685
+0x1ca56c 458b0094 bl #0x1ed280 ['lua_pcall'] script_lua.c:1703
+0x1ca57c 66810094 bl #0x1eab14 ['lua_type'] script_lua.c:1710
+0x1ca590 30820094 bl #0x1eae50 ['lua_isstring'] script_lua.c:1712
+0x1ca5b0 78cdfb97 bl #0xbdb90 ['addReplyErrorFormat'] script_lua.c:1715
+0x1ca5bc 6e800094 bl #0x1ea774 ['lua_settop'] script_lua.c:1731
+0x1ca5cc dd860094 bl #0x1ec140 ['lua_pushstring'] script_lua.c:144
+0x1ca5d4 ab860094 bl #0x1ec080 ['lua_pushnil'] script_lua.c:148
+0x1ca5f8 3e890014 b #0x1ecaf0 ['lua_settable'] script_lua.c:150
+0x1ca608 cefbff97 bl #0x1c9540 ['luaReplyToRedisReply'] script_lua.c:1735
+0x1ca620 748f0094 bl #0x1ee3f0 ['lua_sethook'] script_lua.c:1739
+0x1ca624 e8ffff17 b #0x1ca5c4 [] script_lua.c:1739
+0x1ca634 1f8d0094 bl #0x1edab0 ['lua_enablereadonlytable'] script_lua.c:1688
+0x1ca648 6e890094 bl #0x1ecc00 ['lua_setfield'] script_lua.c:1689
+0x1ca658 168d0094 bl #0x1edab0 ['lua_enablereadonlytable'] script_lua.c:1690
+0x1ca674 038b0094 bl #0x1ed280 ['lua_pcall'] script_lua.c:1701
+0x1ca678 beffff17 b #0x1ca570 [] script_lua.c:1701
+0x1ca698 568f0094 bl #0x1ee3f0 ['lua_sethook'] script_lua.c:1671
+0x1ca69c a3ffff17 b #0x1ca528 [] script_lua.c:1672
+0x1ca6ac 018d0094 bl #0x1edab0 ['lua_enablereadonlytable'] script_lua.c:1681
+0x1ca6c0 50890094 bl #0x1ecc00 ['lua_setfield'] script_lua.c:1682
+0x1ca6d0 f88c0094 bl #0x1edab0 ['lua_enablereadonlytable'] script_lua.c:1683
+0x1ca6d4 9cffff17 b #0x1ca544 [] script_lua.c:1683
+0x1ca6f0 408f0094 bl #0x1ee3f0 ['lua_sethook'] script_lua.c:1668
+0x1ca6f4 8dffff17 b #0x1ca528 [] script_lua.c:1669
+0x1ca700 fd89fb97 bl #0xacef4 ['sdsempty'] script_lua.c:1718
+0x1ca710 d0f9ff97 bl #0x1c8e50 ['luaExtractErrorInformation'] script_lua.c:1719
+0x1ca724 f3a7fb97 bl #0xb46f0 ['sdscatfmt'] script_lua.c:1720
+0x1ca748 eaa7fb97 bl #0xb46f0 ['sdscatfmt'] script_lua.c:1723
+0x1ca768 16330094 bl #0x1d73c0 ['sdsmapchars.constprop.0'] networking.c:623
+0x1ca778 1fc7fb97 bl #0xbc3f4 ['addReplyErrorSdsEx'] networking.c:624
+0x1ca784 cb88fb97 bl #0xacab0 ['sdsfree'] script_lua.c:1615
+0x1ca790 c888fb97 bl #0xacab0 ['sdsfree'] script_lua.c:1616
+0x1ca79c c588fb97 bl #0xacab0 ['sdsfree'] script_lua.c:1617
+0x1ca7a0 85ffff17 b #0x1ca5b4 [] script_lua.c:1617
+0x1ca7b0 54840094 bl #0x1eb900 ['lua_tolstring'] script_lua.c:1713
+0x1ca7b8 7affff17 b #0x1ca5a0 [] script_lua.c:1713
+
+Control transfers: luaRedisGenericCommand
+0x1cb5d0 e4ecff97 bl #0x1c6960 ['luaGetFromRegistry'] script_lua.c:880
+0x1cb5f4 83f9ff97 bl #0x1c9c00 ['luaArgsToRedisArgv'] script_lua.c:886
+0x1cb62c ae87fb97 bl #0xad4e4 ['sdsnew'] script_lua.c:563
+0x1cb638 76f6ff97 bl #0x1c9010 ['luaPushErrorBuff'] script_lua.c:563
+0x1cb650 c0035fd6 ret  [] script_lua.c:982
+0x1cb684 9887fb97 bl #0xad4e4 ['sdsnew'] script_lua.c:909
+0x1cb6b4 739afb97 bl #0xb2080 ['sdscatlen'] script_lua.c:916
+0x1cb6c8 339bfb97 bl #0xb2394 ['sdscatsds'] script_lua.c:917
+0x1cb6f4 909bfb97 bl #0xb2534 ['sdscatprintf'] script_lua.c:912
+0x1cb700 7904fb97 bl #0x8c8e4 ['listAddNodeTail'] eval.c:810
+0x1cb710 3cfeff97 bl #0x1cb000 ['scriptCall'] script_lua.c:923
+0x1cb794 37f0ff97 bl #0x1c7870 ['parseReply'] script_lua.c:219
+0x1cb7b0 4d87fb97 bl #0xad4e4 ['sdsnew'] eval.c:1373
+0x1cb7c4 6f08fe97 bl #0x14d980 ['ldbRedisProtocolToHuman'] eval.c:1374
+0x1cb7cc f2fffd97 bl #0x14b794 ['ldbLogWithMaxLen'] eval.c:1375
+0x1cb7e0 b484fb97 bl #0xacab0 ['sdsfree'] script_lua.c:962
+0x1cb7f8 1aefff97 bl #0x1c7460 ['freeLuaRedisArgv'] script_lua.c:968
+0x1cb810 a0dafb97 bl #0xc2290 ['resetClient'] script_lua.c:972
+0x1cb828 85ffff17 b #0x1cb63c [] script_lua.c:975
+0x1cb82c aa380094 bl #0x1d9ad4 ['_sdsnewlen.constprop.0'] sds.c:154
+0x1cb85c 099afb97 bl #0xb2080 ['sdscatlen'] script_lua.c:951
+0x1cb870 8cf7fa97 bl #0x896a0 ['listDelNode'] script_lua.c:952
+0x1cb880 b2ffff17 b #0x1cb748 [] script_lua.c:948
+0x1cb88c 2d870094 bl #0x1ed540 ['lua_error'] script_lua.c:571
+0x1cb890 6cffff17 b #0x1cb640 [] script_lua.c:571
+0x1cb894 1487fb97 bl #0xad4e4 ['sdsnew'] script_lua.c:563
+0x1cb8a0 dcf5ff97 bl #0x1c9010 ['luaPushErrorBuff'] script_lua.c:563
+0x1cb8a8 8284fb97 bl #0xacab0 ['sdsfree'] script_lua.c:926
+0x1cb8b8 22820094 bl #0x1ec140 ['lua_pushstring'] script_lua.c:929
+0x1cb8c4 cb820094 bl #0x1ec3f0 ['lua_pushboolean'] script_lua.c:930
+0x1cb8d0 88840094 bl #0x1ecaf0 ['lua_settable'] script_lua.c:931
+0x1cb8d4 c5ffff17 b #0x1cb7e8 [] script_lua.c:932
+0x1cb8e8 5a310094 bl #0x1d7e50 ['_serverLog.constprop.0'] script_lua.c:901
+0x1cb8ec 4fffff17 b #0x1cb628 [] script_lua.c:901
+0x1cb90c 1a7bfd97 bl #0x12a574 ['_serverAssert'] script_lua.c:881
+0x1cb914 0b870094 bl #0x1ed540 ['lua_error'] script_lua.c:571
+0x1cb91c 49ffff17 b #0x1cb640 [] script_lua.c:979
+
+Control transfers: postExecutionUnitOperations
+0xa3994 c0035fd6 ret  [] server.c:3460
+0xa3998 968d0394 bl #0x186ff0 ['firePostExecutionUnitJobs'] server.c:3452
+0xa399c 29ffff97 bl #0xa3640 ['propagatePendingCommands.lto_priv.0'] server.c:3456
+0xa39d0 20780094 bl #0xc1a50 ['unprotectClient'] module.c:798
+0xa39e8 3ee90494 bl #0x1ddee0 ['unblockClient.constprop.0'] networking.c:4108
+0xa39f8 c0035fd6 ret  [] server.c:3460
+
+Control transfers: scriptCall
+0x1cb038 92ebfe97 bl #0x185e80 ['moduleCallCommandFilters'] script.c:582
+0x1cb04c 0160fb97 bl #0xa3050 ['lookupCommandLogic'] server.c:3202
+0x1cb0c8 9fc2ff97 bl #0x1bbb44 ['ACLCheckAllUserCommandPerm'] acl.c:1879
+0x1cb11c e557fb97 bl #0xa10b0 ['mustObeyClient'] script.c:463
+0x1cb150 2165fb97 bl #0xa45d4 ['getCommandFlags'] script.c:473
+0x1cb178 3b98fd97 bl #0x131264 ['getNodeByQuery'] script.c:475
+0x1cb1c8 be62fb97 bl #0xa3cc0 ['call'] script.c:628
+0x1cb1d8 30000014 b #0x1cb298 [] script.c:629
+0x1cb1f0 bd88fb97 bl #0xad4e4 ['sdsnew'] script.c:364
+0x1cb1fc 10000014 b #0x1cb23c [] script.c:364
+0x1cb214 b488fb97 bl #0xad4e4 ['sdsnew'] script.c:395
+0x1cb224 06000014 b #0x1cb23c [] script.c:396
+0x1cb230 ad88fb97 bl #0xad4e4 ['sdsnew'] script.c:592
+0x1cb26c f9c7fb97 bl #0xbd250 ['afterErrorReply'] script.c:633
+0x1cb2a8 c0035fd6 ret  [] script.c:635
+0x1cb2bc e5c7fb97 bl #0xbd250 ['afterErrorReply'] script.c:633
+0x1cb2d0 f1ffff17 b #0x1cb294 [] server.c:3476
+0x1cb2d8 e3ffff17 b #0x1cb264 [] sds.h:68
+0x1cb2e0 e1ffff17 b #0x1cb264 [] sds.h:74
+0x1cb2e8 dfffff17 b #0x1cb264 [] sds.h:72
+0x1cb2ec 2158fb97 bl #0xa1370 ['writeCommandsDeniedByDiskError'] script.c:412
+0x1cb308 0b4bfc97 bl #0xddf34 ['checkGoodReplicasStatus'] script.c:430
+0x1cb314 77ffff17 b #0x1cb0f0 [] script.c:439
+0x1cb31c 6557fb97 bl #0xa10b0 ['mustObeyClient'] script.c:415
+0x1cb334 7888fb97 bl #0xad514 ['sdsdup'] script.c:431
+0x1cb344 beffff17 b #0x1cb23c [] script.c:432
+0x1cb354 bfc7fb97 bl #0xbd250 ['afterErrorReply'] script.c:633
+0x1cb358 c7ffff17 b #0x1cb274 [] server.c:3475
+0x1cb360 5457fb97 bl #0xa10b0 ['mustObeyClient'] script.c:450
+0x1cb394 e7ffff17 b #0x1cb330 [] script.c:455
+0x1cb3a0 5188fb97 bl #0xad4e4 ['sdsnew'] script.c:566
+0x1cb3ac a4ffff17 b #0x1cb23c [] script.c:567
+0x1cb3c4 6c7cfd97 bl #0x12a574 ['_serverAssert'] script.c:629
+0x1cb3d0 4588fb97 bl #0xad4e4 ['sdsnew'] script.c:366
+0x1cb40c 91c7fb97 bl #0xbd250 ['afterErrorReply'] script.c:633
+0x1cb418 9fffff17 b #0x1cb294 [] server.c:3486
+0x1cb438 7acbff97 bl #0x1be220 ['addACLLogEntry'] script.c:377
+0x1cb458 0ecbff97 bl #0x1be090 ['getAclErrorMessage'] script.c:378
+0x1cb468 1f88fb97 bl #0xad4e4 ['sdsnew'] script.c:379
+0x1cb470 c99bfb97 bl #0xb2394 ['sdscatsds'] script.c:379
+0x1cb47c 8d85fb97 bl #0xacab0 ['sdsfree'] script.c:380
+0x1cb488 6dffff17 b #0x1cb23c [] script.c:633
+0x1cb490 49ffff17 b #0x1cb1b4 [] script.c:510
+0x1cb498 a267fb97 bl #0xa5320 ['writeCommandsGetDiskErrorMessage'] script.c:422
+0x1cb4a8 65ffff17 b #0x1cb23c [] script.c:423
+0x1cb4e0 0188fb97 bl #0xad4e4 ['sdsnew'] script.c:499
+0x1cb4f0 53ffff17 b #0x1cb23c [] script.c:499
+0x1cb500 8cffff17 b #0x1cb330 [] script.c:431
+0x1cb50c f687fb97 bl #0xad4e4 ['sdsnew'] script.c:477
+0x1cb51c 48ffff17 b #0x1cb23c [] script.c:477
+0x1cb528 ef87fb97 bl #0xad4e4 ['sdsnew'] script.c:481
+0x1cb538 41ffff17 b #0x1cb23c [] script.c:481
+0x1cb544 e887fb97 bl #0xad4e4 ['sdsnew'] script.c:512
+0x1cb554 3affff17 b #0x1cb23c [] script.c:514
+0x1cb560 e187fb97 bl #0xad4e4 ['sdsnew'] script.c:496
+0x1cb570 33ffff17 b #0x1cb23c [] script.c:496
+0x1cb574 6086fb97 bl #0xacef4 ['sdsempty'] script.c:491
+0x1cb588 5aa4fb97 bl #0xb46f0 ['sdscatfmt'] script.c:491
+0x1cb598 29ffff17 b #0x1cb23c [] script.c:491
+0x1cb59c 5686fb97 bl #0xacef4 ['sdsempty'] script.c:484
+0x1cb5ac f6ffff17 b #0x1cb584 [] script.c:484

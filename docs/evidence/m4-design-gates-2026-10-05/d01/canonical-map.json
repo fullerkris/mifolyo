@@ -1,0 +1,252 @@
+{
+  "assembled_in_memory_equal": true,
+  "base_commit": "e80d00538b11c46d021427bcfe1c408e16071c68",
+  "candidate_source_spans": [
+    {
+      "canonical_first": 8606,
+      "canonical_last": 8622,
+      "module": "ledger_stage.lua",
+      "module_first": 1095,
+      "module_last": 1111
+    },
+    {
+      "canonical_first": 8664,
+      "canonical_last": 8675,
+      "module": "ledger_stage.lua",
+      "module_first": 1153,
+      "module_last": 1164
+    },
+    {
+      "canonical_first": 8888,
+      "canonical_last": 8905,
+      "module": "ledger_stage.lua",
+      "module_first": 1377,
+      "module_last": 1394
+    },
+    {
+      "canonical_first": 8906,
+      "canonical_last": 8969,
+      "module": "ledger_stage.lua",
+      "module_first": 1395,
+      "module_last": 1458
+    },
+    {
+      "canonical_first": 8970,
+      "canonical_last": 9035,
+      "module": "ledger_stage.lua",
+      "module_first": 1459,
+      "module_last": 1524
+    },
+    {
+      "canonical_first": 9036,
+      "canonical_last": 9054,
+      "module": "ledger_stage.lua",
+      "module_first": 1525,
+      "module_last": 1543
+    },
+    {
+      "canonical_first": 9057,
+      "canonical_last": 9096,
+      "module": "ledger_stage.lua",
+      "module_first": 1546,
+      "module_last": 1585
+    },
+    {
+      "canonical_first": 3031,
+      "canonical_last": 3067,
+      "module": "plan.lua",
+      "module_first": 80,
+      "module_last": 116
+    },
+    {
+      "canonical_first": 3252,
+      "canonical_last": 3311,
+      "module": "plan.lua",
+      "module_first": 301,
+      "module_last": 360
+    },
+    {
+      "canonical_first": 3375,
+      "canonical_last": 3457,
+      "module": "plan.lua",
+      "module_first": 424,
+      "module_last": 506
+    },
+    {
+      "canonical_first": 3459,
+      "canonical_last": 3486,
+      "module": "plan.lua",
+      "module_first": 508,
+      "module_last": 535
+    },
+    {
+      "canonical_first": 4580,
+      "canonical_last": 4600,
+      "module": "ledger_run.lua",
+      "module_first": 569,
+      "module_last": 589
+    },
+    {
+      "canonical_first": 4731,
+      "canonical_last": 4824,
+      "module": "ledger_run.lua",
+      "module_first": 720,
+      "module_last": 813
+    },
+    {
+      "canonical_first": 9099,
+      "canonical_last": 9106,
+      "module": "ops/cj2_commit.lua",
+      "module_first": 1,
+      "module_last": 8
+    }
+  ],
+  "canonical_bytes": 827166,
+  "canonical_lines": 9106,
+  "canonical_path": "services/spider/internal/database/crawljobsv2/lua/cj2_commit.lua",
+  "canonical_sha256": "e6d9f14ccc566cff43148790af96f1b2d65e890a2a4e7b33e3bb475c1427d4fe",
+  "chunks": [
+    {
+      "bytes": 15418,
+      "canonical_byte_offset": 167,
+      "canonical_first_line": 4,
+      "canonical_last_line": 390,
+      "sha256": "9d536667cb04c750bbf4fba657855ac43c58a50b677f59f8161e12f041b60f44",
+      "source": "services/spider/internal/database/crawljobsv2/lua_src/primitives.lua"
+    },
+    {
+      "bytes": 6184,
+      "canonical_byte_offset": 15637,
+      "canonical_first_line": 394,
+      "canonical_last_line": 524,
+      "sha256": "b9bfc2ad28c1cfd293e0b72e1163ed24288dd0f17ccdc4d8f0187faf3c0f760f",
+      "source": "services/spider/internal/database/crawljobsv2/lua_src/identities.lua"
+    },
+    {
+      "bytes": 15101,
+      "canonical_byte_offset": 21853,
+      "canonical_first_line": 527,
+      "canonical_last_line": 789,
+      "sha256": "421c9513b8f49aebe4087af255a52f912c0831317bd48960d1d464949f53569f",
+      "source": "services/spider/internal/database/crawljobsv2/lua_src/schemas.lua"
+    },
+    {
+      "bytes": 39599,
+      "canonical_byte_offset": 36983,
+      "canonical_first_line": 792,
+      "canonical_last_line": 1358,
+      "sha256": "d69af7b0eff5cdd6816e1d9d7623df2703e24086903b62e22ef78cc8bef2c033",
+      "source": "services/spider/internal/database/crawljobsv2/lua_src/wire.lua"
+    },
+    {
+      "bytes": 31668,
+      "canonical_byte_offset": 76614,
+      "canonical_first_line": 1361,
+      "canonical_last_line": 1860,
+      "sha256": "0d6f9a63822f4efbc6997a834e4519d0b133ff944850dd7eae373b9c59920e44",
+      "source": "services/spider/internal/database/crawljobsv2/lua_src/context.lua"
+    },
+    {
+      "bytes": 22896,
+      "canonical_byte_offset": 108311,
+      "canonical_first_line": 1863,
+      "canonical_last_line": 2295,
+      "sha256": "5e9a48480ecbaf857da5dee8d2ca705cb8a6544acae8c069ea540cfe4dcf4bef",
+      "source": "services/spider/internal/database/crawljobsv2/lua_src/read.lua"
+    },
+    {
+      "bytes": 8662,
+      "canonical_byte_offset": 131236,
+      "canonical_first_line": 2298,
+      "canonical_last_line": 2440,
+      "sha256": "76a9ec19ff49140db86f1f0a285be8c3da83456587e8b4c78ffdadbe742bdbf4",
+      "source": "services/spider/internal/database/crawljobsv2/lua_src/gate.lua"
+    },
+    {
+      "bytes": 33982,
+      "canonical_byte_offset": 139929,
+      "canonical_first_line": 2443,
+      "canonical_last_line": 2949,
+      "sha256": "0ba6604a581cf937f6360a033e59ddc2702495991a5b9ecaa66dd1e743a7d107",
+      "source": "services/spider/internal/database/crawljobsv2/lua_src/memory.lua"
+    },
+    {
+      "bytes": 31483,
+      "canonical_byte_offset": 173940,
+      "canonical_first_line": 2952,
+      "canonical_last_line": 3487,
+      "sha256": "ad10f4ca7e323331d515f1fbaec295b1890fc187cdbf2a88b3fbc8f7b181fda6",
+      "source": "services/spider/internal/database/crawljobsv2/lua_src/plan.lua"
+    },
+    {
+      "bytes": 273023,
+      "canonical_byte_offset": 205520,
+      "canonical_first_line": 3492,
+      "canonical_last_line": 3548,
+      "sha256": "07243776f0a5b1691e872cf92bddaf60cebf292175f25e2146a65220f20e849e",
+      "source": "services/spider/internal/database/crawljobsv2/lua_src/unicode_data.lua"
+    },
+    {
+      "bytes": 19606,
+      "canonical_byte_offset": 478574,
+      "canonical_first_line": 3551,
+      "canonical_last_line": 4009,
+      "sha256": "ee50f6d8e18491f0c869fcd1625f62c4e880f85e4474108e597bcff54d97849f",
+      "source": "services/spider/internal/database/crawljobsv2/lua_src/url.lua"
+    },
+    {
+      "bytes": 55154,
+      "canonical_byte_offset": 498211,
+      "canonical_first_line": 4012,
+      "canonical_last_line": 4909,
+      "sha256": "b4841a7521651d0f1aa5f2c8b7625b6773529e2a533b3c305373cebd20f0dc0a",
+      "source": "services/spider/internal/database/crawljobsv2/lua_src/ledger_run.lua"
+    },
+    {
+      "bytes": 64338,
+      "canonical_byte_offset": 553393,
+      "canonical_first_line": 4912,
+      "canonical_last_line": 5864,
+      "sha256": "8d70fe50f8ae143cf4f7e93d42f54be147985d048faa0fc972f49a576c7ac72e",
+      "source": "services/spider/internal/database/crawljobsv2/lua_src/ledger_job.lua"
+    },
+    {
+      "bytes": 91350,
+      "canonical_byte_offset": 617763,
+      "canonical_first_line": 5867,
+      "canonical_last_line": 7207,
+      "sha256": "0e821f57554e2b301b4187d7ee113b18f0a2d284a2413ed1e6cf9b3feb1d7409",
+      "source": "services/spider/internal/database/crawljobsv2/lua_src/ledger_request.lua"
+    },
+    {
+      "bytes": 14278,
+      "canonical_byte_offset": 709175,
+      "canonical_first_line": 7211,
+      "canonical_last_line": 7509,
+      "sha256": "47958a0440b463e24d3d0420da1eae21e2dc23e8543fc9498e16fd84a156ce90",
+      "source": "services/spider/internal/database/crawljobsv2/lua_src/stage_output.lua"
+    },
+    {
+      "bytes": 103263,
+      "canonical_byte_offset": 723483,
+      "canonical_first_line": 7512,
+      "canonical_last_line": 9097,
+      "sha256": "f9ca9907d2b7e3bb38b2e85690a1ad7a8ec035c88a3ed1d2e7160d387b6c2864",
+      "source": "services/spider/internal/database/crawljobsv2/lua_src/ledger_stage.lua"
+    },
+    {
+      "bytes": 413,
+      "canonical_byte_offset": 826753,
+      "canonical_first_line": 9099,
+      "canonical_last_line": 9106,
+      "sha256": "98f5fecc5933e3fda823045adb114d7fe4452ae7eabff1cae36863085d1352c6",
+      "source": "services/spider/internal/database/crawljobsv2/lua_src/ops/cj2_commit.lua"
+    }
+  ],
+  "class": "static_canonical_source_reconciliation",
+  "generator_path": "scripts/generate-crawl-jobs-v2-lua.py",
+  "generator_sha256": "9b0aab29d20d2622913ade9da70b65e958e6dff05ef98a698f34eda3fc79fc05",
+  "lua_bytecode_generated": false,
+  "lua_executed": false,
+  "redis_script_sha1": "d187ed1bda07f50f6e15ffc7fa5e515bf3bfe9fa"
+}

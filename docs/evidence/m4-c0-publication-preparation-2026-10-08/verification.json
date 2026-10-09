@@ -1,0 +1,129 @@
+{
+  "actionlint_available": false,
+  "base_commit": "ab5f21a7421f3ed48cfb32481613fa5656dcb8a4",
+  "broader_recheck": {
+    "baseline_elapsed_seconds": 2496.716,
+    "baseline_main_ci_gate_sha256": "7991442ee8e72ef36eab96cde19b7269fae4bbc42d8b3d7d4749a061babf6b55",
+    "baseline_main_ci_job_log_sha256": "5372b44efb84ee6af2534632bfe0f94985d3ce8a996459c07acac1bd2427f39d",
+    "baseline_main_commit": "ab5f21a7421f3ed48cfb32481613fa5656dcb8a4",
+    "baseline_tests": 183,
+    "command": [
+      "/Users/kfuller/miniforge3/bin/python3",
+      "-B",
+      "-W",
+      "error::ResourceWarning",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests/crawl-jobs-v2-redis",
+      "-v"
+    ],
+    "disposition": "C0 scope checks pass separately; unchanged Redis coverage retains its verified exact-main evidence and existing protected CI step. No suite timeout, assertion or CI check was weakened.",
+    "first_driver_sha256": "f0dff148ee917a94af945a2502efc54dc2124a6748b519d72187bbf1535c8a64",
+    "interpretation": "The optional local recheck budget was below the recorded full-suite duration. No new 183-test PASS or individual test outcome is inferred from the interrupted attempt.",
+    "observed_exception": "subprocess.TimeoutExpired",
+    "original_observation": "Tool returned TimeoutExpired from verify.py subprocess.run after its explicit 300-second limit; capture_output buffers were not persisted by that driver.",
+    "partial_test_count_known": false,
+    "partial_test_output_retained": false,
+    "recorded_utc": "2026-10-08T20:58:28.656125+00:00",
+    "status": "LOCAL_BROADER_RECHECK_TIMED_OUT",
+    "timeout_seconds": 300
+  },
+  "broader_recheck_record_sha256": "d88d51b038dad2e6f29b5592d172e418f937e23ec8d351cb9ff6f896b246088f",
+  "c0_report_sha256": "be5850259e9b03e5bcecc1c48ded2238aca83575d54397601ac4a0dd9cef11c6",
+  "c0_test_ids_preserved": 113,
+  "committed": false,
+  "design_files_preserved": 22,
+  "docker_operations": false,
+  "hosted_ci_run": false,
+  "inputs": {
+    ".github/workflows/required-checks.yml": "b8cee21324a1740564fe012f9ba7b8c0d8d251558b8caf671bea0f9d51ebedd4",
+    "scripts/test-crawl-jobs-v2-observer.py": "9afb715125f734f5b905da63dde5c9787fc5997b2e5a73a0bf62d781b23aef84",
+    "scripts/tests/test_crawl_jobs_v2_observer.py": "7ec2695cb666eb5364716a7e7f3910eb2fc95f29db753571682cded25d384c79"
+  },
+  "m4_accepted": false,
+  "native_actor_execution": false,
+  "native_artifacts_preserved": 11,
+  "native_inputs_preserved": 9,
+  "new_independent_review_performed": false,
+  "package_files": 26,
+  "package_source_inventory_sha256": "01c5a7318274d26d3868d40ff71205f1193de123914dc9907ffb62eb0f3693ac",
+  "primary_unrelated_preserved": 372,
+  "protected_contexts_unchanged": 14,
+  "publication_scope_sha256": "e9b5a368c73e64ac7028cdc975b32b254985db6436eec6774eb4601b6d8a3ffa",
+  "pushed": false,
+  "python": "3.12.7 | packaged by conda-forge | (main, Oct  4 2024, 15:57:01) [Clang 17.0.6 ]",
+  "pyyaml": "6.0.2",
+  "recorded_utc": "2026-10-08T20:58:28.658858+00:00",
+  "redis_local_rerun_pass": false,
+  "results": [
+    {
+      "command": [
+        "/Users/kfuller/miniforge3/bin/python3",
+        "-B",
+        "-W",
+        "error::ResourceWarning",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts/tests",
+        "-v"
+      ],
+      "elapsed_ms": 9647,
+      "exit_code": 0,
+      "logs": {
+        "scripts.stderr.log": "0e09ec8d7fbf6085a62bb8567ef608a4037ab716f702335abba0181006c3d616",
+        "scripts.stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "name": "scripts",
+      "no_skips_or_resource_warnings": true,
+      "status": "PASS",
+      "tests": 31
+    },
+    {
+      "command": [
+        "/Users/kfuller/miniforge3/bin/python3",
+        "-B",
+        "-W",
+        "error::ResourceWarning",
+        "scripts/test-crawl-jobs-v2-observer.py",
+        "--report",
+        "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-publication-preparation-2026-10-08/c0-offline-tests.json"
+      ],
+      "elapsed_ms": 11111,
+      "exit_code": 0,
+      "logs": {
+        "c0.stderr.log": "64aadfff1c9c3e5c7aaec2cb45160986b6732c2002e7fc860d42d50ed1a2bde5",
+        "c0.stdout.log": "2a25dea1680617509e0497d0d95345649953f5c7ff638d549e8eef981c99e071"
+      },
+      "name": "c0",
+      "no_skips_or_resource_warnings": true,
+      "status": "PASS",
+      "tests": 113
+    },
+    {
+      "command": [
+        "/Users/kfuller/miniforge3/bin/python3",
+        "-B",
+        "scripts/verify-crawl-jobs-v2-digests.py"
+      ],
+      "elapsed_ms": 4267,
+      "exit_code": 0,
+      "logs": {
+        "digests.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "digests.stdout.log": "3eb56b3b0f6631ea351778445603ef9aebdc2770edf750e6dc6d54b8f5c6f2b5"
+      },
+      "name": "digests",
+      "no_skips_or_resource_warnings": true,
+      "status": "PASS",
+      "tests": null
+    }
+  ],
+  "runner_guard_tests": 10,
+  "script_tests": 31,
+  "status": "PASS_SCOPED_C0_CHECKS_WITH_BROADER_RECHECK_TIMEOUT",
+  "unit_workflow_unchanged": true,
+  "workflow_structure_only_two_added_steps": true
+}

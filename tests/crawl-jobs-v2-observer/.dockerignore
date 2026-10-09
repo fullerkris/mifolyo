@@ -1,0 +1,8 @@
+**
+!Dockerfile
+!.dockerignore
+!contracts.py
+!profiles.py
+!build_tools.py
+!native/*.c
+!native/*.h

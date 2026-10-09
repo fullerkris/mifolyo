@@ -123,17 +123,19 @@ retains the exact records. PR #19 subsequently merged documentation/CI cleanup a
 A's zero starts, B's first-start history, 60 counters and 46 authority denials.
 The full 183-test pre-guard harness, 21 scripts and 81 canonical Go/Lua race invocations
 pass; a final ACL case-binding guard then passes all 33 shared-family regressions.
-Independent correctness/security reviews now both return **GO for image/CI
+Independent correctness/security source reviews returned **GO for image/CI
 preparation**, with all 108 source hashes unchanged. Fresh selected arm64 image
 preparation also **passes**: both checks match 74 files/all 20 recipes, stopped-role
 admission passes, and all six metadata resources are independently absent.
-Registry scope is 20 cases/22 scenarios. The 39-file checkpoint is now published
-as `22317dc` on draft PR #20 with all fourteen protected checks passing. Downloaded
-evidence verifies 480 Go roots, the final-source 183-test harness/21 scripts and
-74 image files/all 20 recipes. See the
-[publication/CI result](docs/crawl-jobs-v2-m4-cancellation-ci-2026-10-06.md) and
+Registry scope is 20 cases/22 scenarios. **PR #20 is now merged as `ab5f21a`**,
+with the same tree as reviewed final head `4e699ec`. All fourteen required
+merged-main checks and twenty-three workflow jobs pass. Downloaded evidence
+verifies 480 Go roots, the final-source 183-test harness/21 scripts and 74 image
+files/all 20 recipes. See the
+[merge/main-CI checkpoint](docs/crawl-jobs-v2-m4-cancellation-merge-2026-10-07.md),
+[original source-publication CI](docs/crawl-jobs-v2-m4-cancellation-ci-2026-10-06.md) and
 [cancellation image preparation](docs/crawl-jobs-v2-m4-shared-group-cancellation-preparation-2026-10-05.md).
-See the [local cancellation checkpoint](docs/crawl-jobs-v2-m4-shared-group-cancellation-2026-10-05.md).
+See the [cancellation implementation checkpoint](docs/crawl-jobs-v2-m4-shared-group-cancellation-2026-10-05.md).
 The [source-review result](docs/crawl-jobs-v2-m4-shared-group-cancellation-review-2026-10-05.md)
 retains the final-byte checks and the pre-/post-ACL-guard verification chronology.
 The first approval was refused before reservation when its full-budget window no

@@ -30,7 +30,7 @@ def native_frame(raw, phase):
     value = decode(raw, LIMITS["receipt_bytes"])
     exact(value, (*COMMON, *FIELDS[phase]))
     integer(value["version"], 1, 1)
-    require(value["phase"] == phase and value["role"] in ("target", "observer"), "ADMISSION_PHASE")
+    require(value["phase"] == phase and value["role"] in ("target", "observer", "oracle"), "ADMISSION_PHASE")
     require(type(value["case_id"]) is str and value["case_id"] in TRIALS and not value["case_id"].startswith("N."), "ADMISSION_CASE")
     digest(value["invocation_sha256"])
     if phase == "IDENTITY":
@@ -39,7 +39,7 @@ def native_frame(raw, phase):
         for name in (*NAMESPACES, "start_ticks", "pid", "tid"):
             integer(value[name], 1)
         integer(value["ns_device"], 1)
-        integer(value["pid"], 1 if value["role"] == "target" else 2, 1 if value["role"] == "target" else 4194304)
+        integer(value["pid"], 2 if value["role"] == "observer" else 1, 4194304 if value["role"] == "observer" else 1)
         require(value["tid"] == value["pid"], "ADMISSION_MAIN_THREAD")
     elif phase == "CONFINEMENT":
         _array(value["caps"], 5, 0, 0)
@@ -98,7 +98,7 @@ def validate(raw_frames, binding, preparation, context, *, target=None):
     validate_preparation(preparation)
     context = validate_context(context)
     exact(binding, ("case_id", "invocation_sha256", "container_id", "image", "role"))
-    require(binding["role"] in ("target", "observer"), "ADMISSION_ROLE")
+    require(binding["role"] in ("target", "observer", "oracle"), "ADMISSION_ROLE")
     digest(binding["container_id"])
     digest(binding["invocation_sha256"])
     require(type(binding["image"]) is str and binding["image"].startswith("sha256:"), "ADMISSION_IMAGE")
@@ -117,7 +117,8 @@ def validate(raw_frames, binding, preparation, context, *, target=None):
     for name in HOST_NAMESPACES:
         require(identity[name.removeprefix("host_")] != context[name], "ADMISSION_HOST_NAMESPACE")
     require(security["tasks"] == resources["processes"] == [identity["pid"]], "ADMISSION_TASK_INVENTORY")
-    require(security["seccomp_filters"] == context["seccomp_filters"][role], "ADMISSION_FILTER_COUNT")
+    # Target and oracle install one OCI filter; only the observer adds self-BPF.
+    require(security["seccomp_filters"] == context["seccomp_filters"]["target" if role == "oracle" else role], "ADMISSION_FILTER_COUNT")
     for name in ("kernel_release_sha256", "lsm_sha256", "time_offsets_sha256", "resolution_ns", "yama_scope"):
         require(clock[name] == context[name], "ADMISSION_KERNEL_CONTEXT")
     require(context["not_before_ns"] <= clock["monotonic_ns"] <= context["not_after_ns"], "ADMISSION_STALE")
@@ -134,7 +135,8 @@ def validate(raw_frames, binding, preparation, context, *, target=None):
             peer["binding"]["invocation_sha256"] == binding["invocation_sha256"] and peer["binding"]["container_id"] != binding["container_id"], "ADMISSION_PEER_BINDING")
         peer_identity = native_frame(peer["frames"][0], "IDENTITY")
         require(clock["monotonic_ns"] >= native_frame(peer["frames"][3], "CLOCK")["monotonic_ns"], "ADMISSION_PEER_CLOCK")
-        for name in ("pid_ns", "user_ns", "time_ns", "ns_device", "boot_sha256", "uid_map_sha256", "gid_map_sha256"):
+        require((identity["pid_ns"] == peer_identity["pid_ns"]) is (role == "observer"), "ADMISSION_PEER_PID_NAMESPACE")
+        for name in ("user_ns", "time_ns", "ns_device", "boot_sha256", "uid_map_sha256", "gid_map_sha256"):
             require(identity[name] == peer_identity[name], "ADMISSION_PEER_NAMESPACE")
         for name in ("cgroup_ns", "mnt_ns", "net_ns", "ipc_ns"):
             require(identity[name] != peer_identity[name], "ADMISSION_PRIVATE_NAMESPACE")

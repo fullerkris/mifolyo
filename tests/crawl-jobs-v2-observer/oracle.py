@@ -36,13 +36,27 @@ def decode_witness(raw):
     return validate_state(value)
 
 
+def admit_witness():
+    """Independently bind the fixed file through the oracle's read-only mount."""
+    fd = os.open("/witness/state", os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC | os.O_NONBLOCK)
+    try:
+        info = os.fstat(fd)
+        require(stat.S_ISREG(info.st_mode) and info.st_nlink == 1, "WITNESS_FILE")
+        value = {"device": info.st_dev, "inode": info.st_ino, "uid": info.st_uid, "gid": info.st_gid,
+            "mode": stat.S_IMODE(info.st_mode), "bytes": info.st_size}
+        require((value["uid"], value["gid"], value["mode"], value["bytes"]) == (999, 999, 0o600, WITNESS_BYTES), "WITNESS_IDENTITY")
+        return value
+    finally:
+        os.close(fd)
+
+
 def read_witness(expected):
     """Caller supplies independently admitted file identity, never a pathname."""
     exact(expected, ("device", "inode", "uid", "gid", "mode", "bytes"))
     for key in ("device", "inode"):
         integer(expected[key], 1)
     require((expected["uid"], expected["gid"], expected["mode"], expected["bytes"]) == (999, 999, 0o600, WITNESS_BYTES), "WITNESS_IDENTITY")
-    fd = os.open("/witness/state", os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC)
+    fd = os.open("/witness/state", os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC | os.O_NONBLOCK)
     try:
         before = os.fstat(fd)
         require(stat.S_ISREG(before.st_mode) and before.st_nlink == 1, "WITNESS_FILE")
@@ -53,6 +67,7 @@ def read_witness(expected):
         second = os.pread(fd, WITNESS_BYTES, 0)
         after = os.fstat(fd)
         require((after.st_dev, after.st_ino, after.st_size, after.st_nlink) == (before.st_dev, before.st_ino, WITNESS_BYTES, 1), "WITNESS_CHANGED")
+        require((after.st_uid, after.st_gid, stat.S_IMODE(after.st_mode)) == (999, 999, 0o600), "WITNESS_CHANGED")
         # The explicitly admitted helper heartbeat is the only concurrently
         # writable field while main is held. Do not mistake a torn main view for proof.
         require(first[:56] + first[64:] == second[:56] + second[64:], "WITNESS_UNSTABLE")

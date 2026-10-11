@@ -13,7 +13,8 @@ LIMITS = {"admission_ms": 10000, "observation_ms": 2000, "cleanup_ms": 5000,
 CAPS = frozenset(("effective", "permitted", "inheritable", "ambient", "bounding"))
 ARTIFACTS = frozenset(("target_source", "observer_source", "oracle_source", "validator_source",
     "target_elf", "observer_elf", "instruction_manifest", "observer_profile", "target_profile",
-    "oracle_profile", "filter_generator", "controller_source", "toolchain_record", "admission_source"))
+    "oracle_profile", "filter_generator", "controller_source", "toolchain_record", "admission_source",
+    "runtime_context_source", "oracle_worker_source", "oracle_elf"))
 
 
 class Invalid(ValueError):

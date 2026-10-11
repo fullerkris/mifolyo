@@ -13,8 +13,7 @@ PTRACE = (0x4206, 0x4207, 0x4202, 0x4204, 0x4205, 2, 7, 9, 17)
 def profile(role):
     require(role in ("observer", "target", "oracle"), "ROLE")
     allowed = list(COMMON)
-    if role in ("target", "observer"):
-        allowed += ["clock_getres", "uname"]
+    allowed += ["clock_getres", "uname"]
     if role != "target":
         allowed.remove("openat")
     if role == "observer":
@@ -26,13 +25,20 @@ def profile(role):
     rows = [{"names": sorted(allowed), "action": "SCMP_ACT_ALLOW", "args": []}]
     rows += [{"names": ["mmap", "mprotect"], "action": "SCMP_ACT_ALLOW",
         "args": [{"index": 2, "value": 4, "valueTwo": 0, "op": "SCMP_CMP_MASKED_EQ"}]},
-        {"names": ["prctl"], "action": "SCMP_ACT_ALLOW", "args": [{"index": 0, "value": 39, "op": "SCMP_CMP_EQ"}]}]
+         {"names": ["prctl"], "action": "SCMP_ACT_ALLOW", "args": [{"index": 0, "value": 39, "op": "SCMP_CMP_EQ"}]}]
+    if role == "oracle":
+        # CPython's loader needs read-only file-backed executable mappings.
+        # Anonymous executable mappings, W+X and executable mprotect stay denied.
+        rows += [{"names": ["mmap"], "action": "SCMP_ACT_ALLOW", "args": [
+            {"index": 2, "value": 2, "valueTwo": 0, "op": "SCMP_CMP_MASKED_EQ"},
+            {"index": 3, "value": 32, "valueTwo": 0, "op": "SCMP_CMP_MASKED_EQ"}]},
+            {"names": ["getsockopt"], "action": "SCMP_ACT_ALLOW", "args": [
+                {"index": 1, "value": 1, "op": "SCMP_CMP_EQ"}, {"index": 2, "value": 17, "op": "SCMP_CMP_EQ"}]}]
     if role != "target":
         rows.append({"names": ["openat"], "action": "SCMP_ACT_ALLOW",
             "args": [{"index": 2, "value": 1 | 2 | 64 | 512 | 1024, "valueTwo": 0, "op": "SCMP_CMP_MASKED_EQ"}]})
-    if role in ("target", "observer"):
-        for operation in (3, 21):  # PR_GET_DUMPABLE / PR_GET_SECCOMP; no setters.
-            rows.append({"names": ["prctl"], "action": "SCMP_ACT_ALLOW", "args": [{"index": 0, "value": operation, "op": "SCMP_CMP_EQ"}]})
+    for operation in (3, 21):  # PR_GET_DUMPABLE / PR_GET_SECCOMP; no setters.
+        rows.append({"names": ["prctl"], "action": "SCMP_ACT_ALLOW", "args": [{"index": 0, "value": operation, "op": "SCMP_CMP_EQ"}]})
     if role != "observer":
         rows.append({"names": ["socket"], "action": "SCMP_ACT_ALLOW",
             "args": [{"index": 0, "value": 1, "op": "SCMP_CMP_EQ"}, {"index": 1, "value": 15, "valueTwo": 1, "op": "SCMP_CMP_MASKED_EQ"}]})

@@ -1,7 +1,8 @@
 """Local-only closed Docker adapter; mutations require an outer authorizer.
 
 There is no run CLI or approval issuer here. Construction and metadata reads do
-not authorize mutation. Native/runtime admission remains a separate next layer.
+not authorize mutation. Runtime admission and oracle observations remain distinct
+from a complete accepted experiment or execution approval.
 """
 import json
 import os
@@ -17,6 +18,7 @@ from owned_resources import ACTORS, VOLUMES, TMPFS_OPTIONS, Registry, admit_cont
 from profiles import profile
 from streams import ProcessStream
 import runtime_admission
+from runtime_context import ContextLease, ContextSource
 from owned_resources import timestamp
 
 MAX_COMMAND_BYTES = 262144
@@ -76,6 +78,18 @@ class DockerBackend:
         self.prefix = ["docker", "--host", "unix:///var/run/docker.sock"]
         self._actor_streams, self._native_admissions = {}, {}
         self._runtime_starts = {}
+        self._context_lease, self._oracle_session = None, None
+
+    def acquire_runtime_context(self, source, preparation, budget, deadline):
+        require(isinstance(source, ContextSource) and not self._actor_streams, "CONTEXT_BEFORE_ACTORS")
+        self._authorize("runtime_context")
+        self.verify_platform(deadline)
+        lease = source.acquire(self.scope["case_id"], self.scope_sha256, preparation, self.scope["daemon_sha256"], deadline, budget)
+        self._daemon(deadline)
+        self._authorize("runtime_context")
+        lease.check(deadline)
+        self._context_lease = lease
+        return lease
 
     def _authorize(self, action):
         require(callable(self.authorize) and self.authorize(action, self.scope_sha256) is True, "EXECUTION_NOT_APPROVED")
@@ -254,6 +268,8 @@ class DockerBackend:
             pre_dispatch = holder and holder[0].phase in ("READY", "ADMISSION_READY")
             try:
                 deadline.check()
+                if self._context_lease is not None and holder and not holder[0].sent:
+                    self._context_lease.check(deadline)
                 if pre_dispatch:
                     admitted = self._native_admissions.get(role)
                     require(admitted is not None and admitted["stream"] is holder[0], "NATIVE_ADMISSION_REQUIRED")
@@ -261,18 +277,27 @@ class DockerBackend:
                     expected_phase = "ARMED" if role == "target" else "READY"
                     require(peer is not None, "NATIVE_OBSERVER_NOT_ARMED" if role == "target" else "NATIVE_TARGET_NOT_READY")
                     peer["stream"].require_quiet_live(expected_phase)
+                    if role == "target":
+                        require(self._oracle_session is not None, "ORACLE_NOT_READY")
+                        self._oracle_session.require_ready()
+                    # Every readiness poll must precede the final expiry checks:
+                    # even a nonblocking oracle poll can cross a peer/lease end.
                     require(deadline.clock() < admitted["expires_at"], "NATIVE_ADMISSION_EXPIRED")
                     require(peer["stream"].deadline.clock() < peer["expires_at"], "NATIVE_ADMISSION_EXPIRED")
+                    if self._context_lease is not None:
+                        self._context_lease.check(deadline)
+                if role == "observer" and holder and holder[0].phase == "HELD":
+                    require(self._oracle_session is not None, "ORACLE_MATCH_REQUIRED")
+                    self._oracle_session.authorize_resume(holder[0])
                 deadline.check()
             except BaseException:
                 if pre_dispatch:
-                    self._native_admissions.pop(role, None)
-                    self._native_admissions.pop(peer_role, None)
+                    self._native_admissions.clear()
                 raise
 
         def before_input():
             self._authorize("actor_input")
-            if holder and not holder[0].sent and role in ("target", "observer"):
+            if holder and not holder[0].sent and role in ACTORS:
                 current = None
                 while current is None:
                     deadline.check()
@@ -289,6 +314,13 @@ class DockerBackend:
         stream = self.stream_factory([*self.prefix, "container", "start", "--attach", "--interactive", ref["id"]],
             binding, budget, deadline, env=clean_environment(), before_input=before_input, before_write=dispatch_guard)
         holder.append(stream)
+        try:
+            if self._context_lease is not None:
+                self._context_lease.check(deadline)
+                stream.bind_admission_window(self._context_lease._context["not_after_ns"])
+        except BaseException:
+            stream.close()
+            raise
         self._actor_streams[ref["id"]] = stream
         return stream
 
@@ -306,18 +338,26 @@ class DockerBackend:
         """Read four bounded actor frames and join them to live owned metadata.
 
         The expected kernel/clock context is an independently trusted controller
-        input, never inferred from the actor being admitted. Oracle admission,
-        ptrace/slot capability proof and full trial evidence remain separate.
+        input, never inferred from the actor being admitted. The oracle uses its
+        interpreter/source identities and private PID namespace. Ptrace/slot
+        capability proof and full trial acceptance remain separate.
         """
         role = ref.get("role") if type(ref) is dict else None
-        require(role in ("target", "observer"), "NATIVE_ADMISSION_ROLE")
+        require(role in ACTORS, "NATIVE_ADMISSION_ROLE")
         hex_id(ref.get("id"))
         require(self._actor_streams.get(ref.get("id")) is stream and stream is not None, "NATIVE_ADMISSION_STREAM")
         try:
             self._authorize("runtime_admission")
             require(role not in self._native_admissions, "NATIVE_ADMISSION_DUPLICATE")
             validate_preparation(preparation)
+            if self._context_lease is not None:
+                expected_context = self._context_lease.view(self.scope["case_id"], self.scope_sha256, preparation, deadline)
+                require(context is self._context_lease or context == expected_context, "CONTEXT_LEASE_BINDING")
+                context = expected_context
+            else:
+                require(not isinstance(context, ContextLease), "CONTEXT_FOREIGN_LEASE")
             runtime_admission.validate_context(context)
+            require(stream.sent_admission_window_end_ns == context["not_after_ns"], "NATIVE_ADMISSION_WINDOW_BINDING")
             saved = validate_snapshot(snapshot)
             require(canonical(saved["scope"]) == canonical(self.scope) and set(saved["entries"]) == set((*VOLUMES, *ACTORS)) and
                 all(row["reference"] is not None for row in saved["entries"].values()), "ACTIVATION_INVENTORY")
@@ -327,7 +367,7 @@ class DockerBackend:
             binding = {"case_id": self.scope["case_id"], "invocation_sha256": self.scope_sha256,
                 "container_id": ref["id"], "image": self.scope["images"][role], "role": role}
             require(stream.binding == binding, "NATIVE_ADMISSION_BINDING")
-            for actor in ("target", "observer"):
+            for actor in ACTORS:
                 require(preparation["artifacts"][actor + "_profile"] == self.scope["profiles"][actor], "NATIVE_ADMISSION_PROFILE")
             registry = object.__new__(Registry)
             registry.scope, registry.entries = self.scope, saved["entries"]
@@ -340,7 +380,7 @@ class DockerBackend:
             before = observed(role)
             require(self._runtime_starts.get(ref["id"]) == before, "NATIVE_ADMISSION_RESTART")
             target = None
-            if role == "observer":
+            if role in ("observer", "oracle"):
                 target = self._native_admissions.get("target")
                 require(target is not None and target["stream"].phase == "READY" and not target["stream"].closed, "NATIVE_ADMISSION_TARGET_REQUIRED")
                 target["stream"].deadline.check()
@@ -348,7 +388,9 @@ class DockerBackend:
                 require(observed("target") == target["metadata"], "NATIVE_ADMISSION_TARGET_RESTART")
             for phase in runtime_admission.PHASES:
                 stream.receive(phase)
-            stream.receive("READY" if role == "target" else "ADMISSION_READY")
+            ready = stream.receive({"target": "READY", "observer": "ADMISSION_READY", "oracle": "ORACLE_READY"}[role])
+            if role == "oracle":
+                require(ready["source_sha256"] == preparation["artifacts"]["oracle_worker_source"], "ORACLE_SOURCE")
             stream.require_admission_ready()
             validated = runtime_admission.validate(stream.admission_frames, binding, preparation, context,
                 target=target["validated"] if target else None)
@@ -367,6 +409,8 @@ class DockerBackend:
                 target["stream"].require_admission_ready()
                 target["stream"].deadline.check()
             deadline.check()
+            if self._context_lease is not None:
+                self._context_lease.check(deadline)
             self._native_admissions[role] = {"stream": stream, "validated": validated, "metadata": before, "expires_at": deadline.end}
             result = runtime_admission.summary(validated)
             result["metadata_sha256"] = sha(canonical(before))
@@ -382,6 +426,27 @@ class DockerBackend:
             if not isinstance(error, Exception):
                 raise
             raise Invalid("NATIVE_ADMISSION_REJECTED") from None
+
+    def open_oracle(self, ref, snapshot, preparation, context, budget, deadline):
+        from oracle_bridge import OracleSession
+        require(self._oracle_session is None and type(ref) is dict and ref.get("role") == "oracle", "ORACLE_DUPLICATE")
+        registry = object.__new__(Registry)
+        saved = validate_snapshot(snapshot)
+        registry.scope, registry.entries = self.scope, saved["entries"]
+        stream = self.open_actor(ref, registry.spec("oracle"), snapshot, budget, deadline)
+        try:
+            if self._context_lease is None:
+                stream.bind_admission_window(runtime_admission.validate_context(context)["not_after_ns"])
+            stream.send_oracle_case()
+            self.collect_native_admission(stream, ref, snapshot, preparation, context, deadline)
+            session = OracleSession(self, stream, ref, snapshot, preparation)
+            session.initialize()
+            self._oracle_session = session
+            return session
+        except BaseException:
+            self._native_admissions.pop("oracle", None)
+            stream.close()
+            raise
 
     def _owned(self, ref, deadline):
         require(type(ref) is dict and ref.get("kind") in ("container", "volume"), "RESOURCE_REFERENCE")

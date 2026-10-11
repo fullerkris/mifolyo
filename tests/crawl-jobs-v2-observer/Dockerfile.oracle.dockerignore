@@ -1,0 +1,10 @@
+**
+!contracts.py
+!runtime_admission.py
+!linux_observation.py
+!oracle.py
+!oracle_protocol.py
+!oracle_worker.py
+!worker.py
+!build_oracle.py
+!Dockerfile.oracle

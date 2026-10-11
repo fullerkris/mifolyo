@@ -1,0 +1,54 @@
+{
+  "base": "2ff03afa8950500de36762bdc5d41de8f2736030",
+  "baseline_test_ids_preserved": 113,
+  "branch": "feature/crawl-jobs-v2-c0-context-oracle",
+  "build_verification_sha256": "8b7817ff8d2fef399dd0d7d0725e9828374b3aaed44daa1f13b16906cef4b96d",
+  "closed_findings": [
+    "COR-CTX-001",
+    "COR-CTX-002",
+    "SEC-CTX-001"
+  ],
+  "committed": false,
+  "digest_vectors": "PASS",
+  "final_reviews": {
+    "correctness": "1ffa557b61e979bce1455927fd4d5c5859c3aa4febb9f718a9f4d7eed2190bb6",
+    "security": "7a85d1801797b57e3183ae811843d9b826103865840105199bc86a4112bc355e"
+  },
+  "initial_review_intake_sha256": "be961ae84551e2f3f4b1048a4a70f5f12b7356b312276fac9a26995d81bf5e59",
+  "initial_reviews": {
+    "correctness": "80e03a35f09f9ba53c76746b581557f8aea5e02092587c5c8374b9ffbae0215d",
+    "security": "814645cde86463ad003b78102619d80673dbe341c5a93cf15672ebee51fccce2"
+  },
+  "m4_accepted": false,
+  "native_artifacts_unchanged": 11,
+  "native_execution": false,
+  "native_inputs_unchanged": 9,
+  "new_test_ids": 12,
+  "open_actionable_findings": 0,
+  "oracle_oci_runtime_validated": false,
+  "oracle_worker_source": "30f1a092422391317453ea624ca7532c46d4d13607c4261b8d80fc50eef6583b",
+  "package_files": 40,
+  "prior_test_ids_preserved": 149,
+  "publication_authorized": false,
+  "pushed": false,
+  "recorded_utc": "2026-10-09T19:16:46.579992+00:00",
+  "remaining": [
+    "Scoped publication preparation and separate publication decision",
+    "Provision/attest the Linux-host source, anchor/key and bounded transport",
+    "Review/admit exact runtime images and the actual oracle OCI sandbox",
+    "Complete trial/timing/whole-trial confinement and independent cleanup/absence proof",
+    "Separate exact-artifact/execution decisions before native calibration; full M4 remains open"
+  ],
+  "review_intake_sha256": "0bc3175b5d13ecb5239095abaae51fecd5bbbed3df219116636611c97a39d02f",
+  "runtime_context_source": "f57f0c4d1ce76f227647596443976adc2a4b4abad7d293797817d29dd597fdbb",
+  "runtime_source_deployment_validated": false,
+  "scope": "Exact corrected context/oracle source and artifact preparation; no runtime or publication authority",
+  "script_tests": 31,
+  "source_inventory_sha256": "99d9dd6f2c475cd83960c66028016d7d508acadd3563f2e440c3bf6ff012c4c3",
+  "status": "PASS_INDEPENDENT_SOURCE_REVIEW",
+  "tests": 161,
+  "tracing": false,
+  "verdict": "GO_FOR_CONTINUED_IMPLEMENTATION",
+  "verification_sha256": "83ac4a4e1822c38ba08210ebf307e2f929e4712dd61a4ebc9acd1b201ef47f94",
+  "version": 1
+}

@@ -2,11 +2,11 @@
 
 **Finding:** F3 - durable crawl-job leases and recovery
 
-**Last updated:** 2026-10-09 (UTC; PR #22 merged as `5859f61` with exact main CI verified; C0 admission source GO and 113-test fixture successor restored for authorized publication; full M4 open)
+**Last updated:** 2026-10-09 (UTC; reviewed context/oracle source and 53-path publication candidate prepared on verified `2ff03af`; fresh 161 C0 / 31 script checks pass; owner publication decision next; full M4 open)
 
-**Code baseline:** merged `main` at `5859f61`; PR #21 documentation and PR #22 Go security update are merged, with PR #22's reviewed-tree continuity and exact main CI verified
+**Code baseline:** merged `main` at `2ff03af`; PR #23 has the reviewed `a1fbc6f4…` tree and its own verified main CI: 14 contexts / 23 jobs, 113 C0 / 31 script / 183 harness tests
 
-**Working branch:** `feature/crawl-jobs-v2-c0-publication`, based at `5859f61`; fresh publication worktree reconstructed from the checksum-verified C0 snapshot, with a reconciled current plan and one successor baseline/recovery record
+**Working branch:** `feature/crawl-jobs-v2-c0-context-oracle`, based at `2ff03af`; context acquisition, three-role admission and oracle/client closure are locally implemented and tested, uncommitted and unpublished
 
 **Initial checkpoint:** `e4372a66201b8767bcca4d7476c30c5b7999922c`
 
@@ -17,9 +17,18 @@ All 43 canonical operations and the sealed, zero-argument
 bounded real-Redis `ledger-smoke-v1` and `ledger-claim-release-v1` cases pass;
 full M4 acceptance is open.
 
-**Current next gate:** publish the owner-authorized C0 source/evidence checkpoint
-and verify its exact revision's protected CI, including the retained 113-test C0
-report. Merge remains a separate decision. The
+**Current next gate:** the owner publication decision for the
+[prepared 53-path context/oracle candidate](crawl-jobs-v2-m4-c0-context-oracle-publication-preparation-2026-10-09.md),
+then scoped commit/push/PR and exact-revision CI. Preparation is complete: fresh
+161 C0 / 31 script checks and digest verification pass; all 40 reviewed package
+files, native artifacts and existing CI coverage retain their identities.
+Independent correctness/security re-review returns **GO_FOR_CONTINUED_IMPLEMENTATION**
+on the corrected **40-file / 161-test** package. Final-poll expiry, equal-clock ACK
+ordering and client-history rollback findings are closed; all 149 previous test IDs
+remain, with 12 new regressions/positive controls. Source inventory:
+`99d9dd6f2c475cd83960c66028016d7d508acadd3563f2e440c3bf6ff012c4c3`.
+Host-source provisioning, runtime images/admission,
+full trial/timing assembly and native calibration remain later gates. The earlier
 [publication refresh](evidence/m4-c0-publication-preparation-2026-10-08/publication-refresh-2026-10-09.json)
 binds the 125-path candidate to verified `5859f61`; the
 [original preparation](crawl-jobs-v2-m4-c0-publication-preparation-2026-10-08.md)
@@ -55,18 +64,26 @@ merged-main workflows passed on attempt 1. Earlier dependency-audit failures and
 the PR's missing-Spider workflow retry retain their original records. The real
 run retains its own approval, execution, review and cleanup evidence; full M4 is open.
 
-**C0 preparation:** the 26-file package includes owned-resource, stream, watchdog
+**Published C0 checkpoint:** the 26-file package includes owned-resource, stream, watchdog
 and native-runtime admission collection/validation. Independent correctness and
 security [review](crawl-jobs-v2-m4-c0-native-admission-review-2026-10-08.md) returns
 **GO_FOR_CONTINUED_IMPLEMENTATION** on the 112-test snapshot after closing
 dispatch-readiness, final-expiry and clock-range findings. The subsequent
 [fixture-only synchronization fix](crawl-jobs-v2-m4-c0-fixture-sync-2026-10-08.md)
 passes 113 tests and preserves production bytes and native artifacts. Publication
-adds fail-closed offline C0 coverage to `required-tests`; hosted C0 evidence awaits
-the published revision. Tests use simulated Docker and benign Python processes.
-Trusted runtime-context acquisition, oracle/client closure, full trial dispatch
-and exact runtime image/approval assembly remain incomplete. No native actor or
-tracing experiment ran.
+adds fail-closed offline C0 coverage to `required-tests`; exact PR and merged-main
+evidence now verify all 113 tests and package hashes. Tests use simulated Docker
+and benign Python processes. No native actor or tracing experiment ran.
+
+**Current local increment:** authenticated Linux-host context acquisition, exact
+Linux-expiry handshakes and an owned read-only oracle/client-closure worker are
+implemented and independently reviewed after three boundary fixes. All 161 tests
+pass (all 149 previous IDs retained plus 12 new tests), with 31 script tests and
+independent digest checks. The oracle manifest was rebuilt; all nine native inputs
+and eleven retained artifacts remain unchanged and statically joined. Both final
+reviews return GO for continued implementation; publication remains a separate
+decision. Trusted source placement/transport, actual oracle OCI
+admission, full trial/timing assembly and whole-trial evidence remain open.
 
 The separately authorized [Go security fix](go-http2-security-2026-10-09.md) uses
 Go 1.26.9 and x/net v0.60.0, with an exact Spider normalization compatibility pin.
@@ -354,12 +371,12 @@ retains it as a primitive case; guard cases now explicitly bind the complete
 | Ledger validation | Baseline/delivery/fence history, post-abort freeze, exact retained witnesses, strict worker expiry, completed replay, prior retry/backpressure/reason fixes and zero-sentinel checks pass local normal conformance and reviewed counterexample replays |
 | Script sources | All 43 canonical operations are implemented: unchanged BOOT passthrough plus 42 exact generated sources; both strict source/bundle generator checks pass |
 | Authoritative bundle | Complete zero-argument `AuthoritativeScriptBindingSet()` validates embedded sources against fixed generated pins and returns fresh private sealed bindings; no caller-supplied sources, hashes or paths |
-| Local and protected acceptance | Merged `5859f61` passes 14/14 main contexts and 23 jobs, with 480 race roots (479 passes/one allowed optional skip), 183 harness/21 script tests and 74-file/20-recipe amd64 image evidence. Its tree matches reviewed `8940367`. C0's 113-test offline suite and added CI step require their own exact published-revision verification |
+| Local and protected acceptance | Merged `2ff03af` passes 14/14 main contexts and 23 jobs, with 113 C0 / 31 script / 183 harness tests, all 480 race roots accounted for and 74-file/20-recipe image evidence. The reviewed context/oracle increment has fresh 161 C0 / 31 script passes and a prepared 53-path publication candidate; owner publication decision and candidate hosted CI remain pending |
 | Runtime behavior | V2 remains dormant in application services; separately authorized disposable Redis smoke, claim/release, all 13 negatives, pre-I/O recovery, bounded request lifecycle, positive-interval and serial shared-group cases pass within their original source/image scopes |
 | M4 bounded execution | Cancellation fixture `cda9d337…` passes once: nine calls, one group-capacity denial, two peer-safe replays, 60 counters and 46 denials. Six-role revocation, original 28-action journal and six-resource absence pass; renewed approval consumed. Earlier shared-capacity evidence retains its own scope; full M4-P4/P5 stay open |
-| Review status | Cancellation retains independent scoped evidence ACCEPT. C0 admission has final source GO on the 112-test snapshot; its fixture-only successor passes 113 tests. The CI integration is a later delta, not an additional independent review; full runtime proof remains pending |
-| Git state | PR #21 merged as `2bdb3e5`; PR #22 merged as `5859f61` with verified main CI. C0 publication uses a fresh worktree and the complete frozen candidate after missing files were detected in the older temporary worktrees. Existing old-directory contents and all 372 unrelated primary paths are preserved |
-| Current bounded slice | Authorized C0 source/design/review/evidence publication with an offline CI gate. The accepted cancellation run retains its consumed approval and exact executed revision; full M4 and native execution remain separate gates |
+| Review status | Cancellation retains scoped evidence ACCEPT. Earlier C0 GO remains bound to its 112-test snapshot; PR #23 published the 113-test fixture successor. Both final reviewers return GO_FOR_CONTINUED_IMPLEMENTATION on the corrected 40-file / 161-test context/oracle snapshot, with all three findings closed; runtime feasibility and full M4 remain unproved |
+| Git state | PRs #21–#23 are merged; exact `2ff03af` main CI is verified. Context/oracle work is local on its isolated feature branch. Published checkpoints, incomplete older worktree contents, native artifacts and 372 unrelated primary paths remain preserved |
+| Current bounded slice | Independently reviewed Linux-context acquisition, native Linux expiry and oracle/client closure. Publication preparation is complete for the unchanged reviewed package; owner decision on the 53-path candidate is next, then exact-revision CI and later trusted-source/runtime-image admission. Earlier execution approvals stay consumed |
 
 ### Current source and fixture identities (regenerated 2026-09-21)
 
@@ -556,9 +573,16 @@ The final matrix and final independent reviews used pinned Go 1.25.13 and passed
 - [x] Merge the separately approved Go security fix and verify actual `5859f61` main CI.
 - [x] Recover the approved 124-path C0 snapshot into a fresh publication worktree;
   reconcile the plan and add one successor baseline/recovery record.
-- [ ] Publish C0 and verify its exact revision's protected CI before a separate merge decision.
-- [ ] Implement trusted Linux runtime-context acquisition and the independent
-  oracle/client-closure worker with source review.
+- [x] Publish C0 as PR #23 and verify exact PR CI, owner merge `2ff03af` and its own main CI.
+- [x] Update the Obsidian completion/status records through MCPVault before the next implementation.
+- [x] Implement the authenticated Linux-context source/lease, Linux-expiry handshake,
+  three-role admission and independent oracle/client-closure bridge; 149 local tests pass.
+- [x] Obtain independent correctness/security review, close all three context/oracle findings,
+  preserve all 149 prior IDs and pass 161 tests; both exact-byte re-reviews return GO.
+- [x] Prepare the exact 53-path context/oracle publication candidate; reverify all 40 reviewed
+  package files, fresh 161 C0 / 31 script checks, digest/artifact bindings and unchanged protected CI.
+- [ ] Obtain the owner publication decision, then commit/push/open the scoped PR and verify exact-revision CI.
+- [ ] Provision/admit the Linux source and transport; validate exact runtime images and the oracle sandbox.
 - [ ] Complete full trial dispatch, image/approval and timing/resource integration;
   decide normative changes and runtime experiments separately.
 - [ ] Complete the broader M4 acceptance reviews and later-case approvals.
@@ -3625,6 +3649,25 @@ for a 125-path publication. The 26-file package and its historical reviews are
 unchanged. The CI step runs offline/benign-process Python checks and retains test
 IDs and source hashes. Trusted context production, oracle/client closure and full
 runtime assembly remain open; publication grants no native execution authority.
+
+**Context/oracle implementation (local, 2026-10-09).** After the owner merged
+PR #23, exact main CI and its source-bound 113-test C0 artifact were verified.
+The requested MCPVault update was completed and read back first. The subsequent
+39-file source package adds a signed read-only Linux-host source protocol and
+context leases, a three-line case/nonce/Linux-expiry actor handshake, oracle
+runtime/source admission and read-only witness/client collection. Live oracle
+readiness gates G; a case/ordinal/HELD-digest match gates R. Client closure retains
+partial, late, reset and unresolved outcomes and joins independent stable remote
+stop observations. Existing protocol/Lua and prior evidence remain unchanged.
+
+All 149 C0 tests pass, retaining all 113 earlier IDs; 31 script tests, digest checks,
+strict native artifact compilation and the pinned oracle artifact build pass.
+No native actor or tracing experiment ran. Source inventory:
+`6dbc77112abc830467ee952eef2d30f54e730c8718093788e4dd486564c6c750`.
+See the [implementation/evidence record](crawl-jobs-v2-m4-c0-context-oracle-2026-10-09.md).
+This is not a new independent GO: source review, operator-admitted Linux endpoint
+provisioning/transport, actual oracle sandbox admission and full runtime/trial
+assembly remain required before any separately authorized calibration.
 
 - **D01: precise internal crash observation.** A reviewed observed method must
   preserve canonical Lua and target Redis semantics. Random/MONITOR-triggered

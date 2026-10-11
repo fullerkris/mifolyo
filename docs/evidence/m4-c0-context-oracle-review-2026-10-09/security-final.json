@@ -1,0 +1,902 @@
+{
+  "binding": {
+    "base": "2ff03afa8950500de36762bdc5d41de8f2736030",
+    "build_verification": {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/build-verification.json",
+      "sha256": "8b7817ff8d2fef399dd0d7d0725e9828374b3aaed44daa1f13b16906cef4b96d"
+    },
+    "implementation_handoff": {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/implementation-handoff.json",
+      "sha256": "90de1512b46173b38c1a152c3b12cb4c533b5ce7adeebe5cb8e89781665e2e95"
+    },
+    "implementation_handoff_directly_verified_before_after": true,
+    "implementation_verification": {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/verification.json",
+      "sha256": "83ac4a4e1822c38ba08210ebf307e2f929e4712dd61a4ebc9acd1b201ef47f94"
+    },
+    "initial_intake": {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/review-intake.json",
+      "sha256": "be961ae84551e2f3f4b1048a4a70f5f12b7356b312276fac9a26995d81bf5e59"
+    },
+    "intake": {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/review-intake-v2.json",
+      "sha256": "0bc3175b5d13ecb5239095abaae51fecd5bbbed3df219116636611c97a39d02f"
+    },
+    "native_artifacts": {
+      "cases.h": "64591020572e8af5afae67856ba79e053afacaf41d08ba10a98f489558e383f4",
+      "observer": "e407a02c67ac7a0cd192e612afe5ad643701c16821f6854e3a11b040e55cfb61",
+      "observer-seccomp.json": "abf581851c19631ba5125ac03443f4ad72c6e8fd7b92fa086218060e07b56bf2",
+      "oracle-seccomp.json": "f82e0ae5335e1393c402265c4a14a4e56ad8df27ab48eee70907745fef3b6835",
+      "target": "819cde0b38e12b235acbef2b3741551af86683ff2c3ec5186b5a45b710e5da45",
+      "target-filter.bpf": "701824ff5f8ccafa359f711d2714b23c8a303789cd1987a3a85aba19a3667b93",
+      "target-manifest.json": "a19b4096f0f268742ebc98bf879e12fbb0de1124a1c8144959496f6b8a615e43",
+      "target-seccomp.json": "6a1ffdf7326ae1370bd55cc2edb2bcfb49b2d65ce7090205576d3b6e9496ab3e",
+      "target_filter.h": "8a1c8f5941860b7acd92f3dc53952aa746fa9d1c57098b214a691fa8a6380b1d",
+      "target_manifest.h": "ccee87e21a21d7d0f8e07cac9fe1dc3e9f20333d51b32e9231d1e2362686d7a5",
+      "toolchain.json": "db73fe1e4f89b176c696c4315b6c3828df9c1091e9a26b2bbeb76bddd2d1dd25"
+    },
+    "native_artifacts_unchanged": 11,
+    "native_inputs_unchanged": 9,
+    "oracle_interpreter_elf_as_recorded": "cb4548d280f38c2b1df4cba45f12c90a034729e08fce5bf1a223c58add0e21e3",
+    "oracle_interpreter_elf_bytes_supplied": false,
+    "oracle_manifest": {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/oracle-rebuild/artifacts/oracle-artifacts.json",
+      "sha256": "961ddf9d26b4633b0915b80c64ef2a5673a23934fbe01bee54d5cb87a2ef588d"
+    },
+    "oracle_worker_source": "30f1a092422391317453ea624ca7532c46d4d13607c4261b8d80fc50eef6583b",
+    "original_review": {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/review.json",
+      "sha256": "814645cde86463ad003b78102619d80673dbe341c5a93cf15672ebee51fccce2"
+    },
+    "package_files": 40,
+    "runtime_context_source": "f57f0c4d1ce76f227647596443976adc2a4b4abad7d293797817d29dd597fdbb",
+    "snapshot": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/source-v2",
+    "snapshot_files": 1679,
+    "snapshot_map_encoding": "Compact sorted JSON mapping snapshot-relative paths to SHA256, comma/colon separators, no newline.",
+    "snapshot_map_sha256": "458de66b6866302b912652dbb02ee1c5d155419428898e0a4f3d8b4e1a75ff14",
+    "source_inventory": {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/source-inventory-v2.json",
+      "sha256": "99d9dd6f2c475cd83960c66028016d7d508acadd3563f2e440c3bf6ff012c4c3"
+    }
+  },
+  "checks": [
+    {
+      "after": {
+        "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-preservation-after.json",
+        "sha256": "5f2dd9405546eba56ea738af6bff772f914fcc51875f46fbb289a8b5fa520dc4"
+      },
+      "before": {
+        "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-preservation-before.json",
+        "sha256": "f5e42778f272f79764877b0a4268f33265017b3be29b428c44a13f44dab31dca"
+      },
+      "details": "All 1679 frozen source-file hashes, 40 package files, supplied intake/inventory/verification/build/handoff records, rebuilt oracle manifest and all 11 native artifacts verified before/after. Oracle bundle recomputed from source-v2; context bundle and 9 native build inputs unchanged. Original security report and every historical private file/symlink inventory remain unchanged.",
+      "id": "exact_bindings_and_preservation",
+      "status": "PASS"
+    },
+    {
+      "baseline_ids_retained": 149,
+      "command": "python3 -B -W error::ResourceWarning scripts/test-crawl-jobs-v2-observer.py --report /private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-existing-suite.json",
+      "cwd": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/source-v2",
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "TMPDIR": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security"
+      },
+      "errors": 0,
+      "expected_failures": 0,
+      "failures": 0,
+      "id": "full_c0_suite",
+      "log": {
+        "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-existing-suite.log",
+        "sha256": "9912239c1e171fbb9af41572da02757685003db4a089d93138e08467cbc532f6"
+      },
+      "new_test_ids": [
+        "test_context_oracle_review.ContextOracleReviewTests.test_chained_close_cannot_erase_complete_receipt",
+        "test_context_oracle_review.ContextOracleReviewTests.test_chained_close_cannot_erase_transport_error",
+        "test_context_oracle_review.ContextOracleReviewTests.test_chained_close_cannot_invent_held_cut",
+        "test_context_oracle_review.ContextOracleReviewTests.test_equal_clock_receipt_and_zero_width_cut_remain_unordered",
+        "test_context_oracle_review.ContextOracleReviewTests.test_final_oracle_poll_rechecks_context_lease",
+        "test_context_oracle_review.ContextOracleReviewTests.test_final_oracle_poll_rechecks_observer_expiry",
+        "test_context_oracle_review.ContextOracleReviewTests.test_final_oracle_poll_rechecks_oracle_expiry",
+        "test_context_oracle_review.ContextOracleReviewTests.test_final_oracle_poll_rechecks_target_expiry",
+        "test_context_oracle_review.ContextOracleReviewTests.test_history_rejects_changed_completion_cut_or_terminal_bytes",
+        "test_context_oracle_review.ContextOracleReviewTests.test_honest_partial_late_reset_and_unresolved_closure_remain_distinct",
+        "test_context_oracle_review.ContextOracleReviewTests.test_live_final_oracle_poll_still_allows_start",
+        "test_context_oracle_review.ContextOracleReviewTests.test_resume_poll_rechecks_oracle_operation_deadline"
+      ],
+      "no_skips_or_test_relaxation": true,
+      "passes": 161,
+      "report": {
+        "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-existing-suite.json",
+        "sha256": "fd5767806f77325bd8e99c7f0b805808a717c312f84a0f150898e33fd6afa3b7"
+      },
+      "runs": 1,
+      "skips": 0,
+      "status": "PASS",
+      "tests_run": 161,
+      "unexpected_successes": 0
+    },
+    {
+      "actual_corrected_code_used": [
+        "oracle_protocol.ClientHistory",
+        "oracle_bridge.OracleSession",
+        "streams.ProcessStream",
+        "oracle_worker.Engine",
+        "oracle_worker.FrameClient"
+      ],
+      "additional_attacks_rejected": 7,
+      "historical_attacks_rejected": 3,
+      "honest_controls_accepted": 11,
+      "id": "independent_sec_ctx_001_replay",
+      "log": {
+        "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-bridge-attempt-1.log",
+        "sha256": "ccd8037087884278f7839f91ea168b772cd6d4f1d993435c45bd96c10fdf1d07"
+      },
+      "production_prototype_substitution": false,
+      "report": {
+        "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-bridge-probes.json",
+        "sha256": "92ef43e1147840e1bfb95169e6c7c7ca2f2939b6ec0f61747019cd386145ccdb"
+      },
+      "status": "PASS_CLOSED"
+    },
+    {
+      "details": "Reviewed the full package diff and actual v2 code. History is bounded to one scalar summary and one cut; state is committed only after validation. Failures cannot receive closure credit even when a HELD response passed client checks but failed observer ordinal matching. No authentication, source, profile or process-generation gate was relaxed.",
+      "diff": {
+        "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-package-diff.txt",
+        "sha256": "dd1fe1ec2afda08e9ecb4db68c58242356292c6d61f0bb43ce9a8768e52182c4"
+      },
+      "id": "other_changed_security_boundaries",
+      "status": "PASS_NO_NEW_ACTIONABLE_FINDING"
+    },
+    {
+      "details": "Four independent final-write-boundary start probes advanced the oracle poll beyond target, observer, oracle and context-lease deadlines; each wrote zero G bytes and cleared all 3 cached admissions. Live start wrote G. Expired oracle operation after resume poll wrote zero R bytes; live resume wrote R. No inspection on the short dispatch path. These use synthetic clock/descriptors and the actual guard/stream methods.",
+      "evidence": [
+        {
+          "description": "Readiness polls precede final peer/lease expiry checks; pre-dispatch refusals clear all admissions.",
+          "line_end": 296,
+          "line_start": 264,
+          "path": "tests/crawl-jobs-v2-observer/docker_backend.py",
+          "sha256": "f559b8852fd4fd3bdea27f7e5fe626cdd3d4d807b7db3be22ffb0ba55c1ed9f3"
+        },
+        {
+          "description": "Oracle readiness rechecks operation deadline after poll.",
+          "line_end": 80,
+          "line_start": 74,
+          "path": "tests/crawl-jobs-v2-observer/oracle_bridge.py",
+          "sha256": "9d1efdbac6ea8b74585344884fb8264bed82f7413d32259146718872e4247f86"
+        },
+        {
+          "description": "Oracle operation deadline is checked after resume readiness poll.",
+          "line_end": 117,
+          "line_start": 111,
+          "path": "tests/crawl-jobs-v2-observer/oracle_bridge.py",
+          "sha256": "9d1efdbac6ea8b74585344884fb8264bed82f7413d32259146718872e4247f86"
+        }
+      ],
+      "id": "post_poll_expiry_and_admission_cache",
+      "log": {
+        "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-gate-attempt-1.log",
+        "sha256": "4a2aec0298759607b3e38d51fb89a8466cdb828a059c3998c61a1881b70a7fae"
+      },
+      "report": {
+        "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-gate-probes.json",
+        "sha256": "246fc2985fc27e93289013d34b7d2c5b00e2098e0346649603b70fb496f2c106"
+      },
+      "status": "PASS"
+    },
+    {
+      "details": "Both worker transcript and controller history require complete_ns strictly below lower cut for timestamp ACK. Equal and zero-width tied receipts remained unknown; receipt after a zero-width upper bound remained late and unknown. Honest positive controls used actual worker Engine/FrameClient with owned socketpairs and synthetic witness/clock.",
+      "evidence": [
+        {
+          "description": "Controller independently derives case/cut classification and late status.",
+          "line_end": 145,
+          "line_start": 123,
+          "path": "tests/crawl-jobs-v2-observer/oracle_protocol.py",
+          "sha256": "f867fdc33eb271385176ab25c09a573e9662f77b7f6a73e559dbf07fcb115f45"
+        },
+        {
+          "description": "Worker strict timestamp ACK and bounded late flag.",
+          "line_end": 191,
+          "line_start": 173,
+          "path": "tests/crawl-jobs-v2-observer/oracle_protocol.py",
+          "sha256": "f867fdc33eb271385176ab25c09a573e9662f77b7f6a73e559dbf07fcb115f45"
+        }
+      ],
+      "id": "strict_timestamp_ack_and_late_flags",
+      "status": "PASS"
+    },
+    {
+      "details": "New owned responder publishes output EOF while waiting on stdin; controller disposes of its still-live owned leader. Existing production streams.py bytes remain exactly unchanged and strict. No LOCAL_PROCESS_CLEANUP failure occurred in this independent re-review. The supplied local verification documents an earlier local fixture failure; this review neither suppresses nor replaces that historical record.",
+      "fixture": {
+        "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2_responder.py",
+        "sha256": "0388f21d7e2f84711d790855334da1b1b464a9b6b9d00c91a395c8b9034a5c83"
+      },
+      "id": "fixture_cleanup_and_production_cleanup_integrity",
+      "production_streams_sha256": "8b7c400c8046c9f8bbbad05a508205b2b00a84104fc4e398f9411719239b3cd8",
+      "status": "PASS"
+    },
+    {
+      "details": "Prior static/benign checks of HMAC/nonce/replay and operator anchors, bounded config reads, native uint64 expiry/control byte checks, exact ELF/profile/BPF joins, namespace/process generation, witness reads and socket bounds remain bound to unchanged source/artifact bytes. Existing coverage reran as part of all 161 tests. New source hash recomputation and context-lease probes add independent re-review checks; native artifacts were not executed or rebuilt by this reviewer.",
+      "id": "unchanged_defenses_carried_forward_by_exact_hash",
+      "original_review": {
+        "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/review.json",
+        "sha256": "814645cde86463ad003b78102619d80673dbe341c5a93cf15672ebee51fccce2"
+      },
+      "status": "PASS_SOURCE_SCOPE_ONLY"
+    },
+    {
+      "additional_suppressions": 0,
+      "binary": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-image-prep-2026-09-21/gitleaks",
+      "binary_sha256_before_after": "af9afd0ae3a0ff6d7f08c4ec4e28686b7e4de6962fe1eadecc497d15cdf731e2",
+      "classifications_required": [],
+      "config": {
+        "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-gitleaks-default.toml",
+        "sha256": "5716ed56a2bb0c5371e9f6563ee6d9e60526bd23180b09d91b919b5d78f826c4"
+      },
+      "empty_ignore_file": true,
+      "exit_code": 0,
+      "explicit_default_rules": true,
+      "file_count": 48,
+      "id": "final_exact_scope_secret_scan",
+      "ignore": {
+        "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-empty.gitleaksignore",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "ignore_gitleaks_allow": true,
+      "input_inventory": {
+        "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-scan-input-manifest.json",
+        "sha256": "34f2d76c5a388c1bab82ea57cbc53c7b940fbd8470521975cbde7e35bc25ce62"
+      },
+      "log": {
+        "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-gitleaks.log",
+        "sha256": "bc15945f8f125edf58eb82623238b331c05e97b2dfe9b8a4fc0b90833a31cdc9"
+      },
+      "matches": 0,
+      "max_decode_depth": 2,
+      "redact_percent": 100,
+      "report": {
+        "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-gitleaks.redacted.json",
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "scope": "Byte-preserving source-v2 package/overlay union only; no unrelated work.",
+      "status": "PASS_NO_MATCHES",
+      "version": "8.24.3"
+    }
+  ],
+  "closed_findings": [
+    {
+      "actionable": false,
+      "actual_remediation_code": "self.client_history = wire.ClientHistory(self.binding['case_id'])\n# After wire.response and witness binding, before accepting the response:\nself.client_history.accept(value['phase'], value['payload'])\n# Existing no-reply predicate now additionally requires:\nself.matched_observer is not None and self.client_history.cut is not None\n",
+      "additional_negative_controls": [
+        {
+          "closure_blocked": true,
+          "name": "erase-eof",
+          "reason": "CLIENT_ROLLBACK"
+        },
+        {
+          "closure_blocked": true,
+          "name": "change-cut-classification",
+          "reason": "CLIENT_CUT_CHANGED"
+        },
+        {
+          "closure_blocked": true,
+          "name": "erase-late-flag",
+          "reason": "CLIENT_LATE_CHANGED"
+        },
+        {
+          "closure_blocked": true,
+          "name": "change-completion-timestamp",
+          "reason": "CLIENT_COMPLETE_CHANGED"
+        },
+        {
+          "closure_blocked": true,
+          "name": "backdate-new-completion",
+          "reason": "CLIENT_CLOCK_ROLLBACK"
+        },
+        {
+          "closure_blocked": true,
+          "name": "bytes-after-eof",
+          "reason": "CLIENT_AFTER_TERMINAL"
+        },
+        {
+          "closure_blocked": true,
+          "name": "unmatched-held",
+          "reason": "ORACLE_HELD_JOIN"
+        }
+      ],
+      "code_evidence": [
+        {
+          "description": "Actual controller-side ClientHistory; no private prototype is imported by the probes.",
+          "line_end": 145,
+          "line_start": 97,
+          "path": "tests/crawl-jobs-v2-observer/oracle_protocol.py",
+          "sha256": "f867fdc33eb271385176ab25c09a573e9662f77b7f6a73e559dbf07fcb115f45"
+        },
+        {
+          "description": "Per-session history is constructed from the bound case.",
+          "line_end": 35,
+          "line_start": 33,
+          "path": "tests/crawl-jobs-v2-observer/oracle_bridge.py",
+          "sha256": "9d1efdbac6ea8b74585344884fb8264bed82f7413d32259146718872e4247f86"
+        },
+        {
+          "description": "History acceptance precedes receipt/sequence advancement; failures poison the session and close its stream.",
+          "line_end": 64,
+          "line_start": 50,
+          "path": "tests/crawl-jobs-v2-observer/oracle_bridge.py",
+          "sha256": "9d1efdbac6ea8b74585344884fb8264bed82f7413d32259146718872e4247f86"
+        },
+        {
+          "description": "Only successful owned observer digest/ordinal join sets matched_observer.",
+          "line_end": 101,
+          "line_start": 94,
+          "path": "tests/crawl-jobs-v2-observer/oracle_bridge.py",
+          "sha256": "9d1efdbac6ea8b74585344884fb8264bed82f7413d32259146718872e4247f86"
+        },
+        {
+          "description": "Rejected CLOSE retains no closed receipt; closure requires nonfailed session and genuine prior matched cut in addition to original-generation stop inspections.",
+          "line_end": 169,
+          "line_start": 127,
+          "path": "tests/crawl-jobs-v2-observer/oracle_bridge.py",
+          "sha256": "9d1efdbac6ea8b74585344884fb8264bed82f7413d32259146718872e4247f86"
+        }
+      ],
+      "honest_controls": [
+        {
+          "accepted": true,
+          "client": {
+            "bytes": 1024,
+            "classification_at_cut": "known_pre_acknowledgment",
+            "closed": true,
+            "complete_after_cut": true,
+            "complete_ns": 3000250,
+            "cut_proved": true,
+            "eof": true,
+            "transport_error": false
+          },
+          "closed_no_reply_window": false,
+          "name": "late"
+        },
+        {
+          "accepted": true,
+          "client": {
+            "bytes": 17,
+            "classification_at_cut": "known_pre_acknowledgment",
+            "closed": true,
+            "complete_after_cut": false,
+            "complete_ns": 0,
+            "cut_proved": true,
+            "eof": true,
+            "transport_error": false
+          },
+          "closed_no_reply_window": true,
+          "name": "partial"
+        },
+        {
+          "accepted": true,
+          "client": {
+            "bytes": 17,
+            "classification_at_cut": "known_pre_acknowledgment",
+            "closed": true,
+            "complete_after_cut": false,
+            "complete_ns": 0,
+            "cut_proved": true,
+            "eof": false,
+            "transport_error": true
+          },
+          "closed_no_reply_window": false,
+          "name": "reset"
+        },
+        {
+          "accepted": true,
+          "client": {
+            "bytes": 17,
+            "classification_at_cut": "known_pre_acknowledgment",
+            "closed": true,
+            "complete_after_cut": false,
+            "complete_ns": 0,
+            "cut_proved": true,
+            "eof": false,
+            "transport_error": false
+          },
+          "closed_no_reply_window": false,
+          "name": "unresolved"
+        },
+        {
+          "accepted": true,
+          "client": {
+            "bytes": 0,
+            "classification_at_cut": "unknown",
+            "closed": true,
+            "complete_after_cut": false,
+            "complete_ns": 0,
+            "cut_proved": false,
+            "eof": false,
+            "transport_error": false
+          },
+          "closed_no_reply_window": false,
+          "name": "no-cut"
+        },
+        {
+          "accepted": true,
+          "client": {
+            "bytes": 0,
+            "classification_at_cut": "not_applicable",
+            "closed": true,
+            "complete_after_cut": false,
+            "complete_ns": 0,
+            "cut_proved": true,
+            "eof": false,
+            "transport_error": false
+          },
+          "closed_no_reply_window": false,
+          "name": "nonstream"
+        },
+        {
+          "accepted": true,
+          "client": {
+            "bytes": 1024,
+            "classification_at_cut": "acknowledged",
+            "closed": true,
+            "complete_after_cut": false,
+            "complete_ns": 3000099,
+            "cut_proved": true,
+            "eof": true,
+            "transport_error": false
+          },
+          "closed_no_reply_window": false,
+          "name": "acknowledged"
+        },
+        {
+          "accepted": true,
+          "client": {
+            "bytes": 1024,
+            "classification_at_cut": "unknown",
+            "closed": true,
+            "complete_after_cut": false,
+            "complete_ns": 3000100,
+            "cut_proved": true,
+            "eof": true,
+            "transport_error": false
+          },
+          "closed_no_reply_window": false,
+          "name": "tied"
+        },
+        {
+          "accepted": true,
+          "client": {
+            "bytes": 1024,
+            "classification_at_cut": "unknown",
+            "closed": true,
+            "complete_after_cut": false,
+            "complete_ns": 3000150,
+            "cut_proved": true,
+            "eof": true,
+            "transport_error": false
+          },
+          "closed_no_reply_window": false,
+          "name": "unordered"
+        },
+        {
+          "accepted": true,
+          "client": {
+            "bytes": 1024,
+            "classification_at_cut": "unknown",
+            "closed": true,
+            "complete_after_cut": false,
+            "complete_ns": 3000200,
+            "cut_proved": true,
+            "eof": true,
+            "transport_error": false
+          },
+          "closed_no_reply_window": false,
+          "name": "zero-width-tied"
+        },
+        {
+          "accepted": true,
+          "client": {
+            "bytes": 1024,
+            "classification_at_cut": "unknown",
+            "closed": true,
+            "complete_after_cut": true,
+            "complete_ns": 3000201,
+            "cut_proved": true,
+            "eof": true,
+            "transport_error": false
+          },
+          "closed_no_reply_window": false,
+          "name": "zero-width-late"
+        }
+      ],
+      "id": "SEC-CTX-001",
+      "implemented_remediation": "The actual source-v2 ClientHistory validates ordering, nondecreasing byte counts, immutable complete timestamp, sticky EOF/error/cut facts, terminal-byte immutability, case-specific HELD cut classification and retained-cut late flags. The bridge invokes it before accepting the reply/hash/sequence, copies retained facts, and requires both a matched observer HELD and a retained cut for no-reply credit.",
+      "independent_replay": {
+        "historical_responses_byte_identical": true,
+        "log": {
+          "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-bridge-attempt-1.log",
+          "sha256": "ccd8037087884278f7839f91ea168b772cd6d4f1d993435c45bd96c10fdf1d07"
+        },
+        "method": "Owned benign Python responder over actual pipes; actual source-v2 wire/bridge/stream methods. Native admission, Docker metadata and remote generation/stop observations are explicit synthetic fixtures, not runtime evidence.",
+        "real_bridge_and_process_stream": true,
+        "reproduction_command": "TMPDIR=\"/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security\" PYTHONDONTWRITEBYTECODE=1 python3 -B -W error::ResourceWarning v2_replay_finding.py v2-replay-001",
+        "reproduction_cwd": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security",
+        "results": [
+          {
+            "closed_receipt_retained": false,
+            "closure_blocked": true,
+            "name": "erase-complete",
+            "reason": "CLIENT_ROLLBACK",
+            "rejected_action": "CLOSE",
+            "report": {
+              "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-result-erase-complete.json",
+              "sha256": "eb7f10017f102dae4a28121c4269d46a605c017b65952e769dc8f27befc43973"
+            },
+            "session_failed": true
+          },
+          {
+            "closed_receipt_retained": false,
+            "closure_blocked": true,
+            "name": "erase-error",
+            "reason": "CLIENT_ROLLBACK",
+            "rejected_action": "CLOSE",
+            "report": {
+              "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-result-erase-error.json",
+              "sha256": "0178be08e7c1baec9dc2c31d51bf57336fa61ecd68904e13144be87df5a6ebca"
+            },
+            "session_failed": true
+          },
+          {
+            "closed_receipt_retained": false,
+            "closure_blocked": true,
+            "name": "fabricate-cut",
+            "reason": "CLIENT_CUT_WITHOUT_HELD",
+            "rejected_action": "CLOSE",
+            "report": {
+              "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-result-fabricate-cut.json",
+              "sha256": "11d621b215549378a9af5825a2a2fd9ec8f4fa2b667fe544ccae24be8dd3045e"
+            },
+            "session_failed": true
+          }
+        ],
+        "summary": {
+          "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-bridge-probes.json",
+          "sha256": "92ef43e1147840e1bfb95169e6c7c7ca2f2939b6ec0f61747019cd386145ccdb"
+        }
+      },
+      "original_proof": [
+        "probe-erase-complete.json",
+        "probe-erase-error.json",
+        "probe-fabricate-cut.json"
+      ],
+      "original_report": {
+        "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/review.json",
+        "sha256": "814645cde86463ad003b78102619d80673dbe341c5a93cf15672ebee51fccce2"
+      },
+      "regression_result": "All 3 historical attacks and 7 additional attacks failed closed. All 11 honest controls passed, including late/partial/reset/unresolved/no-cut/nonstream and equal/zero-width timestamp boundaries. Public receipt mutation did not alter retained history.",
+      "severity": "Medium",
+      "status": "CLOSED_VERIFIED_IN_SOURCE_V2",
+      "title": "Oracle closure could erase reply/error history or invent a cut"
+    }
+  ],
+  "date": "2026-10-09",
+  "execution_flags": {
+    "deployment": false,
+    "docker_operations": false,
+    "execution_authorized": false,
+    "kernel_policy_changes": false,
+    "m4_accepted": false,
+    "namespace_joins": false,
+    "native_execution": false,
+    "native_oracle_sandbox_execution": false,
+    "publication_authorized": false,
+    "redis_cases": false,
+    "runtime_approved": false,
+    "tracing_or_ptrace": false
+  },
+  "new_actionable_findings": [],
+  "open_actionable_findings": 0,
+  "preservation": {
+    "application_source_or_docs_edited": false,
+    "bridge_probe_runs": 1,
+    "failed_execution_attempts": 0,
+    "first_review_scripts_and_attempts_preserved": true,
+    "gate_probe_runs": 1,
+    "git_mutations": false,
+    "historical_file_entries_verified": 83,
+    "historical_files_map_sha256": "cc74041080153b942fde28b68a351fd70803221021f843ded8f564bf1515fa33",
+    "historical_review_files_unchanged": true,
+    "native_artifacts_unchanged": true,
+    "new_suite_runs": 1,
+    "oracle_manifest_unchanged": true,
+    "original_review_json_overwritten": false,
+    "original_worktrees_accessed": false,
+    "other_reviewer_private_results_accessed": false,
+    "secret_scan_runs": 1,
+    "source_v2_unchanged": true,
+    "test_or_probe_failures_suppressed": false,
+    "vault_accessed_or_modified": false,
+    "writes_confined_to": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security"
+  },
+  "private_evidence": [
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-bridge-attempt-1.log",
+      "sha256": "ccd8037087884278f7839f91ea168b772cd6d4f1d993435c45bd96c10fdf1d07"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-bridge-probes.json",
+      "sha256": "92ef43e1147840e1bfb95169e6c7c7ca2f2939b6ec0f61747019cd386145ccdb"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-empty.gitleaksignore",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-existing-suite.json",
+      "sha256": "fd5767806f77325bd8e99c7f0b805808a717c312f84a0f150898e33fd6afa3b7"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-existing-suite.log",
+      "sha256": "9912239c1e171fbb9af41572da02757685003db4a089d93138e08467cbc532f6"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-gate-attempt-1.log",
+      "sha256": "4a2aec0298759607b3e38d51fb89a8466cdb828a059c3998c61a1881b70a7fae"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-gate-probes.json",
+      "sha256": "246fc2985fc27e93289013d34b7d2c5b00e2098e0346649603b70fb496f2c106"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-gitleaks-default.toml",
+      "sha256": "5716ed56a2bb0c5371e9f6563ee6d9e60526bd23180b09d91b919b5d78f826c4"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-gitleaks.log",
+      "sha256": "bc15945f8f125edf58eb82623238b331c05e97b2dfe9b8a4fc0b90833a31cdc9"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-gitleaks.redacted.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-package-diff.txt",
+      "sha256": "dd1fe1ec2afda08e9ecb4db68c58242356292c6d61f0bb43ce9a8768e52182c4"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-plan-acknowledged.json",
+      "sha256": "4249d9d83b3e8abeeeab360c744f23c280169095e0dcce14ac67227e174cafbd"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-plan-backdate-new-completion.json",
+      "sha256": "89bdd85ea96b01cabd92f184e3bb922880e62191e286daa45ede7ce38454ee73"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-plan-bytes-after-eof.json",
+      "sha256": "0f522ebf95bb08871750c75bf18a9bbb9fbfa41e85d260b62e0e614c205d3c67"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-plan-change-completion-timestamp.json",
+      "sha256": "a4f4c06c40f7a8c0fcf91de3851cadaadb2583b761407b6352d3cdc544ae6d0f"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-plan-change-cut-classification.json",
+      "sha256": "7c725f7449b62b6fc3241ec17388a6547ce203c1f6032a39a9e8649188813ca8"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-plan-erase-complete.json",
+      "sha256": "b6b700035947d22c452dfb600e47d36e586219443adaadca85bd04ba24144820"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-plan-erase-eof.json",
+      "sha256": "0e54ac81127bc158774f0ee97c232ac85103e197c4d0a6ef7851217299e0b7e5"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-plan-erase-error.json",
+      "sha256": "ba662b73c27774dae6536562a58fd1a90c7c9e1e08724a63507319f6718a191f"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-plan-erase-late-flag.json",
+      "sha256": "e07824d4ccf05ac79fb101a91c7c8e322425eb4dbc3b2bac0cdd74260f308233"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-plan-fabricate-cut.json",
+      "sha256": "95406b85021dfb722ed723e5d3fa54595b26ba20646de7a7c7f677515191ca1f"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-plan-late.json",
+      "sha256": "a3d275733b72e6315d64f62c60d597f13aae93627ca52d1b4489265e2fd0d5b7"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-plan-no-cut.json",
+      "sha256": "5167b2b465e633007959f3b0a3b6311a747af401073b4cc5fde96d0b8dbb4ad8"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-plan-nonstream.json",
+      "sha256": "a1069bc3be3f55c3bd5edd95bc257164501da19f8d767df838eeb5e3ab00c6d6"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-plan-partial.json",
+      "sha256": "54263d44cc41e9b32f8af9fe35e24afb7ccd56d6475e329077b13f9657506b13"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-plan-reset.json",
+      "sha256": "b427adfe8dc948d7c8a46735763d5c6612880982dd90ea618eb52374cefe5996"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-plan-tied.json",
+      "sha256": "1939f5bf17ece0d44e19b9bba6f18e087caa2d5272bafd268d3676953fd20bae"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-plan-unmatched-held.json",
+      "sha256": "ac0b1931bc44535342722774b95648b48c03be51093168af0b7a16658c583abc"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-plan-unordered.json",
+      "sha256": "2066e83a0e8dfcad96084679153da95d4818359283b32cc5de00d710edcd797c"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-plan-unresolved.json",
+      "sha256": "0a0086b4931e9c3af925ae393836b56e013bfcc1e81cd0ef61d3b2acf791b6e9"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-plan-zero-width-late.json",
+      "sha256": "5b2058feb067a8c3f1fc9f8c6a227db6b8dcfe01c00e0702af48d1703f4f258a"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-plan-zero-width-tied.json",
+      "sha256": "644c888ef748927a046bff891e07fc80b3f94bbd701b74bc0e5fd3946fbef956"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-preservation-after.json",
+      "sha256": "5f2dd9405546eba56ea738af6bff772f914fcc51875f46fbb289a8b5fa520dc4"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-preservation-after.log",
+      "sha256": "c42f6df1a766c85862e3f83930bc99c1ba9b4e7d782d1ebbeba88b8f4af515e2"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-preservation-before.json",
+      "sha256": "f5e42778f272f79764877b0a4268f33265017b3be29b428c44a13f44dab31dca"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-preservation-before.log",
+      "sha256": "1b69fe9b8a15ce23fb947e8944d0cb2c4c99a7d857de6bfbd7f6e22b4e5a9254"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-result-acknowledged.json",
+      "sha256": "353aabbe0392243ff357567e74b1e26a5da6f27e2eae228c060452a37fa6edc5"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-result-backdate-new-completion.json",
+      "sha256": "ceb9ad77e40de8ab055e21d0ce5f476242b01c79d0ee7d88493156d7734ca770"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-result-bytes-after-eof.json",
+      "sha256": "616071d5828424376b2a90819ecf261c37a5e5b10d229a8e94973421dd885e47"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-result-change-completion-timestamp.json",
+      "sha256": "e95ccec075834e9ad669c8c42049acac56046466a86e941868c61f8b455067df"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-result-change-cut-classification.json",
+      "sha256": "61076a4f0d9b7afd6db692677d37cfad7b62de516daacbe79cbedff3e527c48f"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-result-erase-complete.json",
+      "sha256": "eb7f10017f102dae4a28121c4269d46a605c017b65952e769dc8f27befc43973"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-result-erase-eof.json",
+      "sha256": "5010e51eda67d2544e017c30a01a464bd20015a08f92785f3243974afbf15e08"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-result-erase-error.json",
+      "sha256": "0178be08e7c1baec9dc2c31d51bf57336fa61ecd68904e13144be87df5a6ebca"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-result-erase-late-flag.json",
+      "sha256": "76dfb47689a8dafd94f11f6ff01d6470cb7fa33929b2c13b42f3939ba0f67936"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-result-fabricate-cut.json",
+      "sha256": "11d621b215549378a9af5825a2a2fd9ec8f4fa2b667fe544ccae24be8dd3045e"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-result-late.json",
+      "sha256": "f4dd54e3f04a6ca5f0d29e1331d78bf10a075507f5de44227c16ff5463adab32"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-result-no-cut.json",
+      "sha256": "b8a8ee6b1b37b5edc7d82d8467cf870352e48b7a6146f66bbb56cea46484b96c"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-result-nonstream.json",
+      "sha256": "eb143d22a057f3fb9d0710ec94d383efc4bbf9135f5f48688e29006ae135dd94"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-result-partial.json",
+      "sha256": "819659bb1cef3ed340c76a6f603d9cfc83bc92c2ab72dad719e0553b51ac36da"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-result-reset.json",
+      "sha256": "8c977c37c4ff8ea2688ab0026b7591cb813b87a55b1d339b169e4ef83c6fc2c6"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-result-tied.json",
+      "sha256": "ab1878a4b7c4f2157487feb0e059263b5f63fc1edbe68b6785d07a0c5d60ea5a"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-result-unmatched-held.json",
+      "sha256": "79d691522067e3f7fc617cd58c2e13d9e527e735bc99740dc6b25be7da267953"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-result-unordered.json",
+      "sha256": "1758b15492a2dd67598ba74f3fc61369e560f86396a7b6d27c77f55b51870553"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-result-unresolved.json",
+      "sha256": "a54cc723b0d7acd13e7b7542f0cec7ed629c4f904e58f4f93b3707c4e9b8db1b"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-result-zero-width-late.json",
+      "sha256": "8ccf4152a746df1d9c23b175cbf44d5664463ac91e21573f89c3c68b58b867ea"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-result-zero-width-tied.json",
+      "sha256": "3bf6cffeb2dafaf7da4060d57601f2407fef3b1cd2ec4c83f1533e035f93a559"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2-scan-input-manifest.json",
+      "sha256": "34f2d76c5a388c1bab82ea57cbc53c7b940fbd8470521975cbde7e35bc25ce62"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2_create_review.py",
+      "sha256": "924fec670759d9cf1d1f356b0203f29e0b8f84d02e5daf6ede3d6b5b378dce7a"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2_prepare_scan.py",
+      "sha256": "7a9e36263be4129d180b34a9d1cb33e076201fa60379bd194f5eecb2d0a4104c"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2_probe_bridge.py",
+      "sha256": "cd3fb72a2a25e8aec028ba86c69ad859947384bde4d4eb9a7cfd46f07e5f1b4d"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2_probe_gates.py",
+      "sha256": "b33da0566759cba5907d382f626193c7290e7c5acf60a8e26230b2ff3db9e64b"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2_replay_finding.py",
+      "sha256": "8e179494ec82116c311765f983d7b8f024658642eb626b4c1341ce271c088eb9"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2_responder.py",
+      "sha256": "0388f21d7e2f84711d790855334da1b1b464a9b6b9d00c91a395c8b9034a5c83"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/v2_verify_preservation.py",
+      "sha256": "d1d09c23482e6735487e94530d68be491b6f36d4c838e62ae4bacad41f9e14d2"
+    }
+  ],
+  "remaining_gates": [
+    "Separate exact-byte publication decision; this report grants no commit, push, PR or publication authority.",
+    "Provision and independently attest the Linux host source anchor/key/code and bounded authenticated transport in the selected Docker daemon kernel domain.",
+    "Prepare/review/admit exact target, observer and oracle runtime images; validate actual OCI filters, executable-memory/noexec constraints, namespace/socket admission and resources.",
+    "Complete trial dispatch, per-trial timing/evidence assembly, whole-trial confinement/resource monitoring and independent watchdog cleanup/absence joins.",
+    "Separate exact-artifact and native calibration/execution approval. Full M4 acceptance remains open."
+  ],
+  "reviewer": "independent-security",
+  "schema": "c0-independent-security-rereview-v2",
+  "threat_model_and_limits": [
+    "Actor bytes and transport remain untrusted. Correct hash chains do not replace semantic monotonicity and actual matched-cut checks.",
+    "Operator-provisioned boot/namespace/device/daemon/code anchor and separate 32-byte key remain explicit host-source trust roots. Their known undeployed status is not a code vulnerability.",
+    "No evidence of actual host-source deployment, correct Docker-kernel placement, key distribution or production bounded authenticated transport was obtained. The direct trusted-context API continues to require an independently trusted caller; actor receipts must not populate it.",
+    "All remote Docker/kernel/admission/stop metadata in private probes is synthetic. Socketpairs and pipes are owned benign Python fixtures, not actual Linux namespace/SO_PEERCRED or oracle OCI validation.",
+    "Unchanged retained native ELF/BPF/profile review is carried forward through exact byte equality. The recorded oracle interpreter hash is bound by the rebuilt manifest; the interpreter/runtime image bytes were not supplied for independent binary/dependency auditing.",
+    "Point-in-time readiness checks are not atomic future-liveness guarantees. Whole-trial confinement, resource/timing and cleanup/absence evidence remain outside this source increment.",
+    "Source checkpoint/README and supplied implementation verification were read as shared remediation documentation. No other reviewer private directory or private results were accessed.",
+    "The initial report remains immutable, including its historical handoff-availability limitation. This report now directly verifies the explicitly supplied original handoff bytes before and after."
+  ],
+  "verdict": "GO_FOR_CONTINUED_IMPLEMENTATION",
+  "verdict_scope": "Corrected exact source-v2 and bound artifact preparation only; not native execution, deployment, publication or full M4 approval."
+}

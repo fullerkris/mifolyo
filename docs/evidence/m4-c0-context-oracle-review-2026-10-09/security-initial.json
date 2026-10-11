@@ -1,0 +1,566 @@
+{
+  "actionable_findings": 1,
+  "allowed_go_scope": "GO_FOR_CONTINUED_IMPLEMENTATION",
+  "binding": {
+    "base": "2ff03afa8950500de36762bdc5d41de8f2736030",
+    "frozen_file_count": 1677,
+    "implementation_handoff_bytes_available": false,
+    "implementation_handoff_sha256_as_recorded_in_verified_intake": "90de1512b46173b38c1a152c3b12cb4c533b5ce7adeebe5cb8e89781665e2e95",
+    "intake": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/review-intake.json",
+    "intake_sha256": "be961ae84551e2f3f4b1048a4a70f5f12b7356b312276fac9a26995d81bf5e59",
+    "oracle_artifact_record_sha256": "2c971a3bafe43ddb8038f713162e6961229a1bba7aa8a6f9457373f3ff68654b",
+    "overlay_count": 33,
+    "package_count": 39,
+    "snapshot": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/source",
+    "snapshot_hash_algorithm": "sha256 of compact sorted JSON mapping snapshot-relative source paths to their SHA256; separators comma/colon, no newline",
+    "snapshot_map_sha256": "c367088d70ab95c8eebfb79a610477995cb538afaf594c2d6899fd822a4e3248",
+    "source_inventory": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/source/docs/evidence/m4-c0-context-oracle-2026-10-09/source-inventory.json",
+    "source_inventory_internal_maps_verified": true,
+    "source_inventory_sha256": "6dbc77112abc830467ee952eef2d30f54e730c8718093788e4dd486564c6c750"
+  },
+  "checks": [
+    {
+      "details": "Exact intake and all 1677 source-file hashes match before/after; 33 overlays, 39 package files, 11 retained native artifacts and oracle artifact record verified. Package source inventory equals the test runner inventory. No extra source files.",
+      "id": "intake_and_preservation",
+      "result": "PASS"
+    },
+    {
+      "command": "python3 -B -W error::ResourceWarning scripts/test-crawl-jobs-v2-observer.py --report /private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/existing-suite.json",
+      "cwd": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/source",
+      "env": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "TMPDIR": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security"
+      },
+      "errors": 0,
+      "failures": 0,
+      "id": "existing_c0_suite",
+      "log": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/existing-suite.log",
+      "passed": 149,
+      "report": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/existing-suite.json",
+      "resource_warning_as_error": true,
+      "result": "PASS",
+      "runs": 1,
+      "skipped": 0,
+      "tests_run": 149
+    },
+    {
+      "details": "HMAC-SHA256 has a fixed domain prefix, strict canonical request shape, fresh 32-byte challenges, case/invocation/preparation/anchor binding, request-hash and ordered response MAC binding. Endpoint verifies provisioned code, boot and complete namespace/device anchor. Controller matches provisioned daemon/code/host exclusions, never inferring expected host values from actor receipts. Replayed/modified/wrong-key/foreign-boot/namespace and delayed exchanges reject in 7 additional deterministic negative controls.",
+      "evidence": [
+        {
+          "description": "Authenticated request and bounded window",
+          "line_end": 57,
+          "line_start": 40,
+          "path": "tests/crawl-jobs-v2-observer/runtime_context.py",
+          "sha256": "89a0d566858604d7ce57e4199909c97cfbba150baa289d3f203257f3b44d49c2"
+        },
+        {
+          "description": "Independent actual-host/code observations and final MAC",
+          "line_end": 91,
+          "line_start": 67,
+          "path": "tests/crawl-jobs-v2-observer/runtime_context.py",
+          "sha256": "89a0d566858604d7ce57e4199909c97cfbba150baa289d3f203257f3b44d49c2"
+        },
+        {
+          "description": "Fresh challenge, exact response binding and conservative lease expiry",
+          "line_end": 167,
+          "line_start": 118,
+          "path": "tests/crawl-jobs-v2-observer/runtime_context.py",
+          "sha256": "89a0d566858604d7ce57e4199909c97cfbba150baa289d3f203257f3b44d49c2"
+        }
+      ],
+      "id": "context_authentication_and_trust_roots",
+      "log": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/context-negative-controls.json",
+      "result": "PASS_IN_REVIEWED_ACQUISITION_PATH"
+    },
+    {
+      "details": "Fixed /etc paths; regular/single-link/no-follow/nonblocking bounded reads; root owner for anchor, service owner and exact 0600/32-byte key. Owned-file probes reject wrong owner, group-readable key, symlink and multiple links. Actual service credentials/parent-directory protection/key distribution remain operator provisioning obligations. No actual configuration or secrets were read.",
+      "evidence": [
+        {
+          "description": "Fixed-path config and key admission",
+          "line_end": 45,
+          "line_start": 27,
+          "path": "tests/crawl-jobs-v2-observer/context_worker.py",
+          "sha256": "6a7082c9e96b839af60cc468d0f76ebc35f9213efb8bee213392aba5a5d46444"
+        }
+      ],
+      "id": "configuration_and_secret_handling",
+      "log": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/boundary-probes.json",
+      "result": "PASS_WITH_PROVISIONING_BOUNDARY"
+    },
+    {
+      "details": "uint64 decimal parser rejects non-digits, >20 digits, overflow, empty/past/over-local-window expiry. Control-byte handling checks the Linux deadline after a successful read before returning A/G/R. Conservative controller elapsed-time lease is not equated to Linux epoch. Existing boundary/high-uptime/expiry/dispatch tests pass. No native instruction executed; scheduling/runtime timing remains unproven.",
+      "evidence": [
+        {
+          "description": "Bounded nonce and overflow-safe Linux expiry parser",
+          "line_end": 41,
+          "line_start": 17,
+          "path": "tests/crawl-jobs-v2-observer/native/admission.h",
+          "sha256": "2560a2afcc106013f70081c72a0faee754c163141d73eec4ecc251cbcbccf806"
+        },
+        {
+          "description": "Post-read control deadline check",
+          "line_end": 128,
+          "line_start": 114,
+          "path": "tests/crawl-jobs-v2-observer/native/common.h",
+          "sha256": "157a7ec3b5c8ec6c0dc031cacb22047216303f4467be5eee7284926d572c53cd"
+        },
+        {
+          "description": "G uses admission expiry",
+          "line_end": 88,
+          "line_start": 73,
+          "path": "tests/crawl-jobs-v2-observer/native/target.c",
+          "sha256": "feb94778757ae05268417c1cd76a383f5339bfa701feababda972a5e077451fd"
+        },
+        {
+          "description": "A precedes attachment and uses admission expiry",
+          "line_end": 207,
+          "line_start": 199,
+          "path": "tests/crawl-jobs-v2-observer/native/observer.c",
+          "sha256": "16899c419a9ab4696d22e0b515c56be511eaa77ff80941de3fa899eac1dd1e9c"
+        },
+        {
+          "description": "R uses the original pre-witness hold deadline",
+          "line_end": 259,
+          "line_start": 245,
+          "path": "tests/crawl-jobs-v2-observer/native/observer.c",
+          "sha256": "16899c419a9ab4696d22e0b515c56be511eaa77ff80941de3fa899eac1dd1e9c"
+        }
+      ],
+      "id": "clock_and_native_expiry",
+      "result": "STATIC_AND_OFFLINE_PASS"
+    },
+    {
+      "details": "Exact retained target manifest regenerated in memory; AArch64 static PIEs have no writable-executable LOAD or executable stack. Actual embedded observer BPF equals retained/generated bytes; all 3 profiles match. Source bundle hashes match inventory and oracle record. Admission binds exact ELF/source/profile to case/scope, own metadata generation, namespace exclusions and target peer. Restart/namespace/ELF mismatch tests reject. Interpreter ELF was not supplied; its recorded hash and pinned image recipe are not runtime attestation.",
+      "id": "artifact_profile_and_namespace_generation_binding",
+      "logs": [
+        "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/static-artifacts.json",
+        "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/boundary-probes.json"
+      ],
+      "result": "STATIC_AND_OFFLINE_PASS"
+    },
+    {
+      "details": "96 mmap role/protection/flag combinations plus executable mprotect and setter denials checked. Oracle extra rule permits no PROT_WRITE and no MAP_ANONYMOUS bit; W+X and executable mprotect reject. 1000 ptrace request/TID/regset combinations from retained BPF, foreign architecture and post-admission exec reject as expected. No filter installed. Argument rules alone cannot attest actual FD provenance or effective mount noexec behavior; real OCI validation remains required. Shared target-written volumes are explicitly configured noexec/nodev/nosuid.",
+      "evidence": [
+        {
+          "description": "Oracle executable mapping expansion and read-only opens",
+          "line_end": 44,
+          "line_start": 26,
+          "path": "tests/crawl-jobs-v2-observer/profiles.py",
+          "sha256": "7a75291b1dbd32f13e1eda00265a17693fc425333bfcc466ca958c7388bc485a"
+        },
+        {
+          "description": "Shared volume noexec policy",
+          "line_end": 21,
+          "line_start": 18,
+          "path": "tests/crawl-jobs-v2-observer/owned_resources.py",
+          "sha256": "cbe6049763ff8e34533e0631a40e029eb5f3080f398192a5faf3570dc2198777"
+        }
+      ],
+      "id": "syscall_and_executable_memory_policy",
+      "result": "ARGUMENT_SIMULATION_PASS_RUNTIME_GATE_REMAINS"
+    },
+    {
+      "details": "Canonical byte equality, duplicate/float/NaN rejection, 1024-byte frames, partial-EOF refusal and shared 65536-byte/64-frame budget verified. Context responses capped at 4096 bytes; kernel/file inputs bounded; witness is fixed 8480 bytes and client fixed 1024 C bytes. Adversarial untrusted fields are not reflected into stable error diagnostics.",
+      "id": "parser_and_resource_bounds",
+      "log": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/boundary-probes.json",
+      "result": "PASS"
+    },
+    {
+      "details": "Existing real-Python-pipe tests cover early/partial/stderr/EOF outputs, authorizer latency, target/observer admission expiries, no-oracle G refusal, matching-oracle R prerequisite, source mismatch and own-process transport cleanup. No Docker inspection is introduced on HELD/resume path. Point-in-time quiet checks are not future liveness guarantees.",
+      "evidence": [
+        {
+          "description": "Input-boundary quiet/live and deadline checks",
+          "line_end": 149,
+          "line_start": 127,
+          "path": "tests/crawl-jobs-v2-observer/streams.py",
+          "sha256": "8b7c400c8046c9f8bbbad05a508205b2b00a84104fc4e398f9411719239b3cd8"
+        },
+        {
+          "description": "Peer/lease/oracle gates",
+          "line_end": 295,
+          "line_start": 264,
+          "path": "tests/crawl-jobs-v2-observer/docker_backend.py",
+          "sha256": "4d8c61e27c574c4790fac204c5efd413097ec98dd7e453860879080442ee67b6"
+        },
+        {
+          "description": "HELD join and resume match",
+          "line_end": 114,
+          "line_start": 79,
+          "path": "tests/crawl-jobs-v2-observer/oracle_bridge.py",
+          "sha256": "9b96ae9955adb9d7a7e0e9d18ef88c27d6150752f95e16a851d4039c3b55b6be"
+        }
+      ],
+      "id": "held_start_resume_and_transport_gates",
+      "result": "EXISTING_OFFLINE_TESTS_PASS"
+    },
+    {
+      "details": "Witness no-follow/nonblocking regular/single-link/inode/owner/mode/size checks and two stable reads reviewed. Actual owned-file mode change between reads and final fstat rejects; UID/GID 999 observation was simulated, not privilege-changed. Socket code fixes pathname, validates pre/post inode/owner/mode and Linux peer UID/GID; data is bounded read-only. Existing real socketpair test preserves fragments, full completion and EOF. Actual Linux SO_PEERCRED/cross-private-namespace pathname admission was not executed.",
+      "evidence": [
+        {
+          "description": "Witness admission and stable read checks",
+          "line_end": 76,
+          "line_start": 39,
+          "path": "tests/crawl-jobs-v2-observer/oracle.py",
+          "sha256": "fa14b08caee86b65d9a01c16bb3e6ea236264275a48a3f32ad6694c57df23bc8"
+        },
+        {
+          "description": "Socket identity and bounded read-only receive",
+          "line_end": 76,
+          "line_start": 31,
+          "path": "tests/crawl-jobs-v2-observer/oracle_worker.py",
+          "sha256": "3a588a010676238f375644ed2af65d1671ff7c38c81fa4908a419790576b363a"
+        }
+      ],
+      "id": "witness_and_socket_admission",
+      "result": "STATIC_AND_OWNED_FIXTURE_PASS"
+    },
+    {
+      "details": "Stable original-generation remote stop checks correctly remain separate from socket/CLI EOF; existing restart and receipt-mutation controls pass. However closure client history is not checked: SEC-CTX-001 reproduces erased completion/error and fabricated cut credit. No actual remote stop or retirement is claimed by these fixtures.",
+      "finding_ids": [
+        "SEC-CTX-001"
+      ],
+      "id": "stop_retirement_no_reply",
+      "result": "NEEDS_REMEDIATION"
+    },
+    {
+      "binary": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-image-prep-2026-09-21/gitleaks",
+      "binary_sha256_before_and_after": "af9afd0ae3a0ff6d7f08c4ec4e28686b7e4de6962fe1eadecc497d15cdf731e2",
+      "classifications_required": [],
+      "configuration": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/gitleaks-default.toml",
+      "empty_ignore": true,
+      "exit_code": 0,
+      "explicit_default_rules": true,
+      "id": "secret_scan",
+      "ignore_file": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/empty.gitleaksignore",
+      "ignore_gitleaks_allow": true,
+      "log": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/gitleaks.log",
+      "matches": 0,
+      "max_decode_depth": 2,
+      "redact_percent": 100,
+      "report": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/gitleaks.redacted.json",
+      "result": "PASS_NO_MATCHES",
+      "scope": "Byte-preserving union of 39 package files and 33 overlay paths: 46 files only. No unrelated-work scans.",
+      "suppressions_added": 0,
+      "version": "8.24.3"
+    }
+  ],
+  "date": "2026-10-09",
+  "evidence_files": [
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/verify_preservation.py",
+      "sha256": "a14470197087c156b45cab3cbb593180dd4c22c34ccc9d93409a1a13627f2667"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/preservation-before.json",
+      "sha256": "678cce26fa28e8825f4cf0d24ed20a71c156e6ab70cec7e6ce93c50727ea8779"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/preservation-after.json",
+      "sha256": "db756e72df59a89152d0d7f8067b518b7607811315a9597662977f83f0d6c093"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/preservation-after.log",
+      "sha256": "565a6677781bc6be0f3628dedadd076c2b90c5de56852b586d1107dcb5013b20"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/existing-suite.json",
+      "sha256": "d8418ca65e19238b6dc0eaaf622cc1fbc5f3192e6596f65e2cf3a8c25d060a28"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/existing-suite.log",
+      "sha256": "4d3e32e57e3309f74f7adb02c939d56d0c50fa2b17229c34409fac3b5326b44e"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/security_probes.py",
+      "sha256": "1e7dad83f830355ad2ed29027fcc67084b02892bf36638c57967bb5cce7abab0"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/fake_oracle.py",
+      "sha256": "bb84b524a6827dd6f7c2a90528f988bde547c48097eca2d0a33fa328afbc7521"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/replay_finding.py",
+      "sha256": "e1003cc09816a834e31935c76bf1456324cbc88146fed8723d3a3c1cad5bde83"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/probe-summary.json",
+      "sha256": "38941bbcfddfc354c25cf36053b70859a90342241bc7b723eee6ed444f21a0ad"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/probe-erase-complete.json",
+      "sha256": "90ac3b1de3b1f83cacb7e7634d873b158c428009c32681654c7b6de422b11841"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/probe-erase-error.json",
+      "sha256": "21cf457ec7b285ab511a7d8b921c68d6d372a5e4b2ce29f3586e2309e412aa4b"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/probe-fabricate-cut.json",
+      "sha256": "996de99148009ea01e588fed0e8723a3bf56848700114f97cedfde3e8aaed231"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/probes-attempt-1.log",
+      "sha256": "8a74abe08e95c03ff2e60f5f27f4afd60234e38f8cfdc077f06d432fe04ed6de"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/static-artifacts.json",
+      "sha256": "11a565833efb093216d979a0eda772e42beaf601200e44e4dc656c4d8d0b03ff"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/context-negative-controls.json",
+      "sha256": "f28cb7a08f960bb671a8258dfe5a0d2f65ebdcd1f6be63e15cb0907c2a595416"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/boundary_probes.py",
+      "sha256": "60f77d7988dc43fecfa30f671a09fccea70415b45ec4f391082ef8be30e3b690"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/boundary-probes.json",
+      "sha256": "9a024f5fe802f8c52bdd82a380cbf8cbfce71bf8bba151c8370883bd343d7b30"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/boundary-probes-attempt-1.log",
+      "sha256": "f6d292e9c1fe50bea247cef0e9e9f894d55fe77353f3513ec42f6a68526b2290"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/remediation_client_history.py",
+      "sha256": "63e6fd1b43b2c9172438e7d7ab8174207557b05e369e56b8714805659a779260"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/test_proposed_remediation.py",
+      "sha256": "d6e6694253a7a5375bf36777041ff41508865e0abb3396d3ab42308e2c514d3b"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/remediation-verification.json",
+      "sha256": "6630e08eaf5726ebb028404367cba56993ea2e8edf982934e92c5576a926ea82"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/remediation-attempt-1.log",
+      "sha256": "34847d365133ea55e6ebb9fb66726e230085e26f95cd5fcf02ce4b98ec5dc36a"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/prepare_scan.py",
+      "sha256": "e3b6ec7eecc6d65de3974d4bec961c941f79d11d4bab8eb84791b2034743cfb6"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/scan-input-manifest.json",
+      "sha256": "7d121640087ac2adcfd20ab5944625ace937f16196dba5b75b71c8b07997d766"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/gitleaks-default.toml",
+      "sha256": "a7f0ce769775f82ff87c644b8c6954c085a07bd8bfe49bec3dba19b27e55add0"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/empty.gitleaksignore",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/gitleaks.redacted.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/gitleaks.log",
+      "sha256": "0e846f8f95e8940fdb7d9364076bed169738a8a06fe747974b9d12adb5d6deae"
+    },
+    {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/create_review.py",
+      "sha256": "df8cc7f74cc7e745ec1732440577d87521c28f58a53e82d59de908da8ea68a4e"
+    }
+  ],
+  "execution": {
+    "deployment": false,
+    "docker_operations": false,
+    "execution_authorized": false,
+    "kernel_policy_changes": false,
+    "m4_accepted": false,
+    "namespace_joins": false,
+    "native_executed": false,
+    "oracle_sandbox_executed": false,
+    "redis_cases": false,
+    "runtime_approved": false,
+    "tracing_or_ptrace": false
+  },
+  "findings": [
+    {
+      "actionable": true,
+      "attack_preconditions": [
+        "An actor or transport can supply oracle response bytes, as explicitly assumed by this review.",
+        "The owned oracle stream has passed admission; the attacker keeps the expected case, invocation, witness digest, sequence and predecessor hashes.",
+        "The separate original-generation target/oracle stop checks may all be genuine; the attack does not bypass them or require the context HMAC key."
+      ],
+      "confidence": "reproduced",
+      "cvss_3_1": {
+        "scope": "Qualitative local actor/transport control assumed by the review threat model; impact is oracle-evidence integrity, not a demonstrated host compromise.",
+        "score": 5.5,
+        "vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:H/A:N"
+      },
+      "cwe": [
+        "CWE-841",
+        "CWE-20"
+      ],
+      "evidence": [
+        {
+          "description": "Validates each summary in isolation; no monotonic history or proof that a HELD cut actually preceded CLOSE.",
+          "line_end": 53,
+          "line_start": 38,
+          "path": "tests/crawl-jobs-v2-observer/oracle_protocol.py",
+          "sha256": "d8330f3fc0846ba0682203a542ab9107e120d0c46000091a97eabe7518d4c587"
+        },
+        {
+          "description": "Case/sequence/chain validation does not constrain cross-phase client-state transitions or derive cut claims from a previously accepted HELD reply.",
+          "line_end": 94,
+          "line_start": 56,
+          "path": "tests/crawl-jobs-v2-observer/oracle_protocol.py",
+          "sha256": "d8330f3fc0846ba0682203a542ab9107e120d0c46000091a97eabe7518d4c587"
+        },
+        {
+          "description": "The bridge stores the receipt hash/sequence but not the previous client transcript; a correctly chained contradictory reply is accepted.",
+          "line_end": 58,
+          "line_start": 36,
+          "path": "tests/crawl-jobs-v2-observer/oracle_bridge.py",
+          "sha256": "9b96ae9955adb9d7a7e0e9d18ef88c27d6150752f95e16a851d4039c3b55b6be"
+        },
+        {
+          "description": "CLOSE is legal directly from INITIALIZED and its summary is retained without joining to accepted cut/client history.",
+          "line_end": 130,
+          "line_start": 124,
+          "path": "tests/crawl-jobs-v2-observer/oracle_bridge.py",
+          "sha256": "9b96ae9955adb9d7a7e0e9d18ef88c27d6150752f95e16a851d4039c3b55b6be"
+        },
+        {
+          "description": "closed_no_reply_window is derived solely from the final untrusted client summary after genuine stop-generation checks.",
+          "line_end": 165,
+          "line_start": 160,
+          "path": "tests/crawl-jobs-v2-observer/oracle_bridge.py",
+          "sha256": "9b96ae9955adb9d7a7e0e9d18ef88c27d6150752f95e16a851d4039c3b55b6be"
+        }
+      ],
+      "id": "SEC-CTX-001",
+      "impact": "A single invocation can receive closed_no_reply_window=true despite an earlier accepted 1024-byte complete reply, an earlier transport error, or no accepted HELD cut at all. These false classifications undermine the bounded independent oracle. The objects still carry execution_authorized=false/runtime_evidence=false: this is not a claim of accepted native execution or M4 exploitation.",
+      "minimal_remediation": {
+        "application_fix_applied": false,
+        "copy_paste_ready_code_path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/remediation_client_history.py",
+        "integration_code": "# OracleSession.__init__\nself.client_history = ClientHistory(self.binding['case_id'])\n# OracleSession._exchange, after wire.response and before accepting the response:\nself.client_history.accept(value['phase'], value['payload'])\n# Add both requirements to the existing closed_no_reply_window conjunction:\nself.matched_observer is not None and self.client_history.cut is not None\n",
+        "private_validation": "Proposed helper rejected all 3 malicious recorded sequences and accepted 8 honest sequences, including no-cut close, non-stream, late complete reply, partial clean EOF, reset, unresolved close, acknowledged and unordered receipt.",
+        "required_regressions": [
+          "Run the real bridge against each malicious responder variant and require fail-closed rejection.",
+          "Keep complete/error/cut state sticky across HELD, FINAL and CLOSE; test forged cut without HELD.",
+          "Retain positive late-complete, partial-EOF, reset, unresolved and non-stream controls."
+        ],
+        "retain_existing_controls": [
+          "Own-stream binding, predecessor/sequence validation, witness identity",
+          "Original-generation remote stop inspections, clean client EOF, and all preparation-only flags"
+        ],
+        "summary": "Enforce controller-side client history, not just worker-side generation. Bytes must never decrease; an established completion timestamp and terminal error/EOF must not disappear; classification/cut must be immutable after HELD. Only a successfully joined HELD reply may introduce a cut. Derive late-completion from the retained cut bounds and require matched HELD history for no-reply credit.",
+        "verification_report": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/remediation-verification.json"
+      },
+      "reproduction": {
+        "all_three_reproduced": true,
+        "log": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/probes-attempt-1.log",
+        "method": "The real OracleSession, protocol validators and ProcessStream communicate with a benign owned Python responder over actual pipes. Bounded Docker/kernel admission and stable original-generation stopped metadata are synthetic fixtures; no Docker or native actor runs.",
+        "repeat_command": "TMPDIR=\"/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security\" PYTHONDONTWRITEBYTECODE=1 python3 -B -W error::ResourceWarning replay_finding.py rerun-001",
+        "repeat_output": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/rerun-001",
+        "scripts": [
+          "security_probes.py",
+          "fake_oracle.py",
+          "replay_finding.py"
+        ],
+        "variants": [
+          {
+            "name": "erase-complete",
+            "report": "probe-erase-complete.json",
+            "steps": [
+              "INIT: empty transcript",
+              "HELD: 17 bytes, known_pre_acknowledgment",
+              "FINAL: 1024 bytes, nonzero complete_ns, complete_after_cut=true",
+              "CLOSE: roll back to 17 bytes, complete_ns=0, clean EOF",
+              "closure: closed_no_reply_window=true, session.failed=false"
+            ]
+          },
+          {
+            "name": "erase-error",
+            "report": "probe-erase-error.json",
+            "steps": [
+              "Accept HELD then FINAL with transport_error=true",
+              "Accept correctly chained CLOSE with transport_error=false/eof=true",
+              "closure: closed_no_reply_window=true"
+            ]
+          },
+          {
+            "name": "fabricate-cut",
+            "report": "probe-fabricate-cut.json",
+            "steps": [
+              "INIT, with no HELD request/receipt",
+              "CLOSE fabricates cut_proved=true and known_pre_acknowledgment",
+              "closure: closed_no_reply_window=true"
+            ]
+          }
+        ],
+        "working_directory": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security"
+      },
+      "severity": "Medium",
+      "status": "OPEN",
+      "title": "Oracle closure trusts the last client summary, allowing erased replies/errors and fabricated pre-ACK cuts"
+    }
+  ],
+  "limits_and_non_findings": [
+    "No Docker operation, native actor/real sandboxed oracle execution, tracing/ptrace, kernel policy change, namespace join, real Redis case or deployment occurred.",
+    "Private Python fixtures and injected Docker/kernel data demonstrate validator behavior only, not Linux or Docker runtime feasibility.",
+    "Host source provisioning/secure parent directories/key distribution/Mac-to-Linux bounded transport remain explicit operator trust obligations; not recast as current code vulnerabilities.",
+    "The backend retains the legacy direct trusted-context dictionary path (docker_backend.py:352-358 and 437-440). The authenticated acquisition path enforces its anchor/key; the direct path still relies on an independently trusted outer caller, as runtime_admission.py:96-98 documents. No code was found automatically deriving expected host values from actor receipts. Runtime integration must not route actor-supplied dictionaries into this trusted-parameter API.",
+    "Point-in-time observations do not atomically guarantee future process lifetime, untouched memory, inode non-reuse or whole-trial confinement.",
+    "The original prior implementation handoff bytes were not supplied at an authorized path; its stated SHA256 is bound by the verified intake, not independently rehashed. All supplied intake/snapshot/inventory/native/oracle bytes were verified before and after.",
+    "The pinned Python base/interpreter identity record was checked, but no oracle interpreter ELF or full runtime image was available for independent library/OS/CVE inspection. No artifact-only build was rerun."
+  ],
+  "preservation": {
+    "after": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/preservation-after.json",
+    "application_source_or_docs_edited": false,
+    "before": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/preservation-before.json",
+    "boundary_probe_attempts": 1,
+    "correctness_review_directory_or_conclusions_accessed": false,
+    "existing_suite_attempts": 1,
+    "failed_attempts": 0,
+    "failed_attempts_deleted_or_overwritten": false,
+    "git_mutations": false,
+    "original_worktrees_accessed": false,
+    "probe_attempts": 1,
+    "remediation_helper_attempts": 1,
+    "retained_artifacts_unchanged": true,
+    "secret_scan_attempts": 1,
+    "snapshot_unchanged": true,
+    "vault_notes_accessed_or_edited": false,
+    "writes_confined_to": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security"
+  },
+  "remaining_gates": [
+    "Remediate SEC-CTX-001 in application source and add full-bridge regressions; obtain independent review of the resulting exact bytes.",
+    "Provision/attest the separate host anchor/key/code and bounded authenticated transport in the actual selected Docker Linux domain.",
+    "Prepare, review and admit exact target/observer/oracle runtime images, effective filters/mounts, interpreter/libraries, resources and actual cross-namespace socket behavior.",
+    "Complete trial dispatch, per-trial timing/evidence assembly, whole-trial confinement/resource monitoring and independent watchdog cleanup/absence joins.",
+    "Obtain separate exact-artifact and native calibration/execution decisions. Full M4 remains open."
+  ],
+  "reviewer": "independent-security",
+  "schema": "c0-independent-security-review-v1",
+  "scope": "C0 trusted-context/oracle source preparation only",
+  "severity_counts": {
+    "Critical": 0,
+    "High": 0,
+    "Informational": 0,
+    "Low": 0,
+    "Medium": 1
+  },
+  "threat_model": {
+    "explicit_trust_roots": [
+      "Operator-provisioned host boot/namespace/device/daemon/source anchor",
+      "Separate 32-byte service HMAC key",
+      "Reviewed preparation/image/profile identities and outer execution authorizer"
+    ],
+    "host_source_deployment_absence_is_not_a_vulnerability": true,
+    "security_boundary": "Evidence must remain case/scope/generation-bound and contradictory observations must fail closed even when their hashes form a valid chain.",
+    "untrusted": [
+      "Actor stdout/witness/client data",
+      "Transport bytes and timing",
+      "Malformed or contradictory oracle summaries"
+    ]
+  },
+  "verdict": "NEEDS_REMEDIATION"
+}

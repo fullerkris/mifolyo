@@ -1,0 +1,15 @@
+{
+  "base": "2ff03afa8950500de36762bdc5d41de8f2736030",
+  "execution_authorized": false,
+  "files": {
+    "build-verification.json": "327af5442c6d6594295fe53984f1f96a3be367083786998241f0f3fd3cc6fbb9",
+    "source-inventory.json": "6dbc77112abc830467ee952eef2d30f54e730c8718093788e4dd486564c6c750",
+    "verification.json": "9ad8a80a1e952f98c4c08c0a960ff8b9ed1c3cc38e2a7c131eb168bb547b6842"
+  },
+  "kind": "c0_context_oracle_local_implementation",
+  "m4_accepted": false,
+  "new_independent_review": false,
+  "package_files": 39,
+  "tests": 149,
+  "version": 1
+}

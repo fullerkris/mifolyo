@@ -27,6 +27,9 @@ def native_message(raw, expected):
         integer(value["events"], 1, LIMITS["events"])
         integer(value["ordinal"], 1, 1050)
         integer(value["read_bytes"], 0, LIMITS["read_bytes"])
+    elif expected == "ORACLE_READY":
+        exact(value, ("phase", "source_sha256", "version"))
+        digest(value["source_sha256"])
     else:
         require(expected in ("READY", "ADMISSION_READY", "ARMED", "FINISHED", "CONTINUATION_DISPATCHED"), "NATIVE_PHASE")
         exact(value, ("phase", "version"))

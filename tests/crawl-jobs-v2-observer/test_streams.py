@@ -20,12 +20,14 @@ def binding(role="target"):
 def process(script, role="target", seconds=2, before_input=None):
     # Fixed synthetic native preamble, including the fresh scope nonce. The
     # observer waits for A before its old ARMED/HELD test body can execute.
-    prefix = 'sys.stdin.readline(); sys.stdin.readline(); '
+    prefix = 'sys.stdin.readline(); sys.stdin.readline(); sys.stdin.readline(); '
     prefix += ''.join('sys.stdout.buffer.write(' + repr(raw) + '); sys.stdout.flush(); ' for raw in frames(role, bound=binding(role)))
     if role == "observer":
         prefix += 'print(\'{"phase":"ADMISSION_READY","version":1}\',flush=True); assert sys.stdin.read(1)=="A"; '
     script = script.replace('sys.stdin.readline(); ', prefix, 1)
-    return ProcessStream([sys.executable, "-I", "-B", "-c", script], binding(role), WireBudget(), Deadline(seconds), before_input=before_input)
+    stream = ProcessStream([sys.executable, "-I", "-B", "-c", script], binding(role), WireBudget(), Deadline(seconds), before_input=before_input)
+    stream.bind_admission_window(9000000000)
+    return stream
 
 
 def select(stream):

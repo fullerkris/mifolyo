@@ -5,12 +5,12 @@ import signal
 import subprocess
 import time
 
-from contracts import LIMITS, TRIALS, Invalid, decode, digest, exact, integer, require
+from contracts import LIMITS, TRIALS, Invalid, clock_ns, decode, digest, exact, integer, require, sha
 from controller import native_message
 from runtime_admission import PHASES
 
 NATIVE_ERRORS = frozenset(("admission", "transport", "case", "deadline", "validator_control", "identity", "bounds",
-    "ptrace_denied", "regset", "debug_state", "instruction", "stop_reason", "controller_kill_required", "helper", "witness"))
+    "ptrace_denied", "regset", "debug_state", "instruction", "stop_reason", "controller_kill_required", "helper", "witness", "oracle"))
 
 
 class Deadline:
@@ -91,6 +91,9 @@ class ProcessStream:
         self.decoder, self.frames = FrameBuffer(budget), []
         self.sent, self.phase, self.closed, self.stdout_eof = False, None, False, False
         self.admission_frames = []
+        self.last_message_sha256 = None
+        self.last_message = None
+        self.admission_window_end_ns = self.sent_admission_window_end_ns = None
         self.selector = selectors.DefaultSelector()
         self._process = None
         try:
@@ -122,7 +125,8 @@ class ProcessStream:
             self.frames.extend(self.decoder.feed(chunk))
 
     def _send(self, raw):
-        require(not self.closed and type(raw) is bytes and 0 < len(raw) <= 160, "INPUT_BOUND")
+        bound = LIMITS["receipt_bytes"] if self.binding["role"] == "oracle" else 160
+        require(not self.closed and type(raw) is bytes and 0 < len(raw) <= bound, "INPUT_BOUND")
         offset = 0
         try:
             while offset < len(raw):
@@ -147,13 +151,28 @@ class ProcessStream:
     def send_case(self):
         require(not self.sent and self.binding["role"] in ("target", "observer"), "CASE_ALREADY_SENT")
         require(not self.binding["case_id"].startswith("N."), "VALIDATOR_ONLY")
-        self._send((self.binding["case_id"] + "\n" + self.binding["invocation_sha256"] + "\n").encode())
+        require(self.admission_window_end_ns is not None, "ADMISSION_WINDOW_REQUIRED")
+        end = clock_ns(self.admission_window_end_ns, 1)
+        self._send((self.binding["case_id"] + "\n" + self.binding["invocation_sha256"] + "\n" + str(end) + "\n").encode())
+        self.sent_admission_window_end_ns = end
         self.sent = True
+
+    def bind_admission_window(self, not_after_ns):
+        require(not self.sent and self.admission_window_end_ns is None, "ADMISSION_WINDOW_ALREADY_BOUND")
+        self.admission_window_end_ns = clock_ns(not_after_ns, 1)
 
     def start_target(self):
         require(self.binding["role"] == "target" and self.phase == "READY", "EARLY_START")
         self._send(b"G")
         self.phase = "START_DISPATCHED"
+
+    def send_oracle_case(self):
+        require(not self.sent and self.binding["role"] == "oracle" and not self.binding["case_id"].startswith("N."), "ORACLE_CASE")
+        require(self.admission_window_end_ns is not None, "ADMISSION_WINDOW_REQUIRED")
+        end = clock_ns(self.admission_window_end_ns, 1)
+        self._send((self.binding["case_id"] + "\n" + self.binding["invocation_sha256"] + "\n" + str(end) + "\n").encode())
+        self.sent_admission_window_end_ns = end
+        self.sent = True
 
     def resume_observer(self):
         # The outer coordinator must separately prove the oracle match. This
@@ -168,7 +187,7 @@ class ProcessStream:
         self.phase = "ARM_DISPATCHED"
 
     def require_admission_ready(self):
-        require(self.phase in ("READY", "ADMISSION_READY"), "NATIVE_ADMISSION_TRANSPORT")
+        require(self.phase in ("READY", "ADMISSION_READY", "ORACLE_READY"), "NATIVE_ADMISSION_TRANSPORT")
         self.require_quiet_live(self.phase)
 
     def require_quiet_live(self, expected_phase):
@@ -177,7 +196,7 @@ class ProcessStream:
         This is a nonblocking point-in-time check, not future liveness or remote
         absence proof. In particular, ARMED may not already have buffered HELD.
         """
-        require(expected_phase in ("READY", "ADMISSION_READY", "ARMED"), "NATIVE_ADMISSION_TRANSPORT")
+        require(expected_phase in ("READY", "ADMISSION_READY", "ARMED", "START_DISPATCHED", "HELD", "ORACLE_READY", "ORACLE_INITIALIZED", "ORACLE_HELD", "ORACLE_FINAL"), "NATIVE_ADMISSION_TRANSPORT")
         try:
             require(not self.closed and self.phase == expected_phase, "NATIVE_ADMISSION_TRANSPORT")
             self._pump(0)
@@ -188,9 +207,10 @@ class ProcessStream:
 
     def receive(self, expected):
         allowed = {("target", "CLOCK"): "READY", ("target", "START_DISPATCHED"): "FINISHED",
+            ("oracle", "CLOCK"): "ORACLE_READY",
             ("observer", "CLOCK"): "ADMISSION_READY", ("observer", "ARM_DISPATCHED"): "ARMED", ("observer", "ARMED"): "HELD",
             ("observer", "RESUME_DISPATCHED"): "CONTINUATION_DISPATCHED"}
-        for role in ("target", "observer"):
+        for role in ("target", "observer", "oracle"):
             for before, after in zip((None, *PHASES[:-1]), PHASES):
                 allowed[(role, before)] = after
         require(not self.closed and self.sent and allowed.get((self.binding["role"], self.phase)) == expected, "STREAM_ORDER")
@@ -212,6 +232,8 @@ class ProcessStream:
                 require(all(result[key] == self.binding[key] for key in ("case_id", "invocation_sha256", "role")), "ADMISSION_BINDING")
                 self.admission_frames.append(raw)
             self.phase = expected
+            self.last_message_sha256 = sha(raw)
+            self.last_message = result
             return result
         except BaseException:
             self.close()

@@ -1,0 +1,86 @@
+{
+  "artifact_step": {
+    "if": "always()",
+    "name": "Retain C0 offline test evidence",
+    "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+    "with": {
+      "if-no-files-found": "error",
+      "name": "c0-offline-tests",
+      "path": "${{ runner.temp }}/c0-offline-tests.json"
+    }
+  },
+  "base": "2ff03afa8950500de36762bdc5d41de8f2736030",
+  "branch_protection_sha256": "44168441a82bae4c047b0e0f9745cc55659602c1302fc55aef838bb517565c2b",
+  "candidate_hosted_ci_performed": false,
+  "ci_files": {
+    ".github/workflows/required-checks.yml": "b8cee21324a1740564fe012f9ba7b8c0d8d251558b8caf671bea0f9d51ebedd4",
+    ".github/workflows/unit-tests.yml": "45a5158e6d7d586d024d4011cca4710586706faac3d31ac29ec28307da70a385",
+    "scripts/test-crawl-jobs-v2-observer.py": "9afb715125f734f5b905da63dde5c9787fc5997b2e5a73a0bf62d781b23aef84",
+    "scripts/tests/test_crawl_jobs_v2_observer.py": "7ec2695cb666eb5364716a7e7f3910eb2fc95f29db753571682cded25d384c79"
+  },
+  "future_publication_checks": [
+    "Bind PR head, tested revision and merge tree to the exact prepared candidate",
+    "Require all fourteen protected contexts and all workflow jobs on the same revision/attempt",
+    "Download C0 evidence; require exact 161 IDs, all40 package hashes and the unchanged runner hash",
+    "Refuse skips, expected failures, incomplete inventories and wrong-source reports",
+    "Verify retained image/race evidence and existing integrations/audits without weakening their gates"
+  ],
+  "local_tests": 161,
+  "main_checkpoint_tests": 113,
+  "main_ci_gate_sha256": "8f2afe16f2482c79ab6a8c5776e7140beb38c82696d4e5d4a2f943f0d9a18213",
+  "main_workflows": {
+    "37949378487": {
+      "conclusion": "success",
+      "event": "push",
+      "head_branch": "main",
+      "head_sha": "2ff03afa8950500de36762bdc5d41de8f2736030",
+      "html_url": "https://github.com/fullerkris/mifolyo/actions/runs/37949378487",
+      "id": 37949378487,
+      "run_attempt": 1,
+      "status": "completed"
+    },
+    "37949378598": {
+      "conclusion": "success",
+      "event": "push",
+      "head_branch": "main",
+      "head_sha": "2ff03afa8950500de36762bdc5d41de8f2736030",
+      "html_url": "https://github.com/fullerkris/mifolyo/actions/runs/37949378598",
+      "id": 37949378598,
+      "run_attempt": 1,
+      "status": "completed"
+    }
+  },
+  "protected_c0_step": {
+    "env": {
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "TMPDIR": "${{ runner.temp }}"
+    },
+    "name": "Run C0 offline preparation tests",
+    "run": "python -B -W error::ResourceWarning scripts/test-crawl-jobs-v2-observer.py --report \"${{ runner.temp }}/c0-offline-tests.json\"",
+    "timeout-minutes": "5",
+    "working-directory": "."
+  },
+  "publication_authorized": false,
+  "python_version": "3.13",
+  "recorded_utc": "2026-10-09T20:54:21.929774+00:00",
+  "required_contexts": [
+    "required-tests",
+    "required-build",
+    "required-smoke",
+    "Test Spider Service",
+    "Test Seed Importer Service",
+    "Test Image Indexer Service",
+    "Audit backlinks-processor Python Dependencies",
+    "Audit dmoz-importer Python Dependencies",
+    "Audit tfidf Python Dependencies",
+    "Check Monitoring Service",
+    "Test Query Engine",
+    "Test PageRank Service",
+    "Test Indexer Service",
+    "Test Render Worker"
+  ],
+  "source_inventory_sha256": "99d9dd6f2c475cd83960c66028016d7d508acadd3563f2e440c3bf6ff012c4c3",
+  "status": "PASS_UNCHANGED_CI_COVERAGE",
+  "strict_required_contexts": 14,
+  "workflow_changes_required": false
+}

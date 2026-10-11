@@ -5,6 +5,7 @@ from pathlib import Path
 import sys
 import tempfile
 import time
+from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
@@ -22,6 +23,7 @@ root = Path(sys.argv[1])
 cfg = json.loads((root / "config.json").read_text())
 assert sys.stdin.buffer.readline().decode().rstrip("\n") == cfg["case_id"]
 assert sys.stdin.buffer.readline().decode().rstrip("\n") == cfg["invocation_sha256"]
+assert sys.stdin.buffer.readline().decode().rstrip("\n") == "9000000000"
 for raw in cfg["frames"]:
     os.write(1, raw.encode())
 phase = "READY" if cfg["role"] == "target" else "ADMISSION_READY"
@@ -114,6 +116,7 @@ class PipePair:
     def open(self, role):
         ref = self.registry.entries[role]["reference"]
         stream = self.backend.open_actor(ref, self.registry.spec(role), self.registry.snapshot(), self.budget, self.deadlines[role])
+        stream.bind_admission_window(context()["not_after_ns"])
         stream.send_case()
         return stream
 
@@ -220,6 +223,9 @@ class DispatchRegressionTests(unittest.TestCase):
             events = len(h.events)
             self.dispatch(observer, observer.arm_observer, True)
             observer.receive("ARMED")
+            # This test isolates native peer guards; the real oracle exchange
+            # and missing-oracle rejection are covered by the bridge tests.
+            h.backend._oracle_session = SimpleNamespace(require_ready=lambda: None)
             self.dispatch(target, target.start_target, True)
             target.receive("FINISHED")
             self.assertEqual(len(h.events), events)

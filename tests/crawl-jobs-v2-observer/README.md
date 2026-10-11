@@ -12,8 +12,9 @@ bounded, externally authorized admission collection from the owned actor streams
   exact capless/process bindings, bounded canonical JSON and case-bound receipts.
   COR-01's hold check includes clock uncertainty and requires actual continuation
   or confirmed stop. A dispatch timestamp cannot close the interval.
-  Preparation now requires an `admission_source` digest in addition to the other
-  frozen artifacts; old preparation objects lacking it reject.
+   Preparation requires `admission_source`, `runtime_context_source`,
+   `oracle_worker_source` and `oracle_elf` identities as well as the other frozen
+   artifacts. Older preparation objects lacking these inputs reject.
 - `native/target.c`: AArch64 PIE synthetic target with explicit pre/post instruction
   labels, 1,050 same-value effects and separate ordinal transcript; nested fake-VM
   prototype/PC markers; helper heartbeat and fixed-frame Unix-stream cases.
@@ -99,7 +100,8 @@ tasks or changed identity refuse admission. In particular, inaccessible LSM/Yama
 or cgroup/time-namespace observations are refusals; no privileged helper, mount,
 sysctl change or capability fallback is introduced. Read-only `uname`,
 `clock_getres`, `PR_GET_DUMPABLE` and `PR_GET_SECCOMP` are added to the native-role
-profiles; policy setters remain excluded and the oracle profile is unchanged.
+profiles; policy setters remain excluded. The oracle's separate mapping expansion
+is described below.
 
 `runtime_admission.py` independently checks the four frames against exact prepared
 ELFs, case/scope/role bindings and an **externally trusted kernel/clock context**.
@@ -129,16 +131,19 @@ The target stays at READY; the observer emits ADMISSION_READY and waits for a fi
 blocks target `G` until the admitted observer is ARMED. After the final input
 authorizer, a nonblocking peer check requires a quiet live READY/ARMED transport;
 readable EOF, stderr, partial output and queued frames (including pre-G HELD)
-reject dispatch. Own and peer admission expiries are rechecked after callbacks /
-polling and again at the write boundary. The stream checks its deadline immediately
+reject dispatch. All readiness polls, including the oracle's, precede the final
+own/peer admission and context-lease expiry checks at the write boundary. The
+oracle also rechecks its expiry after its poll. A failed pre-dispatch join clears
+all three cached admissions. The stream checks its deadline immediately
 before each write. Collection performs final live-ready checks after metadata /
 authorization work. These checks observe currently available loss; they do not
 guarantee future channel lifetime atomically. No Docker inspection is added to
 the short HELD/resume path.
 
-Typical integration order (only under the outer execution authorizer): open the
-target stream, send its fixed case/nonce, collect target admission; open the observer,
-send its case/nonce, collect observer admission; arm/receive ARMED; start the target.
+Typical integration order (only under the outer execution authorizer): acquire
+trusted context; open the target and send case/nonce/Linux expiry, then collect
+target admission; do the same for the observer; open/admit/initialize the oracle;
+arm/receive ARMED; start the target.
 The admission collector accepts only backend-owned streams and complete resource
 snapshots. Failure closes the local stream and raises a value-free error; independent
 watchdog cleanup and remote absence proof remain mandatory.
@@ -147,7 +152,112 @@ The compact digest summary is not a transferable capability. Both validation and
 collection retain `execution_authorized=false` and `runtime_evidence=false`; injected
 Docker/stream fixtures are explicitly labelled simulated. A pre-case snapshot does
 not establish confinement/resource usage for a whole trial, held timing, hardware
-breakpoint precision, or oracle/client closure. The oracle worker is still pending.
+breakpoint precision, or complete trial acceptance. The oracle worker and its
+bounded client-closure bridge are described below; deployment/calibration remain gated.
+
+## Independently acquired Linux context
+
+`runtime_context.py` supplies an authenticated acquisition protocol and an expiring
+`ContextLease`. `context_worker.py` is the fixed, read-only Linux-host endpoint;
+`linux_observation.py` reads bounded, fixed procfs/sysfs leaves. It never enters a
+namespace, changes policy/credentials or substitutes the controller's macOS clock.
+
+The source is an **operator-provisioned trust root**, separate from all three
+actors. Its root-owned `/etc/obs1/context-source.json` fixes the Docker daemon
+identity, collector source-bundle hash, Linux boot hash, host namespace/device
+anchor and expected OCI/filter counts. The 32-byte authentication key lives in
+mode-0600 `/etc/obs1/context-source.key`, owned by the context service's user.
+Provisioning must independently attest that anchor in the Docker daemon's actual
+Linux environment; actor receipts must never populate it. The endpoint refuses
+if its actual boot/namespaces differ, or if Linux/AArch64, zero time offsets,
+LSM/Yama access or stable observations are unavailable. No privileged fallback,
+host-namespace Docker role or policy-setting helper is introduced.
+
+The controller's `ContextSource` sends a fresh challenge, case/scope/preparation
+binding and a bounded validity duration, authenticated by HMAC-SHA256. Three
+canonical observation frames plus a final MAC are individually capped at 1,024
+bytes and charged to the shared wire budget. The key is never sent to actors or
+included in exported receipts. Wrong source/daemon/anchor, bad MAC, replayed or
+reordered frames, mid-read drift, expired responses and foreign leases reject.
+The source's provisioning and Mac-to-Linux transport remain explicit outer
+integration obligations: pass a bounded transport for the source's stdio exchange;
+an arbitrary actor stream is not an authenticated host source.
+
+`DockerBackend.acquire_runtime_context()` must run before actor activation and
+rechecks the daemon around acquisition. It binds the returned lease to this
+backend/scope. Local elapsed-time expiry is a conservative transport budget, not
+an equality between clock epochs. **The native handshake now has three lines:**
+case ID, 64-hex scope nonce, and the exact unsigned-64-bit Linux `not_after_ns`.
+The actor checks that deadline in its own kernel clock, including after reading
+a control byte. Thus controller sleep or clock-domain differences cannot extend
+native A/G admission. The backend joins the transmitted window to the validated
+context and rechecks the lease at the write boundary. Fresh native artifacts are
+required; old binaries/preparation packets are not compatible with this handshake.
+
+## Oracle worker and client closure
+
+`worker.py` implements the reserved `/oracle/worker.py` entrypoint.
+`oracle_worker.py`, `oracle_protocol.py` and `oracle_bridge.py` provide a bounded,
+case/scope-bound INIT → HELD → FINAL → CLOSE exchange, with sequence/predecessor
+checks. The worker emits independently checked startup observations, including
+its interpreter ELF and worker-source bundle identities. Its private PID namespace,
+32 MiB memory limit, eight-PID ceiling, UID/GID 999, five zero capability sets,
+NNP, seccomp and kernel/clock observations are admitted against the same trusted
+context. The oracle uses the target's expected base OCI-filter count; only the
+observer adds a self-installed filter.
+
+The worker independently admits `/witness/state` through the read-only volume,
+checks regular/single-link identity, ownership, mode and fixed 8,480-byte size,
+then applies the existing full ordinal/transcript and final-state validators.
+No caller pathname or PID is accepted. Opening is nonblocking/no-follow and
+identity/permissions are checked again after the actual reads.
+
+For the three P3 stream families, a read-only client connects only to
+`/control/frame.sock`, checks its inode/owner/mode and peer credentials, and reads
+the fixed 1,024-byte `C` frame. It never sends application bytes to the target.
+Fragments, complete receipt time, EOF, reset/error, late completion and unresolved
+retirement stay distinct. The held witness supplies a lower cut bound; the
+oracle's causal post-HELD read supplies an upper bound in the same Linux clock.
+Only a receipt strictly before the lower bound gets timestamp-based ACK credit.
+Equality, including a zero-width cut interval, remains unordered. Late completion is retained even
+when the case was affirmatively pre-acknowledgment at the cut.
+
+`DockerBackend.open_oracle()` binds an owned, admitted worker and its initial
+witness receipt. Target G requires this live initialized oracle. After receiving
+the owned observer's HELD frame, `OracleSession.advance_held()` joins its digest
+and ordinal to the actual oracle result before advancing the coordinator. R
+requires that same live oracle match. These short held/resume checks add no Docker
+inspection. `observe_final()` checks final witness evidence; `close()` performs a
+bounded client drain and retains partial/error outcomes. `closure()` separately
+joins two stable inspections of the original target/oracle generations as exited
+with PID zero. Socket/CLI EOF alone never proves remote stop. A closed no-reply
+window additionally requires a proved pre-ACK cut, clean client EOF and no complete
+reply; unresolved/reset paths cannot receive that credit. Resource disposal and
+independent absence proof remain the watchdog's responsibility.
+
+The controller independently retains `ClientHistory` across accepted replies.
+Byte counts cannot decrease; completion timestamps and terminal EOF/error facts
+cannot disappear or change. Only a HELD response introduces a cut, its classification
+is immutable, and subsequent late-completion flags are derived from the retained
+cut bounds. No-reply credit additionally requires the successfully matched owned
+HELD digest. A correctly hashed chain of contradictory summaries poisons the
+session rather than replacing earlier evidence. Oracle operation deadlines are
+also rechecked after the resume-readiness poll.
+
+`test_context_oracle_review.py` retains the review counterexamples and positive
+controls: final-poll expiry, tied timestamps, completion/error rollback and a
+fabricated cut, plus honest partial/late/reset/unresolved/non-stream outcomes.
+It uses synthetic admission/stop metadata, deterministic clocks and benign Python
+pipes/sockets. Exact review findings and verdicts are recorded in the
+[review checkpoint](../../docs/crawl-jobs-v2-m4-c0-context-oracle-review-2026-10-09.md).
+
+The oracle's OCI profile admits CPython's **read-only file-backed** executable
+mapping, while anonymous executable memory, W+X, executable `mprotect`, ptrace and
+namespace setters stay denied. A separately pinned Python image recipe is provided
+in `Dockerfile.oracle`; artifact generation runs only `build_oracle.py`, never the
+worker. Its real OCI/runtime behavior still needs separately approved admission
+and calibration. Synthetic client receipts do not themselves become Redis/D02 ACK
+or durability evidence.
 
 Creation candidates are journalled before mutation; identities are bound before
 start. A lost create response is never retried. Currently observed owned resources
@@ -187,6 +297,10 @@ python3 -B -W error::ResourceWarning -m unittest discover -s tests/crawl-jobs-v2
 docker build --network none --pull=false --platform linux/arm64 \
   --target artifacts --output type=local,dest=/absolute/private/empty-directory \
   tests/crawl-jobs-v2-observer
+docker build --network none --pull=false --platform linux/arm64 \
+  --file tests/crawl-jobs-v2-observer/Dockerfile.oracle --target artifacts \
+  --output type=local,dest=/absolute/private/another-empty-directory \
+  tests/crawl-jobs-v2-observer
 ```
 
 The compiler stage uses the immutable GCC 14.3.0/bookworm arm64 manifest
@@ -202,13 +316,13 @@ Yama/LSM access, capless attachment, timing precision nor a complete experiment.
 
 ## Remaining execution assembly
 
-The resource, stream, watchdog and native admission collection/validation layers
-now exist as implementation components. They still need trusted runtime-context
-acquisition, the oracle worker/client-frame closure bridge, full trial dispatch,
-complete per-trial receipt assembly and exact runtime images. The outer authorizer must be bound to the
-separate reviewed approval/execution decision; no approval parser or `run` CLI is
-provided by this layer. Oracle-worker argv is reserved by the closed blueprint,
-not a claim that that worker image is implemented or admitted.
+The resource, stream, watchdog, independently authenticated context acquisition,
+three-role admission and oracle/client-closure components now exist. Remaining
+work includes trusted Linux-source provisioning/transport in the actual Docker
+kernel domain, reviewed runtime images and admission, full trial dispatch,
+complete per-trial receipt/timing assembly and whole-trial confinement evidence.
+The outer authorizer must be bound to the separate reviewed approval/execution
+decision; no approval issuer or complete `run` CLI is provided by this layer.
 
 The pure coordinator consumes independently validated evidence digests; it cannot
 prove events occurred. The new stream objects bind local process handles and the

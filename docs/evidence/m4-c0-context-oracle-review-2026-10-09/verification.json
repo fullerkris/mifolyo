@@ -1,0 +1,54 @@
+{
+  "base": "2ff03afa8950500de36762bdc5d41de8f2736030",
+  "baseline_test_ids_preserved": 113,
+  "branch": "feature/crawl-jobs-v2-c0-context-oracle",
+  "build_verification_sha256": "8b7817ff8d2fef399dd0d7d0725e9828374b3aaed44daa1f13b16906cef4b96d",
+  "check_records": {
+    "bound-suite": "6018fffba7105c7b9affa81b64769460b97104a1e064ab31304a5784e34467f2",
+    "digests": "726323830f8a12d9cc5459d9e505235ca721f15a22faf256b581a27c343b40c8",
+    "final-suite": "6ef66881c46533473e0e0c671c89ac9fd63b5c2c22ffded9accab23e185729cd",
+    "oracle-rebuild": "e92b5b199cb3adb8cf24cf2c0ce6e6cc218114ceb32c202829e67a1bbea6cae1",
+    "review-green-v2": "e50a6c23ae953bf03191d29b1b31d5005aef76340b2210fe22d88ac7c1b5a8a6",
+    "scripts": "35f03f5c97ca321c522254df45e23bad2ca279690eed51b67d464ab516965965"
+  },
+  "committed": false,
+  "digest_vectors": "PASS",
+  "final_independent_verdict": "PENDING",
+  "initial_reviews": {
+    "correctness": "80e03a35f09f9ba53c76746b581557f8aea5e02092587c5c8374b9ffbae0215d",
+    "security": "814645cde86463ad003b78102619d80673dbe341c5a93cf15672ebee51fccce2"
+  },
+  "m4_accepted": false,
+  "native_execution": false,
+  "new_test_ids": [
+    "test_context_oracle_review.ContextOracleReviewTests.test_chained_close_cannot_erase_complete_receipt",
+    "test_context_oracle_review.ContextOracleReviewTests.test_chained_close_cannot_erase_transport_error",
+    "test_context_oracle_review.ContextOracleReviewTests.test_chained_close_cannot_invent_held_cut",
+    "test_context_oracle_review.ContextOracleReviewTests.test_equal_clock_receipt_and_zero_width_cut_remain_unordered",
+    "test_context_oracle_review.ContextOracleReviewTests.test_final_oracle_poll_rechecks_context_lease",
+    "test_context_oracle_review.ContextOracleReviewTests.test_final_oracle_poll_rechecks_observer_expiry",
+    "test_context_oracle_review.ContextOracleReviewTests.test_final_oracle_poll_rechecks_oracle_expiry",
+    "test_context_oracle_review.ContextOracleReviewTests.test_final_oracle_poll_rechecks_target_expiry",
+    "test_context_oracle_review.ContextOracleReviewTests.test_history_rejects_changed_completion_cut_or_terminal_bytes",
+    "test_context_oracle_review.ContextOracleReviewTests.test_honest_partial_late_reset_and_unresolved_closure_remain_distinct",
+    "test_context_oracle_review.ContextOracleReviewTests.test_live_final_oracle_poll_still_allows_start",
+    "test_context_oracle_review.ContextOracleReviewTests.test_resume_poll_rechecks_oracle_operation_deadline"
+  ],
+  "oracle_oci_runtime_validated": false,
+  "package_files": 40,
+  "prior_test_ids_preserved": 149,
+  "pushed": false,
+  "recorded_utc": "2026-10-09T18:57:46.021769+00:00",
+  "retained_failures": {
+    "review-green": "LOCAL_PROCESS_CLEANUP from the benign responder; output EOF/leader disposal fixture made explicit",
+    "review-red": "Original production counterexamples and missing new history API"
+  },
+  "runtime_source_deployment_validated": false,
+  "script_tests": 31,
+  "skipped": 0,
+  "source_inventory_sha256": "99d9dd6f2c475cd83960c66028016d7d508acadd3563f2e440c3bf6ff012c4c3",
+  "status": "PASS_LOCAL_REMEDIATION",
+  "test_report_sha256": "fd5767806f77325bd8e99c7f0b805808a717c312f84a0f150898e33fd6afa3b7",
+  "tests": 161,
+  "tracing": false
+}

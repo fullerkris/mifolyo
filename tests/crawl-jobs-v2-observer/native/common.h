@@ -115,7 +115,10 @@ static inline char control_byte(uint64_t until) {
     char value;
     while (mono_ns() < until) {
         ssize_t count = read(STDIN_FILENO, &value, 1);
-        if (count == 1) return value;
+        if (count == 1) {
+            if (mono_ns() >= until) invalid("deadline");
+            return value;
+        }
         if (count == 0 || (errno != EAGAIN && errno != EINTR)) invalid("transport");
         struct timespec delay = {0, 100000};
         nanosleep(&delay, NULL);

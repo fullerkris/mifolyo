@@ -1,0 +1,27 @@
+{
+  "native_actors_executed": false,
+  "native_artifacts": {
+    "cases.h": "64591020572e8af5afae67856ba79e053afacaf41d08ba10a98f489558e383f4",
+    "observer": "e407a02c67ac7a0cd192e612afe5ad643701c16821f6854e3a11b040e55cfb61",
+    "observer-seccomp.json": "abf581851c19631ba5125ac03443f4ad72c6e8fd7b92fa086218060e07b56bf2",
+    "oracle-seccomp.json": "f82e0ae5335e1393c402265c4a14a4e56ad8df27ab48eee70907745fef3b6835",
+    "target": "819cde0b38e12b235acbef2b3741551af86683ff2c3ec5186b5a45b710e5da45",
+    "target-filter.bpf": "701824ff5f8ccafa359f711d2714b23c8a303789cd1987a3a85aba19a3667b93",
+    "target-manifest.json": "a19b4096f0f268742ebc98bf879e12fbb0de1124a1c8144959496f6b8a615e43",
+    "target-seccomp.json": "6a1ffdf7326ae1370bd55cc2edb2bcfb49b2d65ce7090205576d3b6e9496ab3e",
+    "target_filter.h": "8a1c8f5941860b7acd92f3dc53952aa746fa9d1c57098b214a691fa8a6380b1d",
+    "target_manifest.h": "ccee87e21a21d7d0f8e07cac9fe1dc3e9f20333d51b32e9231d1e2362686d7a5",
+    "toolchain.json": "db73fe1e4f89b176c696c4315b6c3828df9c1091e9a26b2bbeb76bddd2d1dd25"
+  },
+  "native_artifacts_unchanged": true,
+  "native_build_provenance_sha256": "327af5442c6d6594295fe53984f1f96a3be367083786998241f0f3fd3cc6fbb9",
+  "native_inputs_unchanged": true,
+  "oracle_build_record_sha256": "e92b5b199cb3adb8cf24cf2c0ce6e6cc218114ceb32c202829e67a1bbea6cae1",
+  "oracle_elf": "cb4548d280f38c2b1df4cba45f12c90a034729e08fce5bf1a223c58add0e21e3",
+  "oracle_manifest_sha256": "961ddf9d26b4633b0915b80c64ef2a5673a23934fbe01bee54d5cb87a2ef588d",
+  "oracle_rebuilt": true,
+  "oracle_worker_executed_in_build": false,
+  "oracle_worker_source": "30f1a092422391317453ea624ca7532c46d4d13607c4261b8d80fc50eef6583b",
+  "source_inventory_sha256": "99d9dd6f2c475cd83960c66028016d7d508acadd3563f2e440c3bf6ff012c4c3",
+  "status": "PASS_ARTIFACT_BINDINGS"
+}

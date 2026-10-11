@@ -1,0 +1,61 @@
+{
+  "files": {
+    "build-verification.json": {
+      "bytes": 1821,
+      "private_source": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/build-verification.json",
+      "sha256": "8b7817ff8d2fef399dd0d7d0725e9828374b3aaed44daa1f13b16906cef4b96d"
+    },
+    "c0-tests.json": {
+      "bytes": 53563,
+      "private_source": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/bound-tests.json",
+      "sha256": "fd5767806f77325bd8e99c7f0b805808a717c312f84a0f150898e33fd6afa3b7"
+    },
+    "correctness-final.json": {
+      "bytes": 40810,
+      "private_source": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/correctness/review-final.json",
+      "sha256": "1ffa557b61e979bce1455927fd4d5c5859c3aa4febb9f718a9f4d7eed2190bb6"
+    },
+    "correctness-initial.json": {
+      "bytes": 23445,
+      "private_source": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/correctness/review.json",
+      "sha256": "80e03a35f09f9ba53c76746b581557f8aea5e02092587c5c8374b9ffbae0215d"
+    },
+    "oracle-artifacts.json": {
+      "bytes": 963,
+      "private_source": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/oracle-rebuild/artifacts/oracle-artifacts.json",
+      "sha256": "961ddf9d26b4633b0915b80c64ef2a5673a23934fbe01bee54d5cb87a2ef588d"
+    },
+    "security-final.json": {
+      "bytes": 50009,
+      "private_source": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/review-final.json",
+      "sha256": "7a85d1801797b57e3183ae811843d9b826103865840105199bc86a4112bc355e"
+    },
+    "security-initial.json": {
+      "bytes": 35406,
+      "private_source": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/security/review.json",
+      "sha256": "814645cde86463ad003b78102619d80673dbe341c5a93cf15672ebee51fccce2"
+    },
+    "source-inventory-v2.json": {
+      "bytes": 8589,
+      "private_source": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/source-inventory-v2.json",
+      "sha256": "99d9dd6f2c475cd83960c66028016d7d508acadd3563f2e440c3bf6ff012c4c3"
+    },
+    "verdicts.json": {
+      "bytes": 2504,
+      "private_source": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/verdicts.json",
+      "sha256": "cf04c87324bf8a02e37eb2e3099443c49ee0c25cf545d85686f60c1ef33e2ad1"
+    },
+    "verification.json": {
+      "bytes": 3243,
+      "private_source": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/verification.json",
+      "sha256": "83ac4a4e1822c38ba08210ebf307e2f929e4712dd61a4ebc9acd1b201ef47f94"
+    }
+  },
+  "kind": "c0_context_oracle_independent_review",
+  "native_execution": false,
+  "publication_authorized": false,
+  "runtime_approved": false,
+  "source_inventory_sha256": "99d9dd6f2c475cd83960c66028016d7d508acadd3563f2e440c3bf6ff012c4c3",
+  "verdicts_sha256": "cf04c87324bf8a02e37eb2e3099443c49ee0c25cf545d85686f60c1ef33e2ad1",
+  "version": 1
+}

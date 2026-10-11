@@ -2,6 +2,7 @@
 import copy
 import json
 import unittest
+from types import SimpleNamespace
 
 import contracts as c
 import controller
@@ -37,18 +38,19 @@ def binding(role="target", invocation=D, case="P1.pre.1.1"):
 def frames(role="target", *, bound=None):
     bound = binding(role) if bound is None else bound
     common = {key: bound[key] for key in ("case_id", "invocation_sha256", "role")} | {"version": 1}
-    pid = 1 if role == "target" else 2
+    pid = 2 if role == "observer" else 1
+    ns_role = {"target": 1, "observer": 2, "oracle": 3}[role]
     ctx = context()
     identity = common | {"phase": "IDENTITY", "boot_sha256": ctx["kernel_boot_sha256"], "executable_sha256": preparation()["artifacts"][role + "_elf"],
         "uid_map_sha256": ctx["uid_map_sha256"], "gid_map_sha256": ctx["gid_map_sha256"], "pid": pid, "tid": pid, "start_ticks": 123 + pid,
-        "pid_ns": 10, "user_ns": 20, "time_ns": 30, "ns_device": 4,
-        "cgroup_ns": 40 + pid, "mnt_ns": 50 + pid, "net_ns": 60 + pid, "ipc_ns": 70 + pid}
+        "pid_ns": 11 if role == "oracle" else 10, "user_ns": 20, "time_ns": 30, "ns_device": 4,
+        "cgroup_ns": 40 + ns_role, "mnt_ns": 50 + ns_role, "net_ns": 60 + ns_role, "ipc_ns": 70 + ns_role}
     security = common | {"phase": "CONFINEMENT", "caps": [0] * 5, "uids": [999] * 4, "gids": [999] * 4, "groups": [],
-        "core_soft": 0, "core_hard": 0, "dumpable": 1, "nnp": 1, "seccomp": 2, "seccomp_filters": 1 if role == "target" else 2,
+        "core_soft": 0, "core_hard": 0, "dumpable": 1, "nnp": 1, "seccomp": 2, "seccomp_filters": 2 if role == "observer" else 1,
         "tasks": [pid], "threads": 1, "tracer_pid": 0}
-    resources = common | {"phase": "RESOURCES", "cgroup_sha256": c.sha(b"0::/\n"), "memory_max": 67108864,
+    resources = common | {"phase": "RESOURCES", "cgroup_sha256": c.sha(b"0::/\n"), "memory_max": c.LIMITS[role + "_memory"],
         "memory_current": 1048576, "memory_peak": 2097152, "swap_max": 0, "cpu_period": 100000, "cpu_quota": 100000,
-        "pids_max": 16, "pids_current": 1, "processes": [pid]}
+        "pids_max": c.LIMITS[role + "_pids"], "pids_current": 1, "processes": [pid]}
     clock = common | {"phase": "CLOCK", "kernel_release_sha256": ctx["kernel_release_sha256"], "lsm_sha256": ctx["lsm_sha256"], "time_offsets_sha256": ctx["time_offsets_sha256"],
         "monotonic_ns": 2000000 + pid, "resolution_ns": 1, "yama_scope": 0}
     return [c.canonical(row) for row in (identity, security, resources, clock)]
@@ -197,11 +199,17 @@ class FakeStream:
         self.sent, self.closed, self.phase = False, False, None
         self.admission_frames, self.hook = [], None
         self.stdout_eof = False
+        self.sent_admission_window_end_ns = None
+        self.admission_window_end_ns = context()["not_after_ns"]
         self.raw = frames(bound["role"], bound=bound)
 
     def send_case(self):
         self.before_input()
+        self.sent_admission_window_end_ns = self.admission_window_end_ns
         self.sent = True
+
+    def bind_admission_window(self, end):
+        self.admission_window_end_ns = c.clock_ns(end, 1)
 
     def receive(self, phase):
         if phase in admission.PHASES:
@@ -274,6 +282,8 @@ class DockerAdmissionTests(unittest.TestCase):
         self.admit(registry, backend, observer, ref, deadline)
         observer.before_input()
         observer.phase = "ARMED"
+        # Native peer/metadata control; real oracle readiness has separate tests.
+        backend._oracle_session = SimpleNamespace(require_ready=lambda: None)
         target.before_input()
         self.assertTrue(any(args[0] == "version" for args in events))
         self.assertFalse(any(args[0:2] == ["container", "exec"] for args in events))

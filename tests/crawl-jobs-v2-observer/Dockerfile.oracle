@@ -1,0 +1,14 @@
+FROM docker.io/library/python@sha256:2325bb286ec344af3e5898cc224b5844e2707ac6e26b1632516fd3edc84a5e26 AS oracle
+WORKDIR /
+COPY contracts.py runtime_admission.py linux_observation.py oracle.py oracle_protocol.py oracle_worker.py worker.py build_oracle.py /oracle/
+USER 999:999
+ENTRYPOINT ["python3"]
+CMD ["-I", "-B", "/oracle/worker.py"]
+
+# Artifact generation executes only the manifest builder, never the worker.
+FROM oracle AS oracle-build
+USER 0:0
+RUN ["python3", "-I", "-B", "/oracle/build_oracle.py", "/artifacts"]
+
+FROM scratch AS artifacts
+COPY --from=oracle-build /artifacts/ /

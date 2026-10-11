@@ -1,0 +1,787 @@
+{
+  "actionable_correctness_blockers_remaining": 0,
+  "activity": {
+    "benign_python_socket_process_fixtures": true,
+    "credentials_accessed": false,
+    "docker_operations": false,
+    "git_mutations": false,
+    "kernel_changes": false,
+    "namespace_joins": false,
+    "native_actor_execution": false,
+    "oracle_sandbox_execution": false,
+    "other_reviewer_private_results_accessed": false,
+    "project_edits": false,
+    "ptrace": false,
+    "redis_cases": false,
+    "tracing": false,
+    "vault_edits": false,
+    "writes_outside_private_directory": false
+  },
+  "bindings": {
+    "base_commit": "2ff03afa8950500de36762bdc5d41de8f2736030",
+    "build_verification_sha256": "8b7817ff8d2fef399dd0d7d0725e9828374b3aaed44daa1f13b16906cef4b96d",
+    "implementation_handoff_sha256": "90de1512b46173b38c1a152c3b12cb4c533b5ce7adeebe5cb8e89781665e2e95",
+    "intake_path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/review-intake-v2.json",
+    "intake_sha256": "0bc3175b5d13ecb5239095abaae51fecd5bbbed3df219116636611c97a39d02f",
+    "oracle_artifact_path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/oracle-rebuild/artifacts/oracle-artifacts.json",
+    "oracle_artifact_sha256": "961ddf9d26b4633b0915b80c64ef2a5673a23934fbe01bee54d5cb87a2ef588d",
+    "oracle_worker_source": "30f1a092422391317453ea624ca7532c46d4d13607c4261b8d80fc50eef6583b",
+    "original_review_path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/correctness/review.json",
+    "original_review_sha256": "80e03a35f09f9ba53c76746b581557f8aea5e02092587c5c8374b9ffbae0215d",
+    "package_files": 40,
+    "runtime_context_source": "f57f0c4d1ce76f227647596443976adc2a4b4abad7d293797817d29dd597fdbb",
+    "snapshot": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/source-v2",
+    "snapshot_files": 1679,
+    "snapshot_map_hash_encoding": "SHA256 of UTF-8 json.dumps(path_to_file_sha256, sort_keys=True, separators=(',', ':'))",
+    "snapshot_map_sha256": "458de66b6866302b912652dbb02ee1c5d155419428898e0a4f3d8b4e1a75ff14",
+    "source_inventory_path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/source-inventory-v2.json",
+    "source_inventory_sha256": "99d9dd6f2c475cd83960c66028016d7d508acadd3563f2e440c3bf6ff012c4c3",
+    "verification_sha256": "83ac4a4e1822c38ba08210ebf307e2f929e4712dd61a4ebc9acd1b201ef47f94"
+  },
+  "client_history_review": {
+    "evidence": [
+      {
+        "detail": "Bounded finite phase order; monotonic counts, immutable completion, sticky terminal facts, HELD-only cut, retained classification and derived late flag. State commits only after validation; scalar summary copied.",
+        "file": "tests/crawl-jobs-v2-observer/oracle_protocol.py",
+        "lines": [
+          97,
+          145
+        ]
+      },
+      {
+        "detail": "History is validated after per-frame schema/chain/witness checks and before session sequence/phase advancement. Exceptions poison and close the session.",
+        "file": "tests/crawl-jobs-v2-observer/oracle_bridge.py",
+        "lines": [
+          35,
+          64
+        ]
+      },
+      {
+        "detail": "Successful observer digest/ordinal and live peer joins precede setting matched_observer.",
+        "file": "tests/crawl-jobs-v2-observer/oracle_bridge.py",
+        "lines": [
+          82,
+          101
+        ]
+      },
+      {
+        "detail": "Closed receipt is deep-copied; independent stopped-generation inspections retained; no-reply credit requires matched HELD, history cut, partial clean EOF and no complete reply.",
+        "file": "tests/crawl-jobs-v2-observer/oracle_bridge.py",
+        "lines": [
+          127,
+          170
+        ]
+      }
+    ],
+    "independent_results": {
+      "history_mutations_rejected_without_state_change": 16,
+      "individually_valid_chained_contradictions_poisoned": 11,
+      "legitimate_and_missing_match_controls": 15,
+      "maximum_frame_bytes": 828,
+      "remote_stop_negative_controls": 6,
+      "worker_history_exchanges": 792
+    },
+    "interpretation": "No additional actionable correctness defect found. Honest partial/late/equal-time completion/reset/unresolved/nonstream and uncut responses remain distinguishable; complete replies, missing matches, reset and unresolved retirement receive no closed-no-reply credit. Synthetic stopped metadata is not represented as real remote-stop evidence."
+  },
+  "closed_findings": [
+    {
+      "evidence": [
+        {
+          "detail": "Peer and oracle polling precede final own/peer/lease checks; pre-dispatch rejection clears all three cached admissions.",
+          "file": "tests/crawl-jobs-v2-observer/docker_backend.py",
+          "lines": [
+            273,
+            295
+          ]
+        },
+        {
+          "detail": "Oracle operation/admission expiry is rechecked after its readiness poll.",
+          "file": "tests/crawl-jobs-v2-observer/oracle_bridge.py",
+          "lines": [
+            74,
+            80
+          ]
+        },
+        {
+          "detail": "Resume authorization also checks its operation deadline after polling.",
+          "file": "tests/crawl-jobs-v2-observer/oracle_bridge.py",
+          "lines": [
+            111,
+            117
+          ]
+        }
+      ],
+      "id": "COR-CTX-001",
+      "independent_reproduction": {
+        "corrected_results": [
+          {
+            "failure": "NATIVE_ADMISSION_EXPIRED",
+            "fixture_kind": "pure simulated Docker metadata/streams; real ContextSource, OracleSession.require_ready and ProcessStream._send; no processes",
+            "lease_expires_at": 7000002.0,
+            "now": 7000001.5,
+            "observer_expires_at": null,
+            "oracle_polls": [
+              7000000.0,
+              7000000.0
+            ],
+            "phase": "READY",
+            "stale_admissions_retained": [],
+            "target_deadline": 7000008.0,
+            "which": "observer",
+            "writes": []
+          },
+          {
+            "failure": "CONTEXT_LEASE_EXPIRED",
+            "fixture_kind": "pure simulated Docker metadata/streams; real ContextSource, OracleSession.require_ready and ProcessStream._send; no processes",
+            "lease_expires_at": 7000002.0,
+            "now": 7000002.5,
+            "observer_expires_at": null,
+            "oracle_polls": [
+              7000000.0,
+              7000000.0
+            ],
+            "phase": "READY",
+            "stale_admissions_retained": [],
+            "target_deadline": 7000008.0,
+            "which": "context_lease",
+            "writes": []
+          }
+        ],
+        "healthy_control": {
+          "metadata_reads_during_dispatch": 0,
+          "now": 7000000.25,
+          "oracle_polls": [
+            7000000.0,
+            7000000.0
+          ],
+          "phase": "START_DISPATCHED",
+          "simulated_kernel_docker_and_streams": true,
+          "writes_hex": [
+            "47"
+          ]
+        },
+        "method": "Exact AST of the first review's retained GuardStream and expiry_during_final_oracle_poll functions executed in separate Python interpreters against each frozen revision. Kernel/Docker/streams are simulated; production context acquisition, lease, oracle readiness and send logic are used. Both executions bind every imported reviewed module by path and hash.",
+        "original_results": [
+          {
+            "failure": null,
+            "fixture_kind": "pure simulated Docker metadata/streams; real ContextSource, OracleSession.require_ready and ProcessStream._send; no processes",
+            "lease_expires_at": 7000002.0,
+            "now": 7000001.5,
+            "observer_expires_at": 7000001.0,
+            "oracle_polls": [
+              7000000.0,
+              7000000.0
+            ],
+            "phase": "START_DISPATCHED",
+            "stale_admissions_retained": [
+              "observer",
+              "oracle",
+              "target"
+            ],
+            "target_deadline": 7000008.0,
+            "which": "observer",
+            "writes": [
+              {
+                "at": 7000001.5,
+                "bytes_hex": "47"
+              }
+            ]
+          },
+          {
+            "failure": null,
+            "fixture_kind": "pure simulated Docker metadata/streams; real ContextSource, OracleSession.require_ready and ProcessStream._send; no processes",
+            "lease_expires_at": 7000002.0,
+            "now": 7000002.5,
+            "observer_expires_at": 7000008.0,
+            "oracle_polls": [
+              7000000.0,
+              7000000.0
+            ],
+            "phase": "START_DISPATCHED",
+            "stale_admissions_retained": [
+              "observer",
+              "oracle",
+              "target"
+            ],
+            "target_deadline": 7000008.0,
+            "which": "context_lease",
+            "writes": [
+              {
+                "at": 7000002.5,
+                "bytes_hex": "47"
+              }
+            ]
+          }
+        ],
+        "summary": "Original revision writes G after observer/lease expiry. Corrected revision writes nothing, stays READY, clears all admissions and rejects with NATIVE_ADMISSION_EXPIRED / CONTEXT_LEASE_EXPIRED. Healthy control still writes exactly G with zero dispatch metadata reads."
+      },
+      "original_severity": "high",
+      "status": "CLOSED_VERIFIED_ON_SOURCE_V2"
+    },
+    {
+      "evidence": [
+        {
+          "detail": "Worker timestamp-only acknowledgment requires complete_ns strictly less than lower.",
+          "file": "tests/crawl-jobs-v2-observer/oracle_protocol.py",
+          "lines": [
+            173,
+            186
+          ]
+        },
+        {
+          "detail": "Controller independently enforces strict-before classification and derives late status from retained bounds.",
+          "file": "tests/crawl-jobs-v2-observer/oracle_protocol.py",
+          "lines": [
+            123,
+            144
+          ]
+        }
+      ],
+      "id": "COR-CTX-002",
+      "independent_reproduction": {
+        "additional_cases": 12,
+        "boundary_cases": 6,
+        "corrected_tie": {
+          "completion_ns": 100,
+          "lower_ns": 100,
+          "summary": {
+            "bytes": 1024,
+            "classification_at_cut": "unknown",
+            "closed": false,
+            "complete_after_cut": false,
+            "complete_ns": 100,
+            "cut_proved": true,
+            "eof": false,
+            "transport_error": false
+          },
+          "upper_ns": 200
+        },
+        "method": "Unchanged original real-socket fixture plus additional tied/zero-width/long-uptime clock controls.",
+        "original_tie": {
+          "completion_ns": 100,
+          "lower_ns": 100,
+          "summary": {
+            "bytes": 1024,
+            "classification_at_cut": "acknowledged",
+            "closed": false,
+            "complete_after_cut": false,
+            "complete_ns": 100,
+            "cut_proved": true,
+            "eof": false,
+            "transport_error": false
+          },
+          "upper_ns": 200
+        },
+        "summary": "Receipt stamp 100 with cut [100,200] changes from acknowledged to unknown; earlier receipt 99 stays acknowledged. Equal/zero-width ties also remain unknown above 2^53 and near UINT64_MAX."
+      },
+      "original_severity": "medium",
+      "status": "CLOSED_VERIFIED_ON_SOURCE_V2"
+    }
+  ],
+  "execution_authorized": false,
+  "historical_findings": [
+    {
+      "evidence": [
+        {
+          "detail": "Peer expiry at 280-281 and lease check at 283 precede oracle.require_ready at 286; the trailing check at 291 rechecks only the target stream deadline.",
+          "file": "tests/crawl-jobs-v2-observer/docker_backend.py",
+          "lines": [
+            264,
+            295
+          ]
+        },
+        {
+          "detail": "require_ready performs an additional oracle stream poll before checking only the oracle admission expiry.",
+          "file": "tests/crawl-jobs-v2-observer/oracle_bridge.py",
+          "lines": [
+            72,
+            77
+          ]
+        },
+        {
+          "detail": "After before_write returns, _send checks only its own deadline and writes G.",
+          "file": "tests/crawl-jobs-v2-observer/streams.py",
+          "lines": [
+            127,
+            148
+          ]
+        },
+        {
+          "detail": "Documented contract requires peer expiry revalidation after polling and at the write boundary.",
+          "file": "tests/crawl-jobs-v2-observer/README.md",
+          "lines": [
+            127,
+            137
+          ]
+        }
+      ],
+      "id": "COR-CTX-001",
+      "impact": "At local time 7000001.5 a G write is accepted with observer admission expired at 7000001.0; at 7000002.5 it is accepted with context lease expired at 7000002.0. All three admissions remain cached. The native Linux expiry check still provides a separate last defense for the lease case; this finding does not claim that native expiry was bypassed or that an experiment passed.",
+      "minimal_correction": "After every readiness poll (including oracle.require_ready), perform a final non-polling check of own, peer and oracle admission expiries plus ContextLease.check immediately before the write. Keep native expiry enforcement. On rejection, invalidate the affected cached admissions. Add both shorter-peer and shorter-lease regressions at the final oracle poll.",
+      "priority": "blocker",
+      "reproduction": {
+        "command": "PYTHONDONTWRITEBYTECODE=1 python3 -B -W error::ResourceWarning independent_probes_v2.py (in a fresh private output copy; do not overwrite retained outputs)",
+        "expected": "Reject before writing G; invalidate stale admissions, rather than transition to START_DISPATCHED.",
+        "function": "expiry_during_final_oracle_poll",
+        "method": "Use real ContextSource/ContextLease acquisition with synthetic kernel reader and Docker metadata, production OracleSession.require_ready and ProcessStream._send, and an intercepted os.write. Advance the shared fake monotonic clock only during the second oracle poll (the final before_write guard). No subprocess or native execution.",
+        "results": [
+          {
+            "failure": null,
+            "fixture_kind": "pure simulated Docker metadata/streams; real ContextSource, OracleSession.require_ready and ProcessStream._send; no processes",
+            "lease_expires_at": 7000002.0,
+            "now": 7000001.5,
+            "observer_expires_at": 7000001.0,
+            "oracle_polls": [
+              7000000.0,
+              7000000.0
+            ],
+            "phase": "START_DISPATCHED",
+            "stale_admissions_retained": [
+              "observer",
+              "oracle",
+              "target"
+            ],
+            "target_deadline": 7000008.0,
+            "which": "observer",
+            "writes": [
+              {
+                "at": 7000001.5,
+                "bytes_hex": "47"
+              }
+            ]
+          },
+          {
+            "failure": null,
+            "fixture_kind": "pure simulated Docker metadata/streams; real ContextSource, OracleSession.require_ready and ProcessStream._send; no processes",
+            "lease_expires_at": 7000002.0,
+            "now": 7000002.5,
+            "observer_expires_at": 7000008.0,
+            "oracle_polls": [
+              7000000.0,
+              7000000.0
+            ],
+            "phase": "START_DISPATCHED",
+            "stale_admissions_retained": [
+              "observer",
+              "oracle",
+              "target"
+            ],
+            "target_deadline": 7000008.0,
+            "which": "context_lease",
+            "writes": [
+              {
+                "at": 7000002.5,
+                "bytes_hex": "47"
+              }
+            ]
+          }
+        ],
+        "script": "independent_probes_v2.py"
+      },
+      "severity": "high",
+      "status": "proven_source_counterexample",
+      "title": "Final oracle readiness poll can bypass peer/context expiry before target G"
+    },
+    {
+      "evidence": [
+        {
+          "detail": "complete_ns <= lower upgrades an equal timestamp to acknowledged.",
+          "file": "tests/crawl-jobs-v2-observer/oracle_protocol.py",
+          "lines": [
+            122,
+            135
+          ]
+        },
+        {
+          "detail": "The cut interval is built from a target pre-marker timestamp and a later causal oracle sample; equality is not a separate client-before-marker handshake.",
+          "file": "tests/crawl-jobs-v2-observer/oracle_worker.py",
+          "lines": [
+            117,
+            125
+          ]
+        },
+        {
+          "detail": "The admitted monotonic resolution may be up to 1000000 ns; equal sampled clock values do not order the events.",
+          "file": "tests/crawl-jobs-v2-observer/runtime_admission.py",
+          "lines": [
+            79,
+            93
+          ]
+        },
+        {
+          "detail": "The stated rule is receipt before the lower bound, with receipts inside the causal interval remaining unordered.",
+          "file": "docs/crawl-jobs-v2-m4-c0-context-oracle-2026-10-09.md",
+          "lines": [
+            66,
+            69
+          ]
+        }
+      ],
+      "id": "COR-CTX-002",
+      "impact": "A non-decreasing/quantized monotonic clock can give the pre-marker sample and a later complete receipt the same value. The implementation promotes that ambiguous boundary to positive ACK evidence. This is a synthetic classification bug, not a claim of Redis/D02 or M4 acceptance.",
+      "minimal_correction": "Require complete_ns < lower (not <=) for timestamp-only ACK credit; retain unknown on equality. Add lower-bound and zero-width-interval tie regressions, and preserve the separately gated calibrated uncertainty requirements.",
+      "priority": "blocker",
+      "reproduction": {
+        "expected": "classification_at_cut=unknown when completion_ns equals lower_ns without additional causal proof.",
+        "function": "real_socket_boundaries",
+        "method": "Send 1024 C bytes over a benign socketpair, consume them through production FrameClient with completion clock value 100, then call ClientTranscript.cut(100, 200).",
+        "result": {
+          "completion_ns": 100,
+          "lower_ns": 100,
+          "summary": {
+            "bytes": 1024,
+            "classification_at_cut": "acknowledged",
+            "closed": false,
+            "complete_after_cut": false,
+            "complete_ns": 100,
+            "cut_proved": true,
+            "eof": false,
+            "transport_error": false
+          },
+          "upper_ns": 200
+        },
+        "retained_execution": "independent_probes_v2.py",
+        "script": "independent_probes.py"
+      },
+      "severity": "medium",
+      "status": "proven_source_counterexample",
+      "title": "A receipt tied with the lower cut timestamp is incorrectly credited as acknowledged"
+    }
+  ],
+  "historical_verdict": "NEEDS_REMEDIATION",
+  "limitations": [
+    "Independently reproduced source behavior with deterministic clocks and benign sockets/pipes; kernel, Docker and witness observations in probes are explicitly synthetic.",
+    "The unchanged native artifact/input hashes preserve the original static ELF/manifest/compiled-BPF verification; native binaries were neither rebuilt nor executed during this re-review.",
+    "The new oracle record's file/source-bundle joins were recomputed and verified; the oracle interpreter binary was not available for separate ELF inspection and its runtime sandbox was not launched.",
+    "The supplied local verification/build records and handoff were hash-verified; the 31-script-suite, digest-vector run and artifact-build commands were not rerun by this reviewer.",
+    "The source remediation report was read as requested; no other reviewer's private results or directory were accessed. Parent red/green logs were not needed."
+  ],
+  "m4_accepted": false,
+  "new_findings": [],
+  "preservation": {
+    "after": {
+      "added_package_paths": [
+        "tests/crawl-jobs-v2-observer/test_context_oracle_review.py"
+      ],
+      "bindings": {
+        "build-verification.json": "8b7817ff8d2fef399dd0d7d0725e9828374b3aaed44daa1f13b16906cef4b96d",
+        "implementation-handoff.json": "90de1512b46173b38c1a152c3b12cb4c533b5ce7adeebe5cb8e89781665e2e95",
+        "review-intake-v2.json": "0bc3175b5d13ecb5239095abaae51fecd5bbbed3df219116636611c97a39d02f",
+        "source-inventory-v2.json": "99d9dd6f2c475cd83960c66028016d7d508acadd3563f2e440c3bf6ff012c4c3",
+        "verification.json": "83ac4a4e1822c38ba08210ebf307e2f929e4712dd61a4ebc9acd1b201ef47f94"
+      },
+      "changed_package_paths": [
+        "tests/crawl-jobs-v2-observer/README.md",
+        "tests/crawl-jobs-v2-observer/docker_backend.py",
+        "tests/crawl-jobs-v2-observer/oracle_bridge.py",
+        "tests/crawl-jobs-v2-observer/oracle_protocol.py"
+      ],
+      "docker_operations": false,
+      "historical_review_sha256": "80e03a35f09f9ba53c76746b581557f8aea5e02092587c5c8374b9ffbae0215d",
+      "native_artifacts_unchanged": {
+        "cases.h": "64591020572e8af5afae67856ba79e053afacaf41d08ba10a98f489558e383f4",
+        "observer": "e407a02c67ac7a0cd192e612afe5ad643701c16821f6854e3a11b040e55cfb61",
+        "observer-seccomp.json": "abf581851c19631ba5125ac03443f4ad72c6e8fd7b92fa086218060e07b56bf2",
+        "oracle-seccomp.json": "f82e0ae5335e1393c402265c4a14a4e56ad8df27ab48eee70907745fef3b6835",
+        "target": "819cde0b38e12b235acbef2b3741551af86683ff2c3ec5186b5a45b710e5da45",
+        "target-filter.bpf": "701824ff5f8ccafa359f711d2714b23c8a303789cd1987a3a85aba19a3667b93",
+        "target-manifest.json": "a19b4096f0f268742ebc98bf879e12fbb0de1124a1c8144959496f6b8a615e43",
+        "target-seccomp.json": "6a1ffdf7326ae1370bd55cc2edb2bcfb49b2d65ce7090205576d3b6e9496ab3e",
+        "target_filter.h": "8a1c8f5941860b7acd92f3dc53952aa746fa9d1c57098b214a691fa8a6380b1d",
+        "target_manifest.h": "ccee87e21a21d7d0f8e07cac9fe1dc3e9f20333d51b32e9231d1e2362686d7a5",
+        "toolchain.json": "db73fe1e4f89b176c696c4315b6c3828df9c1091e9a26b2bbeb76bddd2d1dd25"
+      },
+      "native_execution": false,
+      "native_inputs_unchanged": {
+        ".dockerignore": "25170fdb33082a47a01bdc344bfabe8ef4460eed2da175e6dd1159557fcaa13d",
+        "Dockerfile": "20849b651a90ad097cc102da321f0fe8958e518d93c7c9ead448d26ec9e8eaa2",
+        "build_tools.py": "bbc4329ac905a7d7a865b59e754357bc8d4c195d15547f047983ff3dfd7ebbda",
+        "contracts.py": "64125c2007b5dfd7c08ddb18e894e12fe72f1ff11002646393eae21d07af3df6",
+        "native/admission.h": "2560a2afcc106013f70081c72a0faee754c163141d73eec4ecc251cbcbccf806",
+        "native/common.h": "157a7ec3b5c8ec6c0dc031cacb22047216303f4467be5eee7284926d572c53cd",
+        "native/observer.c": "16899c419a9ab4696d22e0b515c56be511eaa77ff80941de3fa899eac1dd1e9c",
+        "native/target.c": "feb94778757ae05268417c1cd76a383f5339bfa701feababda972a5e077451fd",
+        "profiles.py": "7a75291b1dbd32f13e1eda00265a17693fc425333bfcc466ca958c7388bc485a"
+      },
+      "old_review_files_preserved": 26,
+      "old_snapshot_preserved": true,
+      "oracle_artifact_sha256": "961ddf9d26b4633b0915b80c64ef2a5673a23934fbe01bee54d5cb87a2ef588d",
+      "oracle_worker_source": "30f1a092422391317453ea624ca7532c46d4d13607c4261b8d80fc50eef6583b",
+      "package_files": 40,
+      "package_matches_inventory": true,
+      "runtime_context_source": "f57f0c4d1ce76f227647596443976adc2a4b4abad7d293797817d29dd597fdbb",
+      "snapshot": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/source-v2",
+      "snapshot_files": 1679,
+      "snapshot_map_sha256": "458de66b6866302b912652dbb02ee1c5d155419428898e0a4f3d8b4e1a75ff14",
+      "source_matches_intake": true,
+      "stage": "after"
+    },
+    "all_1679_snapshot_files_preserved": true,
+    "all_26_first_review_files_preserved": true,
+    "before": {
+      "added_package_paths": [
+        "tests/crawl-jobs-v2-observer/test_context_oracle_review.py"
+      ],
+      "bindings": {
+        "build-verification.json": "8b7817ff8d2fef399dd0d7d0725e9828374b3aaed44daa1f13b16906cef4b96d",
+        "implementation-handoff.json": "90de1512b46173b38c1a152c3b12cb4c533b5ce7adeebe5cb8e89781665e2e95",
+        "review-intake-v2.json": "0bc3175b5d13ecb5239095abaae51fecd5bbbed3df219116636611c97a39d02f",
+        "source-inventory-v2.json": "99d9dd6f2c475cd83960c66028016d7d508acadd3563f2e440c3bf6ff012c4c3",
+        "verification.json": "83ac4a4e1822c38ba08210ebf307e2f929e4712dd61a4ebc9acd1b201ef47f94"
+      },
+      "changed_package_paths": [
+        "tests/crawl-jobs-v2-observer/README.md",
+        "tests/crawl-jobs-v2-observer/docker_backend.py",
+        "tests/crawl-jobs-v2-observer/oracle_bridge.py",
+        "tests/crawl-jobs-v2-observer/oracle_protocol.py"
+      ],
+      "docker_operations": false,
+      "historical_review_sha256": "80e03a35f09f9ba53c76746b581557f8aea5e02092587c5c8374b9ffbae0215d",
+      "native_artifacts_unchanged": {
+        "cases.h": "64591020572e8af5afae67856ba79e053afacaf41d08ba10a98f489558e383f4",
+        "observer": "e407a02c67ac7a0cd192e612afe5ad643701c16821f6854e3a11b040e55cfb61",
+        "observer-seccomp.json": "abf581851c19631ba5125ac03443f4ad72c6e8fd7b92fa086218060e07b56bf2",
+        "oracle-seccomp.json": "f82e0ae5335e1393c402265c4a14a4e56ad8df27ab48eee70907745fef3b6835",
+        "target": "819cde0b38e12b235acbef2b3741551af86683ff2c3ec5186b5a45b710e5da45",
+        "target-filter.bpf": "701824ff5f8ccafa359f711d2714b23c8a303789cd1987a3a85aba19a3667b93",
+        "target-manifest.json": "a19b4096f0f268742ebc98bf879e12fbb0de1124a1c8144959496f6b8a615e43",
+        "target-seccomp.json": "6a1ffdf7326ae1370bd55cc2edb2bcfb49b2d65ce7090205576d3b6e9496ab3e",
+        "target_filter.h": "8a1c8f5941860b7acd92f3dc53952aa746fa9d1c57098b214a691fa8a6380b1d",
+        "target_manifest.h": "ccee87e21a21d7d0f8e07cac9fe1dc3e9f20333d51b32e9231d1e2362686d7a5",
+        "toolchain.json": "db73fe1e4f89b176c696c4315b6c3828df9c1091e9a26b2bbeb76bddd2d1dd25"
+      },
+      "native_execution": false,
+      "native_inputs_unchanged": {
+        ".dockerignore": "25170fdb33082a47a01bdc344bfabe8ef4460eed2da175e6dd1159557fcaa13d",
+        "Dockerfile": "20849b651a90ad097cc102da321f0fe8958e518d93c7c9ead448d26ec9e8eaa2",
+        "build_tools.py": "bbc4329ac905a7d7a865b59e754357bc8d4c195d15547f047983ff3dfd7ebbda",
+        "contracts.py": "64125c2007b5dfd7c08ddb18e894e12fe72f1ff11002646393eae21d07af3df6",
+        "native/admission.h": "2560a2afcc106013f70081c72a0faee754c163141d73eec4ecc251cbcbccf806",
+        "native/common.h": "157a7ec3b5c8ec6c0dc031cacb22047216303f4467be5eee7284926d572c53cd",
+        "native/observer.c": "16899c419a9ab4696d22e0b515c56be511eaa77ff80941de3fa899eac1dd1e9c",
+        "native/target.c": "feb94778757ae05268417c1cd76a383f5339bfa701feababda972a5e077451fd",
+        "profiles.py": "7a75291b1dbd32f13e1eda00265a17693fc425333bfcc466ca958c7388bc485a"
+      },
+      "old_review_files_preserved": 26,
+      "old_snapshot_preserved": true,
+      "oracle_artifact_sha256": "961ddf9d26b4633b0915b80c64ef2a5673a23934fbe01bee54d5cb87a2ef588d",
+      "oracle_worker_source": "30f1a092422391317453ea624ca7532c46d4d13607c4261b8d80fc50eef6583b",
+      "package_files": 40,
+      "package_matches_inventory": true,
+      "runtime_context_source": "f57f0c4d1ce76f227647596443976adc2a4b4abad7d293797817d29dd597fdbb",
+      "snapshot": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/source-v2",
+      "snapshot_files": 1679,
+      "snapshot_map_sha256": "458de66b6866302b912652dbb02ee1c5d155419428898e0a4f3d8b4e1a75ff14",
+      "source_matches_intake": true,
+      "stage": "before"
+    },
+    "nine_native_inputs_and_eleven_native_artifacts_unchanged": true,
+    "original_failures_preserved": true,
+    "original_snapshot_preserved": true
+  },
+  "private_artifacts": {
+    "rereview-existing-suite-invocation.json": {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/correctness/rereview-existing-suite-invocation.json",
+      "sha256": "2762b9a98e60f9b0c09dedb35d37b531afc3f7013c2a735523df1aa4437fe1fb"
+    },
+    "rereview-existing-suite.json": {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/correctness/rereview-existing-suite.json",
+      "sha256": "fd5767806f77325bd8e99c7f0b805808a717c312f84a0f150898e33fd6afa3b7"
+    },
+    "rereview-existing-suite.stderr.log": {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/correctness/rereview-existing-suite.stderr.log",
+      "sha256": "60690f4eff31afed9119024c757397d30eaa90149e689eb5e455183d2edea343"
+    },
+    "rereview-existing-suite.stdout.log": {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/correctness/rereview-existing-suite.stdout.log",
+      "sha256": "c48b8638c5eb6a52a75f5d634e93f98956440254e07df49ff70c69a2e770f1b4"
+    },
+    "rereview-preservation-after.json": {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/correctness/rereview-preservation-after.json",
+      "sha256": "03a1934323247e7014dae332fcc0a61d7e6277c5c0d20656491380930fa62c79"
+    },
+    "rereview-preservation-before.json": {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/correctness/rereview-preservation-before.json",
+      "sha256": "95a4bbd89b766a8bdfbaa8292e92f74ef7011aeee3d17b9194b4077ea12a3537"
+    },
+    "rereview-probes-corrected-invocation.json": {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/correctness/rereview-probes-corrected-invocation.json",
+      "sha256": "dc39441a585212963b26b508feee20915ad09aa92fe97b43d5f41638b82aa117"
+    },
+    "rereview-probes-corrected.json": {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/correctness/rereview-probes-corrected.json",
+      "sha256": "ba65f72d0048f3d09b82886076e8c2124307b891c81bb5cb38936dae0a9b5436"
+    },
+    "rereview-probes-corrected.stderr.log": {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/correctness/rereview-probes-corrected.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "rereview-probes-corrected.stdout.log": {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/correctness/rereview-probes-corrected.stdout.log",
+      "sha256": "118935c2a8d30ae671a7f50415324eafc7c9aec0fc280c10662fe9ed2855a76e"
+    },
+    "rereview-probes-original-invocation.json": {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/correctness/rereview-probes-original-invocation.json",
+      "sha256": "165a8c68e1fa7052d0c70b372070511c0270597f8d8674143696c7ab7a28aa27"
+    },
+    "rereview-probes-original.json": {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/correctness/rereview-probes-original.json",
+      "sha256": "36f06e5a38d8786fa805f9b94974047087eb5b56bb5179c37c0d1a3ccf821d91"
+    },
+    "rereview-probes-original.stderr.log": {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/correctness/rereview-probes-original.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "rereview-probes-original.stdout.log": {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/correctness/rereview-probes-original.stdout.log",
+      "sha256": "78703f3e2ccc27a455f4d4906951c8113618680b736216fac4b1b8d994d11256"
+    },
+    "rereview-session-probes-invocation.json": {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/correctness/rereview-session-probes-invocation.json",
+      "sha256": "bc9e5ea07f9e287203e5d681fcc92745c43c47b5b4424648bf64f75e1c9ea9d2"
+    },
+    "rereview-session-probes.json": {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/correctness/rereview-session-probes.json",
+      "sha256": "7c5c83aa95cab947e96a9615b994e56e96f5f23db713cbda4ae240de6d9990a5"
+    },
+    "rereview-session-probes.stderr.log": {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/correctness/rereview-session-probes.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "rereview-session-probes.stdout.log": {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/correctness/rereview-session-probes.stdout.log",
+      "sha256": "bf17036669a2f5db95f7c67f303d7fa2ca27ea75f523c46c16acc8acfffc2fc2"
+    },
+    "rereview_finish.py": {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/correctness/rereview_finish.py",
+      "sha256": "7b2ad623c1dfa05fc928ee7e256038bdf90b9efd7f3e84e6b93831e4b30039ce"
+    },
+    "rereview_independent.py": {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/correctness/rereview_independent.py",
+      "sha256": "05b63e2bca60c28cec19eeea882bcb25d89e13c1b358bf7920539dfff5ad69ab"
+    },
+    "rereview_run_probes.py": {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/correctness/rereview_run_probes.py",
+      "sha256": "822a94c0aaccb899e33f2ecd792476beb546591a2b6b36f464b1d78661d69920"
+    },
+    "rereview_run_session.py": {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/correctness/rereview_run_session.py",
+      "sha256": "a1042ac0651731606f20c8c243a9488d3bfe4df89881abf1399762afd901a2a7"
+    },
+    "rereview_session_probes.py": {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/correctness/rereview_session_probes.py",
+      "sha256": "30c7f8d634b9cf157f2becf66ffef03953b04de4a7f1d670dcc473eacdbabf28"
+    },
+    "rereview_verify_and_run.py": {
+      "path": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/correctness/rereview_verify_and_run.py",
+      "sha256": "5ae004a66fd244b6ae043cd323a4a5a559dcc6c1efbb3e67bc686876150d94dc"
+    }
+  },
+  "publication_authorized": false,
+  "remaining_gates": [
+    "Separate scoped publication decision; this source-only GO is not publication authority.",
+    "Independent provisioning/admission of the host anchor, key and bounded authenticated transport in the actual selected Docker Linux domain.",
+    "Exact runtime image/oracle sandbox admission and feasibility, including fixed kernel observations, syscall policy, process identity and resource behavior.",
+    "Separate exact-artifact and execution approval before native actors, tracing or calibration; real clock precision/uncertainty and hold/pause bounds remain unmeasured.",
+    "Complete trial dispatch and per-trial receipts/timing, whole-trial confinement/resource monitoring and independently verified watchdog cleanup/remote absence joins; full M4 acceptance remains open."
+  ],
+  "reviewer": "independent_correctness",
+  "runtime_evidence": false,
+  "runtime_feasibility_proven": false,
+  "scope": "Continued source/preparation implementation only; no runtime, M4, deployment, native execution or publication authority",
+  "tests": [
+    {
+      "errors": 0,
+      "failures": 0,
+      "invocation": {
+        "command": [
+          "python3",
+          "-B",
+          "-W",
+          "error::ResourceWarning",
+          "scripts/test-crawl-jobs-v2-observer.py",
+          "--report",
+          "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/correctness/rereview-existing-suite.json"
+        ],
+        "cwd": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/source-v2",
+        "environment": {
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "TMPDIR": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-review-2026-10-09/correctness"
+        },
+        "returncode": 0
+      },
+      "name": "full_C0_suite",
+      "new_test_ids": [
+        "test_context_oracle_review.ContextOracleReviewTests.test_chained_close_cannot_erase_complete_receipt",
+        "test_context_oracle_review.ContextOracleReviewTests.test_chained_close_cannot_erase_transport_error",
+        "test_context_oracle_review.ContextOracleReviewTests.test_chained_close_cannot_invent_held_cut",
+        "test_context_oracle_review.ContextOracleReviewTests.test_equal_clock_receipt_and_zero_width_cut_remain_unordered",
+        "test_context_oracle_review.ContextOracleReviewTests.test_final_oracle_poll_rechecks_context_lease",
+        "test_context_oracle_review.ContextOracleReviewTests.test_final_oracle_poll_rechecks_observer_expiry",
+        "test_context_oracle_review.ContextOracleReviewTests.test_final_oracle_poll_rechecks_oracle_expiry",
+        "test_context_oracle_review.ContextOracleReviewTests.test_final_oracle_poll_rechecks_target_expiry",
+        "test_context_oracle_review.ContextOracleReviewTests.test_history_rejects_changed_completion_cut_or_terminal_bytes",
+        "test_context_oracle_review.ContextOracleReviewTests.test_honest_partial_late_reset_and_unresolved_closure_remain_distinct",
+        "test_context_oracle_review.ContextOracleReviewTests.test_live_final_oracle_poll_still_allows_start",
+        "test_context_oracle_review.ContextOracleReviewTests.test_resume_poll_rechecks_oracle_operation_deadline"
+      ],
+      "original_test_ids_retained": 149,
+      "passed": 161,
+      "report": "rereview-existing-suite.json",
+      "resource_warnings": 0,
+      "runs": 1,
+      "skipped": 0,
+      "status": "PASS",
+      "stderr": "rereview-existing-suite.stderr.log",
+      "stdout": "rereview-existing-suite.stdout.log",
+      "tests_run": 161
+    },
+    {
+      "name": "precise_original_counterexample_controls",
+      "report": "rereview-probes-original.json",
+      "source_mutated": false,
+      "status": "PASS_EXPECTED_ORIGINAL_DEFECTS_REPRODUCED"
+    },
+    {
+      "name": "independent_corrected_counterexamples_and_history",
+      "report": "rereview-probes-corrected.json",
+      "retained_definition_bindings": {
+        "independent_probes.py": {
+          "definitions": [
+            "initial",
+            "state_for",
+            "MemoryClient",
+            "rpc",
+            "real_socket_boundaries",
+            "partial_terminal"
+          ],
+          "file_sha256": "f646e0b3b6a0d4609687e68253985ae4b70916bc1cbd67381a3f5496e4a6e89c",
+          "selected_ast_sha256": "45649e64c247829035719d71d364ce832f16839da9cd33de3e8d4607d571cf5c"
+        },
+        "independent_probes_v2.py": {
+          "definitions": [
+            "GuardStream",
+            "expiry_during_final_oracle_poll"
+          ],
+          "file_sha256": "ab697386a541938e933c36da6eb420207525c73e0867e31b03516015e40d57e4",
+          "selected_ast_sha256": "b7a70d406879d53343b703da39d6071107a8d9711af014bd39f5d6fec6b623a0"
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "fixture_kind": "In-memory valid chained responses and synthetic admitted kernel/container/stopped-generation data; no process or Docker execution",
+      "name": "independent_session_join_and_closure",
+      "report": "rereview-session-probes.json",
+      "status": "PASS"
+    },
+    {
+      "after": "rereview-preservation-after.json",
+      "before": "rereview-preservation-before.json",
+      "name": "source_artifact_and_historical_preservation",
+      "status": "PASS"
+    }
+  ],
+  "verdict": "GO_FOR_CONTINUED_IMPLEMENTATION",
+  "version": 2
+}

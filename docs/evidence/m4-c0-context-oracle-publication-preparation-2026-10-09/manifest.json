@@ -1,0 +1,27 @@
+{
+  "base": "2ff03afa8950500de36762bdc5d41de8f2736030",
+  "candidate_hosted_ci_performed": false,
+  "files": {
+    "c0-tests.json": {
+      "bytes": 53563,
+      "private_source": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-publication-preparation-2026-10-09/c0-tests.json",
+      "sha256": "fd5767806f77325bd8e99c7f0b805808a717c312f84a0f150898e33fd6afa3b7"
+    },
+    "ci-readiness.json": {
+      "bytes": 3521,
+      "private_source": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-publication-preparation-2026-10-09/ci-readiness.json",
+      "sha256": "61eb7ddbc297d3cb9b36dbf08e77a930710b97e18b7ef3b216b39409711efe85"
+    },
+    "verification.json": {
+      "bytes": 1832,
+      "private_source": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-oracle-publication-preparation-2026-10-09/verification.json",
+      "sha256": "b9f6b6f59341f655f2f602df1c6d2657e1d82a24ff38b06e49ee3b25757b6e00"
+    }
+  },
+  "kind": "c0_context_oracle_publication_preparation",
+  "native_execution": false,
+  "publication_authorized": false,
+  "review_verdicts_sha256": "cf04c87324bf8a02e37eb2e3099443c49ee0c25cf545d85686f60c1ef33e2ad1",
+  "source_inventory_sha256": "99d9dd6f2c475cd83960c66028016d7d508acadd3563f2e440c3bf6ff012c4c3",
+  "version": 1
+}

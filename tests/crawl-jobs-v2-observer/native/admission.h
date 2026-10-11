@@ -25,6 +25,19 @@ static void admission_nonce(void) {
     }
     admission_invocation[64] = 0;
     if (!nonzero || control_byte(admission_until) != '\n') invalid("admission");
+    /* The controller supplies the independently collected Linux window end.
+       A macOS timeout cannot extend this kernel-clock admission boundary. */
+    uint64_t expiry = 0;
+    unsigned digits = 0;
+    for (;;) {
+        char byte = control_byte(admission_until);
+        if (byte == '\n') break;
+        if (byte < '0' || byte > '9' || ++digits > 20 ||
+            expiry > (UINT64_MAX - (unsigned)(byte - '0')) / 10) invalid("admission");
+        expiry = expiry * 10 + (unsigned)(byte - '0');
+    }
+    if (!digits || expiry <= mono_ns() || expiry > admission_until) invalid("admission");
+    admission_until = expiry;
 }
 
 static size_t admission_read(const char *path, char *raw, size_t capacity) {

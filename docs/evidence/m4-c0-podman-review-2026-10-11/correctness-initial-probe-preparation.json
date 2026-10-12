@@ -1,0 +1,35 @@
+{
+  "cases": [
+    {
+      "accepted": true,
+      "changed_artifact": "runtime_context_deployment",
+      "factory_refuses_same_changed_preparation": true,
+      "lease_bound_to_changed_preparation": true,
+      "prepared_artifact": "f58f8c33c25ddac35ebfcdd0bc68825abeb6bc4c7a2684da4c9ae1a852b3db6e",
+      "source_original_deployment": "29996ac81cbce94c8b4d8de22bc0cdf5c6ef830ffac8c8d9133dae7f85035753",
+      "source_original_transport": "1f83f90e21d13092ff8ac146d2415681afceb15de7ac5780b308413b0024abdd"
+    },
+    {
+      "accepted": true,
+      "changed_artifact": "runtime_context_transport",
+      "factory_refuses_same_changed_preparation": true,
+      "lease_bound_to_changed_preparation": true,
+      "prepared_artifact": "f58f8c33c25ddac35ebfcdd0bc68825abeb6bc4c7a2684da4c9ae1a852b3db6e",
+      "source_original_deployment": "29996ac81cbce94c8b4d8de22bc0cdf5c6ef830ffac8c8d9133dae7f85035753",
+      "source_original_transport": "1f83f90e21d13092ff8ac146d2415681afceb15de7ac5780b308413b0024abdd"
+    },
+    {
+      "accepted": false,
+      "changed_artifact": "runtime_context_source",
+      "error": "CONTEXT_SOURCE_BINDING",
+      "factory_refuses_same_changed_preparation": true
+    }
+  ],
+  "live_ssh_or_real_collector_executed": false,
+  "private_identity_preflight": {
+    "fixture_is_deliberately_not_a_key": true,
+    "verify_bundle_status": "PASS_PRIVATE_BUNDLE"
+  },
+  "recommended_one_shot_backend_path_has_no_reuse": true,
+  "status": "REPRODUCED_SOURCE_REUSE_BINDING_GAP"
+}

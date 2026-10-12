@@ -1,0 +1,132 @@
+test_first_nonblocking_failure_kills_exited_leaders_descendant (test_context_provisioning.SSHTransportTests.test_first_nonblocking_failure_kills_exited_leaders_descendant) ... FAIL
+test_first_registration_failure_kills_exited_leaders_descendant (test_context_provisioning.SSHTransportTests.test_first_registration_failure_kills_exited_leaders_descendant) ... FAIL
+test_reused_source_rechecks_provisioning_before_authorization_or_io (test_context_provisioning.SSHTransportTests.test_reused_source_rechecks_provisioning_before_authorization_or_io) ... 
+  test_reused_source_rechecks_provisioning_before_authorization_or_io (test_context_provisioning.SSHTransportTests.test_reused_source_rechecks_provisioning_before_authorization_or_io) (field='runtime_context_deployment', in_place=False) ... FAIL
+  test_reused_source_rechecks_provisioning_before_authorization_or_io (test_context_provisioning.SSHTransportTests.test_reused_source_rechecks_provisioning_before_authorization_or_io) (field='runtime_context_transport', in_place=False) ... FAIL
+  test_reused_source_rechecks_provisioning_before_authorization_or_io (test_context_provisioning.SSHTransportTests.test_reused_source_rechecks_provisioning_before_authorization_or_io) (field='runtime_context_deployment', in_place=True) ... FAIL
+  test_reused_source_rechecks_provisioning_before_authorization_or_io (test_context_provisioning.SSHTransportTests.test_reused_source_rechecks_provisioning_before_authorization_or_io) (field='runtime_context_transport', in_place=True) ... FAIL
+test_reused_source_accepts_matching_bindings_with_fresh_challenges (test_context_provisioning.SSHTransportTests.test_reused_source_accepts_matching_bindings_with_fresh_challenges) ... ok
+test_public_provisioning_receipt_cannot_rebind_a_reused_source (test_context_provisioning.SSHTransportTests.test_public_provisioning_receipt_cannot_rebind_a_reused_source) ... FAIL
+test_ssh_entrypoint_checks_exact_code_inventory_and_interpreter (test_context_provisioning.ProvisioningTests.test_ssh_entrypoint_checks_exact_code_inventory_and_interpreter) ... ERROR
+
+======================================================================
+ERROR: test_ssh_entrypoint_checks_exact_code_inventory_and_interpreter (test_context_provisioning.ProvisioningTests.test_ssh_entrypoint_checks_exact_code_inventory_and_interpreter)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/tests/crawl-jobs-v2-observer/test_context_provisioning.py", line 252, in test_ssh_entrypoint_checks_exact_code_inventory_and_interpreter
+    context_ssh.admit_session()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/tests/crawl-jobs-v2-observer/context_ssh.py", line 23, in admit_session
+    fd = files.directory(files.CODE, 0, 0o755)
+  File "/usr/lib64/python3.14/unittest/mock.py", line 1176, in __call__
+    return self._mock_call(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/usr/lib64/python3.14/unittest/mock.py", line 1180, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/usr/lib64/python3.14/unittest/mock.py", line 1247, in _execute_mock_call
+    result = effect(*args, **kwargs)
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/tests/crawl-jobs-v2-observer/test_context_provisioning.py", line 240, in directory
+    return real_directory(path, actual_uid, mode)
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/tests/crawl-jobs-v2-observer/context_files.py", line 24, in directory
+    require(stat.S_ISDIR(info.st_mode) and info.st_uid == uid and stat.S_IMODE(info.st_mode) == mode, "CONTEXT_DIRECTORY")
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/tests/crawl-jobs-v2-observer/contracts.py", line 26, in require
+    raise Invalid(code)
+contracts.Invalid: CONTEXT_DIRECTORY
+
+======================================================================
+FAIL: test_first_nonblocking_failure_kills_exited_leaders_descendant (test_context_provisioning.SSHTransportTests.test_first_nonblocking_failure_kills_exited_leaders_descendant)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/tests/crawl-jobs-v2-observer/test_context_provisioning.py", line 595, in test_first_nonblocking_failure_kills_exited_leaders_descendant
+    self.exited_leader_setup_failure("nonblocking")
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/tests/crawl-jobs-v2-observer/test_context_provisioning.py", line 576, in exited_leader_setup_failure
+    self.assertEqual(events[:2], ["kill", "wait"])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: ['wait'] != ['kill', 'wait']
+
+First differing element 0:
+'wait'
+'kill'
+
+Second list contains 1 additional elements.
+First extra element 1:
+'wait'
+
+- ['wait']
++ ['kill', 'wait']
+
+======================================================================
+FAIL: test_first_registration_failure_kills_exited_leaders_descendant (test_context_provisioning.SSHTransportTests.test_first_registration_failure_kills_exited_leaders_descendant)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/tests/crawl-jobs-v2-observer/test_context_provisioning.py", line 598, in test_first_registration_failure_kills_exited_leaders_descendant
+    self.exited_leader_setup_failure("registration")
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/tests/crawl-jobs-v2-observer/test_context_provisioning.py", line 576, in exited_leader_setup_failure
+    self.assertEqual(events[:2], ["kill", "wait"])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: ['wait'] != ['kill', 'wait']
+
+First differing element 0:
+'wait'
+'kill'
+
+Second list contains 1 additional elements.
+First extra element 1:
+'wait'
+
+- ['wait']
++ ['kill', 'wait']
+
+======================================================================
+FAIL: test_reused_source_rechecks_provisioning_before_authorization_or_io (test_context_provisioning.SSHTransportTests.test_reused_source_rechecks_provisioning_before_authorization_or_io) (field='runtime_context_deployment', in_place=False)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/tests/crawl-jobs-v2-observer/test_context_provisioning.py", line 401, in test_reused_source_rechecks_provisioning_before_authorization_or_io
+    with self.assertRaises(c.Invalid):
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+AssertionError: Invalid not raised
+
+======================================================================
+FAIL: test_reused_source_rechecks_provisioning_before_authorization_or_io (test_context_provisioning.SSHTransportTests.test_reused_source_rechecks_provisioning_before_authorization_or_io) (field='runtime_context_transport', in_place=False)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/tests/crawl-jobs-v2-observer/test_context_provisioning.py", line 401, in test_reused_source_rechecks_provisioning_before_authorization_or_io
+    with self.assertRaises(c.Invalid):
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+AssertionError: Invalid not raised
+
+======================================================================
+FAIL: test_reused_source_rechecks_provisioning_before_authorization_or_io (test_context_provisioning.SSHTransportTests.test_reused_source_rechecks_provisioning_before_authorization_or_io) (field='runtime_context_deployment', in_place=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/tests/crawl-jobs-v2-observer/test_context_provisioning.py", line 401, in test_reused_source_rechecks_provisioning_before_authorization_or_io
+    with self.assertRaises(c.Invalid):
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+AssertionError: Invalid not raised
+
+======================================================================
+FAIL: test_reused_source_rechecks_provisioning_before_authorization_or_io (test_context_provisioning.SSHTransportTests.test_reused_source_rechecks_provisioning_before_authorization_or_io) (field='runtime_context_transport', in_place=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/tests/crawl-jobs-v2-observer/test_context_provisioning.py", line 401, in test_reused_source_rechecks_provisioning_before_authorization_or_io
+    with self.assertRaises(c.Invalid):
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+AssertionError: Invalid not raised
+
+======================================================================
+FAIL: test_public_provisioning_receipt_cannot_rebind_a_reused_source (test_context_provisioning.SSHTransportTests.test_public_provisioning_receipt_cannot_rebind_a_reused_source)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/tests/crawl-jobs-v2-observer/test_context_provisioning.py", line 435, in test_public_provisioning_receipt_cannot_rebind_a_reused_source
+    with self.assertRaises(c.Invalid):
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+AssertionError: Invalid not raised
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.074s
+
+FAILED (failures=7, errors=1)

@@ -2,11 +2,11 @@
 
 **Finding:** F3 - durable crawl-job leases and recovery
 
-**Last updated:** 2026-10-09 (UTC; reviewed context/oracle source and 53-path publication candidate prepared on verified `2ff03af`; fresh 161 C0 / 31 script checks pass; owner publication decision next; full M4 open)
+**Last updated:** 2026-10-12 (PR #24 merged as `64c98a7` with exact main CI verified; pinned-SSH review remediation complete at 202 tests with two independent GO verdicts; owner-authorized scoped feature-branch publication and exact PR CI are the active step; live host installation remains open)
 
-**Code baseline:** merged `main` at `2ff03af`; PR #23 has the reviewed `a1fbc6f4…` tree and its own verified main CI: 14 contexts / 23 jobs, 113 C0 / 31 script / 183 harness tests
+**Code baseline:** merged `main` at `64c98a7`; PR #24 has the approved `f842de5b…` tree and its own verified main CI: 14 contexts / 23 jobs, 161 C0 / 31 script / 183 harness tests
 
-**Working branch:** `feature/crawl-jobs-v2-c0-context-oracle`, based at `2ff03af`; context acquisition, three-role admission and oracle/client closure are locally implemented and tested, uncommitted and unpublished
+**Working branch:** `feature/crawl-jobs-v2-c0-context-provisioning`, based at `64c98a7`; tooling checkpoint committed and pushed as `1e95696` (no PR); the subsequent cleanup correction and review evidence are local, uncommitted changes
 
 **Initial checkpoint:** `e4372a66201b8767bcca4d7476c30c5b7999922c`
 
@@ -17,11 +17,27 @@ All 43 canonical operations and the sealed, zero-argument
 bounded real-Redis `ledger-smoke-v1` and `ledger-claim-release-v1` cases pass;
 full M4 acceptance is open.
 
-**Current next gate:** the owner publication decision for the
-[prepared 53-path context/oracle candidate](crawl-jobs-v2-m4-c0-context-oracle-publication-preparation-2026-10-09.md),
-then scoped commit/push/PR and exact-revision CI. Preparation is complete: fresh
-161 C0 / 31 script checks and digest verification pass; all 40 reviewed package
-files, native artifacts and existing CI coverage retain their identities.
+**Current publication step (owner-authorized 2026-10-12):** commit/push the exact
+reviewed [pinned-SSH cleanup/reuse remediation](crawl-jobs-v2-m4-c0-ssh-remediation-2026-10-11.md),
+open its PR against main, and verify the exact revision's required checks and
+retained artifacts. Owner merge and actual merged-main verification follow.
+The owner selected tooling for an operator-managed Linux/AArch64 Docker host;
+live installation awaits identification of that host. The Docker Desktop VM
+recorded at the original tooling checkpoint has no admitted collector endpoint,
+and a different server cannot attest its kernel. The corrected 45-file package
+passes 202 C0 tests under both umasks 022 and 077, retaining all 197 previous IDs.
+The prior 31 script tests and digest checks retain their unchanged inputs. The original
+artifact-only build inputs are unchanged. [Rootless Podman/QEMU reconstruction](crawl-jobs-v2-m4-c0-podman-review-2026-10-11.md)
+on this Linux/x86_64 workstation now reproduces all 11 native ARM64 outputs and
+the oracle manifest/interpreter exactly. Static ELF/manifest/BPF/profile/source
+joins passed both independent reviews. COR-SSH-002/003 and the umask fixture issue
+are closed by both final reviewers on inventory `2ecf2c68…`; each returns
+GO_FOR_CONTINUED_IMPLEMENTATION. Actual host installation and native runtime acceptance remain open.
+
+**Merged context/oracle checkpoint:** PR #24's exact publication, owner merge
+`64c98a7`, reviewed-tree continuity and actual main CI are complete. Both main
+workflows passed on attempt 1; main gate:
+`53159ebf13efec96b3d08dd491abbeadc8e3f84bc988c86dfff87baf1e01210e`.
 Independent correctness/security re-review returns **GO_FOR_CONTINUED_IMPLEMENTATION**
 on the corrected **40-file / 161-test** package. Final-poll expiry, equal-clock ACK
 ordering and client-history rollback findings are closed; all 149 previous test IDs
@@ -75,7 +91,7 @@ adds fail-closed offline C0 coverage to `required-tests`; exact PR and merged-ma
 evidence now verify all 113 tests and package hashes. Tests use simulated Docker
 and benign Python processes. No native actor or tracing experiment ran.
 
-**Current local increment:** authenticated Linux-host context acquisition, exact
+**Merged context/oracle increment:** authenticated Linux-host context acquisition, exact
 Linux-expiry handshakes and an owned read-only oracle/client-closure worker are
 implemented and independently reviewed after three boundary fixes. All 161 tests
 pass (all 149 previous IDs retained plus 12 new tests), with 31 script tests and
@@ -84,6 +100,42 @@ and eleven retained artifacts remain unchanged and statically joined. Both final
 reviews return GO for continued implementation; publication remains a separate
 decision. Trusted source placement/transport, actual oracle OCI
 admission, full trial/timing assembly and whole-trial evidence remain open.
+
+**Current tooling increment:** private provisioning bundles, the fixed
+SSH forced command, bounded pinned transport and preparation-bound preflight are
+implemented under the owner-selected tooling-only scope and pushed as `1e95696`.
+The initial COR-SSH-001 fix is preserved. Review follow-ups COR-SSH-002/003 and
+QA-ENV-001 are independently closed; 202 tests pass under both umasks and both final
+reviewers return scoped GO. Publication is the next decision. Host identification,
+operator installation and live SSH/context acquisition remain explicit gates.
+
+### Dual-architecture C0 runtime plan — 2026-10-11
+
+The owner requested runtime builds for both **Linux/ARM64 (`linux/arm64`,
+`aarch64`)** and **Linux/x64 (`linux/amd64`, `x86_64`)**. This covers the C0
+target, observer and oracle runtime images and their trusted context-source
+support. ARM64 artifact reconstruction/review is the immediate step; the x64
+runtime is a planned port with its own implementation and native acceptance.
+
+The current sources bind ARM64 instruction encodings, hardware-debug regsets,
+ELF machine type, seccomp architecture/syscall rules and admission/platform
+checks. Both runtime variants must preserve the same C0 behavioral contract
+while binding architecture-specific code, profiles, images and evidence.
+
+| ID | Deliverable | Status / completion evidence |
+|---|---|---|
+| C0-ARCH-01 | Reconstruct and review the existing ARM64 artifacts using rootless Podman/QEMU on the x64 workstation | Complete: 11/11 native outputs and oracle manifest/interpreter match; both reviewers verify actual joins. Transport-source follow-ups are independently closed on the corrected 202-test snapshot |
+| C0-ARCH-02 | Define explicit architecture selection and artifact/admission identities | Planned: bind preparation, deployment, ELF, image and profile architecture consistently; reject mixed-architecture packets and preserve existing ARM64 rejection controls |
+| C0-ARCH-03 | Implement the x64 native runtime and context/oracle support | Planned: architecture-specific instruction markers/decoding, hardware-debug-register handling, seccomp syscall/architecture filters and platform observations; regression/negative controls for each architecture |
+| C0-ARCH-04 | Build target/observer/oracle runtime images for both architectures | Planned: independently pinned compiler/Python bases for each platform, architecture-specific source/ELF/library/profile manifests and CI artifact checks; compare exported files separately from builder-dependent image metadata |
+| C0-ARCH-05 | Perform native runtime admission and calibration for each architecture | Planned: admitted ARM64 and x64 Linux environments with verified context-source placement, engine/backend compatibility, tracing/breakpoint, confinement, timing and cleanup evidence for each variant |
+| C0-ARCH-06 | Publish the accepted dual-architecture runtime set | Planned: retain separate immutable platform digests and acceptance records; publish a multi-architecture image index only after both referenced variants pass their required gates |
+
+QEMU-assisted builds establish artifact construction, not native ARM64 kernel,
+hardware-breakpoint or timing acceptance. Podman is the selected local builder
+for C0-ARCH-01; actual runtime-engine/backend support is verified independently
+under C0-ARCH-05. Architecture coverage is recorded per platform rather than
+inferred from a shared image tag or an x64 test pass.
 
 The separately authorized [Go security fix](go-http2-security-2026-10-09.md) uses
 Go 1.26.9 and x/net v0.60.0, with an exact Spider normalization compatibility pin.
@@ -371,12 +423,12 @@ retains it as a primitive case; guard cases now explicitly bind the complete
 | Ledger validation | Baseline/delivery/fence history, post-abort freeze, exact retained witnesses, strict worker expiry, completed replay, prior retry/backpressure/reason fixes and zero-sentinel checks pass local normal conformance and reviewed counterexample replays |
 | Script sources | All 43 canonical operations are implemented: unchanged BOOT passthrough plus 42 exact generated sources; both strict source/bundle generator checks pass |
 | Authoritative bundle | Complete zero-argument `AuthoritativeScriptBindingSet()` validates embedded sources against fixed generated pins and returns fresh private sealed bindings; no caller-supplied sources, hashes or paths |
-| Local and protected acceptance | Merged `2ff03af` passes 14/14 main contexts and 23 jobs, with 113 C0 / 31 script / 183 harness tests, all 480 race roots accounted for and 74-file/20-recipe image evidence. The reviewed context/oracle increment has fresh 161 C0 / 31 script passes and a prepared 53-path publication candidate; owner publication decision and candidate hosted CI remain pending |
+| Local and protected acceptance | Merged `64c98a7` passes 14/14 main contexts and 23 jobs, with 161 C0 / 31 script / 183 harness tests, all 480 race roots accounted for and 74-file/20-recipe image evidence. The 45-file pinned-SSH remediation passes 202 C0 tests under both umasks, retains all 197 prior IDs, and receives two independent GO verdicts. Original native/oracle inputs and ARM64 outputs are unchanged and statically reviewed; scoped PR/publication remains pending |
 | Runtime behavior | V2 remains dormant in application services; separately authorized disposable Redis smoke, claim/release, all 13 negatives, pre-I/O recovery, bounded request lifecycle, positive-interval and serial shared-group cases pass within their original source/image scopes |
 | M4 bounded execution | Cancellation fixture `cda9d337…` passes once: nine calls, one group-capacity denial, two peer-safe replays, 60 counters and 46 denials. Six-role revocation, original 28-action journal and six-resource absence pass; renewed approval consumed. Earlier shared-capacity evidence retains its own scope; full M4-P4/P5 stay open |
 | Review status | Cancellation retains scoped evidence ACCEPT. Earlier C0 GO remains bound to its 112-test snapshot; PR #23 published the 113-test fixture successor. Both final reviewers return GO_FOR_CONTINUED_IMPLEMENTATION on the corrected 40-file / 161-test context/oracle snapshot, with all three findings closed; runtime feasibility and full M4 remain unproved |
-| Git state | PRs #21–#23 are merged; exact `2ff03af` main CI is verified. Context/oracle work is local on its isolated feature branch. Published checkpoints, incomplete older worktree contents, native artifacts and 372 unrelated primary paths remain preserved |
-| Current bounded slice | Independently reviewed Linux-context acquisition, native Linux expiry and oracle/client closure. Publication preparation is complete for the unchanged reviewed package; owner decision on the 53-path candidate is next, then exact-revision CI and later trusted-source/runtime-image admission. Earlier execution approvals stay consumed |
+| Git state | PRs #21–#24 are merged; exact `64c98a7` main CI is verified. Pinned-SSH tooling is pushed as `1e95696` on `feature/crawl-jobs-v2-c0-context-provisioning`; its cleanup correction/review evidence are local. Historical checkpoint and artifact records retain their original scope |
+| Current bounded slice | Operator-selected pinned-SSH provisioning bundles, fixed forced-command endpoint, bounded transport and preparation-bound preflight. Tooling is locally verified; live installation waits for an admitted host in the selected daemon's actual Linux domain. No Docker endpoint switch or native execution is included |
 
 ### Current source and fixture identities (regenerated 2026-09-21)
 
@@ -581,7 +633,17 @@ The final matrix and final independent reviews used pinned Go 1.25.13 and passed
   preserve all 149 prior IDs and pass 161 tests; both exact-byte re-reviews return GO.
 - [x] Prepare the exact 53-path context/oracle publication candidate; reverify all 40 reviewed
   package files, fresh 161 C0 / 31 script checks, digest/artifact bindings and unchanged protected CI.
-- [ ] Obtain the owner publication decision, then commit/push/open the scoped PR and verify exact-revision CI.
+- [x] Publish the owner-approved exact candidate as PR #24; verify exact PR CI, owner merge `64c98a7`, tree continuity and its own main CI.
+- [x] Implement the owner-selected pinned-SSH provisioning/transport tooling and preflight; preserve all 161 baseline test IDs and pass 194 C0 / 31 script tests.
+- [x] Push the tooling checkpoint as `1e95696`; resume review and locally correct COR-SSH-001, retaining all 194 IDs with 197 passing C0 tests.
+- [x] Add the owner-requested ARM64 and x64 runtime plan (C0-ARCH-01–06), with per-architecture artifact and native acceptance evidence.
+- [x] Reconstruct and inspect the current ARM64 artifact-only outputs with Podman/QEMU: all 11 native outputs and oracle manifest/interpreter match, with actual ELF/manifest/BPF/profile joins (C0-ARCH-01).
+- [x] Complete initial independent ARM64 artifact/source reviews; locally remediate COR-SSH-002/003 and QA-ENV-001, with 202 C0 passes under both umasks and unchanged native/oracle build inputs.
+- [x] Complete final independent remediation re-review: both reviewers close all follow-ups and return GO on inventory `2ecf2c68…`, each passing 202 tests with unchanged artifact continuity.
+- [x] Obtain the owner's scoped publication decision for the reviewed pinned-SSH snapshot (2026-10-12).
+- [ ] Publish the exact reviewed candidate and verify its PR CI; complete owner merge and actual merged-main verification subsequently.
+- [ ] Implement architecture selection/x64 support, build both runtime image sets, and complete each platform's native admission before dual-architecture publication (C0-ARCH-02–06).
+- [ ] Identify/admit the actual Linux host, perform operator installation and verify live SSH/context acquisition.
 - [ ] Provision/admit the Linux source and transport; validate exact runtime images and the oracle sandbox.
 - [ ] Complete full trial dispatch, image/approval and timing/resource integration;
   decide normative changes and runtime experiments separately.

@@ -1,0 +1,20 @@
+{
+  "owned_descendants": {
+    "first-register-child.pid": {
+      "live": false,
+      "pid": 143524,
+      "state": null
+    },
+    "first-set-blocking-child.pid": {
+      "live": false,
+      "pid": 143520,
+      "state": null
+    },
+    "registered-timeout-control-child.pid": {
+      "live": false,
+      "pid": 143526,
+      "state": null
+    }
+  },
+  "status": "PASS"
+}

@@ -1,0 +1,50 @@
+{
+  "all_owned_processes_stopped_by_transport": true,
+  "cases": [
+    {
+      "descendant_live_after_transport": false,
+      "descendant_pgid": 143518,
+      "descendant_state_after_transport": "R",
+      "exception": "OSError",
+      "failure": "first-set-blocking",
+      "leader_pid": 143518,
+      "leader_reaped": true,
+      "leader_returncode": 0,
+      "message": "[Errno 5] owned pipe injection",
+      "parent_pipes_closed": true,
+      "registers_attempted": [],
+      "selector_closed": true
+    },
+    {
+      "descendant_live_after_transport": false,
+      "descendant_pgid": 143523,
+      "descendant_state_after_transport": "R",
+      "exception": "OSError",
+      "failure": "first-register",
+      "leader_pid": 143523,
+      "leader_reaped": true,
+      "leader_returncode": 0,
+      "message": "[Errno 28] owned selector injection",
+      "parent_pipes_closed": true,
+      "registers_attempted": [
+        "in"
+      ],
+      "selector_closed": true
+    },
+    {
+      "descendant_live_after_transport": false,
+      "descendant_pgid": 143525,
+      "descendant_state_after_transport": "R",
+      "exception": "Invalid",
+      "failure": "registered-timeout-control",
+      "leader_pid": 143525,
+      "leader_reaped": true,
+      "leader_returncode": 0,
+      "message": "DEADLINE",
+      "parent_pipes_closed": true,
+      "registers_attempted": [],
+      "selector_closed": true
+    }
+  ],
+  "status": "PASS_COR_SSH_002_REPLAY"
+}

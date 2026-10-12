@@ -1,0 +1,74 @@
+{
+  "build_performed": false,
+  "build_required_for_this_delta": false,
+  "elf_checks": {
+    "observer": {
+      "bytes": 5450304,
+      "machine": 183,
+      "sha256": "e407a02c67ac7a0cd192e612afe5ad643701c16821f6854e3a11b040e55cfb61",
+      "type": 3
+    },
+    "oracle_interpreter": {
+      "bytes": 67608,
+      "machine": 183,
+      "sha256": "cb4548d280f38c2b1df4cba45f12c90a034729e08fce5bf1a223c58add0e21e3",
+      "type": 3
+    },
+    "target": {
+      "bytes": 5448416,
+      "machine": 183,
+      "sha256": "819cde0b38e12b235acbef2b3741551af86683ff2c3ec5186b5a45b710e5da45",
+      "type": 3
+    }
+  },
+  "input_checks": {
+    "native_inputs_unchanged": {
+      "tests/crawl-jobs-v2-observer/.dockerignore": "25170fdb33082a47a01bdc344bfabe8ef4460eed2da175e6dd1159557fcaa13d",
+      "tests/crawl-jobs-v2-observer/Dockerfile": "20849b651a90ad097cc102da321f0fe8958e518d93c7c9ead448d26ec9e8eaa2",
+      "tests/crawl-jobs-v2-observer/build_tools.py": "bbc4329ac905a7d7a865b59e754357bc8d4c195d15547f047983ff3dfd7ebbda",
+      "tests/crawl-jobs-v2-observer/contracts.py": "1e29b16e16bc64660332c9be413bcfcb8946f84f8615e862fa01bf845d96752b",
+      "tests/crawl-jobs-v2-observer/native/admission.h": "2560a2afcc106013f70081c72a0faee754c163141d73eec4ecc251cbcbccf806",
+      "tests/crawl-jobs-v2-observer/native/common.h": "157a7ec3b5c8ec6c0dc031cacb22047216303f4467be5eee7284926d572c53cd",
+      "tests/crawl-jobs-v2-observer/native/observer.c": "16899c419a9ab4696d22e0b515c56be511eaa77ff80941de3fa899eac1dd1e9c",
+      "tests/crawl-jobs-v2-observer/native/target.c": "feb94778757ae05268417c1cd76a383f5339bfa701feababda972a5e077451fd",
+      "tests/crawl-jobs-v2-observer/profiles.py": "7a75291b1dbd32f13e1eda00265a17693fc425333bfcc466ca958c7388bc485a"
+    },
+    "oracle_inputs_unchanged": {
+      "tests/crawl-jobs-v2-observer/Dockerfile.oracle": "7c3b72b8db003f927f4a34342df7180aa674fa25fce9233cad173032dc735e5e",
+      "tests/crawl-jobs-v2-observer/Dockerfile.oracle.dockerignore": "679f3cd226874aa189596199b105352137171eed114a1393e478eafc43f330d3",
+      "tests/crawl-jobs-v2-observer/build_oracle.py": "6e3a3903fa127b7e7856a23d9bb7b3892b328f0582a0a63b28d4157d1fdf9956",
+      "tests/crawl-jobs-v2-observer/contracts.py": "1e29b16e16bc64660332c9be413bcfcb8946f84f8615e862fa01bf845d96752b",
+      "tests/crawl-jobs-v2-observer/linux_observation.py": "942336518ede2d71928c171180cfe077006e9dfdfe0ba399bebd85d994a7958b",
+      "tests/crawl-jobs-v2-observer/oracle.py": "fa14b08caee86b65d9a01c16bb3e6ea236264275a48a3f32ad6694c57df23bc8",
+      "tests/crawl-jobs-v2-observer/oracle_protocol.py": "f867fdc33eb271385176ab25c09a573e9662f77b7f6a73e559dbf07fcb115f45",
+      "tests/crawl-jobs-v2-observer/oracle_worker.py": "3a588a010676238f375644ed2af65d1671ff7c38c81fa4908a419790576b363a",
+      "tests/crawl-jobs-v2-observer/runtime_admission.py": "f1b87f1f1e46c4a1726da19da177567fcfcf67443b19cfb208c1fd4f7c9c77ed",
+      "tests/crawl-jobs-v2-observer/worker.py": "08c319e7ec3790f619e4bf4ba3160e0db3bdc34f8dd86256bf998639aa2ea273"
+    }
+  },
+  "manifest_filter_profiles_toolchain_source_joins_rechecked": true,
+  "native_artifacts": {
+    "cases.h": "64591020572e8af5afae67856ba79e053afacaf41d08ba10a98f489558e383f4",
+    "observer": "e407a02c67ac7a0cd192e612afe5ad643701c16821f6854e3a11b040e55cfb61",
+    "observer-seccomp.json": "abf581851c19631ba5125ac03443f4ad72c6e8fd7b92fa086218060e07b56bf2",
+    "oracle-seccomp.json": "f82e0ae5335e1393c402265c4a14a4e56ad8df27ab48eee70907745fef3b6835",
+    "target": "819cde0b38e12b235acbef2b3741551af86683ff2c3ec5186b5a45b710e5da45",
+    "target-filter.bpf": "701824ff5f8ccafa359f711d2714b23c8a303789cd1987a3a85aba19a3667b93",
+    "target-manifest.json": "a19b4096f0f268742ebc98bf879e12fbb0de1124a1c8144959496f6b8a615e43",
+    "target-seccomp.json": "6a1ffdf7326ae1370bd55cc2edb2bcfb49b2d65ce7090205576d3b6e9496ab3e",
+    "target_filter.h": "8a1c8f5941860b7acd92f3dc53952aa746fa9d1c57098b214a691fa8a6380b1d",
+    "target_manifest.h": "ccee87e21a21d7d0f8e07cac9fe1dc3e9f20333d51b32e9231d1e2362686d7a5",
+    "toolchain.json": "e953b3c89a20ebeca25ebbcce8d30486aa10174db1d9986977bed786aa47f9dc"
+  },
+  "native_or_oracle_interpreter_executed": false,
+  "oracle_manifest_sha256": "3f51809ebddbad24cbe03611e67b678df003121b77aff0743de0251baf538131",
+  "prior_independent_instruction_and_1482_bpf_checks_preserved_by_identical_bytes": true,
+  "prior_independent_report_sha256": "d0e089b240c7014b236b2e994a9a9a86192f6d7274f5c733a310ea66b87d1bdf",
+  "source_bundle_digests": {
+    "oracle_worker_source": "a6c5fd8c2c42fceadff3c846f083b5f9ed92ffb93c4ea7e644bf9b0f315d71f9",
+    "runtime_context_source": "00717364e862cad8012f42dc2702a3e3236822c861fbd21fd190b7e47fc78257",
+    "runtime_context_transport": "20b53849d3617f1a7f1dc2897cd2ab3fed48990b8df188317c8c136d8276869a"
+  },
+  "status": "PASS_STATIC_ARTIFACT_CONTINUITY",
+  "toolchain_libraries_independently_extracted": false
+}

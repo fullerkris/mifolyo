@@ -1,4 +1,4 @@
-"""Fixed, read-only Linux-host context endpoint; deployment/transport are external.
+"""Fixed read-only Linux-host endpoint using operator-provisioned configuration.
 
 Provision the anchor as root-owned /etc/obs1/context-source.json and the 32-byte
 authentication key as mode-0600 /etc/obs1/context-source.key owned by this service.
@@ -7,13 +7,13 @@ Neither an actor nor a request supplies these paths, keys or namespace anchors.
 import os
 from pathlib import Path
 import select
-import stat
 import sys
 import time
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from contracts import LIMITS, canonical, decode, require
 from runtime_context import LinuxContextEndpoint
+import context_files
 
 
 class Deadline:
@@ -25,17 +25,12 @@ class Deadline:
 
 
 def provisioned(path, key=False):
-    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK | os.O_CLOEXEC)
-    with os.fdopen(fd, "rb") as stream:
-        info = os.fstat(stream.fileno())
-        require(stat.S_ISREG(info.st_mode) and info.st_nlink == 1, "CONTEXT_CONFIG")
-        require(info.st_uid == (os.geteuid() if key else 0) and
-            stat.S_IMODE(info.st_mode) in ((0o600,) if key else (0o400, 0o444, 0o644)), "CONTEXT_CONFIG")
-        raw = stream.read(4097)
-        require(len(raw) == info.st_size and len(raw) <= 4096, "CONTEXT_CONFIG")
-        if key:
-            require(len(raw) == 32, "CONTEXT_CONFIG")
-        return raw
+    expected = context_files.CONFIG / ("context-source.key" if key else "context-source.json")
+    require(Path(path) == expected, "CONTEXT_CONFIG_PATH")
+    raw = context_files.read_config(expected.name, os.geteuid() if key else 0,
+        (0o600,) if key else (0o400, 0o444, 0o644), 32 if key else 4096)
+    require(not key or len(raw) == 32, "CONTEXT_CONFIG")
+    return raw
 
 
 def main():

@@ -1,0 +1,2 @@
+PASS: unchanged 11 native outputs + oracle manifest/interpreter; 9 native and 10 oracle inputs; prior ELF/filter/profile/source joins preserved.
+PASS: 202/202 in one umask-077 run; 197 previous IDs preserved + 5 new; old FAIL report preserved.

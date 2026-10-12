@@ -1,0 +1,39 @@
+{
+  "binfmt": "enabled\ninterpreter /usr/bin/qemu-aarch64-static\nflags: F\noffset 0\nmagic 7f454c460201010000000000000000000200b700\nmask ffffffffffffff00fffffffffffffffffeffffff\n",
+  "buildah": "1.43.4",
+  "emulated_architectures": [
+    "linux/arm64",
+    "linux/arm64be"
+  ],
+  "host_architecture": "x86_64",
+  "kind": "c0_podman_arm64_preflight",
+  "native_actor_execution": false,
+  "oci_runtime": {
+    "name": "crun",
+    "package": "crun-1.28-1.fc44.x86_64",
+    "path": "/usr/bin/crun",
+    "version": "crun version 1.28\ncommit: 54f16ffbefcd022bf032af768b5c5ce075c18bfc\nrundir: /run/user/1000/crun\nspec: 1.0.0\n+SYSTEMD +SELINUX +APPARMOR +CAP +SECCOMP +EBPF +CRIU +LIBKRUN +WASM:wasmedge +JSON_C"
+  },
+  "podman": {
+    "APIVersion": "5.8.7",
+    "BuildOrigin": "Fedora Project",
+    "Built": 1789516800,
+    "BuiltTime": "Tue Sep 15 20:00:00 2026",
+    "GitCommit": "c593b672bf3db1173aebea565ebf1a724ea196dc",
+    "GoVersion": "go1.26.8-X:nodwarf5",
+    "Os": "linux",
+    "OsArch": "linux/amd64",
+    "Version": "5.8.7"
+  },
+  "prior_container_records": 1,
+  "prior_image_records": 7,
+  "python": "3.14.7",
+  "qemu_sha256": "e4cbe197554147c4944a9a2593cd4e46bc00f630cb58196dc9170659ef1f253d",
+  "qemu_version": "qemu-aarch64 version 10.2.2 (qemu-10.2.2-1.fc44)\nCopyright (c) 2003-2025 Fabrice Bellard and the QEMU Project developers",
+  "rootless": true,
+  "seccomp_enabled": true,
+  "selinux_enabled": true,
+  "service_is_remote": false,
+  "source_inventory_sha256": "f53058a955de01027efcdbaa6adace7d6904197c845e5886b25e7d9db41bc227",
+  "version": 1
+}

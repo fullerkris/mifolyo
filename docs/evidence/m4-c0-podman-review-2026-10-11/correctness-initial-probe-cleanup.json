@@ -1,0 +1,50 @@
+{
+  "all_owned_processes_stopped_by_probe": true,
+  "cases": [
+    {
+      "descendant_live_after_transport": true,
+      "descendant_pgid": 110229,
+      "descendant_state_after_transport": "S",
+      "exception": "OSError",
+      "failure": "first-set-blocking",
+      "leader_pid": 110229,
+      "leader_reaped": true,
+      "leader_returncode": 0,
+      "message": "[Errno 5] owned pipe injection",
+      "parent_pipes_closed": true,
+      "registers_attempted": [],
+      "selector_closed": true
+    },
+    {
+      "descendant_live_after_transport": true,
+      "descendant_pgid": 110231,
+      "descendant_state_after_transport": "S",
+      "exception": "OSError",
+      "failure": "first-register",
+      "leader_pid": 110231,
+      "leader_reaped": true,
+      "leader_returncode": 0,
+      "message": "[Errno 28] owned selector injection",
+      "parent_pipes_closed": true,
+      "registers_attempted": [
+        "in"
+      ],
+      "selector_closed": true
+    },
+    {
+      "descendant_live_after_transport": false,
+      "descendant_pgid": 110233,
+      "descendant_state_after_transport": "R",
+      "exception": "Invalid",
+      "failure": "registered-timeout-control",
+      "leader_pid": 110233,
+      "leader_reaped": true,
+      "leader_returncode": 0,
+      "message": "DEADLINE",
+      "parent_pipes_closed": true,
+      "registers_attempted": [],
+      "selector_closed": true
+    }
+  ],
+  "status": "REPRODUCED"
+}

@@ -1,0 +1,197 @@
+{
+  "all_processes_owned_benign_python": true,
+  "fd_delta": 0,
+  "probe_groups": 13,
+  "real_collector_or_native_artifact_execution": false,
+  "results": [
+    {
+      "detail": {
+        "canonical_numeric_controls": 3,
+        "rejections": 35
+      },
+      "elapsed_seconds": 0.040571,
+      "id": "deployment-input-boundaries",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "noncanonical_requests_rejected": 8
+      },
+      "elapsed_seconds": 0.000131,
+      "id": "canonical-json-boundary",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "fd_delta": 0,
+        "traversal_owner_modes_links_fifo_size_path_replacement": "all rejected"
+      },
+      "elapsed_seconds": 0.000918,
+      "id": "owned-file-boundaries",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "forbidden_path_tokens_rejected": 5,
+        "numeric_v4_v6": true,
+        "offline_ssh_G_only": true,
+        "outputs_sha256": [
+          "1655bca8d21af6e7326340046714d4757d117eb53682bbd780623d2775f4df75",
+          "93205763357c90dd5273d5b43231c6a2560b37efa02e2e713d9e44af48f5540c"
+        ]
+      },
+      "elapsed_seconds": 0.015579,
+      "id": "ssh-offline-effective-options",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "corrected": {
+          "children_created": 0,
+          "fd_delta_before_reviewer_cleanup": 0,
+          "open_pipes": 0,
+          "running_children": 0
+        },
+        "original": {
+          "children_created": 1,
+          "fd_delta_before_reviewer_cleanup": 3,
+          "open_pipes": 3,
+          "running_children": 1
+        },
+        "reviewer_cleanup_completed": true
+      },
+      "elapsed_seconds": 0.003872,
+      "id": "COR-SSH-001-original-vs-corrected",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "all_pipes_closed_children_reaped_selectors_closed": true,
+        "fd_delta": 0,
+        "scenarios": [
+          "register-1",
+          "register-2",
+          "register-3",
+          "blocking-1",
+          "blocking-2",
+          "blocking-3",
+          "spawn-EMFILE"
+        ]
+      },
+      "elapsed_seconds": 0.008969,
+      "id": "partial-startup-failure-cleanup",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "expired_between_allocation_and_spawn": "refused without spawning"
+      },
+      "elapsed_seconds": 0.00066,
+      "id": "deadline-between-selector-and-spawn",
+      "status": "PASS"
+    },
+    {
+      "detail": [
+        {
+          "elapsed_seconds": 0.012189,
+          "fd_delta": 0,
+          "scenario": "echo1024"
+        },
+        {
+          "elapsed_seconds": 0.012495,
+          "fd_delta": 0,
+          "scenario": "max4096"
+        },
+        {
+          "elapsed_seconds": 0.011171,
+          "fd_delta": 0,
+          "scenario": "overflow4097"
+        },
+        {
+          "elapsed_seconds": 0.009664,
+          "fd_delta": 0,
+          "scenario": "early-eof"
+        },
+        {
+          "elapsed_seconds": 0.011337,
+          "fd_delta": 0,
+          "scenario": "stderr"
+        },
+        {
+          "elapsed_seconds": 0.201363,
+          "fd_delta": 0,
+          "scenario": "closed-pipes-live-child"
+        },
+        {
+          "elapsed_seconds": 0.202383,
+          "fd_delta": 0,
+          "scenario": "silent-peer"
+        }
+      ],
+      "elapsed_seconds": 0.46072,
+      "id": "bounded-real-benign-pipes",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "exchange_not_called": true,
+        "foreign_daemon": "rejected",
+        "non_true_authorizers": "rejected",
+        "public_secret_bytes_and_hashes_absent": true,
+        "three_artifact_mismatches": "rejected"
+      },
+      "elapsed_seconds": 0.00707,
+      "id": "preparation-authority-secret-joins",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "fresh_challenge_replay_rejected": true,
+        "lease_preparation_rebind_rejected": true,
+        "reader": "simulated only",
+        "tamper_variants": 6
+      },
+      "elapsed_seconds": 0.005832,
+      "id": "signed-response-tamper-replay",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "child_reaped": true,
+        "private_copies_removed": true,
+        "stderr_generic_failure": true
+      },
+      "elapsed_seconds": 0.01765,
+      "id": "wrapped-refusal-private-copy-cleanup",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "all_required_policy_rows": 10,
+        "live_daemon_attestation_not_claimed": true,
+        "wrong_markers_before_config_access": 5
+      },
+      "elapsed_seconds": 0.001895,
+      "id": "forced-command-policy-and-marker",
+      "status": "PASS"
+    },
+    {
+      "detail": {
+        "docker_and_host_observations": "simulated",
+        "no_lease_cached_or_actor_started": true,
+        "outer_authorizer_calls": [
+          "runtime_context",
+          "runtime_context",
+          "runtime_context"
+        ],
+        "revocation_after_exchange_refused": true
+      },
+      "elapsed_seconds": 0.013618,
+      "id": "backend-authority-revocation",
+      "status": "PASS"
+    }
+  ],
+  "source_modified": false,
+  "ssh_usage": "offline -G only; no authentication/network connection",
+  "status": "PASS"
+}

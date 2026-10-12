@@ -183,6 +183,113 @@ The source's provisioning and Mac-to-Linux transport remain explicit outer
 integration obligations: pass a bounded transport for the source's stdio exchange;
 an arbitrary actor stream is not an authenticated host source.
 
+### Operator-provisioned pinned-SSH tooling
+
+`context_provision.py` creates and validates a **new private staging bundle**;
+`context_transport.py` supplies the concrete bounded SSH exchange;
+`context_ssh.py` is the fixed server forced command. The owner selected tooling
+for an operator-managed Linux/AArch64 Docker host. Actual installation and live
+SSH admission await identification of that host. The current Docker Desktop
+LinuxKit VM has no collector endpoint established by this work.
+
+The collector must share the selected Docker daemon's actual Linux kernel and
+host namespaces. A collector on another server cannot supply context for Docker
+Desktop. The backend still selects only `unix:///var/run/docker.sock`; this
+increment does not switch daemons, add remote Docker endpoints, enter namespaces
+or install a privileged helper. The deployment target/daemon pairing must be
+admitted before the new transport is used for a real trial.
+
+The closed deployment object contains:
+
+- `version: 1` and the existing independently admitted `anchor`;
+- a canonical numeric IPv4/IPv6 `host` and integer `port` (no DNS names/options);
+- dedicated `service_uid` / `service_gid`, neither root nor actor UID/GID 999;
+- exactly one out-of-band verified `ssh-ed25519` host key and client public key,
+  each in `ssh-ed25519 BASE64` form without comments/options;
+- reviewed `ssh_client_sha256` for controller `/usr/bin/ssh` and
+  `host_python_sha256` for the host's forced-command interpreter.
+
+The tool validates these supplied values; it does not discover, infer or approve
+host namespace anchors or SSH host keys. Deployment JSON must use the existing
+canonical JSON encoding. Keep it and the unencrypted OpenSSH identity in an
+owner-only mode-0700 directory, each mode 0600. Materialize a new destination:
+
+```sh
+python3 -I -B tests/crawl-jobs-v2-observer/context_provision.py \
+  --deployment /absolute/private/deployment.json \
+  --identity /absolute/private/id_ed25519 \
+  --output /absolute/private/new-context-bundle
+python3 -I -B tests/crawl-jobs-v2-observer/context_provision.py \
+  --check-bundle /absolute/private/new-context-bundle
+```
+
+The generator creates separate `host/` and `controller/` payloads. It generates
+a fresh 32-byte HMAC key unless one is supplied to the Python API, and places
+copies only in the private host/controller key files. The SSH private identity
+stays in `controller/`; it is never in the host payload. Public manifests/receipts
+contain neither secret values nor secret-file hashes. Existing output paths are
+refused; failed partial staging directories remain private and are not installed.
+`--check-bundle` verifies exact source/config bytes, policy, file inventory,
+ownership/modes, matching nonzero HMAC keys and the closed manifest.
+
+#### Host installation contract (operator step)
+
+The staging bundle is not an installer and performs no privileged OS mutation.
+On the independently identified test host, the operator must:
+
+1. Establish a dedicated `obs1-context` account with the admitted UID/GID, no
+   additional groups, no password authentication and no writable startup files.
+   Verify root ownership/non-writable, non-symlink ancestors of the install paths.
+2. Install exactly the seven `host/code/` source files under
+   `/opt/obs1/context-source/`: directory root-owned 0755, files root-owned 0444.
+   Extra modules or bytecode files are refused; the interpreter uses `-I -B`.
+3. Install `host/etc/` under root-owned 0755 `/etc/obs1/`. Public anchor/service/
+   authorized-key files are root-owned 0444. `context-source.key` is owned by the
+   service UID/GID with mode 0600 and exactly 32 bytes. Never mount it into actors.
+4. Review/install the root-owned `sshd_config.fragment` as
+   `/etc/ssh/sshd_config.d/obs1-context.conf`, with its `Match User obs1-context`
+   restrictions. Confirm the server includes that directory and validates with
+   `sshd -t`; collect the effective `sshd -T -C ...` configuration for this user
+   and actual client address. `validate_sshd_output()` checks the required policy
+   and global `permituserenvironment no`; validating supplied text alone is not
+   proof that the live daemon loaded it. Reload belongs to the operator's change.
+5. Verify collector placement and permissions without adding capabilities,
+   changing Yama/LSM policy, mounting securityfs, or joining host namespaces.
+   Missing observations remain a refusal.
+
+Both SSH configuration and `authorized_keys` fix the command to
+`/usr/bin/python3 -I -B /opt/obs1/context-source/context_ssh.py`. The entrypoint
+requires original command `obs1-context-v1`, the admitted service identity,
+exact root-owned code inventory and interpreter digest. It then delegates to
+the bounded signed context worker. It does not offer a shell or caller pathname.
+
+#### Controller preflight
+
+The controller payload remains owner-owned 0700 with mode 0600 files. Bind the
+preparation's new `runtime_context_deployment` artifact to
+`deployment_digest(deployment)` and `runtime_context_transport` to
+`transport_digest()`, in addition to the host source bundle. Old packets require
+regeneration; ordinary validation does not grant execution authority.
+
+`DockerBackend.acquire_provisioned_context(bundle, preparation, budget, deadline,
+authorize_source=...)` admits these bindings before actor activation, preserves
+the existing outer authorizers and selected-daemon checks, and returns the
+existing expiring lease with a secret-free provisioning receipt. Actual host
+installation/SSH admission is not inferred from possession of bundle files.
+
+SSH uses fixed `/usr/bin/ssh`, explicit pinned known-host data, the supplied
+identity, isolated configuration, no agent/password/interactive authentication,
+no proxy/control sockets/local command/forwarding, one connection attempt and
+the existing deadline. It launches without a shell or ambient SSH environment.
+Each exchange uses private credential copies and checks credentials/client
+identity before/after. Both pipes are nonblocking and bounded: request 1024 bytes,
+response 4096 bytes; stderr, nonzero exit, partial/extra frames, hung peers and
+unsettled EOF refuse. Local process cleanup is bounded and never remote-stop proof.
+
+Tests use real benign Python pipes and owned files, simulated Linux/metadata,
+and the real client's offline `ssh -G` configuration output. They do not establish
+live SSH authentication, installation on Docker Desktop, or native calibration.
+
 `DockerBackend.acquire_runtime_context()` must run before actor activation and
 rechecks the daemon around acquisition. It binds the returned lease to this
 backend/scope. Local elapsed-time expiry is a conservative transport budget, not

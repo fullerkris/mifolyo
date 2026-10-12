@@ -1,0 +1,26 @@
+{
+  "deployment_complete": false,
+  "execution_authorized": false,
+  "files": {
+    "c0-tests.json": {
+      "bytes": 65982,
+      "sha256": "94bd6ddf268cf9c877868019319fae2268da6869386bfc9ffba15ec4ed8b88d9"
+    },
+    "red-tests.json": {
+      "bytes": 6841,
+      "sha256": "78dde4da355071fbd4656517cfe383cc54e871cdda99c9ed60737bdf7b0c5574"
+    },
+    "review.json": {
+      "bytes": 4314,
+      "sha256": "25dcb6ea3fa8b3642cf9fd1d06d2c3f988dab7272e7e894a58abb6bbc64a60be"
+    },
+    "source-inventory.json": {
+      "bytes": 8598,
+      "sha256": "f53058a955de01027efcdbaa6adace7d6904197c845e5886b25e7d9db41bc227"
+    }
+  },
+  "kind": "c0_context_provisioning_review_exports",
+  "reviewed_commit": "1e956962596f7bb86143d45dd62ebf863c0b64eb",
+  "source_inventory_sha256": "f53058a955de01027efcdbaa6adace7d6904197c845e5886b25e7d9db41bc227",
+  "version": 1
+}

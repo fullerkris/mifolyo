@@ -1,0 +1,29 @@
+{
+  "cases": [
+    {
+      "accepted": false,
+      "changed_artifact": "runtime_context_deployment",
+      "error": "CONTEXT_PROVISIONING_BINDING",
+      "factory_refuses_same_changed_preparation": true
+    },
+    {
+      "accepted": false,
+      "changed_artifact": "runtime_context_transport",
+      "error": "CONTEXT_PROVISIONING_BINDING",
+      "factory_refuses_same_changed_preparation": true
+    },
+    {
+      "accepted": false,
+      "changed_artifact": "runtime_context_source",
+      "error": "CONTEXT_PROVISIONING_BINDING",
+      "factory_refuses_same_changed_preparation": true
+    }
+  ],
+  "live_ssh_or_real_collector_executed": false,
+  "private_identity_preflight": {
+    "fixture_is_deliberately_not_a_key": true,
+    "verify_bundle_status": "PASS_PRIVATE_BUNDLE"
+  },
+  "recommended_one_shot_backend_path_has_no_reuse": true,
+  "status": "PASS_COR_SSH_003_REPLAY"
+}

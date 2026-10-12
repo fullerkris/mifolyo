@@ -1,0 +1,51 @@
+{
+  "deployment_complete": false,
+  "execution_authorized": false,
+  "files": {
+    "c0-tests-022.json": {
+      "bytes": 67722,
+      "private_source": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/c0-tests-022.json",
+      "sha256": "1d8d1cd2b3cecf39bbc61652968971a40c853902c2d08df91cb42502fa6494fc"
+    },
+    "c0-tests-022.log": {
+      "bytes": 32863,
+      "private_source": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/c0-tests-022.log",
+      "sha256": "34a1768582ca7cedfb46cf6c946c54a362c9003e3d1444b76482e58a979030a8"
+    },
+    "c0-tests-077.json": {
+      "bytes": 67722,
+      "private_source": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/c0-tests-077.json",
+      "sha256": "1d8d1cd2b3cecf39bbc61652968971a40c853902c2d08df91cb42502fa6494fc"
+    },
+    "c0-tests-077.log": {
+      "bytes": 32863,
+      "private_source": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/c0-tests-077.log",
+      "sha256": "3860d1a0de41c92c3aa5ff03c3fdeb3ec6ee8ea2621ce978a6146b2cac6d6a17"
+    },
+    "red-tests.json": {
+      "bytes": 8474,
+      "private_source": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/red-tests.json",
+      "sha256": "a79f0389874f8e5ae2e38eafa578963513cbd9d780ecc7b91bc7f6fd49dec4c5"
+    },
+    "red-tests.log": {
+      "bytes": 10021,
+      "private_source": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/red-tests.log",
+      "sha256": "ab6d9674eff1bbc24e2ac608ea084a7c0ba24effca69c01f1932f8a829743a9f"
+    },
+    "remediation.json": {
+      "bytes": 3305,
+      "private_source": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/remediation.json",
+      "sha256": "be92677e3a523e0659800cbd6cf59944f6f1ad23994cd9175fcc485f1308d99b"
+    },
+    "source-inventory.json": {
+      "bytes": 8593,
+      "private_source": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/source-inventory.json",
+      "sha256": "2ecf2c68b6a3293cc3b34314e23022b3f35c2eda69f9f8efa0391728804a8edf"
+    }
+  },
+  "independent_rereview_pending": true,
+  "kind": "c0_ssh_local_remediation_exports",
+  "remediation_sha256": "be92677e3a523e0659800cbd6cf59944f6f1ad23994cd9175fcc485f1308d99b",
+  "source_inventory_sha256": "2ecf2c68b6a3293cc3b34314e23022b3f35c2eda69f9f8efa0391728804a8edf",
+  "version": 1
+}

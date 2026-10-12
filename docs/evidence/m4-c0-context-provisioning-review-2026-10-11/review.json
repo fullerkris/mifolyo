@@ -1,0 +1,97 @@
+{
+  "artifact_review": {
+    "blocker": "Docker is unavailable here; original raw artifact outputs are referenced in the prior macOS private workspace, not supplied in this checkout.",
+    "fresh_builds_performed": false,
+    "native_inputs_unchanged": 9,
+    "oracle_inputs_unchanged": 10,
+    "original_build_verification_sha256": "c9826477cb4e8afbfbe3adb6c41112f1af87be97ebddf7e06a53e07b4cd2ec58",
+    "raw_arm64_artifacts_reverified": false
+  },
+  "branch": "feature/crawl-jobs-v2-c0-context-provisioning",
+  "checks": {
+    "c0_report_sha256": "94bd6ddf268cf9c877868019319fae2268da6869386bfc9ffba15ec4ed8b88d9",
+    "corrected_c0_tests": 197,
+    "digest_vectors": "PASS",
+    "intake_c0_tests": 194,
+    "new_test_ids": [
+      "test_context_provisioning.SSHTransportTests.test_pipe_setup_failure_reaps_the_child_and_closes_resources",
+      "test_context_provisioning.SSHTransportTests.test_selector_setup_failure_cannot_leave_a_spawned_process",
+      "test_context_provisioning.SSHTransportTests.test_spawn_failure_closes_any_created_selector"
+    ],
+    "preserved_test_ids": 194,
+    "red_report_sha256": "78dde4da355071fbd4656517cfe383cc54e871cdda99c9ed60737bdf7b0c5574",
+    "red_tests": {
+      "failures": [
+        "test_context_provisioning.SSHTransportTests.test_selector_setup_failure_cannot_leave_a_spawned_process"
+      ],
+      "passed": [
+        "test_context_provisioning.SSHTransportTests.test_pipe_setup_failure_reaps_the_child_and_closes_resources",
+        "test_context_provisioning.SSHTransportTests.test_spawn_failure_closes_any_created_selector"
+      ],
+      "tests_run": 3
+    },
+    "resource_warnings_as_errors": true,
+    "script_tests": 31,
+    "script_tests_phase": "intake; script/digest inputs unchanged by remediation",
+    "skipped": []
+  },
+  "correction_committed": false,
+  "correction_pushed": false,
+  "date": "2026-10-11",
+  "deployment_complete": false,
+  "environment": {
+    "architecture": "x86_64",
+    "docker_available": false,
+    "os": "Linux",
+    "python": "3.14.7"
+  },
+  "execution_authorized": false,
+  "findings": [
+    {
+      "defect": "Selector creation after spawn and before the cleanup guard can leave the owned process and its pipes open on allocation failure.",
+      "id": "COR-SSH-001",
+      "independent_rereview_complete": false,
+      "local_regression_verified": true,
+      "location_at_reviewed_commit": "tests/crawl-jobs-v2-observer/context_transport.py:64-69",
+      "probe": {
+        "child_alive_after_refusal": true,
+        "fault": "injected ENFILE from DefaultSelector with a real benign Python child",
+        "pipes_closed_after_refusal": [
+          false,
+          false,
+          false
+        ],
+        "probe_child_cleaned_up": true
+      },
+      "remediation": "Admit the selector before spawn, recheck the deadline, and guard spawn/pipe setup with conditional child cleanup and unconditional selector close.",
+      "severity": "medium"
+    }
+  ],
+  "kind": "c0_context_provisioning_review",
+  "live_installation_performed": false,
+  "live_ssh_authentication": false,
+  "m4_accepted": false,
+  "native_actor_execution": false,
+  "original_evidence_exports_verified": 5,
+  "original_package_files_verified": 45,
+  "pr_created": false,
+  "remaining": [
+    "Independent final correctness/security re-review of corrected source and raw ARM64 artifacts",
+    "Separate scoped PR/publication decision",
+    "Identify/admit the correct Linux/AArch64 host and install/acquire real context",
+    "Runtime-image admission, full trial/timing/cleanup assembly and separately authorized calibration"
+  ],
+  "review_mode": "Single-session source review and local remediation; no separate final reviewer verdict",
+  "review_scope": [
+    "private bundle generation and exact validation",
+    "fixed service endpoint and owned-file reads",
+    "SSH configuration, client/credential pins and bounded exchange",
+    "startup/deadline/cleanup failure paths",
+    "preparation and backend preflight bindings",
+    "retained evidence hashes and native/oracle input continuity"
+  ],
+  "reviewed_commit": "1e956962596f7bb86143d45dd62ebf863c0b64eb",
+  "source_inventory_sha256": "f53058a955de01027efcdbaa6adace7d6904197c845e5886b25e7d9db41bc227",
+  "status": "PASS_LOCAL_REMEDIATION_INDEPENDENT_REREVIEW_PENDING",
+  "version": 1
+}

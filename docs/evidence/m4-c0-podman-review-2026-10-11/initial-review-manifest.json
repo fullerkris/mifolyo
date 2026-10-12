@@ -1,0 +1,75 @@
+{
+  "execution_authorized": false,
+  "files": {
+    "correctness-initial-artifact-checks.json": {
+      "bytes": 6545,
+      "private_source": "/tmp/opencode/m4-c0-podman-arm64-2026-10-11/correctness/artifact-checks.json",
+      "sha256": "d0e089b240c7014b236b2e994a9a9a86192f6d7274f5c733a310ea66b87d1bdf"
+    },
+    "correctness-initial-c0-tests.json": {
+      "bytes": 65982,
+      "private_source": "/tmp/opencode/m4-c0-podman-arm64-2026-10-11/correctness/c0-tests.json",
+      "sha256": "94bd6ddf268cf9c877868019319fae2268da6869386bfc9ffba15ec4ed8b88d9"
+    },
+    "correctness-initial-probe-cleanup.json": {
+      "bytes": 1437,
+      "private_source": "/tmp/opencode/m4-c0-podman-arm64-2026-10-11/correctness/probe-cleanup.json",
+      "sha256": "c6beef3e05c0c59d46557c26870fede66261965dddfa7d6bdab90a8092ddc80e"
+    },
+    "correctness-initial-probe-preparation.json": {
+      "bytes": 1498,
+      "private_source": "/tmp/opencode/m4-c0-podman-arm64-2026-10-11/correctness/probe-preparation.json",
+      "sha256": "a84a327ebad902089d4ff6a59dfc77bc82df400dcca7de7dd862a555773b75f1"
+    },
+    "correctness-initial-review.json": {
+      "bytes": 6437,
+      "private_source": "/tmp/opencode/m4-c0-podman-arm64-2026-10-11/correctness/review.json",
+      "sha256": "ada46c4392db346166ad9aa8531baf3c3aaa293f4a42cced5b8ad9418fdf77f7"
+    },
+    "correctness-initial-review.md": {
+      "bytes": 17726,
+      "private_source": "/tmp/opencode/m4-c0-podman-arm64-2026-10-11/correctness/review.md",
+      "sha256": "9fb29ce22f285ecded90fb4c1a2a8eb6d89a62a866f2af3a90d86bd319de1ea9"
+    },
+    "security-initial-artifacts.json": {
+      "bytes": 5278,
+      "private_source": "/tmp/opencode/m4-c0-podman-arm64-2026-10-11/security/artifacts.json",
+      "sha256": "27865da68adc1c69a64fd756bbfd66bbf765592673557d32bf4d25481c168c52"
+    },
+    "security-initial-c0-tests.json": {
+      "bytes": 65984,
+      "private_source": "/tmp/opencode/m4-c0-podman-arm64-2026-10-11/security/c0-tests.json",
+      "sha256": "66161b67cf93ce43f405314ef4b4606aaa6af2cf9f94d350fe2d07fbc0065310"
+    },
+    "security-initial-isolated-umask-retest.json": {
+      "bytes": 776,
+      "private_source": "/tmp/opencode/m4-c0-podman-arm64-2026-10-11/security/isolated-umask-retest.json",
+      "sha256": "72da6af58a6f29f7ab013d3b655c8c650eabcfb5f17269750bda456d3a919e10"
+    },
+    "security-initial-probes.json": {
+      "bytes": 5189,
+      "private_source": "/tmp/opencode/m4-c0-podman-arm64-2026-10-11/security/probes.json",
+      "sha256": "607210143f9a8b119d7987046cd1e3d603a4b9535c25cdee7efdd54856edd8f9"
+    },
+    "security-initial-review.json": {
+      "bytes": 13301,
+      "private_source": "/tmp/opencode/m4-c0-podman-arm64-2026-10-11/security/review.json",
+      "sha256": "e90fdea81bb4954e3d8d3835472112aa74c4e73c3f4a2381e2832fd8714810e8"
+    },
+    "security-initial-review.md": {
+      "bytes": 9586,
+      "private_source": "/tmp/opencode/m4-c0-podman-arm64-2026-10-11/security/review.md",
+      "sha256": "fb01f244cc197fcfa5083711963bd95860dec40eb15ad1f09282067ded50686c"
+    }
+  },
+  "findings": [
+    "COR-SSH-002",
+    "COR-SSH-003",
+    "QA-ENV-001"
+  ],
+  "kind": "c0_pinned_ssh_initial_independent_reviews",
+  "publication_authorized": false,
+  "source_inventory_sha256": "f53058a955de01027efcdbaa6adace7d6904197c845e5886b25e7d9db41bc227",
+  "status": "NEEDS_REMEDIATION",
+  "version": 1
+}

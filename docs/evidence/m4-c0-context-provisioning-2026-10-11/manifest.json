@@ -1,0 +1,36 @@
+{
+  "base": "64c98a78e0e0ae1731f1516c06932bc881e8becf",
+  "deployment_complete": false,
+  "execution_authorized": false,
+  "files": {
+    "build-verification.json": {
+      "bytes": 1589,
+      "private_source": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-provisioning-2026-10-11/build-verification.json",
+      "sha256": "c9826477cb4e8afbfbe3adb6c41112f1af87be97ebddf7e06a53e07b4cd2ec58"
+    },
+    "c0-tests.json": {
+      "bytes": 65022,
+      "private_source": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-provisioning-2026-10-11/final-tests.json",
+      "sha256": "9ac5aea6ca17f477816e31029b5a8238ff529a1b52c640c9ebbaa6d53ac5fc81"
+    },
+    "merged-main-ci-gate.json": {
+      "bytes": 9152,
+      "private_source": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-provisioning-2026-10-11/main/ci-gate.json",
+      "sha256": "53159ebf13efec96b3d08dd491abbeadc8e3f84bc988c86dfff87baf1e01210e"
+    },
+    "source-inventory.json": {
+      "bytes": 9779,
+      "private_source": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-provisioning-2026-10-11/source-inventory.json",
+      "sha256": "b69502b2287b08331570f7a7c2728586da216341ec9da0fdb0c097abfaac4c4a"
+    },
+    "verification.json": {
+      "bytes": 6343,
+      "private_source": "/private/var/folders/bg/k5cdrp4s64j32mt9h8b9t39h0000gn/T/opencode/m4-c0-context-provisioning-2026-10-11/verification.json",
+      "sha256": "3e82982be4d22eeb7c0334fd77b3c5f28300b7d44c4da6fd025dd51d2c3a2019"
+    }
+  },
+  "kind": "c0_context_provisioning_tooling",
+  "live_installation_performed": false,
+  "source_inventory_sha256": "b69502b2287b08331570f7a7c2728586da216341ec9da0fdb0c097abfaac4c4a",
+  "version": 1
+}

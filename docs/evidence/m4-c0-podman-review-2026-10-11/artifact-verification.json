@@ -1,0 +1,42 @@
+{
+  "deployment_complete": false,
+  "execution_authorized": false,
+  "extraction_container_absent": true,
+  "joins": {
+    "all_three_profiles": true,
+    "compiled_observer_bpf": true,
+    "elf_machine_aarch64": true,
+    "oracle_source_and_interpreter_bindings": true,
+    "target_instruction_manifest": true,
+    "toolchain_source_and_elf_bindings": true
+  },
+  "kind": "c0_podman_arm64_artifact_verification",
+  "live_host_collector_executed": false,
+  "native_artifacts": {
+    "cases.h": "64591020572e8af5afae67856ba79e053afacaf41d08ba10a98f489558e383f4",
+    "observer": "e407a02c67ac7a0cd192e612afe5ad643701c16821f6854e3a11b040e55cfb61",
+    "observer-seccomp.json": "abf581851c19631ba5125ac03443f4ad72c6e8fd7b92fa086218060e07b56bf2",
+    "oracle-seccomp.json": "f82e0ae5335e1393c402265c4a14a4e56ad8df27ab48eee70907745fef3b6835",
+    "target": "819cde0b38e12b235acbef2b3741551af86683ff2c3ec5186b5a45b710e5da45",
+    "target-filter.bpf": "701824ff5f8ccafa359f711d2714b23c8a303789cd1987a3a85aba19a3667b93",
+    "target-manifest.json": "a19b4096f0f268742ebc98bf879e12fbb0de1124a1c8144959496f6b8a615e43",
+    "target-seccomp.json": "6a1ffdf7326ae1370bd55cc2edb2bcfb49b2d65ce7090205576d3b6e9496ab3e",
+    "target_filter.h": "8a1c8f5941860b7acd92f3dc53952aa746fa9d1c57098b214a691fa8a6380b1d",
+    "target_manifest.h": "ccee87e21a21d7d0f8e07cac9fe1dc3e9f20333d51b32e9231d1e2362686d7a5",
+    "toolchain.json": "e953b3c89a20ebeca25ebbcce8d30486aa10174db1d9986977bed786aa47f9dc"
+  },
+  "native_artifacts_matching_prior": 11,
+  "native_programs_executed": false,
+  "oracle_elf_matches_prior": true,
+  "oracle_elf_sha256": "cb4548d280f38c2b1df4cba45f12c90a034729e08fce5bf1a223c58add0e21e3",
+  "oracle_manifest_matches_prior": true,
+  "oracle_manifest_sha256": "3f51809ebddbad24cbe03611e67b678df003121b77aff0743de0251baf538131",
+  "oracle_worker_executed": false,
+  "prior_container_ids_preserved": [
+    "a7d85c29fc9983d8f7ef34dff3a82a52f7ad7cbae002c52299eef5266f80feb1"
+  ],
+  "runtime_feasibility_proven": false,
+  "source_inventory_sha256": "f53058a955de01027efcdbaa6adace7d6904197c845e5886b25e7d9db41bc227",
+  "status": "PASS_STATIC_ARTIFACT_RECONSTRUCTION",
+  "version": 1
+}

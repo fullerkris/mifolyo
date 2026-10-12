@@ -6,6 +6,49 @@ from it. Native code is compiled for static review; the preparation build never
 executes either output program. The Python APIs provide contracts/oracles and
 bounded, externally authorized admission collection from the owned actor streams.
 
+## Architecture-bound contracts (C0-ARCH-02)
+
+Architecture selection uses the canonical Linux names below. `contracts.platform()`
+returns a closed descriptor; `platform_digest()` binds its exact canonical bytes.
+Aliases are not accepted in preparation/deployment/admission packets.
+
+| Contract name | OCI platform | ELF machine | Seccomp architecture |
+|---|---|---|---|
+| `aarch64` | `linux/arm64` | 183 (`EM_AARCH64`), ELF64 little-endian | `SCMP_ARCH_AARCH64` |
+| `x86_64` | `linux/amd64` | 62 (`EM_X86_64`), ELF64 little-endian | `SCMP_ARCH_X86_64` |
+
+Both names are available for preparation and deployment **metadata**. Runtime
+entrypoints, profile/filter generation, resource scopes and artifact builders
+currently require `aarch64`; `x86_64` refuses with `ARCHITECTURE_NOT_IMPLEMENTED`
+until the C0-ARCH-03 port supplies its native implementation. No ARM64 profile,
+filter, instruction sequence or kernel observation is relabelled for x64.
+
+Preparation and resource scopes are **version 2**, with an explicit architecture
+and `platform_sha256`. Deployment objects and their anchors are **version 2**
+with matching architectures. Generated host service configuration and bundle
+manifests carry the same selection. Missing/legacy fields reject rather than
+being inferred; producer convenience defaults still select ARM64 explicitly.
+
+The signed context protocol and all four native admission frames are **version 2**.
+Requests bind the selected architecture; the authenticated KERNEL payload carries
+the collector's observed architecture. Native IDENTITY carries the actor's
+architecture, joined to the preparation, trusted context, owned stream binding
+and resource scope. Control messages and the three-line case/nonce/Linux-expiry
+handshake retain their existing format. Frame and shared-byte limits are unchanged.
+
+Docker daemon/image metadata must match the selected OCI architecture before
+container creation/start. Profile content stays exact and architecture-bound.
+Build manifests/toolchain records bind the platform digest, actual ELF headers
+and artifact hashes; runtime interpreter hashing also checks ELF architecture.
+The ELF-header classifier alone is not complete ELF, image or runtime admission.
+
+**Regenerate** old preparations, source/deployment bundles, resource snapshots,
+context exchanges, native ELFs/instruction manifests and oracle manifests for this
+version. Old version-1 admission frames and unbound packets are incompatible.
+ARM64 seccomp profile and compiled-filter bytes retain their existing constraints.
+The x64 implementation, dual-runtime image builds and native host/backend admission
+remain C0-ARCH-03–05 work; these contracts do not grant execution authority.
+
 ## Implemented artifact components
 
 - `contracts.py`: fixed 276-trial C0 registry, immutable preparation identities,
@@ -78,7 +121,7 @@ earlier artifact identities remain historical records.
 target and observer, after case selection and a nonzero 64-hex invocation/scope
 nonce. It emits four canonical frames, each still limited to 1,024 bytes:
 
-1. **IDENTITY:** executable SHA-256, boot identity, namespace inodes/device,
+1. **IDENTITY:** explicit architecture, executable SHA-256, boot identity, namespace inodes/device,
    UID/GID-map digests, process/main-thread IDs and start ticks.
 2. **CONFINEMENT:** all UID/GID slots, supplementary groups, five zero capability
    sets, no-new-privileges, seccomp mode/filter count, dumpability, core limits,
@@ -201,7 +244,8 @@ admitted before the new transport is used for a real trial.
 
 The closed deployment object contains:
 
-- `version: 1` and the existing independently admitted `anchor`;
+- `version: 2`, canonical `architecture`, and an independently admitted version-2
+  `anchor` with the same architecture;
 - a canonical numeric IPv4/IPv6 `host` and integer `port` (no DNS names/options);
 - dedicated `service_uid` / `service_gid`, neither root nor actor UID/GID 999;
 - exactly one out-of-band verified `ssh-ed25519` host key and client public key,
@@ -260,7 +304,8 @@ On the independently identified test host, the operator must:
 Both SSH configuration and `authorized_keys` fix the command to
 `/usr/bin/python3 -I -B /opt/obs1/context-source/context_ssh.py`. The entrypoint
 requires original command `obs1-context-v1`, the admitted service identity,
-exact root-owned code inventory and interpreter digest. It then delegates to
+matching service/anchor architecture, exact root-owned code inventory and
+architecture-checked interpreter digest. It then delegates to
 the bounded signed context worker. It does not offer a shell or caller pathname.
 
 #### Controller preflight

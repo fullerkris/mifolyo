@@ -1,0 +1,8 @@
+{
+  "in_memory_redirected_script_sha256": "e84310ad312ab18e287e5efdd1077b9aa9aa7c568143370b2fc251dc6f2caf2f",
+  "mode": "host",
+  "original_script": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/security/probe_host_join.py",
+  "original_script_sha256": "633c12260250588b55cdeda484d454d187c9805883b443d0315c0d3a7b0e6a0e",
+  "original_unmodified": true,
+  "status": "PASS"
+}

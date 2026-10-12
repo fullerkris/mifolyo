@@ -1,0 +1,48 @@
+{
+  "committed": false,
+  "corrected_findings": {
+    "COR-ARCH-001": "Shared immutable-image admission is rechecked before both create and start transports.",
+    "COR-ARCH-002": "Validate and freeze operation-local anchors/keys; reject anchor drift across callbacks and join context/request/lease/receipt architecture.",
+    "COR-ARCH-003": "Record mode validates one target snapshot and its exact instruction manifest before compiler queries or output; records that same snapshot hash."
+  },
+  "execution_authorized": false,
+  "fresh_native_build": "PASS",
+  "independent_review_complete": false,
+  "kind": "c0_architecture_review_remediation",
+  "live_context_acquisition": false,
+  "native_actor_execution": false,
+  "new_test_ids": [
+    "test_architecture_review.ArchitectureReviewTests.test_anchor_drift_during_authorization_refuses_before_exchange",
+    "test_architecture_review.ArchitectureReviewTests.test_endpoint_anchor_drift_during_observation_refuses",
+    "test_architecture_review.ArchitectureReviewTests.test_endpoint_and_request_parser_reject_legacy_anchor",
+    "test_architecture_review.ArchitectureReviewTests.test_legacy_anchor_is_revalidated_at_each_source_acquisition",
+    "test_architecture_review.ArchitectureReviewTests.test_record_accepts_matching_arm64_target_and_manifest",
+    "test_architecture_review.ArchitectureReviewTests.test_record_rejects_foreign_target_and_stale_or_legacy_manifest",
+    "test_architecture_review.ArchitectureReviewTests.test_signed_response_cannot_follow_a_mutated_public_anchor",
+    "test_architecture_review.ArchitectureReviewTests.test_start_checks_each_roles_actual_image_architecture",
+    "test_architecture_review.ArchitectureReviewTests.test_valid_context_receipt_remains_bound_to_the_signed_request"
+  ],
+  "oracle_build_reused": true,
+  "oracle_inputs_verified_unchanged": 10,
+  "oracle_manifest_and_interpreter_unchanged": true,
+  "oracle_worker_execution": false,
+  "previous_229_ids_preserved": true,
+  "pushed": false,
+  "recorded_utc": "2026-10-12T20:06:27.274023+00:00",
+  "red_report_sha256": "6e58410aea85c684e5a3d19d53d4b6ad918739f5a7ab28def93fba01598cda22",
+  "runtime_acceptance": false,
+  "source_inventory_sha256": "a02661da8cb299ff60e4ad9752ea53329b65c384d7f8e15853641dcf6db426cc",
+  "status": "PASS_LOCAL_REMEDIATION_REREVIEW_PENDING",
+  "test_reports": {
+    "022": "d6bf46767e6c7909789e53ce008dc0e26ebd60f4c3e3f76fe4837747ceab38c4",
+    "077": "d6bf46767e6c7909789e53ce008dc0e26ebd60f4c3e3f76fe4837747ceab38c4"
+  },
+  "tests_per_run": 238,
+  "toolchain_source_record_regenerated": true,
+  "umasks": [
+    "022",
+    "077"
+  ],
+  "unchanged_native_outputs": 10,
+  "version": 1
+}

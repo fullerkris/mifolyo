@@ -1,0 +1,43 @@
+{
+  "all_existing_test_assertion_asts_preserved": true,
+  "independent_full_suite_runs": 1,
+  "merged_baseline_ids_retained": 202,
+  "new_test_ids": [
+    "test_architecture_review.ArchitectureReviewTests.test_anchor_drift_during_authorization_refuses_before_exchange",
+    "test_architecture_review.ArchitectureReviewTests.test_endpoint_anchor_drift_during_observation_refuses",
+    "test_architecture_review.ArchitectureReviewTests.test_endpoint_and_request_parser_reject_legacy_anchor",
+    "test_architecture_review.ArchitectureReviewTests.test_legacy_anchor_is_revalidated_at_each_source_acquisition",
+    "test_architecture_review.ArchitectureReviewTests.test_record_accepts_matching_arm64_target_and_manifest",
+    "test_architecture_review.ArchitectureReviewTests.test_record_rejects_foreign_target_and_stale_or_legacy_manifest",
+    "test_architecture_review.ArchitectureReviewTests.test_signed_response_cannot_follow_a_mutated_public_anchor",
+    "test_architecture_review.ArchitectureReviewTests.test_start_checks_each_roles_actual_image_architecture",
+    "test_architecture_review.ArchitectureReviewTests.test_valid_context_receipt_remains_bound_to_the_signed_request"
+  ],
+  "previous_ids_retained": 229,
+  "prior_ssh_and_umask_fixes_preserved_by_byte_identity": {
+    "context_transport.py": "43193118350d4d52d0f3901e4a93561fa7cd94dd4e81c2ce99337b5364404af0",
+    "test_architecture_contracts.py": "6bf71465ff0a4928410e198138a57066890cb53153a9b2e7e38b4531ee06310a",
+    "test_context_provisioning.py": "47af7da18e75e311d280927b83cb64bf1b12b01562217f75bfd21b10255e83de"
+  },
+  "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+  "status": "PASS",
+  "supplementary_author_022_077_reports_match": true,
+  "supplementary_author_red_report_sha256": "6e58410aea85c684e5a3d19d53d4b6ad918739f5a7ab28def93fba01598cda22",
+  "supplementary_red_failed_methods": [
+    "test_architecture_review.ArchitectureReviewTests.test_anchor_drift_during_authorization_refuses_before_exchange",
+    "test_architecture_review.ArchitectureReviewTests.test_endpoint_anchor_drift_during_observation_refuses",
+    "test_architecture_review.ArchitectureReviewTests.test_endpoint_and_request_parser_reject_legacy_anchor",
+    "test_architecture_review.ArchitectureReviewTests.test_legacy_anchor_is_revalidated_at_each_source_acquisition",
+    "test_architecture_review.ArchitectureReviewTests.test_record_rejects_foreign_target_and_stale_or_legacy_manifest",
+    "test_architecture_review.ArchitectureReviewTests.test_signed_response_cannot_follow_a_mutated_public_anchor",
+    "test_architecture_review.ArchitectureReviewTests.test_start_checks_each_roles_actual_image_architecture"
+  ],
+  "supplementary_red_positive_methods": [
+    "test_architecture_review.ArchitectureReviewTests.test_record_accepts_matching_arm64_target_and_manifest",
+    "test_architecture_review.ArchitectureReviewTests.test_valid_context_receipt_remains_bound_to_the_signed_request"
+  ],
+  "test_log_sha256": "1d9988d0d4d03077a7cc770d7674f9a6ab83f8452842deb850e0ac35965abafb",
+  "test_report_sha256": "d6bf46767e6c7909789e53ce008dc0e26ebd60f4c3e3f76fe4837747ceab38c4",
+  "tests_run": 238,
+  "umask": "022"
+}

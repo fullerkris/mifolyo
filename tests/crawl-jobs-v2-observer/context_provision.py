@@ -10,13 +10,13 @@ import struct
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from contracts import Invalid, canonical, decode, digest, exact, integer, require, sha
+from contracts import Invalid, canonical, decode, digest, exact, integer, platform, platform_digest, require, runtime_architecture, sha
 import context_files as files
 from linux_observation import source_hash
 import runtime_context as context
 
 TRANSPORT_FILES = ("context_files.py", "context_provision.py", "context_transport.py")
-DEPLOYMENT_FIELDS = ("version", "anchor", "host", "port", "service_uid", "service_gid", "ssh_host_key", "ssh_client_key", "ssh_client_sha256", "host_python_sha256")
+DEPLOYMENT_FIELDS = ("version", "architecture", "anchor", "host", "port", "service_uid", "service_gid", "ssh_host_key", "ssh_client_key", "ssh_client_sha256", "host_python_sha256")
 
 
 def public_key(value):
@@ -34,8 +34,10 @@ def public_key(value):
 
 def validate_deployment(value):
     exact(value, DEPLOYMENT_FIELDS)
-    integer(value["version"], 1, 1)
+    integer(value["version"], 2, 2)
+    platform(value["architecture"])
     context.validate_anchor(value["anchor"])
+    require(value["architecture"] == value["anchor"]["architecture"], "CONTEXT_ARCHITECTURE")
     require(type(value["host"]) is str and "%" not in value["host"], "CONTEXT_SSH_HOST")
     try:
         host = ipaddress.ip_address(value["host"])
@@ -84,13 +86,14 @@ def validate_sshd_output(raw):
 
 def host_files(deployment):
     value = validate_deployment(deployment)
+    runtime_architecture(value["architecture"])
     require(value["anchor"]["source_sha256"] == context.source_digest(), "CONTEXT_SOURCE_BINDING")
     root = Path(__file__).resolve().parent
     result = {"code/" + name: (root / name).read_bytes() for name in context.SOURCE_FILES}
     require(sha(canonical({name: sha(result["code/" + name]) for name in context.SOURCE_FILES})) ==
         value["anchor"]["source_sha256"], "CONTEXT_SOURCE_CHANGED")
     result.update({"etc/context-source.json": canonical(value["anchor"]),
-        "etc/context-service.json": canonical({"uid": value["service_uid"], "gid": value["service_gid"], "python_sha256": value["host_python_sha256"]}),
+        "etc/context-service.json": canonical({"architecture": value["architecture"], "uid": value["service_uid"], "gid": value["service_gid"], "python_sha256": value["host_python_sha256"]}),
         "etc/authorized_keys": ('restrict,command="' + files.FORCED_COMMAND + '" ' + value["ssh_client_key"] + "\n").encode(),
         "sshd_config.fragment": sshd_fragment()})
     require(context.source_digest() == value["anchor"]["source_sha256"], "CONTEXT_SOURCE_CHANGED")
@@ -104,7 +107,8 @@ def write_new(path, raw, mode=0o600):
 
 
 def manifest(value, public_hashes):
-    return {"version": 1, "kind": "context_provisioning_bundle", "deployment_sha256": deployment_digest(value),
+    return {"version": 2, "kind": "context_provisioning_bundle", "architecture": value["architecture"],
+        "platform_sha256": platform_digest(value["architecture"]), "deployment_sha256": deployment_digest(value),
         "runtime_context_source": context.source_digest(), "runtime_context_transport": transport_digest(),
         "files": public_hashes, "host_installation": {"code_directory": str(files.CODE), "config_directory": str(files.CONFIG),
             "directory_owner": 0, "directory_mode": 0o755, "public_file_owner": 0, "public_file_mode": 0o444,

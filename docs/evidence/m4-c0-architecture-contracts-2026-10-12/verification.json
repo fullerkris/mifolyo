@@ -1,0 +1,78 @@
+{
+  "arm64_profile_and_filter_bytes_preserved": true,
+  "baseline_test_ids_preserved": 202,
+  "canonical_architectures": [
+    "aarch64",
+    "x86_64"
+  ],
+  "committed": false,
+  "direct_transport_runtime_guard_added": true,
+  "elf_manifest_filter_profile_source_joins": "PASS",
+  "execution_authorized": false,
+  "extraction_container_never_started_and_removed": true,
+  "independent_review_complete": false,
+  "kind": "c0_architecture_contract_local_verification",
+  "live_context_acquisition": false,
+  "m4_accepted": false,
+  "migration_fixture_updates": [
+    "GuardStream binding now includes architecture",
+    "Fake Docker startup adapter now reports the admitted server architecture"
+  ],
+  "mixed_architecture_paths_tested": true,
+  "native_actor_execution": false,
+  "native_artifact_build": "PASS",
+  "new_test_ids": [
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_admission_summary_cannot_promote_an_unsupported_architecture",
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_authenticated_wrong_architecture_context_response_refuses",
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_backend_context_architecture_mismatch_prevents_callbacks",
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_backend_platform_or_image_mismatch_prevents_create",
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_bundle_manifest_and_host_configuration_bind_the_architecture",
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_collector_observation_must_match_the_independent_anchor",
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_deployment_and_anchor_architecture_must_agree",
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_direct_ssh_transport_refuses_x64_before_client_or_process_io",
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_foreign_daemon_blocks_actor_start_and_mixed_context_blocks_oracle",
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_known_x64_deployment_is_metadata_only_until_the_port",
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_legacy_native_frames_and_contexts_do_not_get_an_inferred_architecture",
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_linux_executable_hash_also_checks_fragmented_elf_header",
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_linux_reader_rejects_foreign_kernel_before_observations",
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_mixed_preparation_refuses_before_source_authorization_and_io",
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_native_preparation_context_binding_and_identity_must_agree",
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_observer_and_oracle_cannot_borrow_foreign_architecture_peer",
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_x64_process_stream_refuses_before_spawning",
+    "test_architecture_contracts.ArchitectureContractTests.test_aliases_unknown_platforms_and_coercions_are_rejected",
+    "test_architecture_contracts.ArchitectureContractTests.test_both_preparation_contracts_are_explicit_and_non_authorizing",
+    "test_architecture_contracts.ArchitectureContractTests.test_build_entrypoints_refuse_x64_before_writing_outputs",
+    "test_architecture_contracts.ArchitectureContractTests.test_canonical_platforms_bind_linux_oci_elf_and_seccomp_names",
+    "test_architecture_contracts.ArchitectureContractTests.test_elf_class_endianness_machine_version_and_short_headers_refuse",
+    "test_architecture_contracts.ArchitectureContractTests.test_elf_headers_are_classified_from_bytes_not_requested_labels",
+    "test_architecture_contracts.ArchitectureContractTests.test_existing_arm64_profiles_and_compiled_filter_bytes_are_preserved",
+    "test_architecture_contracts.ArchitectureContractTests.test_mislabeled_oci_profile_cannot_be_admitted",
+    "test_architecture_contracts.ArchitectureContractTests.test_preparation_relabeling_and_legacy_packets_refuse",
+    "test_architecture_contracts.ArchitectureContractTests.test_resource_scope_binds_architecture_and_refuses_legacy_or_relabeling"
+  ],
+  "old_unbound_packets_rejected": true,
+  "oracle_artifact_build": "PASS",
+  "oracle_interpreter_verified": true,
+  "oracle_worker_execution": false,
+  "package_files": 46,
+  "prior_container_inventory_preserved": true,
+  "pushed": false,
+  "recorded_utc": "2026-10-12T19:26:17.152556+00:00",
+  "runtime_acceptance": false,
+  "runtime_implemented": [
+    "aarch64"
+  ],
+  "schema_version": 2,
+  "source_inventory_sha256": "b5388bbdf282e286caec43f6a5e12bc5e0129a6630f43bd2c2b15b405b0d7bfb",
+  "status": "PASS_LOCAL_ARCHITECTURE_CONTRACTS",
+  "test_reports": {
+    "022": "c426dc3172d90a4592cfbf8549092ed17c11e79b2245589d65308838be884eaa",
+    "077": "c426dc3172d90a4592cfbf8549092ed17c11e79b2245589d65308838be884eaa"
+  },
+  "tests_per_full_run": 229,
+  "umasks": [
+    "022",
+    "077"
+  ],
+  "version": 1
+}

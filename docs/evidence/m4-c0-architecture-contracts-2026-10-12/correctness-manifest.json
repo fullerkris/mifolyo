@@ -1,0 +1,83 @@
+{
+  "execution_authorized": false,
+  "files": {
+    "correctness-artifact-checks.json": {
+      "bytes": 3372,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/correctness/artifact-checks.json",
+      "sha256": "781ef9e83dfd7e9e91742e6f1bbc90f4273a6e8657848d2e42099be87cf04294"
+    },
+    "correctness-integrity-after.json": {
+      "bytes": 14858,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/correctness/integrity-after.json",
+      "sha256": "627f12af8bada418fd5adb2b38876ae209d78102c5c7c6a0ec06255dcc3e28ff"
+    },
+    "correctness-integrity-after.log": {
+      "bytes": 304,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/correctness/integrity-after.log",
+      "sha256": "33b41de96541e3d4780191a23343e2f15075b1624c3ea3d3ae3a9e1705135273"
+    },
+    "correctness-integrity-before.json": {
+      "bytes": 14658,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/correctness/integrity-before.json",
+      "sha256": "24b805df60ea84e40ec35c66a0c77d15177c0d6cde4e03eab2d63a26a5e4db3f"
+    },
+    "correctness-probes-recheck.log": {
+      "bytes": 3787,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/correctness/probes-recheck.log",
+      "sha256": "6b18e22193daa77a8ef9d1c2927dcaf9fc183e15243de07d3145ce3abe5b9490"
+    },
+    "correctness-probes.json": {
+      "bytes": 5568,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/correctness/probes.json",
+      "sha256": "12fa8e1d915abdfc0885b8036e389b5ed8601e6507c2f975301dbaaffb793f3f"
+    },
+    "correctness-probes.log": {
+      "bytes": 3662,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/correctness/probes.log",
+      "sha256": "27ad6080552bdecb23adb56f975f4ffacf1c3ea53cc047aec8efd02df0541aa6"
+    },
+    "correctness-review.json": {
+      "bytes": 23206,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/correctness/review.json",
+      "sha256": "cfec175b78f6a21f47a6407ffec213a1d2ee09e64cf25941defc168a6796fbe4"
+    },
+    "correctness-review.md": {
+      "bytes": 15050,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/correctness/review.md",
+      "sha256": "f1920eb21d1d2d50584746fc43086db375af6ca02f2e7f7b9f715ffb625b30ff"
+    },
+    "correctness-static-checks-attempt1.log": {
+      "bytes": 1100,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/correctness/static-checks-attempt1.log",
+      "sha256": "8fdfa7ab98f92a3135d43851ace2f64057ba3b9ecd1f94b179ef67db3638f56c"
+    },
+    "correctness-static-checks.log": {
+      "bytes": 174,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/correctness/static-checks.log",
+      "sha256": "60ef178d30c6243d537481c68d4962b3642d56a127b751c5e893629c87257ec5"
+    },
+    "correctness-test-verification.json": {
+      "bytes": 4728,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/correctness/test-verification.json",
+      "sha256": "4bc088c00f51499202f426e6fe50545c95a076cb72f8157383da4e376e87cf41"
+    },
+    "correctness-tests.json": {
+      "bytes": 77823,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/correctness/tests.json",
+      "sha256": "c426dc3172d90a4592cfbf8549092ed17c11e79b2245589d65308838be884eaa"
+    },
+    "correctness-tests.log": {
+      "bytes": 37914,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/correctness/tests.log",
+      "sha256": "5c91070fc5792db831a844f421fbcd5202bcf50e4ce74722285ad32bf6688db7"
+    }
+  },
+  "kind": "c0_architecture_independent_review_exports",
+  "publication_authorized": false,
+  "review_sha256": "cfec175b78f6a21f47a6407ffec213a1d2ee09e64cf25941defc168a6796fbe4",
+  "reviewer": "correctness",
+  "runtime_acceptance": false,
+  "source_inventory_sha256": "b5388bbdf282e286caec43f6a5e12bc5e0129a6630f43bd2c2b15b405b0d7bfb",
+  "verdict": "NEEDS_REMEDIATION",
+  "version": 1
+}

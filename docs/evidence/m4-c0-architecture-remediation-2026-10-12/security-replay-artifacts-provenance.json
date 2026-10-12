@@ -1,0 +1,8 @@
+{
+  "in_memory_redirected_script_sha256": "d6858ea32d707b3100d5eff52d1e230cafb65d3231d44f9d6c538c6be780e431",
+  "mode": "artifacts",
+  "original_script": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/security/probe_artifacts.py",
+  "original_script_sha256": "ca302863f6648c13a8a478b37109961d67ee99c4aed753bd4631685fa273e3b3",
+  "original_unmodified": true,
+  "status": "PASS"
+}

@@ -1,0 +1,87 @@
+{
+  "changed_native_outputs": [
+    "toolchain.json"
+  ],
+  "compiled_filter": {
+    "bytes": 272,
+    "file_offset": 3498664,
+    "instructions": 34,
+    "sha256": "701824ff5f8ccafa359f711d2714b23c8a303789cd1987a3a85aba19a3667b93"
+  },
+  "independent_rebuild": false,
+  "native_build_log_sha256": "46731c37be6f59e38825dc859c11b64f0a91f3233d633608288dbaeffa861ff4",
+  "native_build_record_sha256": "3e3def6ffb319eb0ebb7604581278468da3ea47d86833180f7151261ac505cca",
+  "native_elfs": {
+    "observer": {
+      "bytes": 5450312,
+      "elf_class": 2,
+      "elf_data": 1,
+      "elf_machine": 183,
+      "elf_type": 3,
+      "sha256": "53800d2281f57341269a0f1c9686809883241ed01872338b0544bf0439e88120"
+    },
+    "target": {
+      "bytes": 5448416,
+      "elf_class": 2,
+      "elf_data": 1,
+      "elf_machine": 183,
+      "elf_type": 3,
+      "sha256": "07ae68522b7e87560bda4d32fcb0f244c74fd748f7cd9ccfe1ac3cf2321deab5"
+    }
+  },
+  "native_execution": false,
+  "native_outputs_byte_identical": [
+    "cases.h",
+    "observer",
+    "observer-seccomp.json",
+    "oracle-seccomp.json",
+    "target",
+    "target-filter.bpf",
+    "target-manifest.json",
+    "target-seccomp.json",
+    "target_filter.h",
+    "target_manifest.h"
+  ],
+  "oracle_build_log_sha256": "0de651ee78e1d65adb1ddef273c39c088273e13c3e3b496dc4c5bfb46594aa10",
+  "oracle_build_record_sha256": "9d894e5745fa4dc54bec359083181fe70c080e0a9e2522f577839cdc944ffac1",
+  "oracle_input_hashes_unchanged": {
+    "Dockerfile.oracle": "7c3b72b8db003f927f4a34342df7180aa674fa25fce9233cad173032dc735e5e",
+    "Dockerfile.oracle.dockerignore": "679f3cd226874aa189596199b105352137171eed114a1393e478eafc43f330d3",
+    "build_oracle.py": "bb79df8f6a4e588c8f5ab865d94220713f551e8b2d22bc612676b72271849ed3",
+    "contracts.py": "b070ce310e159cbcdf63af478b872da8b0c1d1ddbbaef0b214f05c8d193a2b81",
+    "linux_observation.py": "fda5448917a84a9f3cc85c2fb9cab33fe9e622d6d1ab8a3742929b046799c0ce",
+    "oracle.py": "fa14b08caee86b65d9a01c16bb3e6ea236264275a48a3f32ad6694c57df23bc8",
+    "oracle_protocol.py": "f867fdc33eb271385176ab25c09a573e9662f77b7f6a73e559dbf07fcb115f45",
+    "oracle_worker.py": "3a588a010676238f375644ed2af65d1671ff7c38c81fa4908a419790576b363a",
+    "runtime_admission.py": "307e4486f4c23c426d543ddc3cee65d99dcee77c7c01087f4c8840cc81d3b076",
+    "worker.py": "08c319e7ec3790f619e4bf4ba3160e0db3bdc34f8dd86256bf998639aa2ea273"
+  },
+  "oracle_interpreter": {
+    "bytes": 67608,
+    "elf_machine": 183,
+    "elf_type": 3,
+    "sha256": "cb4548d280f38c2b1df4cba45f12c90a034729e08fce5bf1a223c58add0e21e3"
+  },
+  "oracle_manifest_sha256": "6168e220727cb6377e8e637740bb8c297bf7bee929ab19aac6db90aa6fbcbfa5",
+  "oracle_payload_source_files_verified": 7,
+  "platform_sha256_unchanged": {
+    "aarch64": "78eb6e420419bf54ed7f88fb27925cfe56ab66625668bf0ef330ce0540f886d0",
+    "x86_64": "433d4c86c5964c2a7b40dc29c7316273295f402870e6146c14a8dc2f825ab49a"
+  },
+  "profiles_sha256": {
+    "observer": "abf581851c19631ba5125ac03443f4ad72c6e8fd7b92fa086218060e07b56bf2",
+    "oracle": "f82e0ae5335e1393c402265c4a14a4e56ad8df27ab48eee70907745fef3b6835",
+    "target": "6a1ffdf7326ae1370bd55cc2edb2bcfb49b2d65ce7090205576d3b6e9496ab3e"
+  },
+  "source_joins": {
+    "oracle_worker_source": "f55a4c825523fc12e6d5bc3f5efaa97c8266a1ef640e4454c912346d36d3a86a",
+    "runtime_context_source": "ffae141857d61996ab5e5b53e8b55402a94b3caed39fa623665467610d81d836",
+    "runtime_context_transport": "72ca166c9680cf4e37142c83335995ba396deec4d978923f23b83bda2cc98001"
+  },
+  "status": "PASS",
+  "target_instruction_symbol_mapping_and_header_checks": true,
+  "target_manifest_sha256": "973b8cf929720c0cd99cacd1f8c39900290c92fb307ad101ca3cc85f35e1f276",
+  "toolchain_only_source_delta": "build_tools.py",
+  "toolchain_sha256": "4926c2e34b92a025c27e0fecdfd64c597da94d53a78d9a4231d51f8c8f0e5eae",
+  "toolchain_source_inputs_verified": 9
+}

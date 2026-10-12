@@ -1,0 +1,2 @@
+# Retain the exact test/build logs referenced by the evidence manifests.
+!*.log

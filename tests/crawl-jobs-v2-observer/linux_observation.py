@@ -11,7 +11,7 @@ import resource
 import stat
 import time
 
-from contracts import LIMITS, Invalid, canonical, clock_ns, integer, require, sha
+from contracts import LIMITS, Invalid, canonical, clock_ns, elf_architecture, integer, require, runtime_architecture, sha
 from runtime_admission import NAMESPACES, native_frame
 
 
@@ -34,6 +34,10 @@ def source_hash(names):
 
 class LinuxReader:
     evidence_kind = "linux_fixed_path_observation"
+
+    def __init__(self, architecture="aarch64"):
+        runtime_architecture(architecture)
+        self.architecture = architecture
 
     def read(self, path, limit=4095):
         fd = os.open(path, os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW | os.O_NONBLOCK)
@@ -72,15 +76,16 @@ class LinuxReader:
         return clock_ns(time.clock_gettime_ns(time.CLOCK_MONOTONIC), 1)
 
     def kernel(self):
+        runtime_architecture(self.architecture)
         uname = os.uname()
-        require(uname.sysname == "Linux" and uname.machine == "aarch64", "LINUX_PLATFORM")
+        require(uname.sysname == "Linux" and uname.machine == self.architecture, "LINUX_PLATFORM")
         namespaces, device = self.namespaces()
         offsets = self.read("/proc/self/timens_offsets")
         require(re.fullmatch(rb"\s*monotonic\s+0\s+0\s+boottime\s+0\s+0\s*", offsets) is not None, "LINUX_TIME_OFFSETS")
         resolution = round(time.clock_getres(time.CLOCK_MONOTONIC) * 1000000000)
         integer(resolution, 1, 1000000)
         yama = integer(self.number("/proc/sys/kernel/yama/ptrace_scope"), 0, 3)
-        return {"kernel_boot_sha256": sha(self.read("/proc/sys/kernel/random/boot_id")),
+        return {"architecture": uname.machine, "kernel_boot_sha256": sha(self.read("/proc/sys/kernel/random/boot_id")),
             "kernel_release_sha256": sha(uname.release.encode()), "uid_map_sha256": sha(self.read("/proc/self/uid_map")),
             "gid_map_sha256": sha(self.read("/proc/self/gid_map")), "lsm_sha256": sha(self.read("/sys/kernel/security/lsm")),
             "time_offsets_sha256": sha(offsets), "namespaces": namespaces, "ns_device": device,
@@ -96,21 +101,25 @@ class LinuxReader:
 
     def executable(self):
         import hashlib
+        runtime_architecture(self.architecture)
         fd = os.open("/proc/self/exe", os.O_RDONLY | os.O_CLOEXEC)
         try:
             before = os.fstat(fd)
             require(stat.S_ISREG(before.st_mode) and 0 < before.st_size <= 32 * 1024 * 1024, "LINUX_EXECUTABLE")
-            digest, size = hashlib.sha256(), 0
+            digest, size, header = hashlib.sha256(), 0, b""
             while True:
                 raw = os.read(fd, 32768)
                 if not raw:
                     break
+                if len(header) < 64:
+                    header += raw[:64 - len(header)]
                 size += len(raw)
                 require(size <= before.st_size, "LINUX_EXECUTABLE")
                 digest.update(raw)
             after = os.fstat(fd)
             require(size == before.st_size and (before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns) ==
                 (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns), "LINUX_EXECUTABLE")
+            require(elf_architecture(header) == self.architecture, "LINUX_EXECUTABLE_ARCHITECTURE")
             return digest.hexdigest()
         finally:
             os.close(fd)
@@ -160,13 +169,13 @@ class LinuxReader:
         processes = self.read("/sys/fs/cgroup/cgroup.procs", 127).split()
         require(processes == [b"1"], "LINUX_TASKS")
         resources.update(cgroup_sha256=sha(cgroup), cpu_quota=int(cpu[0]), cpu_period=int(cpu[1]), processes=[1])
-        identity = {"boot_sha256": before["kernel_boot_sha256"], "executable_sha256": executable,
+        identity = {"architecture": before["architecture"], "boot_sha256": before["kernel_boot_sha256"], "executable_sha256": executable,
             "uid_map_sha256": before["uid_map_sha256"], "gid_map_sha256": before["gid_map_sha256"],
             "pid": 1, "tid": 1, "start_ticks": ticks, "ns_device": before["ns_device"], **before["namespaces"]}
         require(self.kernel() == before and self.ticks() == ticks and self.security() == security, "LINUX_CHANGED")
         clock = {key: before[key] for key in ("kernel_release_sha256", "lsm_sha256", "time_offsets_sha256", "resolution_ns", "yama_scope")}
         clock["monotonic_ns"] = self.monotonic_ns()
-        common = {"case_id": case_id, "invocation_sha256": invocation_sha256, "role": "oracle", "version": 1}
+        common = {"case_id": case_id, "invocation_sha256": invocation_sha256, "role": "oracle", "version": 2}
         output = []
         for phase, fields in zip(("IDENTITY", "CONFINEMENT", "RESOURCES", "CLOCK"), (identity, security, resources, clock)):
             raw = canonical(common | {"phase": phase} | fields)

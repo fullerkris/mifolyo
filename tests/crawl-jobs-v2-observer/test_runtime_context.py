@@ -28,6 +28,7 @@ class Reader:
     def __init__(self):
         original = context()
         self.value = {key: original[key] for key in admission.CONTEXT_HASHES}
+        self.value["architecture"] = original["architecture"]
         self.value.update(namespaces={name.removeprefix("host_"): original[name] for name in admission.HOST_NAMESPACES} |
             {key: original[key] for key in ("user_ns", "time_ns")}, ns_device=4, resolution_ns=1, yama_scope=0)
         self.tick = 1000000
@@ -43,7 +44,7 @@ class Reader:
 
 def fixture():
     reader, clock = Reader(), Clock()
-    anchor = {"daemon_sha256": c.sha(b"daemon"), "source_sha256": ctx.source_digest(),
+    anchor = {"version": 2, "architecture": reader.value["architecture"], "daemon_sha256": c.sha(b"daemon"), "source_sha256": ctx.source_digest(),
         "kernel_boot_sha256": reader.value["kernel_boot_sha256"], "namespaces": reader.value["namespaces"],
         "ns_device": 4, "seccomp_filters": {"target": 1, "observer": 2}}
     prep = preparation()

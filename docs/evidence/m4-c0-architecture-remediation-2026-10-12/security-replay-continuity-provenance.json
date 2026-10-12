@@ -1,0 +1,8 @@
+{
+  "in_memory_redirected_script_sha256": "fde6d4007887edcfd533e4e2b9c333a8a3c54d3c669c014cc70d0ea0e5e574c4",
+  "mode": "continuity",
+  "original_script": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/security/probe_continuity.py",
+  "original_script_sha256": "fe7aa2f023b6642a9f7a044454b0b280b678cd8fc75e006596bcb080ea869872",
+  "original_unmodified": true,
+  "status": "PASS"
+}

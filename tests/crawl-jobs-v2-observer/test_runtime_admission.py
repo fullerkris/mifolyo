@@ -25,23 +25,23 @@ def preparation():
 
 
 def context():
-    return {**{name: c.sha(name.encode()) for name in admission.CONTEXT_HASHES}, **{name: 100 + i for i, name in enumerate(admission.HOST_NAMESPACES)},
+    return {"architecture": "aarch64", **{name: c.sha(name.encode()) for name in admission.CONTEXT_HASHES}, **{name: 100 + i for i, name in enumerate(admission.HOST_NAMESPACES)},
         "user_ns": 20, "time_ns": 30, "ns_device": 4, "resolution_ns": 1, "yama_scope": 0,
         "seccomp_filters": {"target": 1, "observer": 2}, "not_before_ns": 1000000, "not_after_ns": 9000000000}
 
 
 def binding(role="target", invocation=D, case="P1.pre.1.1"):
-    return {"case_id": case, "invocation_sha256": invocation, "container_id": c.sha(role.encode()),
+    return {"architecture": "aarch64", "case_id": case, "invocation_sha256": invocation, "container_id": c.sha(role.encode()),
         "image": "sha256:" + c.sha((role + "-image").encode()), "role": role}
 
 
 def frames(role="target", *, bound=None):
     bound = binding(role) if bound is None else bound
-    common = {key: bound[key] for key in ("case_id", "invocation_sha256", "role")} | {"version": 1}
+    common = {key: bound[key] for key in ("case_id", "invocation_sha256", "role")} | {"version": 2}
     pid = 2 if role == "observer" else 1
     ns_role = {"target": 1, "observer": 2, "oracle": 3}[role]
     ctx = context()
-    identity = common | {"phase": "IDENTITY", "boot_sha256": ctx["kernel_boot_sha256"], "executable_sha256": preparation()["artifacts"][role + "_elf"],
+    identity = common | {"architecture": bound["architecture"], "phase": "IDENTITY", "boot_sha256": ctx["kernel_boot_sha256"], "executable_sha256": preparation()["artifacts"][role + "_elf"],
         "uid_map_sha256": ctx["uid_map_sha256"], "gid_map_sha256": ctx["gid_map_sha256"], "pid": pid, "tid": pid, "start_ticks": 123 + pid,
         "pid_ns": 11 if role == "oracle" else 10, "user_ns": 20, "time_ns": 30, "ns_device": 4,
         "cgroup_ns": 40 + ns_role, "mnt_ns": 50 + ns_role, "net_ns": 60 + ns_role, "ipc_ns": 70 + ns_role}

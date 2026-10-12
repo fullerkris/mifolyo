@@ -1,0 +1,383 @@
+{
+  "actions": {
+    "BPF_installation": false,
+    "compiler_rebuild": false,
+    "docker_or_podman_workloads": false,
+    "host_policy_mutation": false,
+    "live_ssh": false,
+    "native_execution": false,
+    "offline_ssh_G_in_suite": true,
+    "original_review_files_modified": false,
+    "owned_benign_python_processes_files_pipes_sockets": true,
+    "real_collector_or_oracle_worker": false,
+    "repo_source_docs_or_obsidian_modified": false,
+    "subagents": 0,
+    "tracing_or_calibration": false
+  },
+  "added_package_paths": [
+    "tests/crawl-jobs-v2-observer/test_architecture_review.py"
+  ],
+  "artifact_continuity": {
+    "actual_compiler_libraries_remeasured": false,
+    "native_or_compiler_or_container_execution": false,
+    "new_host_source_sha256": "ffae141857d61996ab5e5b53e8b55402a94b3caed39fa623665467610d81d836",
+    "new_toolchain_sha256": "4926c2e34b92a025c27e0fecdfd64c597da94d53a78d9a4231d51f8c8f0e5eae",
+    "oracle_elf_sha256": "cb4548d280f38c2b1df4cba45f12c90a034729e08fce5bf1a223c58add0e21e3",
+    "oracle_manifest_sha256": "6168e220727cb6377e8e637740bb8c297bf7bee929ab19aac6db90aa6fbcbfa5",
+    "oracle_worker_sha256_unchanged": "f55a4c825523fc12e6d5bc3f5efaa97c8266a1ef640e4454c912346d36d3a86a",
+    "status": "PASS",
+    "toolchain_change_only": "sources.build_tools.py; all compiler metadata/library records, ELF hashes, version and platform identity retained",
+    "transport_sha256_unchanged": "72ca166c9680cf4e37142c83335995ba396deec4d978923f23b83bda2cc98001",
+    "unchanged_native_outputs": {
+      "cases.h": "64591020572e8af5afae67856ba79e053afacaf41d08ba10a98f489558e383f4",
+      "observer": "53800d2281f57341269a0f1c9686809883241ed01872338b0544bf0439e88120",
+      "observer-seccomp.json": "abf581851c19631ba5125ac03443f4ad72c6e8fd7b92fa086218060e07b56bf2",
+      "oracle-seccomp.json": "f82e0ae5335e1393c402265c4a14a4e56ad8df27ab48eee70907745fef3b6835",
+      "target": "07ae68522b7e87560bda4d32fcb0f244c74fd748f7cd9ccfe1ac3cf2321deab5",
+      "target-filter.bpf": "701824ff5f8ccafa359f711d2714b23c8a303789cd1987a3a85aba19a3667b93",
+      "target-manifest.json": "973b8cf929720c0cd99cacd1f8c39900290c92fb307ad101ca3cc85f35e1f276",
+      "target-seccomp.json": "6a1ffdf7326ae1370bd55cc2edb2bcfb49b2d65ce7090205576d3b6e9496ab3e",
+      "target_filter.h": "8a1c8f5941860b7acd92f3dc53952aa746fa9d1c57098b214a691fa8a6380b1d",
+      "target_manifest.h": "e9506a8347f34d2d1e752705d72c9819060d40b64bd556c6787fd0c370e58b6c"
+    },
+    "verified_fixes_patch_sha256": "5e7947990f7082a56c057003a4dc62929eb431e9e0d4dcf16772f38f8bae8cb7"
+  },
+  "artifacts": {
+    "compiled_filter": {
+      "bytes": 272,
+      "file_offset": 3498664,
+      "instructions": 34,
+      "sha256": "701824ff5f8ccafa359f711d2714b23c8a303789cd1987a3a85aba19a3667b93",
+      "simulated_cases": 3092
+    },
+    "effect_sequence": {
+      "file_offset": 444480,
+      "meaning": [
+        "mov x4,#42",
+        "str x4,[x3]",
+        "str x2,[x1]",
+        "stlr x2,[x0]",
+        "ret"
+      ],
+      "words": [
+        "0xd2800544",
+        "0xf9000064",
+        "0xf9000022",
+        "0xc89ffc02",
+        "0xd65f03c0"
+      ]
+    },
+    "execution_authorized": false,
+    "filter_installed": false,
+    "kind": "independent_static_artifact_security_review",
+    "limits": [
+      "Static bytes and source/manifests only; no independent rebuild, toolchain-library remeasurement, dynamic dependency closure, load-bias proof, binfmt/emulation attestation, kernel seccomp execution, or native runtime feasibility."
+    ],
+    "manifest_and_headers_regenerated_or_independently_joined": true,
+    "native_admission_formats": {
+      "observer": {
+        "CLOCK": {
+          "format_bytes": 212,
+          "sha256": "f9d607ba56980e65e64b94f2f323785f69f1243a0c39ce161e043fffe65e103a"
+        },
+        "CONFINEMENT": {
+          "format_bytes": 294,
+          "sha256": "2b5353558581df009ce8da477b839dcad844337959af86a2f6d08bcf507c75a3"
+        },
+        "IDENTITY": {
+          "format_bytes": 348,
+          "sha256": "f5ad4e01d92c4f2f1a18b5d34de1b515be990b353b17352b93816786b00d8120"
+        },
+        "RESOURCES": {
+          "format_bytes": 265,
+          "sha256": "82fc77c55ddca53e08fc02f8119d9dade2bc625f7f1c290bd02ba176c4f1a0f1"
+        }
+      },
+      "target": {
+        "CLOCK": {
+          "format_bytes": 212,
+          "sha256": "f9d607ba56980e65e64b94f2f323785f69f1243a0c39ce161e043fffe65e103a"
+        },
+        "CONFINEMENT": {
+          "format_bytes": 294,
+          "sha256": "2b5353558581df009ce8da477b839dcad844337959af86a2f6d08bcf507c75a3"
+        },
+        "IDENTITY": {
+          "format_bytes": 348,
+          "sha256": "f5ad4e01d92c4f2f1a18b5d34de1b515be990b353b17352b93816786b00d8120"
+        },
+        "RESOURCES": {
+          "format_bytes": 265,
+          "sha256": "82fc77c55ddca53e08fc02f8119d9dade2bc625f7f1c290bd02ba176c4f1a0f1"
+        }
+      }
+    },
+    "native_compile_guard_present": true,
+    "native_executed": false,
+    "native_sha256": {
+      "observer": "53800d2281f57341269a0f1c9686809883241ed01872338b0544bf0439e88120",
+      "target": "07ae68522b7e87560bda4d32fcb0f244c74fd748f7cd9ccfe1ac3cf2321deab5"
+    },
+    "native_source_join_files": 9,
+    "native_type": "ELF64 little-endian EM_AARCH64 ET_DYN static PIE, no PT_INTERP, NX stack, RELRO, no W+X PT_LOAD",
+    "oracle_elf_sha256": "cb4548d280f38c2b1df4cba45f12c90a034729e08fce5bf1a223c58add0e21e3",
+    "oracle_interpreter": "/lib/ld-linux-aarch64.so.1",
+    "oracle_manifest_sha256": "6168e220727cb6377e8e637740bb8c297bf7bee929ab19aac6db90aa6fbcbfa5",
+    "oracle_runtime_dependencies_validated": false,
+    "oracle_source_join_files": 7,
+    "platform_sha256": "78eb6e420419bf54ed7f88fb27925cfe56ab66625668bf0ef330ce0540f886d0",
+    "profile_sha256": {
+      "observer": "abf581851c19631ba5125ac03443f4ad72c6e8fd7b92fa086218060e07b56bf2",
+      "oracle": "f82e0ae5335e1393c402265c4a14a4e56ad8df27ab48eee70907745fef3b6835",
+      "target": "6a1ffdf7326ae1370bd55cc2edb2bcfb49b2d65ce7090205576d3b6e9496ab3e"
+    },
+    "status": "PASS",
+    "unsupported_or_relabeled_artifact_refusals": [
+      "ARCHITECTURE_NOT_IMPLEMENTED",
+      "ARCHITECTURE_NOT_IMPLEMENTED",
+      "ELF_ARCHITECTURE"
+    ]
+  },
+  "base_commit": "ced6e1cff36101f76fb54904b6b0fa2cf33cb48f",
+  "branch": "feature/crawl-jobs-v2-c0-architecture-contracts",
+  "changed_package_paths": [
+    "tests/crawl-jobs-v2-observer/build_tools.py",
+    "tests/crawl-jobs-v2-observer/docker_backend.py",
+    "tests/crawl-jobs-v2-observer/runtime_context.py",
+    "tests/crawl-jobs-v2-observer/test_owned_resources.py"
+  ],
+  "counterexamples": {
+    "corrected_status": "PASS",
+    "initial_status": "PASS",
+    "method": "Separate interpreters per snapshot, public API/callback/state inputs, inert real ELF bytes, fake compiler/image/start transports; no native execution.",
+    "reproduction_command": "python3 -B -W error::ResourceWarning probe_counterexamples.py initial\npython3 -B -W error::ResourceWarning probe_counterexamples.py corrected",
+    "status_semantics": "Initial PASS means defects reproduced, not old source approved."
+  },
+  "date": "2026-10-12",
+  "derived_bundles": {
+    "oracle_worker_source": "f55a4c825523fc12e6d5bc3f5efaa97c8266a1ef640e4454c912346d36d3a86a",
+    "runtime_context_source": "ffae141857d61996ab5e5b53e8b55402a94b3caed39fa623665467610d81d836",
+    "runtime_context_transport": "72ca166c9680cf4e37142c83335995ba396deec4d978923f23b83bda2cc98001"
+  },
+  "evidence_sha256": {
+    "artifact-continuity.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "artifact-continuity.json": "27244a5d05825f4084e73c7bdda54f0c829487d1a7816f6abd930b96718f1f18",
+    "artifact-continuity.log": "27244a5d05825f4084e73c7bdda54f0c829487d1a7816f6abd930b96718f1f18",
+    "artifacts.json": "aaab74f0eee4743568a9b90051811f3f2f5eb2246399745068d58ee4b2ba5c26",
+    "continuity.json": "fb9b68bb44629bd8131651380dc5152d522766434d2b46e1d8bd83c8b9e78bdf",
+    "counterexamples-corrected.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "counterexamples-corrected.json": "7e4ab4c78c66fed170f63fd28741aa3344e76b417c068edfc65aff5d5f159bb5",
+    "counterexamples-corrected.log": "21f263f8fb5436c9bf13dbebd87e8caa0826afdeda11151edbc5d8bfce128629",
+    "counterexamples-initial.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "counterexamples-initial.json": "b233ed5ed9b0a04d4ed5031ec79df1937bce1fa174f6b4c19d5243fcbd15377d",
+    "counterexamples-initial.log": "8a507f37d95d4ca312099173388180f4bd4ed4f630b474600d74f4fc4a6a438e",
+    "host-join.json": "24c62c6296d2c6c4421df37b15ad859154789b07c9c2d86023c30b12b0a443a5",
+    "integrity-after.json": "57b510d3cdc53ef0325d554873b15bee472d88fe2854b5a707a7f5a59a10ec47",
+    "integrity-before.json": "9cec9bfbe9b3c3604a9193729b6cfb4b99114e78a240abe11de5c340607f61b8",
+    "previous-boundary-probes.json": "8b3fd102a6994ab2b8cdf9301ce95b97b222f4f59eea4947868194f9b2ae4fb5",
+    "probe_counterexamples.py": "af8462a5813ee7ba2421f5bd134c5624da204a9f71b52f44b7cce73bbb22e8fb",
+    "recheck_previous_probes.py": "3a8faad0ba06efe56a4dd6eed3c7418542bb186ccbe5e408455ccec87dcb2858",
+    "replay-artifacts-provenance.json": "4b89e42f10008502847d069ab00c33e4556e5af595d668e904a8777f48c9ec65",
+    "replay-artifacts.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "replay-artifacts.log": "aaab74f0eee4743568a9b90051811f3f2f5eb2246399745068d58ee4b2ba5c26",
+    "replay-boundaries-provenance.json": "f82fb785d5c60c53775fb7109237001fac5433be8408464b0c7a5c1e69ab1388",
+    "replay-boundaries.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "replay-boundaries.log": "05b16d640cebcce2ac8635a8287042af31db986a463293acd1e887f8255bc8cc",
+    "replay-continuity-provenance.json": "1610dafa3452233c0d99538bd8cb6251e10504623ae375fb351bdb9fc1d96375",
+    "replay-continuity.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "replay-continuity.log": "fb9b68bb44629bd8131651380dc5152d522766434d2b46e1d8bd83c8b9e78bdf",
+    "replay-host-provenance.json": "241e8fa3ad6f1d1138188f3530fbdb8b42eae7fd20bbd6455e413a8f7d39623a",
+    "replay-host.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "replay-host.log": "24c62c6296d2c6c4421df37b15ad859154789b07c9c2d86023c30b12b0a443a5",
+    "review.md": "f7218530a813adf7e5f5e822fa04ce2d2bc1bd2835c6e8b1d036c011c82c9fa0",
+    "test-verification.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "test-verification.json": "d59a3e9769ff2498998cf84b27e30b41857b055ff25e45898f3c50f722b1ffda",
+    "test-verification.log": "d59a3e9769ff2498998cf84b27e30b41857b055ff25e45898f3c50f722b1ffda",
+    "tests.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "tests.json": "d6bf46767e6c7909789e53ce008dc0e26ebd60f4c3e3f76fe4837747ceab38c4",
+    "tests.log": "2b9c2f75d14937615c6ba80e289f3df10e05d780ababed4f7a76346cd14f8135",
+    "verified-fixes.patch": "5e7947990f7082a56c057003a4dc62929eb431e9e0d4dcf16772f38f8bae8cb7",
+    "verify_artifact_delta.py": "e1415746d8ae1e95b8a25f80add3c8a88ebe1ad87bb36fcb05c29809b3a2c759",
+    "verify_integrity.py": "3e47a8fde3779bc3d7847b460ebd29680e076362a8f8939bf2f71ed9289d4083",
+    "verify_tests_and_delta.py": "246b6b92069388bd31f5c7eabaff744670c26f59a4ae27ad4f2a6e11a3490964",
+    "write_review.py": "ee5c6b8c4b07943985db4ce34906da2bf979a8cd9e1f3e5c5d1524fcfc1bd2db"
+  },
+  "execution_authorized": false,
+  "findings": [
+    {
+      "complete_remediation_code": "verified-fixes.patch: docker_backend.py section",
+      "corrected_location": {
+        "lines": "197-206,230,281,337-338",
+        "path": "tests/crawl-jobs-v2-observer/docker_backend.py"
+      },
+      "id": "COR-ARCH-001",
+      "impact_and_qualification": "Missing pre-start data-boundary guard in standalone/snapshot activation. No demonstrated native exploitation or failure of an uninterrupted previously validated create-then-start path. Root/daemon/controller compromise is not required to expose the API consistency gap.",
+      "initial_location": {
+        "lines": "251-278,333-334",
+        "path": "tests/crawl-jobs-v2-observer/docker_backend.py"
+      },
+      "minimal_remediation": "Share the existing full image identity/OS/architecture/Config/environment predicate and invoke it at creation and direct startup before stream_factory.",
+      "new_or_remaining_blocker": false,
+      "priority": "P1",
+      "proof": {
+        "actual_native_execution": false,
+        "cases_per_revision": 72,
+        "corrected_invalid_start_or_create_refusals": 66,
+        "corrected_matching_controls": 6,
+        "initial_invalid_direct_start_dispatches": 33,
+        "probe": "COR-ARCH-001-startup-and-create-image-matrix"
+      },
+      "remediation_code": "self._admit_image(expected, deadline)",
+      "reproduction": "Valid owned resource snapshot, ARM64 daemon, fake actual image reporting amd64/missing architecture. Old public open_actor dispatches start without any image inspection. Expanded matrix also covers OS/ID/Config/OnBuild/Volumes/Env/Healthcheck for all three actors.",
+      "severity": "High",
+      "status": "VERIFIED_FIXED",
+      "title": "Direct actor startup skipped actual image architecture/config admission"
+    },
+    {
+      "complete_remediation_code": "verified-fixes.patch: runtime_context.py section",
+      "corrected_location": {
+        "lines": "47-60,72-98,112-118,129-184",
+        "path": "tests/crawl-jobs-v2-observer/runtime_context.py"
+      },
+      "id": "COR-ARCH-002",
+      "impact_and_qualification": "Public operation-state and evidence consistency defect; repro uses trusted/injected callbacks and a known test signing key. Not unauthenticated HMAC forgery or Python sandbox escape. Later backend architecture checks still rejected the mixed lease.",
+      "initial_location": {
+        "lines": "47-60,71-97,109-114,125-176",
+        "path": "tests/crawl-jobs-v2-observer/runtime_context.py"
+      },
+      "minimal_remediation": "Validate/snapshot anchor and key at every source/endpoint operation, validate request anchors, use snapshots throughout, reject anchor drift at callback returns/sealing and join context architecture directly to binding/preparation, including lease views.",
+      "new_or_remaining_blocker": false,
+      "priority": "P2",
+      "proof": {
+        "actual_native_execution": false,
+        "corrected_direct_legacy_endpoint_kernel_reads": 0,
+        "equivalent_anchor_positive_controls": 3,
+        "expanded_corrected_drift_refusals": 40,
+        "private_python_fields_mutated_by_counterexample_probe": false,
+        "probe_ids": [
+          "COR-ARCH-002-authenticated-architecture-drift",
+          "COR-ARCH-002-anchor-downgrade",
+          "COR-ARCH-002-expanded-public-anchor-lifecycle",
+          "COR-ARCH-002-operation-key-and-view-consistency"
+        ]
+      },
+      "remediation_code": "anchor, key = validate_anchor(self.anchor), self._key\nmac(key, b\"\")\n# After authorizer/exchange callbacks:\nrequire(canonical(self.anchor) == canonical(anchor), \"CONTEXT_ANCHOR_CHANGED\")\n# After authenticated context parsing:\nrequire(context[\"architecture\"] == anchor[\"architecture\"] == binding[\"architecture\"], \"CONTEXT_ARCHITECTURE\")",
+      "reproduction": "A correctly test-key-signed x86_64 KERNEL reply plus public source.anchor mutation produced an aarch64-bound lease whose view/receipt were x86_64 and whose receipt anchor hash differed from the request. Separate version=1 mutations before acquisition, in authorization and endpoint reads, plus direct legacy parser/endpoint calls reproduced.",
+      "severity": "Medium",
+      "status": "VERIFIED_FIXED",
+      "title": "Public anchor callback drift yielded inconsistent authenticated leases and legacy-anchor acceptance"
+    },
+    {
+      "complete_remediation_code": "verified-fixes.patch: build_tools.py section",
+      "corrected_location": {
+        "lines": "108-110,129-132",
+        "path": "tests/crawl-jobs-v2-observer/build_tools.py"
+      },
+      "id": "COR-ARCH-003",
+      "impact_and_qualification": "Standalone/final artifact-record integrity failure, not demonstrated runtime execution. Supplied artifacts themselves were coherent; preceding normal manifest generation did not protect this independent public entrypoint.",
+      "initial_location": {
+        "lines": "107-129",
+        "path": "tests/crawl-jobs-v2-observer/build_tools.py"
+      },
+      "minimal_remediation": "Read one target byte snapshot, generate/validate target_manifest for the selected architecture, require exact canonical manifest equality before compiler metadata and hash the same validated snapshot in the record.",
+      "new_or_remaining_blocker": false,
+      "priority": "P2",
+      "proof": {
+        "actual_compiler_or_elf_execution": false,
+        "cases_per_revision": 9,
+        "corrected_negative_refusals_before_compiler_or_output": 7,
+        "positive_matching_and_during_compiler_replacement_controls": 2,
+        "probe": "COR-ARCH-003-record-target-manifest-snapshot",
+        "target_reads_per_operation": 1
+      },
+      "remediation_code": "target = (out / \"target\").read_bytes()\nmanifest = target_manifest(target, architecture)\nrequire((out / \"target-manifest.json\").read_bytes() == canonical(manifest), \"BUILD_TARGET_MANIFEST\")\n# In the existing final record, use \"target_sha256\": sha(target).",
+      "reproduction": "Real ARM64 observer/BPF/manifest retained as inert private files, target replaced with x86_64 interpreter ELF bytes, compiler/library queries stubbed. Old record mode writes an ARM64 record with a foreign target digest inconsistent with the manifest.",
+      "severity": "Medium",
+      "status": "VERIFIED_FIXED",
+      "title": "Record-only builder could label a foreign/stale target artifact set aarch64"
+    }
+  ],
+  "history": {
+    "assessment_correction": "The initial security review missed the direct startup, mutable public-anchor and record-only builder gaps. They are independently reproduced here rather than dismissed as private-field/root compromise. Its GO and all original reports/probes/snapshots are preserved as history, not proof the gaps were absent.",
+    "initial_correctness_json_sha256": "cfec175b78f6a21f47a6407ffec213a1d2ee09e64cf25941defc168a6796fbe4",
+    "initial_security_json_sha256": "9f7ef408e625e1d4401ac7f345a4a5926603fbe777818f997775b0438afbe364",
+    "initial_security_md_sha256": "112354ced20cc42afcf27c02d805bb4297ac467f89a3912aced73755b582d4ed",
+    "initial_security_verdict": "GO_FOR_CONTINUED_IMPLEMENTATION",
+    "original_evidence_files_verified_unchanged": 59
+  },
+  "increment": "C0-ARCH-02",
+  "independent_tests": {
+    "FakeDocker_change": "Additional bound image metadata branch in inspect; no old test method/assertion changed or image guard bypassed.",
+    "all_229_prior_test_method_ASTs_unchanged": true,
+    "elapsed_seconds": 13.328,
+    "independent_umask_022_run": false,
+    "new_ids": [
+      "test_architecture_review.ArchitectureReviewTests.test_anchor_drift_during_authorization_refuses_before_exchange",
+      "test_architecture_review.ArchitectureReviewTests.test_endpoint_anchor_drift_during_observation_refuses",
+      "test_architecture_review.ArchitectureReviewTests.test_endpoint_and_request_parser_reject_legacy_anchor",
+      "test_architecture_review.ArchitectureReviewTests.test_legacy_anchor_is_revalidated_at_each_source_acquisition",
+      "test_architecture_review.ArchitectureReviewTests.test_record_accepts_matching_arm64_target_and_manifest",
+      "test_architecture_review.ArchitectureReviewTests.test_record_rejects_foreign_target_and_stale_or_legacy_manifest",
+      "test_architecture_review.ArchitectureReviewTests.test_signed_response_cannot_follow_a_mutated_public_anchor",
+      "test_architecture_review.ArchitectureReviewTests.test_start_checks_each_roles_actual_image_architecture",
+      "test_architecture_review.ArchitectureReviewTests.test_valid_context_receipt_remains_bound_to_the_signed_request"
+    ],
+    "preserved_prior_ids": 229,
+    "resource_warnings_as_errors": true,
+    "resource_warnings_seen": 0,
+    "status": "PASS",
+    "suite_runs_on_corrected_source": 1,
+    "tests_log_sha256": "2b9c2f75d14937615c6ba80e289f3df10e05d780ababed4f7a76346cd14f8135",
+    "tests_run": 238,
+    "tests_sha256": "d6bf46767e6c7909789e53ce008dc0e26ebd60f4c3e3f76fe4837747ceab38c4",
+    "tmpdir": "/tmp/opencode",
+    "umask": "077"
+  },
+  "kind": "independent_security_remediation_review",
+  "migration": "Host-source identity changed to ffae141857d61996ab5e5b53e8b55402a94b3caed39fa623665467610d81d836; regenerate dependent host deployment/preparation bindings. Transport and oracle identities unchanged.",
+  "new_findings": [],
+  "old_package_files_verified_before_after": 46,
+  "open_findings": [],
+  "oracle_unchanged_input_count": 10,
+  "package_files_verified_before_after": 47,
+  "preserved_boundary_probes": {
+    "expected_invalid_refusals": 280,
+    "groups": 8,
+    "method": "Preserved scripts redirected only in memory to corrected snapshot/new private output; original files unchanged; replay provenance retained.",
+    "status": "PASS"
+  },
+  "preserved_corrections": {
+    "COR-SSH-001": "FIX_PRESERVED: selector before spawn",
+    "COR-SSH-002": "FIX_PRESERVED: all six setup-failure positions kill before reap, inherited-pipe EOF, descriptor delta zero",
+    "COR-SSH-003": "FIX_PRESERVED: per-acquisition copied preparation/private provisioning identities before authorization/I/O",
+    "QA-ENV-001": "FIX_PRESERVED: explicit simulated-install chmod under private parent; full suite/host probe pass under 077; production mode checks unchanged"
+  },
+  "previous_inventory_sha256": "b5388bbdf282e286caec43f6a5e12bc5e0129a6630f43bd2c2b15b405b0d7bfb",
+  "publication_authorized": false,
+  "remaining_boundaries": [
+    "C0-ARCH-03 x64 implementation and later host/runtime/backend admission; no Podman runtime adapter.",
+    "Independent host/daemon/collector placement, installed source/interpreter ownership and effective live sshd policy.",
+    "Decoded SSH key pairing and live pinned-SSH authentication.",
+    "Actual image-content/dependency closure, non-emulated host/native execution proof and ELF load bias.",
+    "Kernel seccomp/LSM/Yama feasibility, breakpoint/tracing hardware, timing/calibration, full-trial acceptance.",
+    "Independent remote cleanup/quiescence/absence proof; local CLI/pipe EOF is insufficient.",
+    "Toolchain/compiler libraries not independently rebuilt or remeasured; recorded metadata/source/ELF joins only."
+  ],
+  "required_remaining_remediation": [],
+  "runner_sha256": "9afb715125f734f5b905da63dde5c9787fc5997b2e5a73a0bf62d781b23aef84",
+  "runner_verified_before_after": true,
+  "runtime_acceptance": false,
+  "scope": "Corrected frozen source and supplied static artifacts only; not publication, live-host admission, native execution or M4 acceptance.",
+  "source_inventory_sha256": "a02661da8cb299ff60e4ad9752ea53329b65c384d7f8e15853641dcf6db426cc",
+  "supplementary_local_verification_sha256": "3617c193c2bbe652ccbc1a526d7710a020e28fc62aa2f808d906bf917b79ea87",
+  "trust_qualifications": [
+    "Root/operator and arbitrary trusted-controller code remain trusted; no Python sandbox boundary is claimed.",
+    "Public operation-state/callback consistency is nonetheless enforced and the three initial gaps were real.",
+    "Known test-key signing demonstrates joins, not unauthenticated HMAC forgery; mixed leases were still rejected by downstream native checks.",
+    "The builder records validated byte snapshots, not atomic filesystem transactions or concurrent-directory attestations.",
+    "Metadata, summaries and static artifacts do not grant execution authority."
+  ],
+  "uncommitted": true,
+  "verdict": "GO_FOR_CONTINUED_IMPLEMENTATION",
+  "version": 1
+}

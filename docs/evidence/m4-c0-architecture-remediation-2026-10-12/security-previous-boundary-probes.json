@@ -1,0 +1,207 @@
+{
+  "original_full_suite_inventory_probe_not_repeated": true,
+  "original_probe_sha256": "d2e274fda4ba4e73461cab8cecdaae2ed5592608df3c78816d327ee70e95164f",
+  "real_native_or_ssh_or_docker_execution": false,
+  "redirected_source_snapshot": "/tmp/opencode/m4-c0-architecture-remediation-2026-10-12/snapshot",
+  "refusal_code_counts": {
+    "ADMISSION_ARCHITECTURE": 21,
+    "ARCHITECTURE": 49,
+    "ARCHITECTURE_NOT_IMPLEMENTED": 44,
+    "CONTEXT_ACQUISITION_REJECTED": 18,
+    "CONTEXT_LEASE_BINDING": 1,
+    "CONTEXT_PROVISIONING_BINDING": 6,
+    "CONTEXT_SOURCE_REFUSED": 5,
+    "CONTEXT_SSH_EXCHANGE_REJECTED": 1,
+    "ELF_ARCHITECTURE": 4,
+    "FIELDS": 17,
+    "IMAGE_IDENTITY": 2,
+    "INTEGER": 66,
+    "JSON": 15,
+    "LINUX_EXECUTABLE_ARCHITECTURE": 1,
+    "LINUX_PLATFORM": 3,
+    "NATIVE_ADMISSION_REJECTED": 3,
+    "PLATFORM": 2,
+    "PREPARATION": 5,
+    "PROFILE_CONTENT": 12,
+    "PROFILE_FILE_CONTENT": 2,
+    "RESOURCE_SCOPE": 3
+  },
+  "results": [
+    {
+      "details": {
+        "negative_cases": 101,
+        "positive_metadata_architectures": [
+          "aarch64",
+          "x86_64"
+        ]
+      },
+      "elapsed_seconds": 0.0069,
+      "id": "schema-downgrade-relabel-coercion",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "authenticated_request_mutations": 5,
+        "authenticated_response_mutations": [
+          "kernel_arch_x86",
+          "kernel_arch_alias",
+          "kernel_arch_missing",
+          "kernel_extra_arch",
+          "namespace_arch",
+          "window_arch",
+          "namespace_substitute",
+          "wrong_request_digest",
+          "kernel_duplicate",
+          "reorder",
+          "truncated",
+          "extra_frame",
+          "old_mac",
+          "version_0",
+          "version_1",
+          "version_2",
+          "version_3"
+        ],
+        "replay_rejected": true
+      },
+      "elapsed_seconds": 0.0227,
+      "id": "signed-context-request-response-joins",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "caller_input_snapshot_and_lease_view_copy": true,
+        "fresh_challenges": true,
+        "matching_reuse": 3,
+        "mutation_refusals_before_authorization_and_io": 12
+      },
+      "elapsed_seconds": 0.0113,
+      "id": "reusable-source-architecture-and-COR-SSH-003",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "metadata_only_x86_64": true,
+        "spawn_build_output_client_daemon_io": 0
+      },
+      "elapsed_seconds": 0.003,
+      "id": "unsupported-architecture-before-activation-io",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "all_four_way_architecture_combinations": 48,
+        "backend_refusal_closes_and_uncaches": 3,
+        "positive_arm64_roles": 3,
+        "rejections_including_legacy_and_coercion": 96
+      },
+      "elapsed_seconds": 0.0723,
+      "id": "native-admission-four-way-join-and-cleanup",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exact_profile_arch_sets_rejected": 12,
+        "pre_create_guards": [
+          {
+            "case": "daemon_amd64",
+            "container_create_called": false,
+            "refusal": "PLATFORM"
+          },
+          {
+            "case": "daemon_aarch64",
+            "container_create_called": false,
+            "refusal": "PLATFORM"
+          },
+          {
+            "case": "image_amd64",
+            "container_create_called": false,
+            "refusal": "IMAGE_IDENTITY"
+          },
+          {
+            "case": "image_aarch64",
+            "container_create_called": false,
+            "refusal": "IMAGE_IDENTITY"
+          },
+          {
+            "case": "profile_x86",
+            "container_create_called": false,
+            "refusal": "PROFILE_FILE_CONTENT"
+          },
+          {
+            "case": "profile_other_role",
+            "container_create_called": false,
+            "refusal": "PROFILE_FILE_CONTENT"
+          }
+        ]
+      },
+      "elapsed_seconds": 0.0096,
+      "id": "docker-image-profile-confusion",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "all_descriptors_closed": true,
+        "fragmented_header_cases": [
+          "arm64",
+          "x86_64",
+          "ELF32",
+          "big-endian",
+          "bad-version",
+          "truncated"
+        ],
+        "real_collector_invoked": false
+      },
+      "elapsed_seconds": 0.0024,
+      "id": "linux-uname-interpreter-classification",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "COR-SSH-001": "selector before spawn preserved",
+        "COR-SSH-002": [
+          {
+            "descendant_pipe_eof": true,
+            "kill_before_reap": true,
+            "operation": "nonblocking",
+            "position": 1
+          },
+          {
+            "descendant_pipe_eof": true,
+            "kill_before_reap": true,
+            "operation": "nonblocking",
+            "position": 2
+          },
+          {
+            "descendant_pipe_eof": true,
+            "kill_before_reap": true,
+            "operation": "nonblocking",
+            "position": 3
+          },
+          {
+            "descendant_pipe_eof": true,
+            "kill_before_reap": true,
+            "operation": "register",
+            "position": 1
+          },
+          {
+            "descendant_pipe_eof": true,
+            "kill_before_reap": true,
+            "operation": "register",
+            "position": 2
+          },
+          {
+            "descendant_pipe_eof": true,
+            "kill_before_reap": true,
+            "operation": "register",
+            "position": 3
+          }
+        ],
+        "fd_delta": 0
+      },
+      "elapsed_seconds": 0.0734,
+      "id": "COR-SSH-001-002-real-owned-pipe-cleanup",
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}

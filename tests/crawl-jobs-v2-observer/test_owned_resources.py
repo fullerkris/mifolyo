@@ -64,6 +64,9 @@ class FakeDocker:
         deadline.check()
         if self.fail_inspect == selector:
             raise c.Invalid("INSPECTION_FAILED")
+        if kind == "image":
+            return {"Id": selector, "Os": "linux", "Architecture": "arm64",
+                "Config": {"Env": [], "OnBuild": None, "Volumes": None}} if selector in self.scope["images"].values() else None
         if kind == "volume":
             return copy.deepcopy(self.volumes.get(selector))
         rows = [value for value in self.containers.values() if value["Id"] == selector or value["Name"] == "/" + selector]
@@ -272,6 +275,8 @@ class DockerAdapterTests(unittest.TestCase):
             args = argv[3:]
             if args[0] == "info":
                 return 0, DAEMON + b"\n", b""
+            if args[0] == "version":
+                return 0, b'{"Os":"linux","Arch":"arm64"}', b""
             kind, operation = args[:2]
             if operation == "inspect":
                 value = fake.inspect(kind, args[2], deadline)
@@ -384,6 +389,8 @@ class DockerAdapterTests(unittest.TestCase):
             calls.append(argv)
             if argv[3] == "info":
                 return 0, DAEMON + b"\n", b""
+            if argv[3] == "version":
+                return 0, b'{"Os":"linux","Arch":"arm64"}', b""
             if argv[3:5] == ["image", "inspect"]:
                 return 0, json.dumps([{"Id": value["images"]["target"], "Os": "linux", "Architecture": "arm64", "Config": {"Env": [], "OnBuild": None, "Volumes": None}}]).encode(), b""
             return 0, ("a" * 64 + "\n").encode(), b""
@@ -415,6 +422,8 @@ class DockerAdapterTests(unittest.TestCase):
             calls.append(argv)
             if argv[3] == "info":
                 return 0, DAEMON, b""
+            if argv[3] == "version":
+                return 0, b'{"Os":"linux","Arch":"arm64"}', b""
             return 0, json.dumps([{"Id": value["images"]["target"], "Os": "linux", "Architecture": "arm64",
                 "Config": {"Env": [], "Volumes": None, "OnBuild": None, "Healthcheck": {"Test": ["CMD-SHELL", "private-canary"]}}}]).encode(), b""
         backend = db.DockerBackend(value, {role: "/not-used" for role in owned.ACTORS}, authorize=lambda *_: True, runner=runner)

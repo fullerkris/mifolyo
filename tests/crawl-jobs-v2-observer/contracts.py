@@ -2,6 +2,7 @@
 import hashlib
 import json
 import re
+import struct
 
 DOMAIN = "mifolyo:m4:obs1:c0:preparation"
 MAX_ARTIFACT = 2 * 1024 * 1024
@@ -102,20 +103,52 @@ def trials():
 TRIALS = tuple(trials())
 
 
-def preparation(artifacts):
+def platform(architecture):
+    """Canonical Linux names; OCI/ELF/seccomp identities are never caller-selected aliases."""
+    require(type(architecture) is str and architecture in ("aarch64", "x86_64"), "ARCHITECTURE")
+    image, machine, seccomp, audit = ("arm64", 183, "SCMP_ARCH_AARCH64", 0xc00000b7) if architecture == "aarch64" else (
+        "amd64", 62, "SCMP_ARCH_X86_64", 0xc000003e)
+    return {"version": 1, "os": "linux", "architecture": architecture, "image_architecture": image,
+        "oci_platform": "linux/" + image, "elf_class": 2, "elf_data": 1, "elf_machine": machine,
+        "seccomp_architecture": seccomp, "audit_architecture": audit}
+
+
+def platform_digest(architecture):
+    return sha(canonical(platform(architecture)))
+
+
+def runtime_architecture(architecture):
+    value = platform(architecture)
+    require(architecture == "aarch64", "ARCHITECTURE_NOT_IMPLEMENTED")
+    return value
+
+
+def elf_architecture(raw):
+    """Classify a checked ELF64/LE header; this is not complete ELF/runtime admission."""
+    require(type(raw) is bytes and 64 <= len(raw) <= 32 * 1024 * 1024 and raw[:7] == b"\x7fELF\x02\x01\x01", "ELF_ARCHITECTURE")
+    kind, machine, version = struct.unpack_from("<HHI", raw, 16)
+    require(kind in (2, 3) and version == 1, "ELF_ARCHITECTURE")
+    for name in ("aarch64", "x86_64"):
+        if machine == platform(name)["elf_machine"]:
+            return name
+    raise Invalid("ELF_ARCHITECTURE")
+
+
+def preparation(artifacts, architecture="aarch64"):
     exact(artifacts, ARTIFACTS)
     for value in artifacts.values():
         digest(value)
-    return {"domain": DOMAIN, "version": 1, "candidate": "C0", "architecture": "aarch64",
+    return {"domain": DOMAIN, "version": 2, "candidate": "C0", "architecture": architecture,
+        "platform_sha256": platform_digest(architecture),
         "artifacts": dict(artifacts), "trial_ids": list(TRIALS), "limits": dict(LIMITS),
         "implementation_only": True, "execution_authorized": False, "m4_accepted": False}
 
 
 def validate_preparation(value):
-    exact(value, ("domain", "version", "candidate", "architecture", "artifacts", "trial_ids", "limits",
+    exact(value, ("domain", "version", "candidate", "architecture", "platform_sha256", "artifacts", "trial_ids", "limits",
                   "implementation_only", "execution_authorized", "m4_accepted"))
-    integer(value["version"], 1, 1)
-    require(canonical(value) == canonical(preparation(value["artifacts"])), "PREPARATION")
+    integer(value["version"], 2, 2)
+    require(canonical(value) == canonical(preparation(value["artifacts"], value["architecture"])), "PREPARATION")
     return value
 
 

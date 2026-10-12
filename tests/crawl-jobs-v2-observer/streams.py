@@ -5,7 +5,7 @@ import signal
 import subprocess
 import time
 
-from contracts import LIMITS, TRIALS, Invalid, clock_ns, decode, digest, exact, integer, require, sha
+from contracts import LIMITS, TRIALS, Invalid, clock_ns, decode, digest, exact, integer, require, runtime_architecture, sha
 from controller import native_message
 from runtime_admission import PHASES
 
@@ -74,7 +74,8 @@ class ProcessStream:
     Killing this CLI group never counts as stopping a remote container.
     """
     def __init__(self, argv, binding, budget, deadline, *, env=None, before_input=None, before_write=None):
-        exact(binding, ("case_id", "invocation_sha256", "container_id", "image", "role"))
+        exact(binding, ("architecture", "case_id", "invocation_sha256", "container_id", "image", "role"))
+        runtime_architecture(binding["architecture"])
         require(type(binding["case_id"]) is str and binding["case_id"] in TRIALS, "CASE")
         digest(binding["invocation_sha256"])
         digest(binding["container_id"])

@@ -41,7 +41,7 @@ def identity_bytes():
 
 def deployment():
     anchor = fixture()[2]
-    return {"version": 1, "anchor": anchor, "host": "127.0.0.1", "port": 2222, "service_uid": 3001, "service_gid": 3002,
+    return {"version": 2, "architecture": anchor["architecture"], "anchor": anchor, "host": "127.0.0.1", "port": 2222, "service_uid": 3001, "service_gid": 3002,
         "ssh_host_key": public_key(1), "ssh_client_key": public_key(2),
         "ssh_client_sha256": c.sha(Path(transport.SSH).read_bytes()), "host_python_sha256": c.sha(b"operator-pinned-host-python")}
 
@@ -220,7 +220,7 @@ class ProvisioningTests(unittest.TestCase):
             read.assert_not_called()
 
     def test_ssh_entrypoint_requires_service_identity(self):
-        service = c.canonical({"uid": 3001, "gid": 3002, "python_sha256": c.sha(b"python")})
+        service = c.canonical({"architecture": "aarch64", "uid": 3001, "gid": 3002, "python_sha256": c.sha(b"python")})
         with patch.dict(os.environ, {"SSH_ORIGINAL_COMMAND": files.REMOTE_COMMAND}), \
                 patch.object(sys, "argv", ["context_ssh.py"]), patch.object(files, "read_config", return_value=service), \
                 patch("context_ssh.os.getuid", return_value=0), self.assertRaisesRegex(c.Invalid, "CONTEXT_SERVICE_IDENTITY"):
@@ -234,7 +234,7 @@ class ProvisioningTests(unittest.TestCase):
             root.chmod(0o755)  # Simulated install mode, independent of the caller's umask.
             for name in context.SOURCE_FILES:
                 path = root / name; path.write_bytes(b"source fixture\n"); path.chmod(0o444)
-            service = {"uid": 3001, "gid": 3002, "python_sha256": c.sha(b"host-python")}
+            service = {"architecture": "aarch64", "uid": 3001, "gid": 3002, "python_sha256": c.sha(b"host-python")}
             actual_uid, real_directory, real_read = os.geteuid(), files.directory, files.read_at
             def directory(path, uid, mode):
                 self.assertEqual((uid, mode), (0, 0o755))
@@ -244,7 +244,7 @@ class ProvisioningTests(unittest.TestCase):
                 return real_read(fd, name, actual_uid, modes, limit)
             with patch.dict(os.environ, {"SSH_ORIGINAL_COMMAND": files.REMOTE_COMMAND}), \
                     patch.object(sys, "argv", ["context_ssh.py"]), patch.object(context_ssh, "__file__", str(root / "context_ssh.py")), \
-                    patch.object(files, "CODE", root), patch.object(files, "read_config", return_value=c.canonical(service)), \
+                    patch.object(files, "CODE", root), patch.object(files, "read_config", side_effect=lambda name, *args: c.canonical(service if name == "context-service.json" else deployment()["anchor"])), \
                     patch.object(files, "directory", side_effect=directory), patch.object(files, "read_at", side_effect=read), \
                     patch("context_ssh.os.getuid", return_value=3001), patch("context_ssh.os.geteuid", return_value=3001), \
                     patch("context_ssh.os.getgid", return_value=3002), patch("context_ssh.os.getegid", return_value=3002), \

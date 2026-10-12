@@ -1,0 +1,136 @@
+{
+  "method": "Original input sequences; relative paths select the new freeze, and only expected post-fix assertions/results change. No native actor/real collector/SSH/Docker/Podman executed",
+  "probes": [
+    {
+      "actual": {
+        "lease_returned": false,
+        "refusal": "CONTEXT_ACQUISITION_REJECTED",
+        "request_architecture": "aarch64",
+        "wire_budget_consumed": 0
+      },
+      "expected": "Refuse or retain the original request/anchor architecture",
+      "finding_reproduced": false,
+      "id": "context_callback_architecture_drift"
+    },
+    {
+      "actual": {
+        "challenges_consumed": 0,
+        "endpoint_anchor_version": 1,
+        "lease_returned": false,
+        "refusal": "CONTEXT_ANCHOR_CHANGED",
+        "source_anchor_version": 1
+      },
+      "expected": "Reject legacy anchor state before producing an exchange/lease",
+      "finding_reproduced": false,
+      "id": "context_callback_anchor_downgrade"
+    },
+    {
+      "actual": {
+        "binding_architecture": "aarch64",
+        "mutated_preparation_view_refusal": "CONTEXT_LEASE_BINDING",
+        "preparation_sha256_unchanged": true
+      },
+      "expected": "Do not relabel validated preparation after authorization callback",
+      "finding_reproduced": false,
+      "id": "context_callback_preparation_is_copied"
+    },
+    {
+      "actual": [
+        {
+          "phase": "KERNEL",
+          "refusal": "CONTEXT_ACQUISITION_REJECTED"
+        },
+        {
+          "phase": "NAMESPACE",
+          "refusal": "CONTEXT_ACQUISITION_REJECTED"
+        },
+        {
+          "phase": "WINDOW",
+          "refusal": "CONTEXT_ACQUISITION_REJECTED"
+        },
+        {
+          "phase": "SEALED",
+          "refusal": "CONTEXT_ACQUISITION_REJECTED"
+        }
+      ],
+      "expected": "Reject each legacy frame even with a correct test-key MAC",
+      "finding_reproduced": false,
+      "id": "authenticated_context_v1_frames"
+    },
+    {
+      "actual": {
+        "available_image_architecture": "amd64",
+        "image_inspections": 1,
+        "refusal": "IMAGE_IDENTITY",
+        "simulated_start_dispatched": []
+      },
+      "expected": "Refuse non-arm64/missing image metadata before invoking the start transport",
+      "finding_reproduced": false,
+      "id": "startup_image_amd64"
+    },
+    {
+      "actual": {
+        "available_image_architecture": null,
+        "image_inspections": 1,
+        "refusal": "IMAGE_IDENTITY",
+        "simulated_start_dispatched": []
+      },
+      "expected": "Refuse non-arm64/missing image metadata before invoking the start transport",
+      "finding_reproduced": false,
+      "id": "startup_image_None"
+    },
+    {
+      "actual": {
+        "available_image_architecture": "arm64",
+        "image_inspections": 1,
+        "simulated_start_dispatched": [
+          [
+            "docker",
+            "--host",
+            "unix:///var/run/docker.sock",
+            "container",
+            "start",
+            "--attach",
+            "--interactive",
+            "87d5bc2f5613f34b882edf7d664ecc925cb033b58093bad7e7d9912ee67ecfa8"
+          ]
+        ],
+        "stream_architecture": "aarch64"
+      },
+      "expected": "Allow arm64 metadata",
+      "finding_reproduced": false,
+      "id": "startup_image_arm64"
+    },
+    {
+      "actual": {
+        "compiler_calls_simulated": [],
+        "private_probe_directory": "/tmp/opencode/m4-c0-architecture-remediation-2026-10-12/correctness/record-mixed-target",
+        "refusal": "ELF_ARCHITECTURE",
+        "target_elf_architecture": "x86_64",
+        "target_manifest_sha256": "07ae68522b7e87560bda4d32fcb0f244c74fd748f7cd9ccfe1ac3cf2321deab5",
+        "target_sha256": "0d64bd6d66d68dac91cdadafc46e22d4f09f22bdc997aaae870f42865b024a3e",
+        "toolchain_written": false
+      },
+      "expected": "Refuse foreign target ELF or stale target manifest before emitting platform-bound toolchain record",
+      "finding_reproduced": false,
+      "id": "record_mode_mixed_target"
+    },
+    {
+      "actual": {
+        "accepted": [
+          [
+            "aarch64",
+            "aarch64",
+            "aarch64",
+            "aarch64"
+          ]
+        ],
+        "rejected": 15
+      },
+      "expected": "Only the all-aarch64 tuple may be admitted",
+      "finding_reproduced": false,
+      "id": "native_architecture_cross_product"
+    }
+  ],
+  "status": "PASS"
+}

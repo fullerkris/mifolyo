@@ -1,0 +1,45 @@
+{
+  "QA-ENV-001": "private 0700 parent; explicit 0755 simulated install under umask 077; 0444 source checks retained",
+  "host_installation_or_collector_run": false,
+  "note": "Ownership and identity patched only in this probe to map simulated root-owned installation onto owned reviewer files; real LinuxReader.executable reads our header fixture.",
+  "permission_admission_weakened_in_production": false,
+  "results": [
+    {
+      "case": "matching",
+      "result": "accepted_simulated_install"
+    },
+    {
+      "case": "service_x64",
+      "result": "CONTEXT_ARCHITECTURE"
+    },
+    {
+      "case": "anchor_x64",
+      "result": "CONTEXT_ARCHITECTURE"
+    },
+    {
+      "case": "service_alias",
+      "result": "CONTEXT_ARCHITECTURE"
+    },
+    {
+      "case": "both_x64",
+      "result": "ARCHITECTURE_NOT_IMPLEMENTED"
+    },
+    {
+      "case": "wrong_elf_pinned_digest",
+      "result": "LINUX_EXECUTABLE_ARCHITECTURE"
+    },
+    {
+      "case": "wrong_digest",
+      "result": "CONTEXT_PYTHON_IDENTITY"
+    },
+    {
+      "case": "missing_service_arch",
+      "result": "FIELDS"
+    },
+    {
+      "case": "legacy_anchor",
+      "result": "INTEGER"
+    }
+  ],
+  "status": "PASS"
+}

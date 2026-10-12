@@ -1,0 +1,25 @@
+{
+  "actual_compiler_libraries_remeasured": false,
+  "native_or_compiler_or_container_execution": false,
+  "new_host_source_sha256": "ffae141857d61996ab5e5b53e8b55402a94b3caed39fa623665467610d81d836",
+  "new_toolchain_sha256": "4926c2e34b92a025c27e0fecdfd64c597da94d53a78d9a4231d51f8c8f0e5eae",
+  "oracle_elf_sha256": "cb4548d280f38c2b1df4cba45f12c90a034729e08fce5bf1a223c58add0e21e3",
+  "oracle_manifest_sha256": "6168e220727cb6377e8e637740bb8c297bf7bee929ab19aac6db90aa6fbcbfa5",
+  "oracle_worker_sha256_unchanged": "f55a4c825523fc12e6d5bc3f5efaa97c8266a1ef640e4454c912346d36d3a86a",
+  "status": "PASS",
+  "toolchain_change_only": "sources.build_tools.py; all compiler metadata/library records, ELF hashes, version and platform identity retained",
+  "transport_sha256_unchanged": "72ca166c9680cf4e37142c83335995ba396deec4d978923f23b83bda2cc98001",
+  "unchanged_native_outputs": {
+    "cases.h": "64591020572e8af5afae67856ba79e053afacaf41d08ba10a98f489558e383f4",
+    "observer": "53800d2281f57341269a0f1c9686809883241ed01872338b0544bf0439e88120",
+    "observer-seccomp.json": "abf581851c19631ba5125ac03443f4ad72c6e8fd7b92fa086218060e07b56bf2",
+    "oracle-seccomp.json": "f82e0ae5335e1393c402265c4a14a4e56ad8df27ab48eee70907745fef3b6835",
+    "target": "07ae68522b7e87560bda4d32fcb0f244c74fd748f7cd9ccfe1ac3cf2321deab5",
+    "target-filter.bpf": "701824ff5f8ccafa359f711d2714b23c8a303789cd1987a3a85aba19a3667b93",
+    "target-manifest.json": "973b8cf929720c0cd99cacd1f8c39900290c92fb307ad101ca3cc85f35e1f276",
+    "target-seccomp.json": "6a1ffdf7326ae1370bd55cc2edb2bcfb49b2d65ce7090205576d3b6e9496ab3e",
+    "target_filter.h": "8a1c8f5941860b7acd92f3dc53952aa746fa9d1c57098b214a691fa8a6380b1d",
+    "target_manifest.h": "e9506a8347f34d2d1e752705d72c9819060d40b64bd556c6787fd0c370e58b6c"
+  },
+  "verified_fixes_patch_sha256": "5e7947990f7082a56c057003a4dc62929eb431e9e0d4dcf16772f38f8bae8cb7"
+}

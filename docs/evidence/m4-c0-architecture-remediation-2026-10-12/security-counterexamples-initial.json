@@ -1,0 +1,757 @@
+{
+  "interpretation": "PASS means expected old defect reproduced or expected corrected behavior verified, not that the old source is approved.",
+  "kind": "architecture_remediation_security_counterexamples",
+  "native_or_collector_or_live_ssh_or_container_execution": false,
+  "results": [
+    {
+      "id": "COR-ARCH-001-startup-and-create-image-matrix",
+      "result": {
+        "cases": [
+          {
+            "entrypoint": "create",
+            "fault": "matching",
+            "image_inspections": 1,
+            "refusal": null,
+            "role": "target",
+            "simulated_mutation_calls": 1
+          },
+          {
+            "entrypoint": "create",
+            "fault": "amd64",
+            "image_inspections": 1,
+            "refusal": "IMAGE_IDENTITY",
+            "role": "target",
+            "simulated_mutation_calls": 0
+          },
+          {
+            "entrypoint": "create",
+            "fault": "missing_arch",
+            "image_inspections": 1,
+            "refusal": "IMAGE_IDENTITY",
+            "role": "target",
+            "simulated_mutation_calls": 0
+          },
+          {
+            "entrypoint": "create",
+            "fault": "linux_alias",
+            "image_inspections": 1,
+            "refusal": "IMAGE_IDENTITY",
+            "role": "target",
+            "simulated_mutation_calls": 0
+          },
+          {
+            "entrypoint": "create",
+            "fault": "wrong_os",
+            "image_inspections": 1,
+            "refusal": "IMAGE_IDENTITY",
+            "role": "target",
+            "simulated_mutation_calls": 0
+          },
+          {
+            "entrypoint": "create",
+            "fault": "missing_image",
+            "image_inspections": 1,
+            "refusal": "INSPECTION_SHAPE",
+            "role": "target",
+            "simulated_mutation_calls": 0
+          },
+          {
+            "entrypoint": "create",
+            "fault": "wrong_id",
+            "image_inspections": 1,
+            "refusal": "IMAGE_IDENTITY",
+            "role": "target",
+            "simulated_mutation_calls": 0
+          },
+          {
+            "entrypoint": "create",
+            "fault": "missing_config",
+            "image_inspections": 1,
+            "refusal": "IMAGE_DEFAULTS",
+            "role": "target",
+            "simulated_mutation_calls": 0
+          },
+          {
+            "entrypoint": "create",
+            "fault": "onbuild",
+            "image_inspections": 1,
+            "refusal": "IMAGE_DEFAULTS",
+            "role": "target",
+            "simulated_mutation_calls": 0
+          },
+          {
+            "entrypoint": "create",
+            "fault": "volumes",
+            "image_inspections": 1,
+            "refusal": "IMAGE_DEFAULTS",
+            "role": "target",
+            "simulated_mutation_calls": 0
+          },
+          {
+            "entrypoint": "create",
+            "fault": "environment",
+            "image_inspections": 1,
+            "refusal": "IMAGE_ENVIRONMENT",
+            "role": "target",
+            "simulated_mutation_calls": 0
+          },
+          {
+            "entrypoint": "create",
+            "fault": "healthcheck",
+            "image_inspections": 1,
+            "refusal": "HEALTHCHECK",
+            "role": "target",
+            "simulated_mutation_calls": 0
+          },
+          {
+            "entrypoint": "create",
+            "fault": "matching",
+            "image_inspections": 1,
+            "refusal": null,
+            "role": "observer",
+            "simulated_mutation_calls": 1
+          },
+          {
+            "entrypoint": "create",
+            "fault": "amd64",
+            "image_inspections": 1,
+            "refusal": "IMAGE_IDENTITY",
+            "role": "observer",
+            "simulated_mutation_calls": 0
+          },
+          {
+            "entrypoint": "create",
+            "fault": "missing_arch",
+            "image_inspections": 1,
+            "refusal": "IMAGE_IDENTITY",
+            "role": "observer",
+            "simulated_mutation_calls": 0
+          },
+          {
+            "entrypoint": "create",
+            "fault": "linux_alias",
+            "image_inspections": 1,
+            "refusal": "IMAGE_IDENTITY",
+            "role": "observer",
+            "simulated_mutation_calls": 0
+          },
+          {
+            "entrypoint": "create",
+            "fault": "wrong_os",
+            "image_inspections": 1,
+            "refusal": "IMAGE_IDENTITY",
+            "role": "observer",
+            "simulated_mutation_calls": 0
+          },
+          {
+            "entrypoint": "create",
+            "fault": "missing_image",
+            "image_inspections": 1,
+            "refusal": "INSPECTION_SHAPE",
+            "role": "observer",
+            "simulated_mutation_calls": 0
+          },
+          {
+            "entrypoint": "create",
+            "fault": "wrong_id",
+            "image_inspections": 1,
+            "refusal": "IMAGE_IDENTITY",
+            "role": "observer",
+            "simulated_mutation_calls": 0
+          },
+          {
+            "entrypoint": "create",
+            "fault": "missing_config",
+            "image_inspections": 1,
+            "refusal": "IMAGE_DEFAULTS",
+            "role": "observer",
+            "simulated_mutation_calls": 0
+          },
+          {
+            "entrypoint": "create",
+            "fault": "onbuild",
+            "image_inspections": 1,
+            "refusal": "IMAGE_DEFAULTS",
+            "role": "observer",
+            "simulated_mutation_calls": 0
+          },
+          {
+            "entrypoint": "create",
+            "fault": "volumes",
+            "image_inspections": 1,
+            "refusal": "IMAGE_DEFAULTS",
+            "role": "observer",
+            "simulated_mutation_calls": 0
+          },
+          {
+            "entrypoint": "create",
+            "fault": "environment",
+            "image_inspections": 1,
+            "refusal": "IMAGE_ENVIRONMENT",
+            "role": "observer",
+            "simulated_mutation_calls": 0
+          },
+          {
+            "entrypoint": "create",
+            "fault": "healthcheck",
+            "image_inspections": 1,
+            "refusal": "HEALTHCHECK",
+            "role": "observer",
+            "simulated_mutation_calls": 0
+          },
+          {
+            "entrypoint": "create",
+            "fault": "matching",
+            "image_inspections": 1,
+            "refusal": null,
+            "role": "oracle",
+            "simulated_mutation_calls": 1
+          },
+          {
+            "entrypoint": "create",
+            "fault": "amd64",
+            "image_inspections": 1,
+            "refusal": "IMAGE_IDENTITY",
+            "role": "oracle",
+            "simulated_mutation_calls": 0
+          },
+          {
+            "entrypoint": "create",
+            "fault": "missing_arch",
+            "image_inspections": 1,
+            "refusal": "IMAGE_IDENTITY",
+            "role": "oracle",
+            "simulated_mutation_calls": 0
+          },
+          {
+            "entrypoint": "create",
+            "fault": "linux_alias",
+            "image_inspections": 1,
+            "refusal": "IMAGE_IDENTITY",
+            "role": "oracle",
+            "simulated_mutation_calls": 0
+          },
+          {
+            "entrypoint": "create",
+            "fault": "wrong_os",
+            "image_inspections": 1,
+            "refusal": "IMAGE_IDENTITY",
+            "role": "oracle",
+            "simulated_mutation_calls": 0
+          },
+          {
+            "entrypoint": "create",
+            "fault": "missing_image",
+            "image_inspections": 1,
+            "refusal": "INSPECTION_SHAPE",
+            "role": "oracle",
+            "simulated_mutation_calls": 0
+          },
+          {
+            "entrypoint": "create",
+            "fault": "wrong_id",
+            "image_inspections": 1,
+            "refusal": "IMAGE_IDENTITY",
+            "role": "oracle",
+            "simulated_mutation_calls": 0
+          },
+          {
+            "entrypoint": "create",
+            "fault": "missing_config",
+            "image_inspections": 1,
+            "refusal": "IMAGE_DEFAULTS",
+            "role": "oracle",
+            "simulated_mutation_calls": 0
+          },
+          {
+            "entrypoint": "create",
+            "fault": "onbuild",
+            "image_inspections": 1,
+            "refusal": "IMAGE_DEFAULTS",
+            "role": "oracle",
+            "simulated_mutation_calls": 0
+          },
+          {
+            "entrypoint": "create",
+            "fault": "volumes",
+            "image_inspections": 1,
+            "refusal": "IMAGE_DEFAULTS",
+            "role": "oracle",
+            "simulated_mutation_calls": 0
+          },
+          {
+            "entrypoint": "create",
+            "fault": "environment",
+            "image_inspections": 1,
+            "refusal": "IMAGE_ENVIRONMENT",
+            "role": "oracle",
+            "simulated_mutation_calls": 0
+          },
+          {
+            "entrypoint": "create",
+            "fault": "healthcheck",
+            "image_inspections": 1,
+            "refusal": "HEALTHCHECK",
+            "role": "oracle",
+            "simulated_mutation_calls": 0
+          },
+          {
+            "entrypoint": "start",
+            "fault": "matching",
+            "image_inspections": 0,
+            "refusal": null,
+            "role": "target",
+            "simulated_mutation_calls": 1
+          },
+          {
+            "entrypoint": "start",
+            "fault": "amd64",
+            "image_inspections": 0,
+            "refusal": null,
+            "role": "target",
+            "simulated_mutation_calls": 1
+          },
+          {
+            "entrypoint": "start",
+            "fault": "missing_arch",
+            "image_inspections": 0,
+            "refusal": null,
+            "role": "target",
+            "simulated_mutation_calls": 1
+          },
+          {
+            "entrypoint": "start",
+            "fault": "linux_alias",
+            "image_inspections": 0,
+            "refusal": null,
+            "role": "target",
+            "simulated_mutation_calls": 1
+          },
+          {
+            "entrypoint": "start",
+            "fault": "wrong_os",
+            "image_inspections": 0,
+            "refusal": null,
+            "role": "target",
+            "simulated_mutation_calls": 1
+          },
+          {
+            "entrypoint": "start",
+            "fault": "missing_image",
+            "image_inspections": 0,
+            "refusal": null,
+            "role": "target",
+            "simulated_mutation_calls": 1
+          },
+          {
+            "entrypoint": "start",
+            "fault": "wrong_id",
+            "image_inspections": 0,
+            "refusal": null,
+            "role": "target",
+            "simulated_mutation_calls": 1
+          },
+          {
+            "entrypoint": "start",
+            "fault": "missing_config",
+            "image_inspections": 0,
+            "refusal": null,
+            "role": "target",
+            "simulated_mutation_calls": 1
+          },
+          {
+            "entrypoint": "start",
+            "fault": "onbuild",
+            "image_inspections": 0,
+            "refusal": null,
+            "role": "target",
+            "simulated_mutation_calls": 1
+          },
+          {
+            "entrypoint": "start",
+            "fault": "volumes",
+            "image_inspections": 0,
+            "refusal": null,
+            "role": "target",
+            "simulated_mutation_calls": 1
+          },
+          {
+            "entrypoint": "start",
+            "fault": "environment",
+            "image_inspections": 0,
+            "refusal": null,
+            "role": "target",
+            "simulated_mutation_calls": 1
+          },
+          {
+            "entrypoint": "start",
+            "fault": "healthcheck",
+            "image_inspections": 0,
+            "refusal": null,
+            "role": "target",
+            "simulated_mutation_calls": 1
+          },
+          {
+            "entrypoint": "start",
+            "fault": "matching",
+            "image_inspections": 0,
+            "refusal": null,
+            "role": "observer",
+            "simulated_mutation_calls": 1
+          },
+          {
+            "entrypoint": "start",
+            "fault": "amd64",
+            "image_inspections": 0,
+            "refusal": null,
+            "role": "observer",
+            "simulated_mutation_calls": 1
+          },
+          {
+            "entrypoint": "start",
+            "fault": "missing_arch",
+            "image_inspections": 0,
+            "refusal": null,
+            "role": "observer",
+            "simulated_mutation_calls": 1
+          },
+          {
+            "entrypoint": "start",
+            "fault": "linux_alias",
+            "image_inspections": 0,
+            "refusal": null,
+            "role": "observer",
+            "simulated_mutation_calls": 1
+          },
+          {
+            "entrypoint": "start",
+            "fault": "wrong_os",
+            "image_inspections": 0,
+            "refusal": null,
+            "role": "observer",
+            "simulated_mutation_calls": 1
+          },
+          {
+            "entrypoint": "start",
+            "fault": "missing_image",
+            "image_inspections": 0,
+            "refusal": null,
+            "role": "observer",
+            "simulated_mutation_calls": 1
+          },
+          {
+            "entrypoint": "start",
+            "fault": "wrong_id",
+            "image_inspections": 0,
+            "refusal": null,
+            "role": "observer",
+            "simulated_mutation_calls": 1
+          },
+          {
+            "entrypoint": "start",
+            "fault": "missing_config",
+            "image_inspections": 0,
+            "refusal": null,
+            "role": "observer",
+            "simulated_mutation_calls": 1
+          },
+          {
+            "entrypoint": "start",
+            "fault": "onbuild",
+            "image_inspections": 0,
+            "refusal": null,
+            "role": "observer",
+            "simulated_mutation_calls": 1
+          },
+          {
+            "entrypoint": "start",
+            "fault": "volumes",
+            "image_inspections": 0,
+            "refusal": null,
+            "role": "observer",
+            "simulated_mutation_calls": 1
+          },
+          {
+            "entrypoint": "start",
+            "fault": "environment",
+            "image_inspections": 0,
+            "refusal": null,
+            "role": "observer",
+            "simulated_mutation_calls": 1
+          },
+          {
+            "entrypoint": "start",
+            "fault": "healthcheck",
+            "image_inspections": 0,
+            "refusal": null,
+            "role": "observer",
+            "simulated_mutation_calls": 1
+          },
+          {
+            "entrypoint": "start",
+            "fault": "matching",
+            "image_inspections": 0,
+            "refusal": null,
+            "role": "oracle",
+            "simulated_mutation_calls": 1
+          },
+          {
+            "entrypoint": "start",
+            "fault": "amd64",
+            "image_inspections": 0,
+            "refusal": null,
+            "role": "oracle",
+            "simulated_mutation_calls": 1
+          },
+          {
+            "entrypoint": "start",
+            "fault": "missing_arch",
+            "image_inspections": 0,
+            "refusal": null,
+            "role": "oracle",
+            "simulated_mutation_calls": 1
+          },
+          {
+            "entrypoint": "start",
+            "fault": "linux_alias",
+            "image_inspections": 0,
+            "refusal": null,
+            "role": "oracle",
+            "simulated_mutation_calls": 1
+          },
+          {
+            "entrypoint": "start",
+            "fault": "wrong_os",
+            "image_inspections": 0,
+            "refusal": null,
+            "role": "oracle",
+            "simulated_mutation_calls": 1
+          },
+          {
+            "entrypoint": "start",
+            "fault": "missing_image",
+            "image_inspections": 0,
+            "refusal": null,
+            "role": "oracle",
+            "simulated_mutation_calls": 1
+          },
+          {
+            "entrypoint": "start",
+            "fault": "wrong_id",
+            "image_inspections": 0,
+            "refusal": null,
+            "role": "oracle",
+            "simulated_mutation_calls": 1
+          },
+          {
+            "entrypoint": "start",
+            "fault": "missing_config",
+            "image_inspections": 0,
+            "refusal": null,
+            "role": "oracle",
+            "simulated_mutation_calls": 1
+          },
+          {
+            "entrypoint": "start",
+            "fault": "onbuild",
+            "image_inspections": 0,
+            "refusal": null,
+            "role": "oracle",
+            "simulated_mutation_calls": 1
+          },
+          {
+            "entrypoint": "start",
+            "fault": "volumes",
+            "image_inspections": 0,
+            "refusal": null,
+            "role": "oracle",
+            "simulated_mutation_calls": 1
+          },
+          {
+            "entrypoint": "start",
+            "fault": "environment",
+            "image_inspections": 0,
+            "refusal": null,
+            "role": "oracle",
+            "simulated_mutation_calls": 1
+          },
+          {
+            "entrypoint": "start",
+            "fault": "healthcheck",
+            "image_inspections": 0,
+            "refusal": null,
+            "role": "oracle",
+            "simulated_mutation_calls": 1
+          }
+        ],
+        "interpretation": "Old direct startup skips the actual image boundary; creation already rejects invalid images. New startup applies the same guard for all roles.",
+        "real_processes_started": 0
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "COR-ARCH-002-authenticated-architecture-drift",
+      "result": {
+        "binding_architecture": "aarch64",
+        "context_architecture": "x86_64",
+        "lease_returned": true,
+        "receipt_anchor_matches_request": false,
+        "receipt_architecture": "x86_64",
+        "refusal": null,
+        "request_architecture": "aarch64"
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "COR-ARCH-002-anchor-downgrade",
+      "result": {
+        "direct_endpoint_kernel_reads": 2,
+        "direct_legacy_endpoint": null,
+        "direct_legacy_request": null,
+        "lifecycle_cases": [
+          {
+            "authorization_calls": 1,
+            "exchange_calls": 1,
+            "lease_returned": true,
+            "phase": "before_acquisition",
+            "refusal": null
+          },
+          {
+            "authorization_calls": 1,
+            "exchange_calls": 1,
+            "lease_returned": true,
+            "phase": "authorization",
+            "refusal": null
+          },
+          {
+            "authorization_calls": 1,
+            "exchange_calls": 1,
+            "lease_returned": true,
+            "phase": "endpoint_read",
+            "refusal": null
+          }
+        ]
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "COR-ARCH-002-expanded-public-anchor-lifecycle",
+      "result": {
+        "status": "corrected-only expanded lifecycle checks"
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "COR-ARCH-002-operation-key-and-view-consistency",
+      "result": {
+        "mid_read_public_key_change": "refused",
+        "private_python_fields_mutated": false,
+        "public_binding_relabel_view_refusal": null
+      },
+      "status": "PASS"
+    },
+    {
+      "id": "COR-ARCH-003-record-target-manifest-snapshot",
+      "result": {
+        "cases": [
+          {
+            "case": "matching",
+            "compiler_metadata_stub_calls": 6,
+            "record_architecture": "aarch64",
+            "record_target_matches_manifest": true,
+            "record_uses_validated_original_bytes": true,
+            "record_written": true,
+            "refusal": null,
+            "target_read_count": 1
+          },
+          {
+            "case": "foreign_target",
+            "compiler_metadata_stub_calls": 6,
+            "record_architecture": "aarch64",
+            "record_target_matches_manifest": false,
+            "record_uses_validated_original_bytes": false,
+            "record_written": true,
+            "refusal": null,
+            "target_read_count": 1
+          },
+          {
+            "case": "stale_target",
+            "compiler_metadata_stub_calls": 6,
+            "record_architecture": "aarch64",
+            "record_target_matches_manifest": false,
+            "record_uses_validated_original_bytes": false,
+            "record_written": true,
+            "refusal": null,
+            "target_read_count": 1
+          },
+          {
+            "case": "legacy_manifest",
+            "compiler_metadata_stub_calls": 6,
+            "record_architecture": "aarch64",
+            "record_target_matches_manifest": true,
+            "record_uses_validated_original_bytes": true,
+            "record_written": true,
+            "refusal": null,
+            "target_read_count": 1
+          },
+          {
+            "case": "foreign_manifest",
+            "compiler_metadata_stub_calls": 6,
+            "record_architecture": "aarch64",
+            "record_target_matches_manifest": true,
+            "record_uses_validated_original_bytes": true,
+            "record_written": true,
+            "refusal": null,
+            "target_read_count": 1
+          },
+          {
+            "case": "foreign_platform",
+            "compiler_metadata_stub_calls": 6,
+            "record_architecture": "aarch64",
+            "record_target_matches_manifest": true,
+            "record_uses_validated_original_bytes": true,
+            "record_written": true,
+            "refusal": null,
+            "target_read_count": 1
+          },
+          {
+            "case": "extra_manifest_field",
+            "compiler_metadata_stub_calls": 6,
+            "record_architecture": "aarch64",
+            "record_target_matches_manifest": true,
+            "record_uses_validated_original_bytes": true,
+            "record_written": true,
+            "refusal": null,
+            "target_read_count": 1
+          },
+          {
+            "case": "noncanonical_manifest",
+            "compiler_metadata_stub_calls": 6,
+            "record_architecture": "aarch64",
+            "record_target_matches_manifest": true,
+            "record_uses_validated_original_bytes": true,
+            "record_written": true,
+            "refusal": null,
+            "target_read_count": 1
+          },
+          {
+            "case": "target_replaced_during_compiler",
+            "compiler_metadata_stub_calls": 6,
+            "record_architecture": "aarch64",
+            "record_target_matches_manifest": false,
+            "record_uses_validated_original_bytes": false,
+            "record_written": true,
+            "refusal": null,
+            "target_read_count": 1
+          }
+        ],
+        "compiler_or_elf_executed": false,
+        "note": "A mutation after validation must not change which byte snapshot is hashed. A valid record is not an atomic attestation of a concurrently writable output directory."
+      },
+      "status": "PASS"
+    }
+  ],
+  "revision": "initial",
+  "source_snapshot": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/snapshot",
+  "status": "PASS"
+}

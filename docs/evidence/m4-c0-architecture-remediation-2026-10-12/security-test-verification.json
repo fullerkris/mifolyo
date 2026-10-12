@@ -1,0 +1,25 @@
+{
+  "FakeDocker_change": "Additional bound image metadata branch in inspect; no old test method/assertion changed or image guard bypassed.",
+  "all_229_prior_test_method_ASTs_unchanged": true,
+  "new_ids": [
+    "test_architecture_review.ArchitectureReviewTests.test_anchor_drift_during_authorization_refuses_before_exchange",
+    "test_architecture_review.ArchitectureReviewTests.test_endpoint_anchor_drift_during_observation_refuses",
+    "test_architecture_review.ArchitectureReviewTests.test_endpoint_and_request_parser_reject_legacy_anchor",
+    "test_architecture_review.ArchitectureReviewTests.test_legacy_anchor_is_revalidated_at_each_source_acquisition",
+    "test_architecture_review.ArchitectureReviewTests.test_record_accepts_matching_arm64_target_and_manifest",
+    "test_architecture_review.ArchitectureReviewTests.test_record_rejects_foreign_target_and_stale_or_legacy_manifest",
+    "test_architecture_review.ArchitectureReviewTests.test_signed_response_cannot_follow_a_mutated_public_anchor",
+    "test_architecture_review.ArchitectureReviewTests.test_start_checks_each_roles_actual_image_architecture",
+    "test_architecture_review.ArchitectureReviewTests.test_valid_context_receipt_remains_bound_to_the_signed_request"
+  ],
+  "preserved_prior_ids": 229,
+  "resource_warnings_as_errors": true,
+  "resource_warnings_seen": 0,
+  "status": "PASS",
+  "suite_runs_on_corrected_source": 1,
+  "tests_log_sha256": "2b9c2f75d14937615c6ba80e289f3df10e05d780ababed4f7a76346cd14f8135",
+  "tests_run": 238,
+  "tests_sha256": "d6bf46767e6c7909789e53ce008dc0e26ebd60f4c3e3f76fe4837747ceab38c4",
+  "tmpdir": "/tmp/opencode",
+  "umask": "077"
+}

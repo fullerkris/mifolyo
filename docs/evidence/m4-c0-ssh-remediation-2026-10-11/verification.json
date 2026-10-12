@@ -1,0 +1,78 @@
+{
+  "artifact_continuity": {
+    "fresh_build_performed_for_this_delta": false,
+    "host_source_and_oracle_worker_identities_unchanged": true,
+    "native_inputs_unchanged": 9,
+    "native_raw_artifacts_unchanged": 11,
+    "oracle_inputs_unchanged": 10,
+    "oracle_manifest_and_interpreter_unchanged": true,
+    "reconstruction_verification_sha256": "569dfdc93881a44d18dc6b8b2d1bdfbc1a5a2453153257de0160751d86d09318"
+  },
+  "closed_findings": [
+    "COR-SSH-002",
+    "COR-SSH-003",
+    "QA-ENV-001"
+  ],
+  "correction_committed": false,
+  "correction_pushed": false,
+  "deployment_complete": false,
+  "execution_authorized": false,
+  "historical_failed_tests_and_initial_reviews_preserved": true,
+  "independent_reviews": {
+    "correctness": {
+      "review_sha256": "39ce04e0b319406164d1c14732baa5cc3186d704fe9704676c4d78ae933d1412",
+      "test_report_sha256": "1d8d1cd2b3cecf39bbc61652968971a40c853902c2d08df91cb42502fa6494fc",
+      "tests": 202,
+      "umask": "022",
+      "verdict": "GO_FOR_CONTINUED_IMPLEMENTATION"
+    },
+    "security": {
+      "review_sha256": "8fa8df79a42d43dcb8770aa14a83ad6beaf5deaa78ff4b59db797b321dfcace1",
+      "test_report_sha256": "1d8d1cd2b3cecf39bbc61652968971a40c853902c2d08df91cb42502fa6494fc",
+      "tests": 202,
+      "umask": "077",
+      "verdict": "GO_FOR_CONTINUED_IMPLEMENTATION"
+    }
+  },
+  "kind": "c0_pinned_ssh_final_review_gate",
+  "label_date": "2026-10-11",
+  "local_full_suite_runs": [
+    {
+      "report_sha256": "1d8d1cd2b3cecf39bbc61652968971a40c853902c2d08df91cb42502fa6494fc",
+      "status": "PASS",
+      "tests": 202,
+      "umask": "022"
+    },
+    {
+      "report_sha256": "1d8d1cd2b3cecf39bbc61652968971a40c853902c2d08df91cb42502fa6494fc",
+      "status": "PASS",
+      "tests": 202,
+      "umask": "077"
+    }
+  ],
+  "m4_accepted": false,
+  "native_runtime_accepted": false,
+  "new_in_scope_findings": [],
+  "new_test_ids": 5,
+  "next": [
+    "Separate scoped PR/publication decision and exact CI/merge verification",
+    "Actual host/context provisioning, runtime-image admission and native trial/calibration acceptance",
+    "Planned ARM64/x64 runtime delivery under C0-ARCH-02\u201306"
+  ],
+  "package_files": 45,
+  "pr_created": false,
+  "preserved_fix": "COR-SSH-001",
+  "previous_test_ids_preserved": 197,
+  "publication_authorized": false,
+  "recorded_utc": "2026-10-12T03:22:32.114156+00:00",
+  "remaining_nonblocking_limitations": [
+    "Private-bundle key envelope validation is not decoded-key/key-pair or live-authentication proof."
+  ],
+  "reviewed_checkpoint_commit": "1e956962596f7bb86143d45dd62ebf863c0b64eb",
+  "reviewed_source_includes_uncommitted_corrections": true,
+  "source_inventory_sha256": "2ecf2c68b6a3293cc3b34314e23022b3f35c2eda69f9f8efa0391728804a8edf",
+  "source_unchanged_after_both_reviews": true,
+  "status": "GO_FOR_CONTINUED_IMPLEMENTATION",
+  "transport_bundle_sha256": "20b53849d3617f1a7f1dc2897cd2ab3fed48990b8df188317c8c136d8276869a",
+  "version": 1
+}

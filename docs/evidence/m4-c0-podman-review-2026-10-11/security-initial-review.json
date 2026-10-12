@@ -1,0 +1,145 @@
+{
+  "agents_spawned": 0,
+  "closed_findings": [
+    {
+      "classification": "Local availability/resource leak; requires an admitted invocation and allocation failure, not a demonstrated remote code execution path.",
+      "copy_paste_remediation_patch": "--- a/tests/crawl-jobs-v2-observer/context_transport.py\n+++ b/tests/crawl-jobs-v2-observer/context_transport.py\n@@ -61,12 +61,15 @@\n def exchange_process(argv, raw, deadline, *, spawn=subprocess.Popen):\n     deadline.check()\n     require(type(raw) is bytes and 0 < len(raw) <= LIMITS[\"receipt_bytes\"] and raw.endswith(b\"\\n\"), \"CONTEXT_INPUT_BOUND\")\n-    process = spawn(argv, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,\n-        env={\"PATH\": \"/usr/bin:/bin\", \"LC_ALL\": \"C\", \"SSH_ASKPASS_REQUIRE\": \"never\"},\n-        start_new_session=True, close_fds=True)\n-    output, offset, reaped = bytearray(), 0, False\n+    # Acquire the selector before starting a child, and guard spawn/setup too.\n     mux = selectors.DefaultSelector()\n+    process, reaped = None, False\n     try:\n+        deadline.check()\n+        process = spawn(argv, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,\n+            env={\"PATH\": \"/usr/bin:/bin\", \"LC_ALL\": \"C\", \"SSH_ASKPASS_REQUIRE\": \"never\"},\n+            start_new_session=True, close_fds=True)\n+        output, offset = bytearray(), 0\n         for pipe, event, label in ((process.stdin, selectors.EVENT_WRITE, \"in\"),\n                 (process.stdout, selectors.EVENT_READ, \"out\"), (process.stderr, selectors.EVENT_READ, \"err\")):\n             os.set_blocking(pipe.fileno(), False)\n@@ -99,7 +102,7 @@\n         return bytes(output)\n     finally:\n         try:\n-            if not reaped:\n+            if process is not None and not reaped:\n                 # Do not reap a leader while descendants may still hold its pipes.\n                 # Normal EOF permits reaping, but is not remote/group absence proof.\n                 if not mux.get_map():\n@@ -113,7 +116,8 @@\n                         process.wait(timeout=LIMITS[\"cleanup_ms\"] / 1000)\n         finally:\n             mux.close()\n-            for pipe in (process.stdin, process.stdout, process.stderr): pipe.close()\n+            if process is not None:\n+                for pipe in (process.stdin, process.stdout, process.stderr): pipe.close()\n \n \n class SSHContextTransport:\n",
+      "id": "COR-SSH-001",
+      "impact": "Original startup exceptions escaped cleanup, retaining subprocess/pipe resources. Repeated failures could exhaust controller resources.",
+      "location_corrected": "tests/crawl-jobs-v2-observer/context_transport.py:61-76,103-120",
+      "location_original": "original-context_transport.py:64-69",
+      "minimal_fix_already_present": "Allocate the selector before spawn; initialize process to None; guard spawn/setup and existing cleanup.",
+      "proof": "Inject DefaultSelector() ENFILE while substituting a newly owned benign Python sleeper for SSH. Original: one live child, three open pipes, fd delta +3. Corrected: zero spawned children and fd delta 0. Reviewer explicitly killed/reaped/closed original control.",
+      "remediation_reference": "The concrete corrected code is preserved in snapshot/tests/crawl-jobs-v2-observer/context_transport.py:61-120; no reviewer source edits.",
+      "severity": "Medium",
+      "status": "VERIFIED_FIXED_IN_FROZEN_SOURCE",
+      "verification": "probes.json: COR-SSH-001-original-vs-corrected, partial-startup-failure-cleanup, deadline-between-selector-and-spawn; all 3 new regression IDs passed in complete suite."
+    }
+  ],
+  "completed_utc": "2026-10-12T02:22:31.467319+00:00",
+  "deferred_and_excluded": [
+    "Identify and admit the actual Linux/AArch64 host in the selected daemon kernel/namespace domain; unchanged backend still selects unix:///var/run/docker.sock.",
+    "Root/service installation, actual sshd configuration and account/environment behavior, public/private key pairing and live SSH authentication require separate admission. The placeholder private key deliberately proves no authentication.",
+    "ELF interpreter hash is not the full Python runtime image/dependency identity; exact OCI image admission remains open.",
+    "Historical Podman/Buildah/QEMU/extraction/lifecycle records were statically checked for consistency; the reviewer ran no engine workload or live container query. Original-container preservation is not independently re-attested from live state.",
+    "No native actor, oracle worker, real host collector, tracing, native calibration, remote-stop/absence proof, host-policy mutation or production connection was executed by this review.",
+    "X64 runtime is PLANNED and excluded from current ARM64 implementation acceptance.",
+    "No publication authorization, host installation approval, native runtime acceptance or full M4 acceptance is conferred."
+  ],
+  "evidence_sha256": {
+    "artifacts.json": "27865da68adc1c69a64fd756bbfd66bbf765592673557d32bf4d25481c168c52",
+    "artifacts.log": "66f0f695e8c2a8c88c925bca4da92b033b81dd082181bf9531df04aa2181b9d1",
+    "c0-tests.json": "66161b67cf93ce43f405314ef4b4606aaa6af2cf9f94d350fe2d07fbc0065310",
+    "c0-tests.log": "524255410bb68d7f2a599340cae5ab2784aa735c09c939320a8d2f707ca1c631",
+    "inspect-artifacts.py": "9a2135bb5c59928288793c9af1c4c7a33ac8f08358e0ee47ca7490155aa4a5df",
+    "integrity-after.json": "5269603ec4555f4ce94045cd866fbec8c8563d8478216171cfe389949f4be4a0",
+    "integrity-before.json": "f092982586551c985f457a86b584f36269846388cf5d359fcf2bdb7c1bca2fb3",
+    "isolated-umask-retest.json": "72da6af58a6f29f7ab013d3b655c8c650eabcfb5f17269750bda456d3a919e10",
+    "isolated-umask-retest.log": "52536f4378bdcb072740e499d5156e4fbb3207d104f4e7b02d9e7950e874fdd9",
+    "probes.json": "607210143f9a8b119d7987046cd1e3d603a4b9535c25cdee7efdd54856edd8f9",
+    "probes.log": "b5bc6e77aa387ee7af0e20e57d79f97477d5f4ec4d5ff6bbf3584bfa64a0588b",
+    "probes.py": "325d4c36cb6fe149f4d00c0798f35c96a0c9a60f0734f849c7e53616bb706796",
+    "test-inventory-comparison.json": "046d58a58f3e3bc67890766267294123052856f255d124dc0124345ffcf72035"
+  },
+  "host_installation_accepted": false,
+  "kind": "mifolyo_c0_independent_security_review",
+  "m4_accepted": false,
+  "native_runtime_accepted": false,
+  "nonblocking_observations": [
+    {
+      "blocking": false,
+      "evidence": [
+        "c0-tests.json",
+        "c0-tests.log",
+        "isolated-umask-retest.json",
+        "isolated-umask-retest.log"
+      ],
+      "id": "QA-ENV-001",
+      "impact": "False-negative offline test result under restrictive umask; no permission bypass or production security weakening was demonstrated.",
+      "location": "tests/crawl-jobs-v2-observer/test_context_provisioning.py:231-239",
+      "minimal_fix": "root = Path(folder) / \"code\"\nroot.mkdir(mode=0o755)\nroot.chmod(0o755)  # exact simulated install mode, inside private TemporaryDirectory\n",
+      "proof": "The reviewer set umask 077 to keep retained outputs private. root.mkdir(mode=0o755) therefore made mode 0700; context_files.directory correctly rejected it. Full suite: 196 passes, 1 error (CONTEXT_DIRECTORY). The unchanged single test passed under umask 022.",
+      "recommendation": "Optional fixture hardening only. Do not relax the application file checks or globally weaken umask. The retained full-suite report remains FAIL and must not be advertised as a clean 197/197 run.",
+      "reproduction": "cd /tmp/opencode/m4-c0-podman-arm64-2026-10-11/snapshot/tests/crawl-jobs-v2-observer\n(umask 077; TMPDIR=/tmp/opencode python3 -B -W error::ResourceWarning -m unittest test_context_provisioning.ProvisioningTests.test_ssh_entrypoint_checks_exact_code_inventory_and_interpreter)",
+      "security_vulnerability": false,
+      "severity": "Informational",
+      "title": "One offline fixture assumes umask permits requested 0755 directory mode"
+    }
+  ],
+  "publication_authorized": false,
+  "rationale": "No unresolved exploitable security-boundary violation found within the documented root/operator trust model. COR-SSH-001 is independently reproduced on original source and verified fixed; static artifacts match original evidence exactly. One nonblocking umask-dependent test-fixture observation is retained transparently.",
+  "repository_snapshot_docs_obsidian_modified": false,
+  "review_label_date": "2026-10-11",
+  "review_outputs_root": "/tmp/opencode/m4-c0-podman-arm64-2026-10-11/security",
+  "source": {
+    "base": "64c98a78e0e0ae1731f1516c06932bc881e8becf",
+    "before_after_all_package_hashes_verified": true,
+    "checkpoint": "1e956962596f7bb86143d45dd62ebf863c0b64eb",
+    "corrected_context_transport_sha256": "effb0794f77066062e8de0cb0134bbbefe1f313dd5e43f2199c906ce692a05a7",
+    "no_snapshot_extra_files": true,
+    "original_context_transport_sha256": "4f7961384e1b814869885db35fe1a2cfe3ce89ecbb49d670e4a1a9c197ce9276",
+    "package_files": 45,
+    "runner_preserved": true,
+    "runner_sha256": "9afb715125f734f5b905da63dde5c9787fc5997b2e5a73a0bf62d781b23aef84",
+    "scope": "Full increment diff; all new context_files/provision/ssh/transport modules; context_worker/contracts/runtime_context/Linux observations/runtime_admission/DockerBackend integration and relevant tests. Existing native artifacts statically inspected, not runtime admitted.",
+    "snapshot": "/tmp/opencode/m4-c0-podman-arm64-2026-10-11/snapshot",
+    "source_delta_sha256": "fe2748bb828e444a6236cb8d824232bfcc9678d09a6d02abd81f0ae8538499b1",
+    "source_inventory_sha256": "f53058a955de01027efcdbaa6adace7d6904197c845e5886b25e7d9db41bc227",
+    "source_joins": {
+      "oracle_worker_source": "a6c5fd8c2c42fceadff3c846f083b5f9ed92ffb93c4ea7e644bf9b0f315d71f9",
+      "runtime_context_source": "00717364e862cad8012f42dc2702a3e3236822c861fbd21fd190b7e47fc78257",
+      "runtime_context_transport": "1f83f90e21d13092ff8ac146d2415681afceb15de7ac5780b308413b0024abdd"
+    },
+    "total_files_including_runner": 46
+  },
+  "trust_boundaries": [
+    "Root/operator is the trust root. Root-replaced source/interpreter/client or operator-supplied false anchors are not out-of-model authentication bypass findings.",
+    "Controller bundle is operator-owned 0700/0600; files are bounded, regular, single-link, no-follow, stable-identity reads. Per-exchange key/known-host copies are private and removed after tested refusals.",
+    "SSH host/client pins are supplied out of band. Numeric host validation, fixed argv/config, strict known-host checking, no agent/proxy/forwarding/control channel, constant remote marker, source HMAC/fresh challenge and preparation/daemon/lease bindings constrain the boundary.",
+    "The library functions are not capability boundaries against malicious code already running as the controller UID. Public API/fixture mutation is not an attacker foothold by itself.",
+    "Final path components are checked in code. Secure non-symlink ancestors, root-controlled runtime dependencies, account/home/startup environment and live effective sshd policy remain the documented operator admission obligations.",
+    "Public manifests/receipts carry no secret bytes or secret-file hashes and do not certify installation, runtime feasibility or execution authorization."
+  ],
+  "unresolved_security_findings": [],
+  "verdict": "GO_FOR_CONTINUED_IMPLEMENTATION",
+  "verification": {
+    "all_source_elf_manifest_filter_profile_joins": "PASS",
+    "all_unique_ids_passed_across_full_run_and_isolated_retest": 197,
+    "compiled_bpf_vectors": 987,
+    "complete_suite_command": "TMPDIR=/tmp/opencode python3 -B -W error::ResourceWarning scripts/test-crawl-jobs-v2-observer.py --report /tmp/opencode/m4-c0-podman-arm64-2026-10-11/security/c0-tests.json",
+    "complete_suite_cwd": "/tmp/opencode/m4-c0-podman-arm64-2026-10-11/snapshot",
+    "complete_suite_errors": [
+      "test_context_provisioning.ProvisioningTests.test_ssh_entrypoint_checks_exact_code_inventory_and_interpreter"
+    ],
+    "complete_suite_passes": 196,
+    "complete_suite_runs": 1,
+    "complete_suite_status": "FAIL",
+    "complete_suite_test_count": 197,
+    "complete_suite_umask": "077",
+    "expected_failures": [],
+    "isolated_retest": {
+      "source_changed": false,
+      "status": "PASS",
+      "tests_run": 1,
+      "umask": "022"
+    },
+    "native_outputs_matching_original": 11,
+    "new_failure_path_ids": [
+      "test_context_provisioning.SSHTransportTests.test_pipe_setup_failure_reaps_the_child_and_closes_resources",
+      "test_context_provisioning.SSHTransportTests.test_selector_setup_failure_cannot_leave_a_spawned_process",
+      "test_context_provisioning.SSHTransportTests.test_spawn_failure_closes_any_created_selector"
+    ],
+    "oracle_manifest_and_interpreter_match_original": true,
+    "prior_build_verification_sha256": "c9826477cb4e8afbfbe3adb6c41112f1af87be97ebddf7e06a53e07b4cd2ec58",
+    "prior_ids_preserved": 194,
+    "prior_source_inventory_sha256": "b69502b2287b08331570f7a7c2728586da216341ec9da0fdb0c097abfaac4c4a",
+    "probe_fd_delta": 0,
+    "resource_warnings_observed": false,
+    "security_probe_groups": 13,
+    "security_probe_status": "PASS",
+    "single_clean_197_test_pass_claimed": false,
+    "skips": [],
+    "unexpected_successes": []
+  },
+  "version": 1
+}

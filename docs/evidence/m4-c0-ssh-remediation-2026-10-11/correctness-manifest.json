@@ -1,0 +1,113 @@
+{
+  "deployment_complete": false,
+  "execution_authorized": false,
+  "files": {
+    "correctness-artifact-continuity.json": {
+      "bytes": 4908,
+      "private_source": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/correctness/artifact-continuity.json",
+      "sha256": "bc0c6a80b784ae4ef56c1aa21d6e48a692bc48d9135965877eb025e4f420c4f2"
+    },
+    "correctness-artifact-continuity.log": {
+      "bytes": 1455,
+      "private_source": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/correctness/artifact-continuity.log",
+      "sha256": "770d253dd9d5d1fd96c7037937b8545c21aa25393df3531f171201821a3ff382"
+    },
+    "correctness-c0-tests.json": {
+      "bytes": 67722,
+      "private_source": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/correctness/c0-tests.json",
+      "sha256": "1d8d1cd2b3cecf39bbc61652968971a40c853902c2d08df91cb42502fa6494fc"
+    },
+    "correctness-c0-tests.log": {
+      "bytes": 32863,
+      "private_source": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/correctness/c0-tests.log",
+      "sha256": "d9a246461a0b0adb0c0f1a491b0f08851aad3ab077902b46dea11c4144304d34"
+    },
+    "correctness-owned-process-postcheck.json": {
+      "bytes": 377,
+      "private_source": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/correctness/owned-process-postcheck.json",
+      "sha256": "a3c039f15ac772031f0c68f7a1ff10d940d404c0cfc3447f4306de0bfe5f1cf5"
+    },
+    "correctness-probe-boundaries.json": {
+      "bytes": 1122,
+      "private_source": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/correctness/probe-boundaries.json",
+      "sha256": "bad48ce2b340eb602c6a96ab81d602fdcf0070f99970f972059420f148eb1c64"
+    },
+    "correctness-probe-boundaries.log": {
+      "bytes": 1122,
+      "private_source": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/correctness/probe-boundaries.log",
+      "sha256": "040809b1c1889d4f95f121145606865c5bb56ad8bcf835d17443c223106f288a"
+    },
+    "correctness-probe-cleanup.json": {
+      "bytes": 1456,
+      "private_source": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/correctness/probe-cleanup.json",
+      "sha256": "198f8b84e868a92e827958cc7449332e5f8899aa0b874f62685c738aecc79c9d"
+    },
+    "correctness-probe-cleanup.log": {
+      "bytes": 1456,
+      "private_source": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/correctness/probe-cleanup.log",
+      "sha256": "53bca0a6149ed577c1f59f0f4adeb5b424ddb4ca3f4f02e1c87a8d305cbc8948"
+    },
+    "correctness-probe-preparation.json": {
+      "bytes": 884,
+      "private_source": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/correctness/probe-preparation.json",
+      "sha256": "fe12c41473d686dd52270499d29de615b6fa1eb38387753f5e9e18dce2232126"
+    },
+    "correctness-probe-preparation.log": {
+      "bytes": 884,
+      "private_source": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/correctness/probe-preparation.log",
+      "sha256": "ec3c2be980fa18ceeefcd94824210d373b4b48840df376576c1182025ac705b0"
+    },
+    "correctness-qa-env-077.json": {
+      "bytes": 330,
+      "private_source": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/correctness/qa-env-077.json",
+      "sha256": "e18f02775a052f83059e2f08ee936cd2c953bb6aefc00fd3580b99e059b4d764"
+    },
+    "correctness-qa-env-077.log": {
+      "bytes": 278,
+      "private_source": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/correctness/qa-env-077.log",
+      "sha256": "52536f4378bdcb072740e499d5156e4fbb3207d104f4e7b02d9e7950e874fdd9"
+    },
+    "correctness-retained-main-evidence.json": {
+      "bytes": 751,
+      "private_source": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/correctness/retained-main-evidence.json",
+      "sha256": "afbc87a502ec7828c682ec0000e256c3f98ea8cd58db33ea306c947a15e7126a"
+    },
+    "correctness-review.json": {
+      "bytes": 6667,
+      "private_source": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/correctness/review.json",
+      "sha256": "39ce04e0b319406164d1c14732baa5cc3186d704fe9704676c4d78ae933d1412"
+    },
+    "correctness-review.md": {
+      "bytes": 14261,
+      "private_source": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/correctness/review.md",
+      "sha256": "da63cfa9a6004635e1b273520d2ebdec382153a70d3d5991b238612dfc8098c4"
+    },
+    "correctness-source-after.json": {
+      "bytes": 6158,
+      "private_source": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/correctness/source-after.json",
+      "sha256": "c741481f2bf4d211022147efc7e45b165677b5f40746d44e26a82ca341382b39"
+    },
+    "correctness-source-before.json": {
+      "bytes": 8233,
+      "private_source": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/correctness/source-before.json",
+      "sha256": "af993378a03d8f5a92ae623839413e345a58f772057ce466aee7f8c448de7c14"
+    },
+    "correctness-test-verification.json": {
+      "bytes": 1066,
+      "private_source": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/correctness/test-verification.json",
+      "sha256": "bbf042f8a04a7438664238552d28289b0c8c2406faac163161cfe0632eb7f1d3"
+    },
+    "correctness-verification.log": {
+      "bytes": 875,
+      "private_source": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/correctness/verification.log",
+      "sha256": "34c720e471753e7f0d2c68c166799d9b3ad2e84722f113ea5f180e62ce5f759a"
+    }
+  },
+  "kind": "c0_independent_remediation_review_exports",
+  "publication_authorized": false,
+  "review_sha256": "39ce04e0b319406164d1c14732baa5cc3186d704fe9704676c4d78ae933d1412",
+  "reviewer": "correctness",
+  "source_inventory_sha256": "2ecf2c68b6a3293cc3b34314e23022b3f35c2eda69f9f8efa0391728804a8edf",
+  "verdict": "GO_FOR_CONTINUED_IMPLEMENTATION",
+  "version": 1
+}

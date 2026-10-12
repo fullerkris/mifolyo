@@ -1,0 +1,44 @@
+{
+  "case_count": 6,
+  "cases": [
+    {
+      "case": "packet_mutation_during_authorize",
+      "next_mutated_acquisition_rejected_before_authorization_exchange_or_budget": true,
+      "request_and_lease_bound_to_original_snapshot": true,
+      "status": "PASS"
+    },
+    {
+      "case": "packet_mutation_during_exchange",
+      "next_mutated_acquisition_rejected_before_authorization_exchange_or_budget": true,
+      "request_and_lease_bound_to_original_snapshot": true,
+      "status": "PASS"
+    },
+    {
+      "case": "valid_reuse_after_mismatch_and_across_cases",
+      "fresh_challenges": 3,
+      "status": "PASS"
+    },
+    {
+      "case": "deadline_between_selector_and_spawn",
+      "selector_closed": true,
+      "spawned": false,
+      "status": "PASS"
+    },
+    {
+      "case": "clean_eof",
+      "kill_calls": 0,
+      "pipes_closed": true,
+      "returncode": 0,
+      "status": "PASS"
+    },
+    {
+      "case": "closed_pipes_live_leader",
+      "kill_calls": 1,
+      "pipes_closed": true,
+      "returncode": -9,
+      "status": "PASS"
+    }
+  ],
+  "simulated_context_only": true,
+  "status": "PASS"
+}

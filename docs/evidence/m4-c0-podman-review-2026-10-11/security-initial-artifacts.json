@@ -1,0 +1,98 @@
+{
+  "all_native_bytes_equal_original_evidence": true,
+  "all_profiles_equal": true,
+  "changed_paths_from_original_inventory": [
+    "tests/crawl-jobs-v2-observer/context_transport.py",
+    "tests/crawl-jobs-v2-observer/test_context_provisioning.py"
+  ],
+  "compiled_bpf_section_equal": true,
+  "compiled_bpf_vectors": 987,
+  "container_lifecycle": "Historical records consistent; no live container query performed by reviewer.",
+  "elf": {
+    "observer": {
+      "bytes": 5450304,
+      "class": 64,
+      "endian": "little",
+      "gnu_relro": true,
+      "interpreters": [],
+      "machine": 183,
+      "no_writable_executable_load": true,
+      "nonexecutable_stack": true,
+      "sha256": "e407a02c67ac7a0cd192e612afe5ad643701c16821f6854e3a11b040e55cfb61",
+      "type": "ET_DYN"
+    },
+    "oracle-python3.13": {
+      "bytes": 67608,
+      "class": 64,
+      "endian": "little",
+      "gnu_relro": true,
+      "interpreters": [
+        "/lib/ld-linux-aarch64.so.1"
+      ],
+      "machine": 183,
+      "no_writable_executable_load": true,
+      "nonexecutable_stack": true,
+      "sha256": "cb4548d280f38c2b1df4cba45f12c90a034729e08fce5bf1a223c58add0e21e3",
+      "type": "ET_DYN"
+    },
+    "target": {
+      "bytes": 5448416,
+      "class": 64,
+      "endian": "little",
+      "gnu_relro": true,
+      "interpreters": [],
+      "machine": 183,
+      "no_writable_executable_load": true,
+      "nonexecutable_stack": true,
+      "sha256": "819cde0b38e12b235acbef2b3741551af86683ff2c3ec5186b5a45b710e5da45",
+      "type": "ET_DYN"
+    }
+  },
+  "native_artifacts": {
+    "cases.h": "64591020572e8af5afae67856ba79e053afacaf41d08ba10a98f489558e383f4",
+    "observer": "e407a02c67ac7a0cd192e612afe5ad643701c16821f6854e3a11b040e55cfb61",
+    "observer-seccomp.json": "abf581851c19631ba5125ac03443f4ad72c6e8fd7b92fa086218060e07b56bf2",
+    "oracle-seccomp.json": "f82e0ae5335e1393c402265c4a14a4e56ad8df27ab48eee70907745fef3b6835",
+    "target": "819cde0b38e12b235acbef2b3741551af86683ff2c3ec5186b5a45b710e5da45",
+    "target-filter.bpf": "701824ff5f8ccafa359f711d2714b23c8a303789cd1987a3a85aba19a3667b93",
+    "target-manifest.json": "a19b4096f0f268742ebc98bf879e12fbb0de1124a1c8144959496f6b8a615e43",
+    "target-seccomp.json": "6a1ffdf7326ae1370bd55cc2edb2bcfb49b2d65ce7090205576d3b6e9496ab3e",
+    "target_filter.h": "8a1c8f5941860b7acd92f3dc53952aa746fa9d1c57098b214a691fa8a6380b1d",
+    "target_manifest.h": "ccee87e21a21d7d0f8e07cac9fe1dc3e9f20333d51b32e9231d1e2362686d7a5",
+    "toolchain.json": "e953b3c89a20ebeca25ebbcce8d30486aa10174db1d9986977bed786aa47f9dc"
+  },
+  "no_artifact_execution": true,
+  "oracle_interpreter_sha256": "cb4548d280f38c2b1df4cba45f12c90a034729e08fce5bf1a223c58add0e21e3",
+  "oracle_manifest_and_elf_equal_original_evidence": true,
+  "oracle_manifest_sha256": "3f51809ebddbad24cbe03611e67b678df003121b77aff0743de0251baf538131",
+  "prior_build_verification_sha256": "c9826477cb4e8afbfbe3adb6c41112f1af87be97ebddf7e06a53e07b4cd2ec58",
+  "prior_source_inventory_sha256": "b69502b2287b08331570f7a7c2728586da216341ec9da0fdb0c097abfaac4c4a",
+  "publication_authorization": false,
+  "record_hashes": {
+    "artifact-verification.json": "569dfdc93881a44d18dc6b8b2d1bdfbc1a5a2453153257de0160751d86d09318",
+    "before-containers.json": "520e5365ce8b4fc5ea5bbb5031c47de6f480ec71696daa59fe48a23c157f3acd",
+    "before-images.json": "814ee024e858d126787ede1b4c2dd16b5c6350520280153cad5108de782b66a7",
+    "build-native-image-inspect.json": "d7fcfd1c3ce4de1a62526d76d9753a6c42b774576a57c53cad6b8c8cf09d312a",
+    "build-native.json": "458d4491923890e4351a8efd27541dcd71ed317100d5efd0dd7803ac13279227",
+    "build-native.log": "b73bfe431396c2a18cb708aaedbf9185d907bd07bb54a4687a51bd7d216b4a5a",
+    "build-oracle-image-inspect.json": "d2f1095b674cabf251b647295c0f387791bce8a09dc28b78c4bb2c1c0d546be4",
+    "build-oracle.json": "f42eb84eabb675b56a812c58971524ef227ff054e10cf5ae71970392ebb9596c",
+    "build-oracle.log": "a8dd3e83778b624276bee1f8117084b8800c2c763d12008d3f36cd5e0c982905",
+    "oracle-extraction.json": "8ffc4f997d605d68f52c24ff08ec5dbbeaff2dbce343bfe97ea5c80c45a093c9",
+    "preflight.json": "9a087a6eb27aee56e0c5e400b88f6e96e111347f0dfe33ab10b90e1c4858281a",
+    "pull-native-image-inspect.json": "8b46eee022d1986cf2a5a286511f5a346c454231d9a8ab442d3bf55bcecb0adc",
+    "pull-native.json": "0d433f690461256a8f40859cd894b32e7727ac177f866ebe87f76cc192b05070",
+    "pull-native.log": "c3a575ae93c79e4ce5098d79f3248a5f970bf0c77f97a5cf7b636c1e782ea6b9",
+    "pull-oracle-image-inspect.json": "db58991ad0d59d226c4ceb8dd870789e5e0608528ffdeb814ae28762e92a5563",
+    "pull-oracle.json": "6cc480288800cb7527212b8ab1208dd46cfaad84640860655a6529e75259216d",
+    "pull-oracle.log": "0f6ce4485b36772a9459d2f887a181317eea851ebcfaa084873d3cca25a5865b"
+  },
+  "runtime_acceptance": false,
+  "source_inventory_sha256": "f53058a955de01027efcdbaa6adace7d6904197c845e5886b25e7d9db41bc227",
+  "source_joins": {
+    "oracle_worker_source": "a6c5fd8c2c42fceadff3c846f083b5f9ed92ffb93c4ea7e644bf9b0f315d71f9",
+    "runtime_context_source": "00717364e862cad8012f42dc2702a3e3236822c861fbd21fd190b7e47fc78257",
+    "runtime_context_transport": "1f83f90e21d13092ff8ac146d2415681afceb15de7ac5780b308413b0024abdd"
+  },
+  "status": "PASS_STATIC_ARTIFACT_RECONSTRUCTION"
+}

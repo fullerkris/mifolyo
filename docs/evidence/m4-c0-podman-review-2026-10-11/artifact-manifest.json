@@ -1,0 +1,77 @@
+{
+  "artifact_verification_sha256": "569dfdc93881a44d18dc6b8b2d1bdfbc1a5a2453153257de0160751d86d09318",
+  "deployment_complete": false,
+  "execution_authorized": false,
+  "files": {
+    "artifact-verification.json": {
+      "bytes": 2176,
+      "private_source": "/tmp/opencode/m4-c0-podman-arm64-2026-10-11/artifact-verification.json",
+      "sha256": "569dfdc93881a44d18dc6b8b2d1bdfbc1a5a2453153257de0160751d86d09318"
+    },
+    "build-native.json": {
+      "bytes": 1561,
+      "private_source": "/tmp/opencode/m4-c0-podman-arm64-2026-10-11/build-native.json",
+      "sha256": "458d4491923890e4351a8efd27541dcd71ed317100d5efd0dd7803ac13279227"
+    },
+    "build-oracle.json": {
+      "bytes": 1584,
+      "private_source": "/tmp/opencode/m4-c0-podman-arm64-2026-10-11/build-oracle.json",
+      "sha256": "f42eb84eabb675b56a812c58971524ef227ff054e10cf5ae71970392ebb9596c"
+    },
+    "native-build.log": {
+      "bytes": 2586,
+      "private_source": "/tmp/opencode/m4-c0-podman-arm64-2026-10-11/build-native.log",
+      "sha256": "b73bfe431396c2a18cb708aaedbf9185d907bd07bb54a4687a51bd7d216b4a5a"
+    },
+    "native-toolchain.json": {
+      "bytes": 1858,
+      "private_source": "/tmp/opencode/m4-c0-podman-arm64-2026-10-11/native-artifacts/toolchain.json",
+      "sha256": "e953b3c89a20ebeca25ebbcce8d30486aa10174db1d9986977bed786aa47f9dc"
+    },
+    "oracle-artifacts.json": {
+      "bytes": 963,
+      "private_source": "/tmp/opencode/m4-c0-podman-arm64-2026-10-11/oracle-artifacts/oracle-artifacts.json",
+      "sha256": "3f51809ebddbad24cbe03611e67b678df003121b77aff0743de0251baf538131"
+    },
+    "oracle-build.log": {
+      "bytes": 854,
+      "private_source": "/tmp/opencode/m4-c0-podman-arm64-2026-10-11/build-oracle.log",
+      "sha256": "a8dd3e83778b624276bee1f8117084b8800c2c763d12008d3f36cd5e0c982905"
+    },
+    "oracle-extraction.json": {
+      "bytes": 1421,
+      "private_source": "/tmp/opencode/m4-c0-podman-arm64-2026-10-11/oracle-extraction.json",
+      "sha256": "8ffc4f997d605d68f52c24ff08ec5dbbeaff2dbce343bfe97ea5c80c45a093c9"
+    },
+    "preflight.json": {
+      "bytes": 1570,
+      "private_source": "/tmp/opencode/m4-c0-podman-arm64-2026-10-11/preflight.json",
+      "sha256": "9a087a6eb27aee56e0c5e400b88f6e96e111347f0dfe33ab10b90e1c4858281a"
+    },
+    "pull-native.json": {
+      "bytes": 1134,
+      "private_source": "/tmp/opencode/m4-c0-podman-arm64-2026-10-11/pull-native.json",
+      "sha256": "0d433f690461256a8f40859cd894b32e7727ac177f866ebe87f76cc192b05070"
+    },
+    "pull-oracle.json": {
+      "bytes": 1246,
+      "private_source": "/tmp/opencode/m4-c0-podman-arm64-2026-10-11/pull-oracle.json",
+      "sha256": "6cc480288800cb7527212b8ab1208dd46cfaad84640860655a6529e75259216d"
+    },
+    "source-inventory.json": {
+      "bytes": 8598,
+      "private_source": "/tmp/opencode/m4-c0-podman-arm64-2026-10-11/source-inventory.json",
+      "sha256": "f53058a955de01027efcdbaa6adace7d6904197c845e5886b25e7d9db41bc227"
+    },
+    "target-manifest.json": {
+      "bytes": 828,
+      "private_source": "/tmp/opencode/m4-c0-podman-arm64-2026-10-11/native-artifacts/target-manifest.json",
+      "sha256": "a19b4096f0f268742ebc98bf879e12fbb0de1124a1c8144959496f6b8a615e43"
+    }
+  },
+  "independent_review_pending": true,
+  "kind": "c0_podman_arm64_artifact_exports",
+  "native_runtime_acceptance": false,
+  "source_inventory_sha256": "f53058a955de01027efcdbaa6adace7d6904197c845e5886b25e7d9db41bc227",
+  "version": 1
+}

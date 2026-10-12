@@ -1,0 +1,147 @@
+{
+  "COR-SSH-001": {
+    "fd_delta": 0,
+    "spawn_calls": 0,
+    "status": "PASS"
+  },
+  "all_owned_process_cleanup_completed": true,
+  "binding_probes": {
+    "cases": [
+      {
+        "accepted": true,
+        "authorizer_calls": 1,
+        "budget_bytes": 1369,
+        "exchange_calls": 1,
+        "factory_refuses_same_packet": "CONTEXT_PROVISIONING_BINDING",
+        "field": "runtime_context_deployment",
+        "in_place": false,
+        "new_challenges_spent": 1,
+        "refusal": null
+      },
+      {
+        "accepted": true,
+        "authorizer_calls": 1,
+        "budget_bytes": 1369,
+        "exchange_calls": 1,
+        "factory_refuses_same_packet": "CONTEXT_PROVISIONING_BINDING",
+        "field": "runtime_context_transport",
+        "in_place": false,
+        "new_challenges_spent": 1,
+        "refusal": null
+      },
+      {
+        "accepted": false,
+        "authorizer_calls": 0,
+        "budget_bytes": 0,
+        "exchange_calls": 0,
+        "factory_refuses_same_packet": "CONTEXT_PROVISIONING_BINDING",
+        "field": "runtime_context_source",
+        "in_place": false,
+        "new_challenges_spent": 0,
+        "refusal": "CONTEXT_SOURCE_BINDING"
+      },
+      {
+        "accepted": true,
+        "authorizer_calls": 1,
+        "budget_bytes": 1369,
+        "exchange_calls": 1,
+        "factory_refuses_same_packet": "CONTEXT_PROVISIONING_BINDING",
+        "field": "runtime_context_deployment",
+        "in_place": true,
+        "new_challenges_spent": 1,
+        "refusal": null
+      },
+      {
+        "accepted": true,
+        "authorizer_calls": 1,
+        "budget_bytes": 1369,
+        "exchange_calls": 1,
+        "factory_refuses_same_packet": "CONTEXT_PROVISIONING_BINDING",
+        "field": "runtime_context_transport",
+        "in_place": true,
+        "new_challenges_spent": 1,
+        "refusal": null
+      },
+      {
+        "accepted": false,
+        "authorizer_calls": 0,
+        "budget_bytes": 0,
+        "exchange_calls": 0,
+        "factory_refuses_same_packet": "CONTEXT_PROVISIONING_BINDING",
+        "field": "runtime_context_source",
+        "in_place": true,
+        "new_challenges_spent": 0,
+        "refusal": "CONTEXT_SOURCE_BINDING"
+      }
+    ],
+    "positive_reuse_and_unrelated_artifact": {
+      "acquisitions": 3,
+      "distinct_challenges": 3,
+      "status": "PASS"
+    }
+  },
+  "cleanup_cases": [
+    {
+      "actual_inherited_pipe_eof": false,
+      "descendant_live_after_transport": true,
+      "elapsed_seconds": 0.111672,
+      "exception": "OSError",
+      "expected_result_observed": true,
+      "failure_number": 1,
+      "fd_delta": 0,
+      "leader_reaped": true,
+      "operation": "blocking",
+      "parent_pipes_and_selector_closed": true,
+      "reviewer_cleanup_completed": true,
+      "transport_events": [
+        "wait"
+      ]
+    },
+    {
+      "actual_inherited_pipe_eof": false,
+      "descendant_live_after_transport": true,
+      "elapsed_seconds": 0.112444,
+      "exception": "OSError",
+      "expected_result_observed": true,
+      "failure_number": 1,
+      "fd_delta": 0,
+      "leader_reaped": true,
+      "operation": "registration",
+      "parent_pipes_and_selector_closed": true,
+      "reviewer_cleanup_completed": true,
+      "transport_events": [
+        "wait"
+      ]
+    },
+    {
+      "actual_inherited_pipe_eof": true,
+      "descendant_live_after_transport": false,
+      "elapsed_seconds": 0.201939,
+      "exception": "Invalid",
+      "expected_result_observed": true,
+      "failure_number": 1,
+      "fd_delta": 0,
+      "leader_reaped": true,
+      "operation": "registered-timeout",
+      "parent_pipes_and_selector_closed": true,
+      "reviewer_cleanup_completed": true,
+      "transport_events": [
+        "kill",
+        "wait"
+      ]
+    }
+  ],
+  "final_fd_delta": 0,
+  "no_live_ssh_or_real_collector": true,
+  "no_native_execution_or_workloads": true,
+  "normal_eof_control": {
+    "fd_delta": 0,
+    "no_unnecessary_group_signal": true,
+    "status": "PASS"
+  },
+  "old_evidence_modified": false,
+  "source_directory": "/tmp/opencode/m4-c0-podman-arm64-2026-10-11/snapshot/tests/crawl-jobs-v2-observer",
+  "status": "EXPECTED_COUNTEREXAMPLES_REPRODUCED",
+  "transport_file_sha256": "effb0794f77066062e8de0cb0134bbbefe1f313dd5e43f2199c906ce692a05a7",
+  "variant": "before"
+}

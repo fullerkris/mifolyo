@@ -1,0 +1,8 @@
+{
+  "log_sha256": "52536f4378bdcb072740e499d5156e4fbb3207d104f4e7b02d9e7950e874fdd9",
+  "scope": "Focused QA-ENV-001 test, not a second full suite",
+  "status": "PASS",
+  "test_id": "test_context_provisioning.ProvisioningTests.test_ssh_entrypoint_checks_exact_code_inventory_and_interpreter",
+  "tests_run": 1,
+  "umask": "077"
+}

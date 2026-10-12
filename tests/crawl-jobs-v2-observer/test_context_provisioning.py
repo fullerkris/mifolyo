@@ -1,8 +1,11 @@
 """Provisioning/SSH guards using private files, benign pipes and simulated Linux."""
 import base64
 import copy
+import errno
 import os
 from pathlib import Path
+import select
+import signal
 import shlex
 import stat
 import struct
@@ -228,6 +231,7 @@ class ProvisioningTests(unittest.TestCase):
         # inventory are real private fixtures. No host account or /etc is changed.
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder) / "code"; root.mkdir(mode=0o755)
+            root.chmod(0o755)  # Simulated install mode, independent of the caller's umask.
             for name in context.SOURCE_FILES:
                 path = root / name; path.write_bytes(b"source fixture\n"); path.chmod(0o444)
             service = {"uid": 3001, "gid": 3002, "python_sha256": c.sha(b"host-python")}
@@ -379,6 +383,60 @@ class SSHTransportTests(unittest.TestCase):
                 with self.subTest(field=field), self.assertRaises(c.Invalid):
                     transport.provisioned_source(root / "controller", prep)
 
+    def test_reused_source_rechecks_provisioning_before_authorization_or_io(self):
+        with tempfile.TemporaryDirectory() as folder:
+            value, root = deployment(), Path(folder) / "bundle"
+            provision.create_bundle(root, value, identity_bytes(), key=KEY)
+            endpoint = context.LinuxContextEndpoint(value["anchor"], KEY, fixture()[0])
+            for in_place in (False, True):
+                for field in ("runtime_context_deployment", "runtime_context_transport", "runtime_context_source"):
+                    with self.subTest(field=field, in_place=in_place):
+                        prep = prepare(value)
+                        source = transport.provisioned_source(root / "controller", prep)
+                        with patch.object(source, "authorize", return_value=True) as authorize, \
+                                patch.object(transport.SSHContextTransport, "__call__", side_effect=endpoint.exchange) as exchange:
+                            source.acquire("P1.pre.1.1", c.sha(b"scope"), prep, value["anchor"]["daemon_sha256"], Deadline(2), WireBudget())
+                            authorize.reset_mock(); exchange.reset_mock()
+                            changed = prep if in_place else copy.deepcopy(prep)
+                            changed["artifacts"][field] = c.sha(b"different-prepared-artifact")
+                            with self.assertRaises(c.Invalid):
+                                source.acquire("P1.pre.1.1", c.sha(b"scope"), changed, value["anchor"]["daemon_sha256"], Deadline(2), WireBudget())
+                            authorize.assert_not_called(); exchange.assert_not_called()
+
+    def test_reused_source_accepts_matching_bindings_with_fresh_challenges(self):
+        with tempfile.TemporaryDirectory() as folder:
+            value, root = deployment(), Path(folder) / "bundle"
+            provision.create_bundle(root, value, identity_bytes(), key=KEY)
+            prep = prepare(value)
+            source = transport.provisioned_source(root / "controller", prep, authorize=lambda *_: True)
+            endpoint = context.LinuxContextEndpoint(value["anchor"], KEY, fixture()[0])
+            changed = copy.deepcopy(prep); changed["artifacts"]["target_elf"] = c.sha(b"another-target")
+            requests = []
+            with patch.object(transport.SSHContextTransport, "__call__", side_effect=endpoint.exchange) as exchange:
+                for packet in (prep, prep, changed):
+                    deadline = Deadline(2)
+                    lease = source.acquire("P1.pre.1.1", c.sha(b"scope"), packet, value["anchor"]["daemon_sha256"], deadline, WireBudget())
+                    lease.view("P1.pre.1.1", c.sha(b"scope"), packet, deadline)
+                    self.assertEqual(lease.binding["preparation_sha256"], c.sha(c.canonical(packet)))
+                    requests.append(lease.receipt["request_sha256"])
+                self.assertEqual(exchange.call_count, 3)
+            self.assertEqual(len(set(requests)), 3)
+
+    def test_public_provisioning_receipt_cannot_rebind_a_reused_source(self):
+        with tempfile.TemporaryDirectory() as folder:
+            value, root = deployment(), Path(folder) / "bundle"
+            provision.create_bundle(root, value, identity_bytes(), key=KEY)
+            prep = prepare(value)
+            source = transport.provisioned_source(root / "controller", prep, authorize=lambda *_: True)
+            changed = copy.deepcopy(prep)
+            for artifact, receipt in (("runtime_context_deployment", "deployment_sha256"), ("runtime_context_transport", "transport_source_sha256")):
+                changed["artifacts"][artifact] = source.provisioning_receipt[receipt] = c.sha(b"unadmitted-binding")
+            endpoint = context.LinuxContextEndpoint(value["anchor"], KEY, fixture()[0])
+            with patch.object(transport.SSHContextTransport, "__call__", side_effect=endpoint.exchange) as exchange:
+                with self.assertRaises(c.Invalid):
+                    source.acquire("P1.pre.1.1", c.sha(b"scope"), changed, value["anchor"]["daemon_sha256"], Deadline(2), WireBudget())
+                exchange.assert_not_called()
+
     def test_private_credential_copies_and_ambient_ssh_settings_are_controlled(self):
         _, calls = self.run_source()
         argv = calls[0]
@@ -415,6 +473,130 @@ class SSHTransportTests(unittest.TestCase):
         with patch.object(transport.subprocess, "Popen") as spawn, self.assertRaises(c.Invalid):
             transport.exchange_process([], b"x\n", deadline, spawn=spawn)
         spawn.assert_not_called()
+
+    def test_selector_setup_failure_cannot_leave_a_spawned_process(self):
+        children = []
+        def spawn(argv, **kwargs):
+            child = subprocess.Popen([sys.executable, "-I", "-B", "-c", "import time; time.sleep(20)"], **kwargs)
+            children.append(child)
+            return child
+        try:
+            with patch.object(transport.selectors, "DefaultSelector", side_effect=OSError(errno.ENFILE, "selector unavailable")), \
+                    self.assertRaises(OSError):
+                transport.exchange_process([], b"probe\n", Deadline(1), spawn=spawn)
+            self.assertFalse(children, "Selector admission must precede process creation")
+        finally:
+            for child in children:
+                if child.poll() is None:
+                    os.killpg(child.pid, signal.SIGKILL)
+                child.wait(timeout=3)
+                for pipe in (child.stdin, child.stdout, child.stderr): pipe.close()
+
+    def test_spawn_failure_closes_any_created_selector(self):
+        selectors, real_selector = [], transport.selectors.DefaultSelector
+        def selector():
+            mux = real_selector()
+            selectors.append(mux)
+            return mux
+        def spawn(*args, **kwargs):
+            raise OSError(errno.EMFILE, "spawn unavailable")
+        try:
+            with patch.object(transport.selectors, "DefaultSelector", side_effect=selector), \
+                    self.assertRaises(OSError):
+                transport.exchange_process([], b"probe\n", Deadline(1), spawn=spawn)
+            self.assertTrue(all(mux.get_map() is None for mux in selectors))
+        finally:
+            for mux in selectors: mux.close()
+
+    def test_pipe_setup_failure_reaps_the_child_and_closes_resources(self):
+        children = []
+        mux = transport.selectors.DefaultSelector()
+        def spawn(argv, **kwargs):
+            child = subprocess.Popen([sys.executable, "-I", "-B", "-c", "import time; time.sleep(20)"], **kwargs)
+            children.append(child)
+            return child
+        try:
+            with patch.object(transport.selectors, "DefaultSelector", return_value=mux), \
+                    patch.object(transport.os, "set_blocking", side_effect=OSError(errno.EIO, "pipe setup unavailable")), \
+                    self.assertRaises(OSError):
+                transport.exchange_process([], b"probe\n", Deadline(1), spawn=spawn)
+            self.assertEqual(len(children), 1)
+            self.assertIsNotNone(children[0].returncode)
+            self.assertTrue(all(pipe.closed for pipe in (children[0].stdin, children[0].stdout, children[0].stderr)))
+            self.assertIsNone(mux.get_map())
+        finally:
+            mux.close()
+            for child in children:
+                if child.poll() is None:
+                    os.killpg(child.pid, signal.SIGKILL)
+                child.wait(timeout=3)
+                for pipe in (child.stdin, child.stdout, child.stderr): pipe.close()
+
+    def exited_leader_setup_failure(self, operation):
+        # Retain the exited leader unreaped while its owned descendant holds
+        # stdout open. A duplicate reader observes actual closure after cleanup.
+        actor = """
+import os, time
+child = os.fork()
+if child == 0:
+    time.sleep(20)
+    os._exit(0)
+os.write(1, (str(child) + "\\n").encode())
+os._exit(0)
+"""
+        children, output, events = [], [], []
+        mux, real_killpg = transport.selectors.DefaultSelector(), os.killpg
+        def spawn(argv, **kwargs):
+            child = subprocess.Popen([sys.executable, "-I", "-B", "-c", actor], **kwargs)
+            children.append(child)
+            end = time.monotonic() + 3
+            while os.waitid(os.P_PID, child.pid, os.WEXITED | os.WNOWAIT | os.WNOHANG) is None:
+                self.assertLess(time.monotonic(), end, "owned leader did not exit")
+                time.sleep(0.005)
+            self.assertIsNone(child.returncode)
+            output.append(os.dup(child.stdout.fileno()))
+            self.assertTrue(select.select(output, [], [], 1)[0])
+            self.assertTrue(os.read(output[0], 64).strip().isdigit())
+            self.assertFalse(select.select(output, [], [], 0)[0], "descendant must hold the pipe")
+            wait = child.wait
+            def observed_wait(*args, **kwargs):
+                events.append("wait")
+                return wait(*args, **kwargs)
+            child.wait = observed_wait
+            return child
+        def killpg(pid, sig):
+            self.assertEqual((pid, sig), (children[0].pid, signal.SIGKILL))
+            events.append("kill")
+            return real_killpg(pid, sig)
+        owner, method = (transport.os, "set_blocking") if operation == "nonblocking" else (mux, "register")
+        try:
+            with patch.object(transport.selectors, "DefaultSelector", return_value=mux), \
+                    patch.object(owner, method, side_effect=OSError(errno.EIO, "first pipe setup refused")), \
+                    patch.object(transport.os, "killpg", side_effect=killpg), self.assertRaises(OSError):
+                transport.exchange_process([], b"probe\n", Deadline(5), spawn=spawn)
+            self.assertEqual(events[:2], ["kill", "wait"])
+            self.assertIsNotNone(children[0].returncode)
+            self.assertTrue(all(pipe.closed for pipe in (children[0].stdin, children[0].stdout, children[0].stderr)))
+            self.assertIsNone(mux.get_map())
+            self.assertTrue(select.select(output, [], [], 2)[0], "descendant still holds its pipe")
+            self.assertEqual(os.read(output[0], 1), b"")
+        finally:
+            for child in children:
+                # An unreaped leader or our still-open inherited pipe retains
+                # the owned group identity, including against the unfixed code.
+                if child.returncode is None or (output and not select.select(output, [], [], 0)[0]):
+                    try: real_killpg(child.pid, signal.SIGKILL)
+                    except ProcessLookupError: pass
+                child.wait(timeout=3)
+                for pipe in (child.stdin, child.stdout, child.stderr): pipe.close()
+            for fd in output: os.close(fd)
+            mux.close()
+
+    def test_first_nonblocking_failure_kills_exited_leaders_descendant(self):
+        self.exited_leader_setup_failure("nonblocking")
+
+    def test_first_registration_failure_kills_exited_leaders_descendant(self):
+        self.exited_leader_setup_failure("registration")
 
     def test_backend_preflight_binds_deployment_before_any_actor_activation(self):
         helper = admission_tests.DockerAdmissionTests()

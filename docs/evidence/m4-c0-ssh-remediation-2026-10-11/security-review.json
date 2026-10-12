@@ -1,0 +1,214 @@
+{
+  "authorization": {
+    "live_ssh_authentication": false,
+    "m4_accepted": false,
+    "native_actor_or_oracle_worker_or_real_collector": false,
+    "native_runtime_accepted": false,
+    "podman_docker_workloads": false,
+    "publication_authorized": false,
+    "repository_snapshot_docs_obsidian_modified_by_reviewer": false,
+    "subagents_spawned": 0,
+    "tracing_calibration_host_policy_mutation": false,
+    "writes_only_within": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/security"
+  },
+  "checks": {
+    "artifacts": {
+      "basis": "Actual source/recipe and raw artifact byte hashes verified against prior independent ELF/filter/profile/source joins.",
+      "fresh_workload_or_build": false,
+      "native_outputs": 11,
+      "native_recipe_source_inputs_unchanged": 9,
+      "oracle_manifest_and_interpreter_unchanged": true,
+      "oracle_recipe_source_inputs_unchanged": 10,
+      "prior_compiled_bpf_vectors_not_rerun": 987,
+      "prior_independent_artifact_report_sha256": "27865da68adc1c69a64fd756bbfd66bbf765592673557d32bf4d25481c168c52",
+      "status": "PASS_BYTE_IDENTICAL_ARTIFACT_CONTINUITY"
+    },
+    "focused_counterexamples_and_controls": {
+      "after_cleanup_cases": 7,
+      "after_status": "PASS_REMEDIATION_AND_CONTROLS",
+      "before_cleanup_cases": 3,
+      "before_status": "EXPECTED_COUNTEREXAMPLES_REPRODUCED",
+      "caller_mutation_stages": [
+        "authorization",
+        "exchange"
+      ],
+      "changed_packet_reuse_cases_per_variant": 6,
+      "normal_eof_and_registered_timeout_controls_passed": true,
+      "owned_groups_cleanup_completed": true,
+      "probe_final_fd_delta": 0,
+      "public_receipt_invalid_attempts": 65,
+      "same_binding_unrelated_artifact_positive_acquisitions": 3,
+      "setup_failure_positions": [
+        1,
+        2,
+        3
+      ],
+      "variant_isolated_imports": true
+    },
+    "full_suite": {
+      "QA-ENV-001_passed": "test_context_provisioning.ProvisioningTests.test_ssh_entrypoint_checks_exact_code_inventory_and_interpreter",
+      "TMPDIR": "/tmp/opencode",
+      "all_started_passed": true,
+      "new_ids": [
+        "test_context_provisioning.SSHTransportTests.test_first_nonblocking_failure_kills_exited_leaders_descendant",
+        "test_context_provisioning.SSHTransportTests.test_first_registration_failure_kills_exited_leaders_descendant",
+        "test_context_provisioning.SSHTransportTests.test_public_provisioning_receipt_cannot_rebind_a_reused_source",
+        "test_context_provisioning.SSHTransportTests.test_reused_source_accepts_matching_bindings_with_fresh_challenges",
+        "test_context_provisioning.SSHTransportTests.test_reused_source_rechecks_provisioning_before_authorization_or_io"
+      ],
+      "new_test_log_sha256": "f484b7ebd3e37490f2926a273342c2a326a1fb4b374d3ee757f58f104965dcfc",
+      "new_test_report_sha256": "1d8d1cd2b3cecf39bbc61652968971a40c853902c2d08df91cb42502fa6494fc",
+      "no_skips_or_errors_or_warnings": true,
+      "original_correctness_test_report_sha256": "94bd6ddf268cf9c877868019319fae2268da6869386bfc9ffba15ec4ed8b88d9",
+      "original_security_report_remains_fail_196_plus_one_error": true,
+      "original_security_test_report_sha256": "66161b67cf93ce43f405314ef4b4606aaa6af2cf9f94d350fe2d07fbc0065310",
+      "prior_ids_retained": 197,
+      "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+      "resource_warnings_as_errors": true,
+      "source_bound": true,
+      "status": "PASS",
+      "suite_runs_by_this_reviewer": 1,
+      "tests_run": 202,
+      "umask": "077"
+    }
+  },
+  "closed_findings": [
+    {
+      "evidence": [
+        "probe-before.json:COR-SSH-001",
+        "probe-after.json:COR-SSH-001",
+        "c0-tests.json"
+      ],
+      "id": "COR-SSH-001",
+      "impact_before_fix": "Selector allocation failure after spawn retained an owned child and three pipes.",
+      "location": "context_transport.py:61-76,104-122",
+      "minimal_fix": "Selector allocation precedes spawn; spawn/setup are guarded and process cleanup is conditional on creation.",
+      "proof": "Original 4f7961 transport counterexample preserved in initial security/probes.json. On both f53058 and current 2ecf2c variants, fresh selector-ENFILE probe made zero spawn calls with zero descriptor delta. The 202-test run also passed all three original startup-failure regressions.",
+      "remediation_code_reference": "COR-SSH-002.remediation_code includes the exact current complete function.",
+      "severity": "Medium",
+      "status": "REMAINS_FIXED"
+    },
+    {
+      "evidence": [
+        "probe-before.json:cleanup_cases",
+        "probe-after.json:cleanup_cases",
+        "probe-after.json:normal_eof_control"
+      ],
+      "id": "COR-SSH-002",
+      "impact_before_fix": "Before first successful registration, an empty selector was treated as observed EOF. An exited leader was reaped without killing its still-live pipe-holding descendant; the rejected acquisition leaked local work.",
+      "location": "context_transport.py:66,73-77,104-118",
+      "minimal_fix": "Initialize setup_complete=False, set it only after all three registrations succeed, and require it before the early non-killing reap. On incomplete setup kill the owned group before wait.",
+      "previously_blocking": true,
+      "priority": "P1",
+      "proof": "Fresh before-snapshot reproduction: first set_blocking and first register failures yielded transport events [wait] and no inherited-pipe EOF. Current snapshot: all six first/second/third setup failures yielded [kill, wait] and actual EOF on an independent duplicated reader. Registered-pipe timeout stopped descendants in both variants; normal echo/EOF completed without unnecessary group signals. All groups were reviewer-owned benign Python processes and explicitly cleaned.",
+      "qualification": "High/P1 bounded-cleanup contract defect in the supported owned-process fault model; not evidence that normal fixed SSH options fork helpers, and not a remote execution or remote-stop proof.",
+      "remediation_code": "def exchange_process(argv, raw, deadline, *, spawn=subprocess.Popen):\n    deadline.check()\n    require(type(raw) is bytes and 0 < len(raw) <= LIMITS[\"receipt_bytes\"] and raw.endswith(b\"\\n\"), \"CONTEXT_INPUT_BOUND\")\n    # Acquire the selector before starting a child, and guard spawn/setup too.\n    mux = selectors.DefaultSelector()\n    process, reaped, setup_complete = None, False, False\n    try:\n        deadline.check()\n        process = spawn(argv, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,\n            env={\"PATH\": \"/usr/bin:/bin\", \"LC_ALL\": \"C\", \"SSH_ASKPASS_REQUIRE\": \"never\"},\n            start_new_session=True, close_fds=True)\n        output, offset = bytearray(), 0\n        for pipe, event, label in ((process.stdin, selectors.EVENT_WRITE, \"in\"),\n                (process.stdout, selectors.EVENT_READ, \"out\"), (process.stderr, selectors.EVENT_READ, \"err\")):\n            os.set_blocking(pipe.fileno(), False)\n            mux.register(pipe, event, label)\n        setup_complete = True\n        while mux.get_map():\n            deadline.check()\n            for event, _ in mux.select(min(deadline.remaining(), 0.05)):\n                deadline.check()\n                if event.data == \"in\":\n                    try: count = os.write(event.fd, raw[offset:])\n                    except (BlockingIOError, InterruptedError): continue\n                    require(count > 0, \"CONTEXT_INPUT_EOF\")\n                    offset += count\n                    if offset == len(raw):\n                        mux.unregister(event.fileobj); process.stdin.close()\n                else:\n                    try: chunk = os.read(event.fd, 4097)\n                    except (BlockingIOError, InterruptedError): continue\n                    if not chunk:\n                        mux.unregister(event.fileobj)\n                    else:\n                        require(event.data == \"out\", \"CONTEXT_SSH_STDERR\")\n                        output.extend(chunk)\n                        require(len(output) <= 4 * LIMITS[\"receipt_bytes\"], \"CONTEXT_OUTPUT_BOUND\")\n        require(offset == len(raw) and output, \"CONTEXT_EXCHANGE_INCOMPLETE\")\n        code = process.wait(timeout=deadline.remaining())\n        reaped = True\n        deadline.check()\n        require(code == 0, \"CONTEXT_SSH_FAILED\")\n        return bytes(output)\n    finally:\n        try:\n            if process is not None and not reaped:\n                # Do not reap a leader while descendants may still hold its pipes.\n                # An empty map before setup is not observed EOF. A drained map\n                # after setup permits reaping, but is not remote/group absence proof.\n                if setup_complete and not mux.get_map():\n                    try: process.wait(timeout=0); reaped = True\n                    except subprocess.TimeoutExpired: pass\n                if not reaped:\n                    try:\n                        try: os.killpg(process.pid, signal.SIGKILL)\n                        except ProcessLookupError: pass\n                    finally:\n                        process.wait(timeout=LIMITS[\"cleanup_ms\"] / 1000)\n        finally:\n            mux.close()\n            if process is not None:\n                for pipe in (process.stdin, process.stdout, process.stderr): pipe.close()\n",
+      "severity": "High",
+      "status": "VERIFIED_FIXED"
+    },
+    {
+      "evidence": [
+        "probe-before.json:binding_probes",
+        "probe-after.json:binding_probes",
+        "probe-after.json:additional_snapshot_receipt_controls"
+      ],
+      "id": "COR-SSH-003",
+      "impact_before_fix": "A returned source admitted using preparation A accepted reused preparation B with a changed deployment or transport artifact and issued a B-bound lease using A. Factory construction rejected the same B.",
+      "location": "context_transport.py:157-181",
+      "minimal_fix": "Return the private ContextSource subclass with copied three-way bindings. Deep-copy validated preparation and recheck source/deployment/transport on every acquisition before callbacks; retain public receipts only as evidence, not the guard.",
+      "previously_blocking": false,
+      "priority": "P2",
+      "proof": "Fresh before-snapshot probes reproduced successful deployment/transport mismatches for copied and in-place changed packets; host-source mismatch refused. Current rejects all six variants before authorization or exchange, without spending challenge/frame/byte budgets. Matching reuse and an unrelated target_elf change succeed with fresh challenges. Rewriting public receipts plus 65 invalid reuse attempts cannot rebind or exhaust valid-use challenge capacity. Caller mutation during either authorization or exchange leaves the signed request/lease bound to the admitted copied preparation.",
+      "qualification": "Reusable-helper contract correction; the ordinary construct-and-acquire one-shot backend was not shown to bypass external authorization. Malicious code already executing as the controller UID is outside this boundary.",
+      "remediation_code": "class _ProvisionedContextSource(ContextSource):\n    def __init__(self, anchor, key, exchange, bindings, *, authorize=None):\n        super().__init__(anchor, key, exchange, authorize=authorize)\n        self._provisioning_bindings = dict(bindings)\n\n    def acquire(self, case_id, invocation_sha256, preparation, daemon_sha256, deadline, budget):\n        preparation = copy.deepcopy(validate_preparation(preparation))\n        require(all(preparation[\"artifacts\"][name] == value for name, value in self._provisioning_bindings.items()),\n            \"CONTEXT_PROVISIONING_BINDING\")\n        return super().acquire(case_id, invocation_sha256, preparation, daemon_sha256, deadline, budget)\n\n\ndef provisioned_source(bundle, preparation, *, authorize=None):\n    \"\"\"Load only operator-provisioned inputs; no discovery, TOFU or key scanning.\"\"\"\n    validate_preparation(preparation)\n    transport = SSHContextTransport(bundle)\n    value = transport.deployment\n    bindings = {\"runtime_context_deployment\": deployment_digest(value), \"runtime_context_transport\": transport_digest(),\n        \"runtime_context_source\": value[\"anchor\"][\"source_sha256\"]}\n    require(all(preparation[\"artifacts\"][name] == digest for name, digest in bindings.items()), \"CONTEXT_PROVISIONING_BINDING\")\n    source = _ProvisionedContextSource(value[\"anchor\"], transport._credentials[\"context-source.key\"], transport, bindings, authorize=authorize)\n    source.provisioning_receipt = {\"deployment_sha256\": bindings[\"runtime_context_deployment\"], \"transport_source_sha256\": bindings[\"runtime_context_transport\"],\n        \"anchor_sha256\": sha(canonical(value[\"anchor\"])), \"ssh_client_sha256\": value[\"ssh_client_sha256\"],\n        \"host_installation_verified\": False, \"execution_authorized\": False, \"runtime_evidence\": False}\n    return source\n",
+      "severity": "Medium",
+      "status": "VERIFIED_FIXED"
+    },
+    {
+      "evidence": [
+        "test-verification.json",
+        "c0-tests.json",
+        "integrity-after.json"
+      ],
+      "id": "QA-ENV-001",
+      "impact_before_fix": "The simulated install-directory fixture failed under umask 077 because mkdir(mode=0755) yielded 0700; production ownership/mode checks correctly refused it.",
+      "location": "test_context_provisioning.py:232-234",
+      "minimal_fix": "Explicit chmod of the simulated install directory, still nested in an owner-only temporary parent. No application check was weakened.",
+      "proof": "Original security report remains 196 passes/one error, with its isolated 022 retest preserved. Current complete suite passes the unchanged test ID under 077; directory helper bytes are identical to the originally reviewed version.",
+      "remediation_code": "root = Path(folder) / \"code\"\nroot.mkdir(mode=0o755)\nroot.chmod(0o755)\n",
+      "security_vulnerability": false,
+      "severity": "Informational",
+      "status": "VERIFIED_FIXED"
+    }
+  ],
+  "completed_utc": "2026-10-12T03:18:01.509953+00:00",
+  "evidence_sha256": {
+    "artifact-continuity.json": "a193040963356dd64397fa00cb90d6e74495fa8d97dd56da618f1254e4ea1059",
+    "c0-tests.json": "1d8d1cd2b3cecf39bbc61652968971a40c853902c2d08df91cb42502fa6494fc",
+    "c0-tests.log": "f484b7ebd3e37490f2926a273342c2a326a1fb4b374d3ee757f58f104965dcfc",
+    "check-continuity.py": "94825e92be49adc763eb409f4091623f01d171e99793f217898884f24a87f4f1",
+    "continuity.log": "ab8c7d5fd6f9479403032126397f6d7f06803e77d563868e3946913da4db9fbc",
+    "integrity-after.json": "084bba56f4d3a11fc649c4d680aafb357f2165efd6c646ab1a0b64aa40c040ed",
+    "integrity-before.json": "11f4381c6f7aca276bec74c1479e33a098373a8b8e3aa70c026856d3f61b1a8e",
+    "probe-after.json": "a8ba0fcb2cd7fea90251dc179ea4ca41ddc0c1ee39f3cad80bb5dd6701eebe7f",
+    "probe-after.log": "a8ba0fcb2cd7fea90251dc179ea4ca41ddc0c1ee39f3cad80bb5dd6701eebe7f",
+    "probe-before.json": "9f098dfe46dc7f91c263bd5f460aeae2c6306f79e6de8a8817aaacd9b1b0cb3c",
+    "probe-before.log": "9f098dfe46dc7f91c263bd5f460aeae2c6306f79e6de8a8817aaacd9b1b0cb3c",
+    "probe-remediation.py": "0f140e2141ee004da620172d26bf7d8287677da86cfcaded3195991e95bc268d",
+    "test-verification.json": "88caf2fc0ed8b9916b04c1dde42e3ed4dfd30f537a734416a837f0661241d93f",
+    "write-review.py": "9004cf4e92b1227758e019aa5f6abe8318cda4f4071d4a4c876582cbf2402438"
+  },
+  "kind": "mifolyo_c0_independent_security_remediation_rereview",
+  "new_findings": [],
+  "rationale": "The two correctness counterexamples are independently reproduced on the prior snapshot and closed on current source; original allocation cleanup and umask fixture correction are preserved. Full offline suite is 202/202 under umask 077. No unresolved in-scope security finding or new security regression was demonstrated.",
+  "remaining_boundaries": [
+    "Source/static-artifact implementation gate only; no publication, merge, host installation, live authentication, native runtime or M4 acceptance is granted.",
+    "Root/operator remains the trust root for installed source, pins, executable dependencies, non-symlink trusted path ancestors and live effective SSH policy.",
+    "Private-key placeholder is not a usable credential or proof of decoded key/public-private pairing; separately admitted real authentication is still required.",
+    "Identify and admit the collector in the selected daemon actual Linux/AArch64 kernel and namespace domain; unchanged backend uses the existing local Unix socket.",
+    "Fresh preparations must use transport identity 20b53849d3617f1a7f1dc2897cd2ab3fed48990b8df188317c8c136d8276869a. Receipt mutation is not authorization or binding authority.",
+    "Copied bindings guard the supported API against preparation drift; arbitrary hostile Python code executing within the trusted controller process is not an isolated principal.",
+    "Local process-group disposal and pipe EOF are not proof of remote collector/container absence or whole-trial cleanup.",
+    "Actual OCI/runtime image and Python dependencies, runtime confinement, seccomp/ptrace/timing/calibration and cleanup/absence remain separate gates.",
+    "Artifact continuity and historical build/extraction records do not newly attest live engine state, container preservation or runtime feasibility.",
+    "X64 runtime remains planned and outside this delta."
+  ],
+  "review_history": {
+    "assessment": "The first security review did not exercise exited-leader/first-registration failure or mismatched-preparation reuse and did not detect COR-SSH-002/003. This re-review confirms those correctness findings on prior source rather than treating the initial GO as proof they were absent. Original reports are historical and unchanged.",
+    "initial_correctness_review_sha256": "ada46c4392db346166ad9aa8531baf3c3aaa293f4a42cced5b8ad9418fdf77f7",
+    "initial_manifest_sha256": "55865d4e88a1c5b06d84e58ab81e50a68f30d6befaf1d6b2391b5efda0cf855e",
+    "initial_security_review_sha256": "e90fdea81bb4954e3d8d3835472112aa74c4e73c3f4a2381e2832fd8714810e8",
+    "local_red_evidence_sha256": "a79f0389874f8e5ae2e38eafa578963513cbd9d780ecc7b91bc7f6fd49dec4c5",
+    "original_cleanup_counterexample_sha256": "c6beef3e05c0c59d46557c26870fede66261965dddfa7d6bdab90a8092ddc80e",
+    "original_reuse_counterexample_sha256": "a84a327ebad902089d4ff6a59dfc77bc82df400dcca7de7dd862a555773b75f1",
+    "original_security_probe_sha256": "607210143f9a8b119d7987046cd1e3d603a4b9535c25cdee7efdd54856edd8f9"
+  },
+  "review_label_date": "2026-10-11",
+  "source": {
+    "all_39_initial_review_files_unchanged": true,
+    "all_before_after_hashes_match": true,
+    "base_label": "64c98a78e0e0ae1731f1516c06932bc881e8becf",
+    "changed_paths_only": [
+      "tests/crawl-jobs-v2-observer/context_transport.py",
+      "tests/crawl-jobs-v2-observer/test_context_provisioning.py"
+    ],
+    "checkpoint_label": "1e956962596f7bb86143d45dd62ebf863c0b64eb",
+    "correction_scope": "Local frozen remediation; source identity is the supplied inventory, not a claim that the checkpoint includes this delta.",
+    "host_source_identity": "00717364e862cad8012f42dc2702a3e3236822c861fbd21fd190b7e47fc78257",
+    "inventory_sha256": "2ecf2c68b6a3293cc3b34314e23022b3f35c2eda69f9f8efa0391728804a8edf",
+    "oracle_worker_identity": "a6c5fd8c2c42fceadff3c846f083b5f9ed92ffb93c4ea7e644bf9b0f315d71f9",
+    "package_files": 45,
+    "previous_inventory_sha256": "f53058a955de01027efcdbaa6adace7d6904197c845e5886b25e7d9db41bc227",
+    "prior_snapshot_unchanged": true,
+    "remediation_record_sha256": "be92677e3a523e0659800cbd6cf59944f6f1ad23994cd9175fcc485f1308d99b",
+    "runner_sha256": "9afb715125f734f5b905da63dde5c9787fc5997b2e5a73a0bf62d781b23aef84",
+    "snapshot": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/snapshot",
+    "snapshot_files_including_runner": 46,
+    "transport_bundle_identity": "20b53849d3617f1a7f1dc2897cd2ab3fed48990b8df188317c8c136d8276869a",
+    "transport_file_sha256": "b8d5d1f1dd568e66115ee6745cb385965f5e7dfac63e7b3d9f0c0979020cc1eb",
+    "transport_remediation_patch_sha256": "026bab6c1f277ab1eb273dfcbb6316aeb96e0e4e1b40a205c6ad9c28394fdd98"
+  },
+  "unresolved_findings": [],
+  "verdict": "GO_FOR_CONTINUED_IMPLEMENTATION",
+  "version": 1
+}

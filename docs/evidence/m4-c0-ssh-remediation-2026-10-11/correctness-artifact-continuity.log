@@ -1,0 +1,36 @@
+{
+  "status": "PASS_STATIC_ARTIFACT_CONTINUITY",
+  "prior_independent_report_sha256": "d0e089b240c7014b236b2e994a9a9a86192f6d7274f5c733a310ea66b87d1bdf",
+  "elf_checks": {
+    "target": {
+      "sha256": "819cde0b38e12b235acbef2b3741551af86683ff2c3ec5186b5a45b710e5da45",
+      "bytes": 5448416,
+      "machine": 183,
+      "type": 3
+    },
+    "observer": {
+      "sha256": "e407a02c67ac7a0cd192e612afe5ad643701c16821f6854e3a11b040e55cfb61",
+      "bytes": 5450304,
+      "machine": 183,
+      "type": 3
+    },
+    "oracle_interpreter": {
+      "sha256": "cb4548d280f38c2b1df4cba45f12c90a034729e08fce5bf1a223c58add0e21e3",
+      "bytes": 67608,
+      "machine": 183,
+      "type": 3
+    }
+  },
+  "oracle_manifest_sha256": "3f51809ebddbad24cbe03611e67b678df003121b77aff0743de0251baf538131",
+  "source_bundle_digests": {
+    "runtime_context_source": "00717364e862cad8012f42dc2702a3e3236822c861fbd21fd190b7e47fc78257",
+    "runtime_context_transport": "20b53849d3617f1a7f1dc2897cd2ab3fed48990b8df188317c8c136d8276869a",
+    "oracle_worker_source": "a6c5fd8c2c42fceadff3c846f083b5f9ed92ffb93c4ea7e644bf9b0f315d71f9"
+  },
+  "manifest_filter_profiles_toolchain_source_joins_rechecked": true,
+  "prior_independent_instruction_and_1482_bpf_checks_preserved_by_identical_bytes": true,
+  "build_required_for_this_delta": false,
+  "build_performed": false,
+  "native_or_oracle_interpreter_executed": false,
+  "toolchain_libraries_independently_extracted": false
+}

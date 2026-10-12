@@ -1,0 +1,78 @@
+{
+  "deployment_complete": false,
+  "execution_authorized": false,
+  "files": {
+    "security-artifact-continuity.json": {
+      "bytes": 7198,
+      "private_source": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/security/artifact-continuity.json",
+      "sha256": "a193040963356dd64397fa00cb90d6e74495fa8d97dd56da618f1254e4ea1059"
+    },
+    "security-c0-tests.json": {
+      "bytes": 67722,
+      "private_source": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/security/c0-tests.json",
+      "sha256": "1d8d1cd2b3cecf39bbc61652968971a40c853902c2d08df91cb42502fa6494fc"
+    },
+    "security-c0-tests.log": {
+      "bytes": 32863,
+      "private_source": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/security/c0-tests.log",
+      "sha256": "f484b7ebd3e37490f2926a273342c2a326a1fb4b374d3ee757f58f104965dcfc"
+    },
+    "security-continuity.log": {
+      "bytes": 244,
+      "private_source": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/security/continuity.log",
+      "sha256": "ab8c7d5fd6f9479403032126397f6d7f06803e77d563868e3946913da4db9fbc"
+    },
+    "security-integrity-after.json": {
+      "bytes": 10266,
+      "private_source": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/security/integrity-after.json",
+      "sha256": "084bba56f4d3a11fc649c4d680aafb357f2165efd6c646ab1a0b64aa40c040ed"
+    },
+    "security-integrity-before.json": {
+      "bytes": 10308,
+      "private_source": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/security/integrity-before.json",
+      "sha256": "11f4381c6f7aca276bec74c1479e33a098373a8b8e3aa70c026856d3f61b1a8e"
+    },
+    "security-probe-after.json": {
+      "bytes": 6881,
+      "private_source": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/security/probe-after.json",
+      "sha256": "a8ba0fcb2cd7fea90251dc179ea4ca41ddc0c1ee39f3cad80bb5dd6701eebe7f"
+    },
+    "security-probe-after.log": {
+      "bytes": 6881,
+      "private_source": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/security/probe-after.log",
+      "sha256": "a8ba0fcb2cd7fea90251dc179ea4ca41ddc0c1ee39f3cad80bb5dd6701eebe7f"
+    },
+    "security-probe-before.json": {
+      "bytes": 4315,
+      "private_source": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/security/probe-before.json",
+      "sha256": "9f098dfe46dc7f91c263bd5f460aeae2c6306f79e6de8a8817aaacd9b1b0cb3c"
+    },
+    "security-probe-before.log": {
+      "bytes": 4315,
+      "private_source": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/security/probe-before.log",
+      "sha256": "9f098dfe46dc7f91c263bd5f460aeae2c6306f79e6de8a8817aaacd9b1b0cb3c"
+    },
+    "security-review.json": {
+      "bytes": 20429,
+      "private_source": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/security/review.json",
+      "sha256": "8fa8df79a42d43dcb8770aa14a83ad6beaf5deaa78ff4b59db797b321dfcace1"
+    },
+    "security-review.md": {
+      "bytes": 10111,
+      "private_source": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/security/review.md",
+      "sha256": "5d8f2d617c989623e59990147a7ce9baf909645c23b9341b50dfd030bf0f47e9"
+    },
+    "security-test-verification.json": {
+      "bytes": 1596,
+      "private_source": "/tmp/opencode/m4-c0-ssh-remediation-2026-10-11/security/test-verification.json",
+      "sha256": "88caf2fc0ed8b9916b04c1dde42e3ed4dfd30f537a734416a837f0661241d93f"
+    }
+  },
+  "kind": "c0_independent_remediation_review_exports",
+  "publication_authorized": false,
+  "review_sha256": "8fa8df79a42d43dcb8770aa14a83ad6beaf5deaa78ff4b59db797b321dfcace1",
+  "reviewer": "security",
+  "source_inventory_sha256": "2ecf2c68b6a3293cc3b34314e23022b3f35c2eda69f9f8efa0391728804a8edf",
+  "verdict": "GO_FOR_CONTINUED_IMPLEMENTATION",
+  "version": 1
+}

@@ -1,0 +1,104 @@
+{
+  "version": 1,
+  "kind": "c0_pinned_ssh_independent_correctness_review",
+  "date": "2026-10-11",
+  "verdict": "NEEDS_REMEDIATION",
+  "scope": "Frozen provisioning/transport implementation, preparation/backend integration and static ARM64 reconstruction; not live runtime acceptance or publication authorization",
+  "snapshot": "/tmp/opencode/m4-c0-podman-arm64-2026-10-11/snapshot",
+  "source_inventory_sha256": "f53058a955de01027efcdbaa6adace7d6904197c845e5886b25e7d9db41bc227",
+  "source_integrity": {
+    "package_files": 45,
+    "before": "PASS",
+    "after": "PASS_UNCHANGED",
+    "runner_unchanged": true,
+    "all_aggregate_source_digests_match": true,
+    "repository_or_snapshot_modified": false
+  },
+  "prior_correction": {
+    "id": "COR-SSH-001",
+    "status": "FIXED_FOR_SELECTOR_ALLOCATION_FAILURE",
+    "new_regression_tests_passed": 3,
+    "remaining_startup_cleanup_issue": "COR-SSH-002"
+  },
+  "findings": [
+    {
+      "id": "COR-SSH-002",
+      "severity": "high",
+      "priority": "P1",
+      "blocking": true,
+      "title": "Empty selector during startup failure is mistaken for observed pipe EOF",
+      "path": "tests/crawl-jobs-v2-observer/context_transport.py",
+      "lines": [108, 110],
+      "related_lines": [[73, 76], [103, 116]],
+      "impact": "First set_blocking/register failure can reap an already-exited leader and skip killpg while its descendant still holds pipes. Acquisition rejects and parent descriptors close, but local descendant work/resources leak.",
+      "reproduction": "python3 -B -W error::ResourceWarning /tmp/opencode/m4-c0-podman-arm64-2026-10-11/correctness/probe_cleanup.py",
+      "evidence": "probe-cleanup.json",
+      "observed": "Both first-setup failure variants left a live descendant; the registered-timeout control stopped it. The probe cleaned up all owned groups.",
+      "minimal_fix": "Track setup completion or actual output EOF; only take the early non-killing reap after completed setup and drained pipes. On incomplete setup kill the group before reaping. Add exited-leader/inherited-pipe failure tests.",
+      "qualification": "Owned-process fault-model reproduction, not a claim that normal fixed SSH flags fork helpers or that local cleanup proves remote stop."
+    },
+    {
+      "id": "COR-SSH-003",
+      "severity": "medium",
+      "priority": "P2",
+      "blocking": false,
+      "title": "Reused provisioned ContextSource does not retain deployment/transport preparation checks",
+      "path": "tests/crawl-jobs-v2-observer/context_transport.py",
+      "lines": [160, 163],
+      "related_path": "tests/crawl-jobs-v2-observer/runtime_context.py",
+      "related_lines": [[118, 122], [131, 165]],
+      "impact": "A source constructed with preparation A accepts preparation B with a different deployment or transport digest and issues a B-bound lease using A's source. The factory itself rejects the same B.",
+      "reproduction": "python3 -B -W error::ResourceWarning /tmp/opencode/m4-c0-podman-arm64-2026-10-11/correctness/probe_preparation.py",
+      "evidence": "probe-preparation.json",
+      "minimal_fix": "Retain admitted deployment/transport digests and compare them before every acquisition, or bind the original preparation digest if that is the intended API. Test source reuse with changed and unchanged preparations.",
+      "qualification": "The recommended acquire_provisioned_context entrypoint constructs and immediately acquires with the same preparation; that one-shot path is not shown broken. No external authorization bypass is claimed."
+    }
+  ],
+  "offline_tests": {
+    "suite_runs": 1,
+    "status": "PASS",
+    "tests_run": 197,
+    "previous_194_ids_retained_and_passed": true,
+    "skips_failures_errors_expected_failures": 0,
+    "resource_warning_or_ignored_exception_in_log": false,
+    "python": "3.14.7",
+    "command": "TMPDIR=/tmp/opencode python3 -B -W error::ResourceWarning scripts/test-crawl-jobs-v2-observer.py --report /tmp/opencode/m4-c0-podman-arm64-2026-10-11/correctness/c0-tests.json"
+  },
+  "static_artifacts": {
+    "status": "PASS_STATIC_JOINS",
+    "native_hashes_matching_both_prior_records": 11,
+    "elf_instruction_manifest_compiled_filter_profiles_toolchain_source_joins": "PASS",
+    "oracle_manifest_interpreter_and_worker_source_joins": "PASS",
+    "extracted_bpf_interpretation_cases": 1482,
+    "build_pull_log_hashes_checked": 4,
+    "toolchain_library_bytes_independently_extracted": false,
+    "evidence": "artifact-checks.json"
+  },
+  "observed_nonblocking_limitations": [
+    "Private SSH identity preflight checks only envelope delimiters and size, not decoded key or private/public pairing; deliberate non-key fixture passes PASS_PRIVATE_BUNDLE. No authentication was attempted."
+  ],
+  "untested_boundaries": [
+    "Live SSH authentication, host installation/effective sshd policy, actual collector/daemon kernel placement and key provenance",
+    "Native actors, oracle worker, collector, OCI policy enforcement, tracing/hardware breakpoints, timing/calibration and whole-trial acceptance",
+    "Live Podman/rootless/network/container-absence observations and independent extraction of toolchain library/base-layer bytes",
+    "Planned x64 implementation is outside this increment and is not counted as a current defect"
+  ],
+  "authorization": {
+    "live_execution_authorized": false,
+    "publication_authorized": false,
+    "native_programs_or_oracle_worker_or_real_collector_executed": false,
+    "live_ssh_or_container_workloads_or_host_policy_changes_performed": false,
+    "subagents_spawned": false
+  },
+  "evidence_sha256": {
+    "review.md": "9fb29ce22f285ecded90fb4c1a2a8eb6d89a62a866f2af3a90d86bd319de1ea9",
+    "source-before.json": "d61ce96b88ceee4d8a294e8d76ceb3b3e827f4a891ec0c157f9b6cc7f2df9c9e",
+    "source-after.json": "2752c6429f1e1d58610e7693886c9d693688369e88c55917a5a84a14b580bc9c",
+    "c0-tests.json": "94bd6ddf268cf9c877868019319fae2268da6869386bfc9ffba15ec4ed8b88d9",
+    "c0-tests.log": "65fe3cdceca74ac7596f594596c1de5a75fa21a7f46ac4a155ee232acd4d6f33",
+    "test-verification.json": "256cb994935d936437d4d7ac242ddff4d1f84bcc1a051b62af9a5a8c07eabada",
+    "artifact-checks.json": "d0e089b240c7014b236b2e994a9a9a86192f6d7274f5c733a310ea66b87d1bdf",
+    "probe-cleanup.json": "c6beef3e05c0c59d46557c26870fede66261965dddfa7d6bdab90a8092ddc80e",
+    "probe-preparation.json": "a84a327ebad902089d4ff6a59dfc77bc82df400dcca7de7dd862a555773b75f1"
+  }
+}

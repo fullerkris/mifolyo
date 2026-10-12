@@ -61,16 +61,20 @@ def verify_client(expected):
 def exchange_process(argv, raw, deadline, *, spawn=subprocess.Popen):
     deadline.check()
     require(type(raw) is bytes and 0 < len(raw) <= LIMITS["receipt_bytes"] and raw.endswith(b"\n"), "CONTEXT_INPUT_BOUND")
-    process = spawn(argv, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-        env={"PATH": "/usr/bin:/bin", "LC_ALL": "C", "SSH_ASKPASS_REQUIRE": "never"},
-        start_new_session=True, close_fds=True)
-    output, offset, reaped = bytearray(), 0, False
+    # Acquire the selector before starting a child, and guard spawn/setup too.
     mux = selectors.DefaultSelector()
+    process, reaped, setup_complete = None, False, False
     try:
+        deadline.check()
+        process = spawn(argv, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            env={"PATH": "/usr/bin:/bin", "LC_ALL": "C", "SSH_ASKPASS_REQUIRE": "never"},
+            start_new_session=True, close_fds=True)
+        output, offset = bytearray(), 0
         for pipe, event, label in ((process.stdin, selectors.EVENT_WRITE, "in"),
                 (process.stdout, selectors.EVENT_READ, "out"), (process.stderr, selectors.EVENT_READ, "err")):
             os.set_blocking(pipe.fileno(), False)
             mux.register(pipe, event, label)
+        setup_complete = True
         while mux.get_map():
             deadline.check()
             for event, _ in mux.select(min(deadline.remaining(), 0.05)):
@@ -99,10 +103,11 @@ def exchange_process(argv, raw, deadline, *, spawn=subprocess.Popen):
         return bytes(output)
     finally:
         try:
-            if not reaped:
+            if process is not None and not reaped:
                 # Do not reap a leader while descendants may still hold its pipes.
-                # Normal EOF permits reaping, but is not remote/group absence proof.
-                if not mux.get_map():
+                # An empty map before setup is not observed EOF. A drained map
+                # after setup permits reaping, but is not remote/group absence proof.
+                if setup_complete and not mux.get_map():
                     try: process.wait(timeout=0); reaped = True
                     except subprocess.TimeoutExpired: pass
                 if not reaped:
@@ -113,7 +118,8 @@ def exchange_process(argv, raw, deadline, *, spawn=subprocess.Popen):
                         process.wait(timeout=LIMITS["cleanup_ms"] / 1000)
         finally:
             mux.close()
-            for pipe in (process.stdin, process.stdout, process.stderr): pipe.close()
+            if process is not None:
+                for pipe in (process.stdin, process.stdout, process.stderr): pipe.close()
 
 
 class SSHContextTransport:
@@ -148,16 +154,28 @@ class SSHContextTransport:
             raise Invalid("CONTEXT_SSH_EXCHANGE_REJECTED") from None
 
 
+class _ProvisionedContextSource(ContextSource):
+    def __init__(self, anchor, key, exchange, bindings, *, authorize=None):
+        super().__init__(anchor, key, exchange, authorize=authorize)
+        self._provisioning_bindings = dict(bindings)
+
+    def acquire(self, case_id, invocation_sha256, preparation, daemon_sha256, deadline, budget):
+        preparation = copy.deepcopy(validate_preparation(preparation))
+        require(all(preparation["artifacts"][name] == value for name, value in self._provisioning_bindings.items()),
+            "CONTEXT_PROVISIONING_BINDING")
+        return super().acquire(case_id, invocation_sha256, preparation, daemon_sha256, deadline, budget)
+
+
 def provisioned_source(bundle, preparation, *, authorize=None):
     """Load only operator-provisioned inputs; no discovery, TOFU or key scanning."""
     validate_preparation(preparation)
     transport = SSHContextTransport(bundle)
     value = transport.deployment
-    require(preparation["artifacts"]["runtime_context_deployment"] == deployment_digest(value) and
-        preparation["artifacts"]["runtime_context_transport"] == transport_digest() and
-        preparation["artifacts"]["runtime_context_source"] == value["anchor"]["source_sha256"], "CONTEXT_PROVISIONING_BINDING")
-    source = ContextSource(value["anchor"], transport._credentials["context-source.key"], transport, authorize=authorize)
-    source.provisioning_receipt = {"deployment_sha256": deployment_digest(value), "transport_source_sha256": transport_digest(),
+    bindings = {"runtime_context_deployment": deployment_digest(value), "runtime_context_transport": transport_digest(),
+        "runtime_context_source": value["anchor"]["source_sha256"]}
+    require(all(preparation["artifacts"][name] == digest for name, digest in bindings.items()), "CONTEXT_PROVISIONING_BINDING")
+    source = _ProvisionedContextSource(value["anchor"], transport._credentials["context-source.key"], transport, bindings, authorize=authorize)
+    source.provisioning_receipt = {"deployment_sha256": bindings["runtime_context_deployment"], "transport_source_sha256": bindings["runtime_context_transport"],
         "anchor_sha256": sha(canonical(value["anchor"])), "ssh_client_sha256": value["ssh_client_sha256"],
         "host_installation_verified": False, "execution_authorized": False, "runtime_evidence": False}
     return source

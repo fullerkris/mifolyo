@@ -1,11 +1,19 @@
 # C0 trusted-source provisioning and pinned-SSH tooling — 2026-10-11
 
-**Local tooling implementation verified; independent review and live host
-installation remain open.** The owner selected **Pinned-SSH tooling**: implement
+**Tooling implementation and subsequent independent source/static-artifact review
+are complete; live host installation remains open.** The owner selected **Pinned-SSH tooling**: implement
 provisioning bundles, constrained SSH transport and controller preflight for an
 operator-managed Linux/AArch64 Docker host. Live installation explicitly awaits
 identification of that host. Work is local on
 `feature/crawl-jobs-v2-c0-context-provisioning`, based on merged `64c98a7`.
+
+**Subsequent checkpoint:** the implementation was committed and pushed as
+`1e95696`. The [completed review remediation](crawl-jobs-v2-m4-c0-ssh-remediation-2026-10-11.md)
+closes COR-SSH-001/002/003 and QA-ENV-001 with **202 C0 passes under both umasks**
+and two independent GO_FOR_CONTINUED_IMPLEMENTATION verdicts. ARM64 reconstruction
+and static artifact reviews are complete. Corrections remain local/uncommitted;
+the separate publication decision is next. Original verification identities below
+retain their recording-time scope; the correction has a new transport identity.
 
 ## Merged baseline verified
 
@@ -62,7 +70,7 @@ The new preparation fields are `runtime_context_deployment` and
 Previous packets/bundle identities require regeneration; prior source GO does
 not automatically cover this increment.
 
-## Verification and identities
+## Original implementation verification and identities
 
 | Check | Result |
 |---|---|
@@ -88,8 +96,8 @@ Private records, clean baseline worktree and artifact outputs remain under
 
 ## Next gates
 
-1. Independent correctness/security review of the new source/artifact snapshot,
-   then a separate scoped publication decision.
+1. Independent review is complete on the corrected 202-test snapshot; make the
+   separate scoped publication decision and verify its exact CI/merge evidence.
 2. Identify and admit an SSH-accessible Linux/AArch64 host in the selected Docker
    daemon's actual kernel domain. Review any future daemon-endpoint change separately.
 3. Operator installation, effective SSH-policy admission, live authentication and

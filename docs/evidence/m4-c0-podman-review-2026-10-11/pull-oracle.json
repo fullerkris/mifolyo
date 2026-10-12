@@ -1,0 +1,35 @@
+{
+  "command": [
+    "podman",
+    "pull",
+    "--platform",
+    "linux/arm64",
+    "--policy",
+    "missing",
+    "docker.io/library/python@sha256:2325bb286ec344af3e5898cc224b5844e2707ac6e26b1632516fd3edc84a5e26"
+  ],
+  "cwd": "/var/home/kfuller/Documents/Git_Projects/mifolyo",
+  "elapsed_seconds": 10.433,
+  "image": {
+    "Architecture": "arm64",
+    "Digest": "sha256:2325bb286ec344af3e5898cc224b5844e2707ac6e26b1632516fd3edc84a5e26",
+    "Id": "adc3d531c29fbd69fa9ca49cd8e241c68aaf4e1dd7462be6c2432044b7a39ea8",
+    "Os": "linux",
+    "RepoDigests": [
+      "docker.io/library/python@sha256:2325bb286ec344af3e5898cc224b5844e2707ac6e26b1632516fd3edc84a5e26",
+      "docker.io/library/python@sha256:ad4c34ff79289506e235b40dce75d629e25f226b597a2455804220f037e07531"
+    ]
+  },
+  "kind": "c0_podman_command",
+  "live_host_collector_executed": false,
+  "log_sha256": "0f6ce4485b36772a9459d2f887a181317eea851ebcfaa084873d3cca25a5865b",
+  "native_programs_executed": false,
+  "returncode": 0,
+  "runtime_evidence": false,
+  "source_inventory_sha256": "f53058a955de01027efcdbaa6adace7d6904197c845e5886b25e7d9db41bc227",
+  "source_unchanged": true,
+  "started_unix": 1791770653.6336737,
+  "status": "PASS",
+  "step": "pull-oracle",
+  "version": 1
+}

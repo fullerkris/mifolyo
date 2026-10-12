@@ -1,0 +1,52 @@
+{
+  "base_image_id": "adc3d531c29fbd69fa9ca49cd8e241c68aaf4e1dd7462be6c2432044b7a39ea8",
+  "commands": [
+    [
+      "podman",
+      "create",
+      "--pull=never",
+      "--platform",
+      "linux/arm64",
+      "--network",
+      "none",
+      "--name",
+      "mifolyo-c0-oracle-inspect-037ffd900c04fdb886cec7ed",
+      "--label",
+      "org.mifolyo.artifact-review=037ffd900c04fdb886cec7ed",
+      "--entrypoint",
+      "/bin/false",
+      "adc3d531c29fbd69fa9ca49cd8e241c68aaf4e1dd7462be6c2432044b7a39ea8"
+    ],
+    [
+      "podman",
+      "inspect",
+      "--type",
+      "container",
+      "bb485a3221996c15d09c5e97a63ebb7c024ca838f85b289c0f39b74d1bb5a3d4"
+    ],
+    [
+      "podman",
+      "cp",
+      "bb485a3221996c15d09c5e97a63ebb7c024ca838f85b289c0f39b74d1bb5a3d4:/usr/local/bin/python3.13",
+      "/tmp/opencode/m4-c0-podman-arm64-2026-10-11/oracle-python3.13"
+    ],
+    [
+      "podman",
+      "inspect",
+      "--type",
+      "container",
+      "bb485a3221996c15d09c5e97a63ebb7c024ca838f85b289c0f39b74d1bb5a3d4"
+    ],
+    [
+      "podman",
+      "rm",
+      "bb485a3221996c15d09c5e97a63ebb7c024ca838f85b289c0f39b74d1bb5a3d4"
+    ]
+  ],
+  "container_id": "bb485a3221996c15d09c5e97a63ebb7c024ca838f85b289c0f39b74d1bb5a3d4",
+  "container_name": "mifolyo-c0-oracle-inspect-037ffd900c04fdb886cec7ed",
+  "container_started": false,
+  "entrypoint_executed": false,
+  "removal_completed": true,
+  "version": 1
+}

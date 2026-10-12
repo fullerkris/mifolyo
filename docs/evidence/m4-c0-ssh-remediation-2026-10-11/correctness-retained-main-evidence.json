@@ -1,0 +1,17 @@
+{
+  "full_runs": {
+    "022": {
+      "log_sha256": "34a1768582ca7cedfb46cf6c946c54a362c9003e3d1444b76482e58a979030a8",
+      "report_sha256": "1d8d1cd2b3cecf39bbc61652968971a40c853902c2d08df91cb42502fa6494fc",
+      "reviewer_executed_this_full_run": false
+    },
+    "077": {
+      "log_sha256": "3860d1a0de41c92c3aa5ff03c3fdeb3ec6ee8ea2621ce978a6146b2cac6d6a17",
+      "report_sha256": "1d8d1cd2b3cecf39bbc61652968971a40c853902c2d08df91cb42502fa6494fc",
+      "reviewer_executed_this_full_run": false
+    }
+  },
+  "independent_run_evidence": "test-verification.json",
+  "red_log_sha256": "ab6d9674eff1bbc24e2ac608ea084a7c0ba24effca69c01f1932f8a829743a9f",
+  "red_report_sha256": "a79f0389874f8e5ae2e38eafa578963513cbd9d780ecc7b91bc7f6fd49dec4c5"
+}

@@ -1,0 +1,26 @@
+{
+  "QA-ENV-001_passed": "test_context_provisioning.ProvisioningTests.test_ssh_entrypoint_checks_exact_code_inventory_and_interpreter",
+  "TMPDIR": "/tmp/opencode",
+  "all_started_passed": true,
+  "new_ids": [
+    "test_context_provisioning.SSHTransportTests.test_first_nonblocking_failure_kills_exited_leaders_descendant",
+    "test_context_provisioning.SSHTransportTests.test_first_registration_failure_kills_exited_leaders_descendant",
+    "test_context_provisioning.SSHTransportTests.test_public_provisioning_receipt_cannot_rebind_a_reused_source",
+    "test_context_provisioning.SSHTransportTests.test_reused_source_accepts_matching_bindings_with_fresh_challenges",
+    "test_context_provisioning.SSHTransportTests.test_reused_source_rechecks_provisioning_before_authorization_or_io"
+  ],
+  "new_test_log_sha256": "f484b7ebd3e37490f2926a273342c2a326a1fb4b374d3ee757f58f104965dcfc",
+  "new_test_report_sha256": "1d8d1cd2b3cecf39bbc61652968971a40c853902c2d08df91cb42502fa6494fc",
+  "no_skips_or_errors_or_warnings": true,
+  "original_correctness_test_report_sha256": "94bd6ddf268cf9c877868019319fae2268da6869386bfc9ffba15ec4ed8b88d9",
+  "original_security_report_remains_fail_196_plus_one_error": true,
+  "original_security_test_report_sha256": "66161b67cf93ce43f405314ef4b4606aaa6af2cf9f94d350fe2d07fbc0065310",
+  "prior_ids_retained": 197,
+  "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+  "resource_warnings_as_errors": true,
+  "source_bound": true,
+  "status": "PASS",
+  "suite_runs_by_this_reviewer": 1,
+  "tests_run": 202,
+  "umask": "077"
+}

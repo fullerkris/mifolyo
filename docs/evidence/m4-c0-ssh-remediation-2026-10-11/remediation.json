@@ -1,0 +1,65 @@
+{
+  "artifact_continuity": {
+    "fresh_build_performed": false,
+    "fresh_build_required_for_this_delta": false,
+    "native_artifacts_unchanged": 11,
+    "native_inputs_unchanged": 9,
+    "oracle_inputs_unchanged": 10,
+    "oracle_manifest_and_elf_unchanged": true,
+    "reconstruction_verification_sha256": "569dfdc93881a44d18dc6b8b2d1bdfbc1a5a2453153257de0160751d86d09318"
+  },
+  "corrected_findings": {
+    "COR-SSH-002": "Incomplete pipe setup always kills the owned group before reaping; early non-killing reap requires completed setup and a drained selector.",
+    "COR-SSH-003": "Retain private copies of admitted source/deployment/transport identities; snapshot and validate each acquisition preparation before authorization or exchange.",
+    "QA-ENV-001": "Explicitly chmod the simulated install directory to 0755 inside its private temporary parent."
+  },
+  "correction_committed": false,
+  "correction_pushed": false,
+  "deployment_complete": false,
+  "execution_authorized": false,
+  "full_suite_runs": {
+    "022": {
+      "command": "python3 -B /tmp/opencode/m4-c0-ssh-remediation-2026-10-11/run-suite.py 022",
+      "log_sha256": "34a1768582ca7cedfb46cf6c946c54a362c9003e3d1444b76482e58a979030a8",
+      "report_sha256": "1d8d1cd2b3cecf39bbc61652968971a40c853902c2d08df91cb42502fa6494fc",
+      "status": "PASS",
+      "tests": 202,
+      "umask": "022"
+    },
+    "077": {
+      "command": "python3 -B /tmp/opencode/m4-c0-ssh-remediation-2026-10-11/run-suite.py 077",
+      "log_sha256": "3860d1a0de41c92c3aa5ff03c3fdeb3ec6ee8ea2621ce978a6146b2cac6d6a17",
+      "report_sha256": "1d8d1cd2b3cecf39bbc61652968971a40c853902c2d08df91cb42502fa6494fc",
+      "status": "PASS",
+      "tests": 202,
+      "umask": "077"
+    }
+  },
+  "host_source_identity_unchanged": true,
+  "independent_final_review_complete": false,
+  "initial_review_manifest_sha256": "55865d4e88a1c5b06d84e58ab81e50a68f30d6befaf1d6b2391b5efda0cf855e",
+  "kind": "c0_pinned_ssh_review_remediation",
+  "label_date": "2026-10-11",
+  "live_ssh_authentication": false,
+  "m4_accepted": false,
+  "native_actor_execution": false,
+  "new_test_ids": [
+    "test_context_provisioning.SSHTransportTests.test_first_nonblocking_failure_kills_exited_leaders_descendant",
+    "test_context_provisioning.SSHTransportTests.test_first_registration_failure_kills_exited_leaders_descendant",
+    "test_context_provisioning.SSHTransportTests.test_public_provisioning_receipt_cannot_rebind_a_reused_source",
+    "test_context_provisioning.SSHTransportTests.test_reused_source_accepts_matching_bindings_with_fresh_challenges",
+    "test_context_provisioning.SSHTransportTests.test_reused_source_rechecks_provisioning_before_authorization_or_io"
+  ],
+  "oracle_worker_identity_unchanged": true,
+  "package_files": 45,
+  "pr_created": false,
+  "previous_test_ids_preserved": 197,
+  "recorded_utc": "2026-10-12T03:03:30.886019+00:00",
+  "red_test_report_sha256": "a79f0389874f8e5ae2e38eafa578963513cbd9d780ecc7b91bc7f6fd49dec4c5",
+  "resource_warnings_as_errors": true,
+  "skipped": [],
+  "source_inventory_sha256": "2ecf2c68b6a3293cc3b34314e23022b3f35c2eda69f9f8efa0391728804a8edf",
+  "status": "PASS_LOCAL_REMEDIATION_REREVIEW_PENDING",
+  "transport_identity": "20b53849d3617f1a7f1dc2897cd2ab3fed48990b8df188317c8c136d8276869a",
+  "version": 1
+}

@@ -91,6 +91,15 @@ class DockerBackend:
         self._context_lease = lease
         return lease
 
+    def acquire_provisioned_context(self, bundle, preparation, budget, deadline, *, authorize_source=None):
+        from context_transport import provisioned_source
+        require(not self._actor_streams, "CONTEXT_BEFORE_ACTORS")
+        self._authorize("runtime_context")
+        source = provisioned_source(bundle, preparation, authorize=authorize_source)
+        lease = self.acquire_runtime_context(source, preparation, budget, deadline)
+        lease.receipt["provisioning"] = dict(source.provisioning_receipt)
+        return lease
+
     def _authorize(self, action):
         require(callable(self.authorize) and self.authorize(action, self.scope_sha256) is True, "EXECUTION_NOT_APPROVED")
 

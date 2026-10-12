@@ -14,7 +14,7 @@ CAPS = frozenset(("effective", "permitted", "inheritable", "ambient", "bounding"
 ARTIFACTS = frozenset(("target_source", "observer_source", "oracle_source", "validator_source",
     "target_elf", "observer_elf", "instruction_manifest", "observer_profile", "target_profile",
     "oracle_profile", "filter_generator", "controller_source", "toolchain_record", "admission_source",
-    "runtime_context_source", "oracle_worker_source", "oracle_elf"))
+    "runtime_context_source", "oracle_worker_source", "oracle_elf", "runtime_context_deployment", "runtime_context_transport"))
 
 
 class Invalid(ValueError):

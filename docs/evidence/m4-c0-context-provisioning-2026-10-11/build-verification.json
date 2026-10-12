@@ -1,0 +1,23 @@
+{
+  "host_source_executed_on_real_host": false,
+  "native_actor_execution": false,
+  "native_artifacts": {
+    "cases.h": "64591020572e8af5afae67856ba79e053afacaf41d08ba10a98f489558e383f4",
+    "observer": "e407a02c67ac7a0cd192e612afe5ad643701c16821f6854e3a11b040e55cfb61",
+    "observer-seccomp.json": "abf581851c19631ba5125ac03443f4ad72c6e8fd7b92fa086218060e07b56bf2",
+    "oracle-seccomp.json": "f82e0ae5335e1393c402265c4a14a4e56ad8df27ab48eee70907745fef3b6835",
+    "target": "819cde0b38e12b235acbef2b3741551af86683ff2c3ec5186b5a45b710e5da45",
+    "target-filter.bpf": "701824ff5f8ccafa359f711d2714b23c8a303789cd1987a3a85aba19a3667b93",
+    "target-manifest.json": "a19b4096f0f268742ebc98bf879e12fbb0de1124a1c8144959496f6b8a615e43",
+    "target-seccomp.json": "6a1ffdf7326ae1370bd55cc2edb2bcfb49b2d65ce7090205576d3b6e9496ab3e",
+    "target_filter.h": "8a1c8f5941860b7acd92f3dc53952aa746fa9d1c57098b214a691fa8a6380b1d",
+    "target_manifest.h": "ccee87e21a21d7d0f8e07cac9fe1dc3e9f20333d51b32e9231d1e2362686d7a5",
+    "toolchain.json": "e953b3c89a20ebeca25ebbcce8d30486aa10174db1d9986977bed786aa47f9dc"
+  },
+  "native_build_record_sha256": "8f2bb1c204446a3084400d68d805ad19bc29d0947cc61ba3ab5bea86acb3b018",
+  "oracle_build_record_sha256": "2d5b376522df5b2d3f8a161b1cce3ebee547f2c1784158f96e28dff2111a50d9",
+  "oracle_manifest_sha256": "3f51809ebddbad24cbe03611e67b678df003121b77aff0743de0251baf538131",
+  "oracle_worker_executed_in_build": false,
+  "source_inventory_sha256": "b69502b2287b08331570f7a7c2728586da216341ec9da0fdb0c097abfaac4c4a",
+  "status": "PASS_ARTIFACT_ONLY_BUILDS"
+}

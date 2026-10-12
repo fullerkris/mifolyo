@@ -78,10 +78,14 @@ supersede it. Reviewed package bytes remain unchanged by later documentation upd
 
 ## Remaining gates
 
-1. **Publication preparation complete:** the [53-path candidate](crawl-jobs-v2-m4-c0-context-oracle-publication-preparation-2026-10-09.md)
-   preserves this reviewed package and passes fresh 161 C0 / 31 script checks.
-   An owner publication decision is next; the candidate remains unstaged,
-   uncommitted and unpublished, and main still has 113 C0 tests.
+**Subsequent progress (2026-10-11):** PR #24 is merged as `64c98a7`; its exact
+main CI is verified. The owner-selected [pinned-SSH tooling increment](crawl-jobs-v2-m4-c0-context-provisioning-2026-10-11.md)
+passes 194 local tests, with independent review and actual host installation still
+open. The original review/version bindings above remain unchanged.
+
+1. **Publication and merge complete:** the [53-path candidate](crawl-jobs-v2-m4-c0-context-oracle-publication-preparation-2026-10-09.md)
+   was published and owner-merged through PR #24. Its actual main CI verifies the
+   reviewed 40-file / 161-test package. New tooling source review is the next gate.
 2. Provision/admit the Linux host source/anchor/key/transport and exact runtime
    images, including the actual oracle OCI sandbox.
 3. Complete trial/timing assembly, whole-trial monitoring and independent cleanup/

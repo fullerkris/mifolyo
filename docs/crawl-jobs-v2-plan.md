@@ -2,11 +2,11 @@
 
 **Finding:** F3 - durable crawl-job leases and recovery
 
-**Last updated:** 2026-10-09 (UTC; reviewed context/oracle source and 53-path publication candidate prepared on verified `2ff03af`; fresh 161 C0 / 31 script checks pass; owner publication decision next; full M4 open)
+**Last updated:** 2026-10-11 (UTC; PR #24 merged as `64c98a7` with exact main CI verified; selected pinned-SSH provisioning/transport tooling locally verified at 194 C0 / 31 script tests; independent review and live host installation remain open)
 
-**Code baseline:** merged `main` at `2ff03af`; PR #23 has the reviewed `a1fbc6f4…` tree and its own verified main CI: 14 contexts / 23 jobs, 113 C0 / 31 script / 183 harness tests
+**Code baseline:** merged `main` at `64c98a7`; PR #24 has the approved `f842de5b…` tree and its own verified main CI: 14 contexts / 23 jobs, 161 C0 / 31 script / 183 harness tests
 
-**Working branch:** `feature/crawl-jobs-v2-c0-context-oracle`, based at `2ff03af`; context acquisition, three-role admission and oracle/client closure are locally implemented and tested, uncommitted and unpublished
+**Working branch:** `feature/crawl-jobs-v2-c0-context-provisioning`, based at `64c98a7`; private provisioning bundles, fixed SSH endpoint, bounded pinned transport and preflight integration are locally implemented and tested, uncommitted and unpublished
 
 **Initial checkpoint:** `e4372a66201b8767bcca4d7476c30c5b7999922c`
 
@@ -17,11 +17,18 @@ All 43 canonical operations and the sealed, zero-argument
 bounded real-Redis `ledger-smoke-v1` and `ledger-claim-release-v1` cases pass;
 full M4 acceptance is open.
 
-**Current next gate:** the owner publication decision for the
-[prepared 53-path context/oracle candidate](crawl-jobs-v2-m4-c0-context-oracle-publication-preparation-2026-10-09.md),
-then scoped commit/push/PR and exact-revision CI. Preparation is complete: fresh
-161 C0 / 31 script checks and digest verification pass; all 40 reviewed package
-files, native artifacts and existing CI coverage retain their identities.
+**Current next gate:** independent source review of the
+[pinned-SSH provisioning/transport increment](crawl-jobs-v2-m4-c0-context-provisioning-2026-10-11.md).
+The owner selected tooling for an operator-managed Linux/AArch64 Docker host;
+live installation awaits identification of that host. The current Docker Desktop
+VM has no admitted collector endpoint, and a different server cannot attest its
+kernel. The new 45-file package passes 194 C0 / 31 script tests and artifact-only
+builds; no daemon change, host installation or native experiment occurred.
+
+**Merged context/oracle checkpoint:** PR #24's exact publication, owner merge
+`64c98a7`, reviewed-tree continuity and actual main CI are complete. Both main
+workflows passed on attempt 1; main gate:
+`53159ebf13efec96b3d08dd491abbeadc8e3f84bc988c86dfff87baf1e01210e`.
 Independent correctness/security re-review returns **GO_FOR_CONTINUED_IMPLEMENTATION**
 on the corrected **40-file / 161-test** package. Final-poll expiry, equal-clock ACK
 ordering and client-history rollback findings are closed; all 149 previous test IDs
@@ -75,7 +82,7 @@ adds fail-closed offline C0 coverage to `required-tests`; exact PR and merged-ma
 evidence now verify all 113 tests and package hashes. Tests use simulated Docker
 and benign Python processes. No native actor or tracing experiment ran.
 
-**Current local increment:** authenticated Linux-host context acquisition, exact
+**Merged context/oracle increment:** authenticated Linux-host context acquisition, exact
 Linux-expiry handshakes and an owned read-only oracle/client-closure worker are
 implemented and independently reviewed after three boundary fixes. All 161 tests
 pass (all 149 previous IDs retained plus 12 new tests), with 31 script tests and
@@ -84,6 +91,12 @@ and eleven retained artifacts remain unchanged and statically joined. Both final
 reviews return GO for continued implementation; publication remains a separate
 decision. Trusted source placement/transport, actual oracle OCI
 admission, full trial/timing assembly and whole-trial evidence remain open.
+
+**Current local tooling increment:** private provisioning bundles, the fixed
+SSH forced command, bounded pinned transport and preparation-bound preflight are
+implemented under the owner-selected tooling-only scope. All 194 tests pass;
+the 45-file snapshot needs its own independent review. Host identification,
+operator installation and live SSH/context acquisition remain explicit gates.
 
 The separately authorized [Go security fix](go-http2-security-2026-10-09.md) uses
 Go 1.26.9 and x/net v0.60.0, with an exact Spider normalization compatibility pin.
@@ -371,12 +384,12 @@ retains it as a primitive case; guard cases now explicitly bind the complete
 | Ledger validation | Baseline/delivery/fence history, post-abort freeze, exact retained witnesses, strict worker expiry, completed replay, prior retry/backpressure/reason fixes and zero-sentinel checks pass local normal conformance and reviewed counterexample replays |
 | Script sources | All 43 canonical operations are implemented: unchanged BOOT passthrough plus 42 exact generated sources; both strict source/bundle generator checks pass |
 | Authoritative bundle | Complete zero-argument `AuthoritativeScriptBindingSet()` validates embedded sources against fixed generated pins and returns fresh private sealed bindings; no caller-supplied sources, hashes or paths |
-| Local and protected acceptance | Merged `2ff03af` passes 14/14 main contexts and 23 jobs, with 113 C0 / 31 script / 183 harness tests, all 480 race roots accounted for and 74-file/20-recipe image evidence. The reviewed context/oracle increment has fresh 161 C0 / 31 script passes and a prepared 53-path publication candidate; owner publication decision and candidate hosted CI remain pending |
+| Local and protected acceptance | Merged `64c98a7` passes 14/14 main contexts and 23 jobs, with 161 C0 / 31 script / 183 harness tests, all 480 race roots accounted for and 74-file/20-recipe image evidence. The subsequent 45-file pinned-SSH tooling increment passes 194 local C0 / 31 script tests and artifact-only builds; new independent review/publication remains pending |
 | Runtime behavior | V2 remains dormant in application services; separately authorized disposable Redis smoke, claim/release, all 13 negatives, pre-I/O recovery, bounded request lifecycle, positive-interval and serial shared-group cases pass within their original source/image scopes |
 | M4 bounded execution | Cancellation fixture `cda9d337…` passes once: nine calls, one group-capacity denial, two peer-safe replays, 60 counters and 46 denials. Six-role revocation, original 28-action journal and six-resource absence pass; renewed approval consumed. Earlier shared-capacity evidence retains its own scope; full M4-P4/P5 stay open |
 | Review status | Cancellation retains scoped evidence ACCEPT. Earlier C0 GO remains bound to its 112-test snapshot; PR #23 published the 113-test fixture successor. Both final reviewers return GO_FOR_CONTINUED_IMPLEMENTATION on the corrected 40-file / 161-test context/oracle snapshot, with all three findings closed; runtime feasibility and full M4 remain unproved |
-| Git state | PRs #21–#23 are merged; exact `2ff03af` main CI is verified. Context/oracle work is local on its isolated feature branch. Published checkpoints, incomplete older worktree contents, native artifacts and 372 unrelated primary paths remain preserved |
-| Current bounded slice | Independently reviewed Linux-context acquisition, native Linux expiry and oracle/client closure. Publication preparation is complete for the unchanged reviewed package; owner decision on the 53-path candidate is next, then exact-revision CI and later trusted-source/runtime-image admission. Earlier execution approvals stay consumed |
+| Git state | PRs #21–#24 are merged; exact `64c98a7` main CI is verified. Pinned-SSH tooling is local on `feature/crawl-jobs-v2-c0-context-provisioning`. Published checkpoints, surviving older worktree contents, native artifacts and 372 unrelated primary paths remain preserved |
+| Current bounded slice | Operator-selected pinned-SSH provisioning bundles, fixed forced-command endpoint, bounded transport and preparation-bound preflight. Tooling is locally verified; live installation waits for an admitted host in the selected daemon's actual Linux domain. No Docker endpoint switch or native execution is included |
 
 ### Current source and fixture identities (regenerated 2026-09-21)
 
@@ -581,7 +594,10 @@ The final matrix and final independent reviews used pinned Go 1.25.13 and passed
   preserve all 149 prior IDs and pass 161 tests; both exact-byte re-reviews return GO.
 - [x] Prepare the exact 53-path context/oracle publication candidate; reverify all 40 reviewed
   package files, fresh 161 C0 / 31 script checks, digest/artifact bindings and unchanged protected CI.
-- [ ] Obtain the owner publication decision, then commit/push/open the scoped PR and verify exact-revision CI.
+- [x] Publish the owner-approved exact candidate as PR #24; verify exact PR CI, owner merge `64c98a7`, tree continuity and its own main CI.
+- [x] Implement the owner-selected pinned-SSH provisioning/transport tooling and preflight; preserve all 161 baseline test IDs and pass 194 C0 / 31 script tests.
+- [ ] Independently review the new tooling snapshot and obtain a separate scoped publication decision.
+- [ ] Identify/admit the actual Linux host, perform operator installation and verify live SSH/context acquisition.
 - [ ] Provision/admit the Linux source and transport; validate exact runtime images and the oracle sandbox.
 - [ ] Complete full trial dispatch, image/approval and timing/resource integration;
   decide normative changes and runtime experiments separately.

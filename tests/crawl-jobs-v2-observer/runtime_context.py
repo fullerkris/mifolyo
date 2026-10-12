@@ -15,7 +15,7 @@ from runtime_admission import CONTEXT_HASHES, HOST_NAMESPACES, NAMESPACES, valid
 
 DOMAIN = "mifolyo:obs1:c0:linux-context"
 PHASES = ("KERNEL", "NAMESPACE", "WINDOW")
-SOURCE_FILES = ("contracts.py", "runtime_admission.py", "linux_observation.py", "runtime_context.py", "context_worker.py")
+SOURCE_FILES = ("contracts.py", "runtime_admission.py", "linux_observation.py", "runtime_context.py", "context_worker.py", "context_files.py", "context_ssh.py")
 _TOKEN = object()
 
 

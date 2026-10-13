@@ -5,14 +5,16 @@ import struct
 import subprocess
 import sys
 
-from contracts import TRIALS, canonical, require, sha
+from contracts import TRIALS, canonical, elf_architecture, platform_digest, require, runtime_architecture, sha
 from profiles import profile, target_filter_program
 
 
-def parse_elf(raw):
+def parse_elf(raw, architecture="aarch64"):
+    selected = runtime_architecture(architecture)
+    require(elf_architecture(raw) == architecture, "ELF_ARCHITECTURE")
     require(64 <= len(raw) <= 32 * 1024 * 1024 and raw[:7] == b"\x7fELF\x02\x01\x01", "ELF")
     header = struct.unpack_from("<16sHHIQQQIHHHHHH", raw)
-    require(header[1:4] == (3, 183, 1), "ELF_TARGET")
+    require(header[1:4] == (3, selected["elf_machine"], 1), "ELF_TARGET")
     phoff, shoff, phsize, phnum, shsize, shnum, strings = header[5], header[6], header[9], header[10], header[11], header[12], header[13]
     require(phsize == 56 and 0 < phnum <= 64 and shsize == 64 and 0 < shnum <= 256 and strings < shnum, "ELF_TABLE")
     require(phoff + phnum * phsize <= len(raw) and shoff + shnum * shsize <= len(raw), "ELF_TABLE")
@@ -49,8 +51,8 @@ def instruction(raw, loads, address):
     return offset, struct.unpack_from("<I", raw, offset)[0]
 
 
-def target_manifest(raw):
-    loads, symbols = parse_elf(raw)
+def target_manifest(raw, architecture="aarch64"):
+    loads, symbols = parse_elf(raw, architecture)
     wanted = {"obs_pre_effect", "obs_post_effect", "obs_vm_marker", "obs_send_marker", "obs_witness_address"}
     require(wanted <= set(symbols), "TARGET_SYMBOLS")
     executable = [row for row in loads if row[1] & 1]
@@ -61,7 +63,8 @@ def target_manifest(raw):
     require(mapping["obs_post_effect"]["instruction"] == 0xd65f03c0, "POST_RETURN")
     require(mapping["obs_vm_marker"]["instruction"] == mapping["obs_send_marker"]["instruction"] == 0xd503201f, "MARKER")
     require(any(row[1] & 2 and row[3] <= symbols["obs_witness_address"]["vaddr"] < row[3] + row[6] for row in loads), "WITNESS_SYMBOL")
-    return {"version": 1, "kind": "synthetic_static_instruction_manifest", "architecture": "aarch64",
+    return {"version": 2, "kind": "synthetic_static_instruction_manifest", "architecture": architecture,
+        "platform_sha256": platform_digest(architecture),
         "elf_sha256": sha(raw), "elf_bytes": len(raw), "symbols": mapping,
         "exec_mapping": {"offset": segment[2] & ~4095, "vaddr": segment[3] & ~4095, "bytes": segment[5]},
         "witness_bytes": 8480, "descriptor_count": 1050, "same_value": 42,
@@ -74,20 +77,23 @@ def write(path, raw):
 
 
 def main():
+    require(len(sys.argv) in (3, 4), "BUILD_ARGUMENTS")
+    architecture = sys.argv[3] if len(sys.argv) == 4 else "aarch64"
+    runtime_architecture(architecture)
     mode, out = sys.argv[1], Path(sys.argv[2])
     require(out.is_dir(), "OUTPUT")
     if mode == "headers":
         cases = "static const char *const OBS_CASES[276] = {\n" + ",\n".join(json.dumps(case) for case in TRIALS) + "\n};\n"
         write(out / "cases.h", cases.encode())
-        program = target_filter_program()
+        program = target_filter_program(architecture)
         rows = ",\n".join("{%d,%d,%d,%du}" % row for row in program)
         write(out / "target_filter.h", ("static const struct sock_filter obs_filter[] __attribute__((section(\".obs_filter\"),used)) = {\n" + rows + "\n};\n").encode())
         write(out / "target-filter.bpf", b"".join(struct.pack("<HBBI", *row) for row in program))
         for role in ("observer", "target", "oracle"):
-            write(out / (role + "-seccomp.json"), canonical(profile(role)))
+            write(out / (role + "-seccomp.json"), canonical(profile(role, architecture)))
     elif mode == "manifest":
         raw = (out / "target").read_bytes()
-        manifest = target_manifest(raw)
+        manifest = target_manifest(raw, architecture)
         write(out / "target-manifest.json", canonical(manifest))
         mapping = manifest["symbols"]
         values = {"OBS_TARGET_SIZE": len(raw), "OBS_EXEC_OFFSET": manifest["exec_mapping"]["offset"],
@@ -99,8 +105,11 @@ def main():
         header = '#define OBS_TARGET_SHA256 "' + sha(raw) + '"\n' + "".join(f"#define {name} UINT64_C({value})\n" for name, value in values.items())
         write(out / "target_manifest.h", header.encode())
     elif mode == "record":
+        target = (out / "target").read_bytes()
+        manifest = target_manifest(target, architecture)
+        require((out / "target-manifest.json").read_bytes() == canonical(manifest), "BUILD_TARGET_MANIFEST")
         observer = (out / "observer").read_bytes()
-        loads, symbols = parse_elf(observer)
+        loads, symbols = parse_elf(observer, architecture)
         filter_symbol = symbols["obs_filter"]
         segments = [row for row in loads if row[3] <= filter_symbol["vaddr"] and filter_symbol["vaddr"] + filter_symbol["size"] <= row[3] + row[5]]
         require(len(segments) == 1, "COMPILED_FILTER")
@@ -110,14 +119,16 @@ def main():
         for command in (("cc", "--version"), ("ld", "--version"), ("cc", "-dumpmachine")):
             process = subprocess.run(command, capture_output=True, check=True, timeout=10)
             commands[" ".join(command)] = process.stdout.decode()
+        require(commands["cc -dumpmachine"].strip().startswith(architecture + "-"), "BUILD_ARCHITECTURE")
         libraries = {}
         for name in ("libc.a", "libcrypto.a", "crtbeginS.o"):
             path = subprocess.check_output(["cc", "-print-file-name=" + name], text=True, timeout=10).strip()
             require(Path(path).is_file(), "TOOLCHAIN_LIBRARY")
             libraries[name] = sha(Path(path).read_bytes())
         sources = {path.as_posix(): sha(path.read_bytes()) for path in Path(".").rglob("*") if path.is_file() and "__pycache__" not in path.parts}
-        write(out / "toolchain.json", canonical({"version": 1, "commands": commands, "libraries": libraries, "sources": sources,
-            "target_sha256": sha((out / "target").read_bytes()), "observer_sha256": sha(observer),
+        write(out / "toolchain.json", canonical({"version": 2, "architecture": architecture, "platform_sha256": platform_digest(architecture),
+            "commands": commands, "libraries": libraries, "sources": sources,
+            "target_sha256": sha(target), "observer_sha256": sha(observer),
             "native_programs_executed": False, "tracing_performed": False}))
     else:
         raise ValueError("MODE")

@@ -1,0 +1,8 @@
+{
+  "in_memory_redirected_script_sha256": "a6334cd394bb2b5e7ae6a5a6a03ba7c9c63383fa1356f3620adf9a6920b76d40",
+  "mode": "boundaries",
+  "original_script": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/security/probe_security.py",
+  "original_script_sha256": "d2e274fda4ba4e73461cab8cecdaae2ed5592608df3c78816d327ee70e95164f",
+  "original_unmodified": true,
+  "status": "PASS"
+}

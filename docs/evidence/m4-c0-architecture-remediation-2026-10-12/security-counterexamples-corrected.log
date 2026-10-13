@@ -1,0 +1,30 @@
+{
+  "revision": "corrected",
+  "status": "PASS",
+  "results": [
+    {
+      "id": "COR-ARCH-001-startup-and-create-image-matrix",
+      "status": "PASS"
+    },
+    {
+      "id": "COR-ARCH-002-authenticated-architecture-drift",
+      "status": "PASS"
+    },
+    {
+      "id": "COR-ARCH-002-anchor-downgrade",
+      "status": "PASS"
+    },
+    {
+      "id": "COR-ARCH-002-expanded-public-anchor-lifecycle",
+      "status": "PASS"
+    },
+    {
+      "id": "COR-ARCH-002-operation-key-and-view-consistency",
+      "status": "PASS"
+    },
+    {
+      "id": "COR-ARCH-003-record-target-manifest-snapshot",
+      "status": "PASS"
+    }
+  ]
+}

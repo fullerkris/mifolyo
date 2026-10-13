@@ -1,0 +1,245 @@
+{
+  "kind": "independent_security_probes",
+  "native_or_collector_or_live_ssh_or_docker_executed": false,
+  "refusal_code_counts": {
+    "ADMISSION_ARCHITECTURE": 21,
+    "ARCHITECTURE": 49,
+    "ARCHITECTURE_NOT_IMPLEMENTED": 44,
+    "CONTEXT_ACQUISITION_REJECTED": 18,
+    "CONTEXT_LEASE_BINDING": 1,
+    "CONTEXT_PROVISIONING_BINDING": 6,
+    "CONTEXT_SOURCE_REFUSED": 5,
+    "CONTEXT_SSH_EXCHANGE_REJECTED": 1,
+    "ELF_ARCHITECTURE": 4,
+    "FIELDS": 17,
+    "IMAGE_IDENTITY": 2,
+    "INTEGER": 66,
+    "JSON": 15,
+    "LINUX_EXECUTABLE_ARCHITECTURE": 1,
+    "LINUX_PLATFORM": 3,
+    "NATIVE_ADMISSION_REJECTED": 3,
+    "PLATFORM": 2,
+    "PREPARATION": 5,
+    "PROFILE_CONTENT": 12,
+    "PROFILE_FILE_CONTENT": 2,
+    "RESOURCE_SCOPE": 3
+  },
+  "results": [
+    {
+      "details": {
+        "negative_cases": 101,
+        "positive_metadata_architectures": [
+          "aarch64",
+          "x86_64"
+        ]
+      },
+      "elapsed_seconds": 0.0075,
+      "id": "schema-downgrade-relabel-coercion",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "authenticated_request_mutations": 5,
+        "authenticated_response_mutations": [
+          "kernel_arch_x86",
+          "kernel_arch_alias",
+          "kernel_arch_missing",
+          "kernel_extra_arch",
+          "namespace_arch",
+          "window_arch",
+          "namespace_substitute",
+          "wrong_request_digest",
+          "kernel_duplicate",
+          "reorder",
+          "truncated",
+          "extra_frame",
+          "old_mac",
+          "version_0",
+          "version_1",
+          "version_2",
+          "version_3"
+        ],
+        "replay_rejected": true
+      },
+      "elapsed_seconds": 0.0227,
+      "id": "signed-context-request-response-joins",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "caller_input_snapshot_and_lease_view_copy": true,
+        "fresh_challenges": true,
+        "matching_reuse": 3,
+        "mutation_refusals_before_authorization_and_io": 12
+      },
+      "elapsed_seconds": 0.0127,
+      "id": "reusable-source-architecture-and-COR-SSH-003",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "metadata_only_x86_64": true,
+        "spawn_build_output_client_daemon_io": 0
+      },
+      "elapsed_seconds": 0.0033,
+      "id": "unsupported-architecture-before-activation-io",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "all_four_way_architecture_combinations": 48,
+        "backend_refusal_closes_and_uncaches": 3,
+        "positive_arm64_roles": 3,
+        "rejections_including_legacy_and_coercion": 96
+      },
+      "elapsed_seconds": 0.0747,
+      "id": "native-admission-four-way-join-and-cleanup",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exact_profile_arch_sets_rejected": 12,
+        "pre_create_guards": [
+          {
+            "case": "daemon_amd64",
+            "container_create_called": false,
+            "refusal": "PLATFORM"
+          },
+          {
+            "case": "daemon_aarch64",
+            "container_create_called": false,
+            "refusal": "PLATFORM"
+          },
+          {
+            "case": "image_amd64",
+            "container_create_called": false,
+            "refusal": "IMAGE_IDENTITY"
+          },
+          {
+            "case": "image_aarch64",
+            "container_create_called": false,
+            "refusal": "IMAGE_IDENTITY"
+          },
+          {
+            "case": "profile_x86",
+            "container_create_called": false,
+            "refusal": "PROFILE_FILE_CONTENT"
+          },
+          {
+            "case": "profile_other_role",
+            "container_create_called": false,
+            "refusal": "PROFILE_FILE_CONTENT"
+          }
+        ]
+      },
+      "elapsed_seconds": 0.0133,
+      "id": "docker-image-profile-confusion",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "all_descriptors_closed": true,
+        "fragmented_header_cases": [
+          "arm64",
+          "x86_64",
+          "ELF32",
+          "big-endian",
+          "bad-version",
+          "truncated"
+        ],
+        "real_collector_invoked": false
+      },
+      "elapsed_seconds": 0.0032,
+      "id": "linux-uname-interpreter-classification",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "COR-SSH-001": "selector before spawn preserved",
+        "COR-SSH-002": [
+          {
+            "descendant_pipe_eof": true,
+            "kill_before_reap": true,
+            "operation": "nonblocking",
+            "position": 1
+          },
+          {
+            "descendant_pipe_eof": true,
+            "kill_before_reap": true,
+            "operation": "nonblocking",
+            "position": 2
+          },
+          {
+            "descendant_pipe_eof": true,
+            "kill_before_reap": true,
+            "operation": "nonblocking",
+            "position": 3
+          },
+          {
+            "descendant_pipe_eof": true,
+            "kill_before_reap": true,
+            "operation": "register",
+            "position": 1
+          },
+          {
+            "descendant_pipe_eof": true,
+            "kill_before_reap": true,
+            "operation": "register",
+            "position": 2
+          },
+          {
+            "descendant_pipe_eof": true,
+            "kill_before_reap": true,
+            "operation": "register",
+            "position": 3
+          }
+        ],
+        "fd_delta": 0
+      },
+      "elapsed_seconds": 0.0826,
+      "id": "COR-SSH-001-002-real-owned-pipe-cleanup",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "all_base_ids_passed": true,
+        "base_test_ids": 202,
+        "full_suite_invocations": 1,
+        "new_ids": [
+          "test_architecture_contracts.ArchitectureBoundaryTests.test_admission_summary_cannot_promote_an_unsupported_architecture",
+          "test_architecture_contracts.ArchitectureBoundaryTests.test_authenticated_wrong_architecture_context_response_refuses",
+          "test_architecture_contracts.ArchitectureBoundaryTests.test_backend_context_architecture_mismatch_prevents_callbacks",
+          "test_architecture_contracts.ArchitectureBoundaryTests.test_backend_platform_or_image_mismatch_prevents_create",
+          "test_architecture_contracts.ArchitectureBoundaryTests.test_bundle_manifest_and_host_configuration_bind_the_architecture",
+          "test_architecture_contracts.ArchitectureBoundaryTests.test_collector_observation_must_match_the_independent_anchor",
+          "test_architecture_contracts.ArchitectureBoundaryTests.test_deployment_and_anchor_architecture_must_agree",
+          "test_architecture_contracts.ArchitectureBoundaryTests.test_direct_ssh_transport_refuses_x64_before_client_or_process_io",
+          "test_architecture_contracts.ArchitectureBoundaryTests.test_foreign_daemon_blocks_actor_start_and_mixed_context_blocks_oracle",
+          "test_architecture_contracts.ArchitectureBoundaryTests.test_known_x64_deployment_is_metadata_only_until_the_port",
+          "test_architecture_contracts.ArchitectureBoundaryTests.test_legacy_native_frames_and_contexts_do_not_get_an_inferred_architecture",
+          "test_architecture_contracts.ArchitectureBoundaryTests.test_linux_executable_hash_also_checks_fragmented_elf_header",
+          "test_architecture_contracts.ArchitectureBoundaryTests.test_linux_reader_rejects_foreign_kernel_before_observations",
+          "test_architecture_contracts.ArchitectureBoundaryTests.test_mixed_preparation_refuses_before_source_authorization_and_io",
+          "test_architecture_contracts.ArchitectureBoundaryTests.test_native_preparation_context_binding_and_identity_must_agree",
+          "test_architecture_contracts.ArchitectureBoundaryTests.test_observer_and_oracle_cannot_borrow_foreign_architecture_peer",
+          "test_architecture_contracts.ArchitectureBoundaryTests.test_x64_process_stream_refuses_before_spawning",
+          "test_architecture_contracts.ArchitectureContractTests.test_aliases_unknown_platforms_and_coercions_are_rejected",
+          "test_architecture_contracts.ArchitectureContractTests.test_both_preparation_contracts_are_explicit_and_non_authorizing",
+          "test_architecture_contracts.ArchitectureContractTests.test_build_entrypoints_refuse_x64_before_writing_outputs",
+          "test_architecture_contracts.ArchitectureContractTests.test_canonical_platforms_bind_linux_oci_elf_and_seccomp_names",
+          "test_architecture_contracts.ArchitectureContractTests.test_elf_class_endianness_machine_version_and_short_headers_refuse",
+          "test_architecture_contracts.ArchitectureContractTests.test_elf_headers_are_classified_from_bytes_not_requested_labels",
+          "test_architecture_contracts.ArchitectureContractTests.test_existing_arm64_profiles_and_compiled_filter_bytes_are_preserved",
+          "test_architecture_contracts.ArchitectureContractTests.test_mislabeled_oci_profile_cannot_be_admitted",
+          "test_architecture_contracts.ArchitectureContractTests.test_preparation_relabeling_and_legacy_packets_refuse",
+          "test_architecture_contracts.ArchitectureContractTests.test_resource_scope_binds_architecture_and_refuses_legacy_or_relabeling"
+        ]
+      },
+      "elapsed_seconds": 0.0493,
+      "id": "base-test-id-continuity-and-single-run",
+      "status": "PASS"
+    }
+  ],
+  "scope": "frozen source, synthetic data, owned benign Python processes only",
+  "status": "PASS"
+}

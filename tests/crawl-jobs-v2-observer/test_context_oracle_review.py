@@ -126,7 +126,7 @@ def oracle_fixture(mode, case="P3.receipt-race.1"):
             row = fake.inspect("container", identifier, deadline)
         registry.bind(role, row)
     def binding(role):
-        return {"case_id": case, "invocation_sha256": c.sha(c.canonical(scope)), "role": role,
+        return {"architecture": scope["architecture"], "case_id": case, "invocation_sha256": c.sha(c.canonical(scope)), "role": role,
             "container_id": registry.entries[role]["reference"]["id"], "image": scope["images"][role]}
     target_validated = admission.validate(admission_tests.frames("target", bound=binding("target")),
         binding("target"), prep, admission_tests.context())
@@ -208,7 +208,7 @@ class ContextOracleReviewTests(unittest.TestCase):
 
     def test_resume_poll_rechecks_oracle_operation_deadline(self):
         clock = fixture()[1]
-        observer = QuietActor({"case_id": "P1.pre.1.1", "invocation_sha256": c.sha(b"scope")}, "HELD")
+        observer = QuietActor({"architecture": "aarch64", "case_id": "P1.pre.1.1", "invocation_sha256": c.sha(b"scope")}, "HELD")
         stream = GuardStream(observer.binding | {"role": "oracle"}, Deadline(1, clock), before_input=None, before_write=None)
         stream.phase, stream.sent = "ORACLE_HELD", True
         stream.poll_hook = lambda: setattr(clock, "now", clock.now + 2)

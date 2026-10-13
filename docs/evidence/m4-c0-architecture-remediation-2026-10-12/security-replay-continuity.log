@@ -1,0 +1,54 @@
+{
+  "arm64_filter_sha256_unchanged": "701824ff5f8ccafa359f711d2714b23c8a303789cd1987a3a85aba19a3667b93",
+  "arm64_profiles_byte_identical_to_base": {
+    "observer": "abf581851c19631ba5125ac03443f4ad72c6e8fd7b92fa086218060e07b56bf2",
+    "oracle": "f82e0ae5335e1393c402265c4a14a4e56ad8df27ab48eee70907745fef3b6835",
+    "target": "6a1ffdf7326ae1370bd55cc2edb2bcfb49b2d65ce7090205576d3b6e9496ab3e"
+  },
+  "base_commit": "ced6e1cff36101f76fb54904b6b0fa2cf33cb48f",
+  "byte_identical_files": {
+    "context_files.py": "956ce03c56e6df84006e9bf16775f1d3d83d2acbda5bec8d9d41b1de2e72d396",
+    "native/common.h": "157a7ec3b5c8ec6c0dc031cacb22047216303f4467be5eee7284926d572c53cd",
+    "native/observer.c": "16899c419a9ab4696d22e0b515c56be511eaa77ff80941de3fa899eac1dd1e9c",
+    "native/target.c": "feb94778757ae05268417c1cd76a383f5339bfa701feababda972a5e077451fd",
+    "watchdog.py": "cc2e7e1212caa6be74e2266ce3a4ab156064a3ae96f01281cfa3ba5660ba5813"
+  },
+  "native_nonce_and_expiry_handshake_and_emit_bound_unchanged": true,
+  "shared_LIMITS_unchanged": true,
+  "status": "PASS",
+  "suite_rerun": false,
+  "unchanged_function_AST": {
+    "context_provision.py": [
+      "write_new",
+      "verify_bundle",
+      "validate_sshd_output",
+      "ssh_policy",
+      "sshd_fragment"
+    ],
+    "context_transport.py": [
+      "exchange_process",
+      "credentials",
+      "verify_client",
+      "ssh_argv",
+      "_ProvisionedContextSource.acquire"
+    ],
+    "contracts.py": [
+      "decode",
+      "clock_ns",
+      "hold_bound"
+    ],
+    "controller.py": [
+      "native_message"
+    ],
+    "owned_resources.py": [
+      "cleanup"
+    ],
+    "streams.py": [
+      "ProcessStream.send_case",
+      "ProcessStream.send_oracle_case",
+      "ProcessStream.start_target",
+      "ProcessStream.arm_observer",
+      "ProcessStream.resume_observer"
+    ]
+  }
+}

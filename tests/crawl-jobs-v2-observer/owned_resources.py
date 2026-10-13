@@ -8,7 +8,7 @@ import datetime
 import json
 import re
 
-from contracts import LIMITS, TRIALS, Invalid, canonical, digest, exact, integer, require, sha
+from contracts import LIMITS, TRIALS, Invalid, canonical, digest, exact, integer, platform_digest, require, runtime_architecture, sha
 from controller import role_spec
 from profiles import profile
 
@@ -34,7 +34,8 @@ def timestamp(value):
     return value
 
 
-def scope(case_id, invocation_id, images, environment_sha256, daemon_sha256):
+def scope(case_id, invocation_id, images, environment_sha256, daemon_sha256, architecture="aarch64"):
+    runtime_architecture(architecture)
     require(type(case_id) is str and case_id in TRIALS, "CASE")
     require(type(invocation_id) is str and re.fullmatch(r"[0-9a-f]{32}", invocation_id) is not None and invocation_id != "0" * 32, "INVOCATION")
     exact(images, ACTORS)
@@ -47,17 +48,19 @@ def scope(case_id, invocation_id, images, environment_sha256, daemon_sha256):
         if role != "oracle":
             require(environment_sha256[role] == sha(canonical([])), "NATIVE_ENVIRONMENT")
     require(len(set(images.values())) == len(ACTORS), "IMAGE_ROLES")
-    return {"version": 1, "case_id": case_id, "invocation_id": invocation_id,
+    return {"version": 2, "architecture": architecture, "platform_sha256": platform_digest(architecture),
+        "case_id": case_id, "invocation_id": invocation_id,
         "images": dict(images), "environment_sha256": dict(environment_sha256),
         "daemon_sha256": daemon_sha256,
-        "profiles": {role: sha(canonical(profile(role))) for role in ACTORS},
+        "profiles": {role: sha(canonical(profile(role, architecture))) for role in ACTORS},
         "namespace_policy": {"target": "private", "oracle": "private", "observer": "owned_target_only"},
         "execution_authorized": False, "runtime_process_admission": "pending"}
 
 
 def validate_scope(value):
-    exact(value, ("version", "case_id", "invocation_id", "images", "environment_sha256", "daemon_sha256", "profiles", "namespace_policy", "execution_authorized", "runtime_process_admission"))
-    require(canonical(value) == canonical(scope(value["case_id"], value["invocation_id"], value["images"], value["environment_sha256"], value["daemon_sha256"])), "RESOURCE_SCOPE")
+    exact(value, ("version", "architecture", "platform_sha256", "case_id", "invocation_id", "images", "environment_sha256", "daemon_sha256", "profiles", "namespace_policy", "execution_authorized", "runtime_process_admission"))
+    integer(value["version"], 2, 2)
+    require(canonical(value) == canonical(scope(value["case_id"], value["invocation_id"], value["images"], value["environment_sha256"], value["daemon_sha256"], value["architecture"])), "RESOURCE_SCOPE")
     return copy.deepcopy(value)
 
 
@@ -86,12 +89,12 @@ def container_spec(value, role, target_id=None):
         hex_id(target_id)
     else:
         require(target_id is None, "UNEXPECTED_PID_TARGET")
-    base = role_spec(role, value["images"][role], value["profiles"][role])
+    base = role_spec(role, value["images"][role], value["profiles"][role], value["architecture"])
     entry, command = COMMANDS[role]
     mounts = [] if role == "observer" else [
         {"name": name(value, "control"), "destination": "/control", "read_only": role == "oracle"},
         {"name": name(value, "witness"), "destination": "/witness", "read_only": role == "oracle"}]
-    return {"role": role, "name": name(value, role), "image": base["image"], "labels": labels(value, role),
+    return {"role": role, "architecture": value["architecture"], "name": name(value, role), "image": base["image"], "labels": labels(value, role),
         "entrypoint": entry, "command": command, "environment_sha256": value["environment_sha256"][role],
         "profile_sha256": value["profiles"][role], "memory": base["memory"], "pids_limit": base["pids_limit"],
         "pid_mode": "container:" + target_id if role == "observer" else "", "mounts": mounts}
@@ -108,7 +111,7 @@ def admit_volume(observed, expected):
         "created": observed["CreatedAt"], "mountpoint": path, "spec_sha256": sha(canonical(expected))}
 
 
-def _profile_options(values, role):
+def _profile_options(values, role, architecture):
     require(type(values) is list and len(values) == 2 and all(type(value) is str and len(value) <= 32768 for value in values), "SECURITY_OPTIONS")
     nnp = [value for value in values if value in ("no-new-privileges", "no-new-privileges:true")]
     seccomp = [value[8:] for value in values if value.startswith("seccomp=")]
@@ -123,7 +126,7 @@ def _profile_options(values, role):
 
     try:
         parsed = json.loads(seccomp[0], object_pairs_hook=pairs)
-        require(canonical(parsed) == canonical(profile(role)), "PROFILE_CONTENT")
+        require(canonical(parsed) == canonical(profile(role, architecture)), "PROFILE_CONTENT")
     except (ValueError, TypeError, UnicodeError, RecursionError):
         raise Invalid("PROFILE_CONTENT") from None
 
@@ -188,7 +191,7 @@ def admit_container(observed, expected, volumes, *, phase="created", bound=None)
     for key in ("PortBindings", "Tmpfs"):
         require(empty_optional(host.get(key), dict), "EXTRA_HOST_AUTHORITY")
     require(host.get("PublishAllPorts") is False and host.get("Runtime") in ("", "runc"), "HOST_AUTHORITY")
-    _profile_options(host.get("SecurityOpt"), expected["role"])
+    _profile_options(host.get("SecurityOpt"), expected["role"], expected["architecture"])
     declared_mounts = [] if host.get("Mounts") is None else host["Mounts"]
     require(type(declared_mounts) is list and len(declared_mounts) == len(expected["mounts"]), "MOUNT_OPTIONS")
     declared = {row.get("Target"): row for row in declared_mounts if type(row) is dict}

@@ -1,0 +1,79 @@
+{
+  "author_full_suite_umasks": [
+    "022",
+    "077"
+  ],
+  "base_commit": "ced6e1cff36101f76fb54904b6b0fa2cf33cb48f",
+  "branch": "feature/crawl-jobs-v2-c0-architecture-contracts",
+  "closed_findings": [
+    "COR-ARCH-001",
+    "COR-ARCH-002",
+    "COR-ARCH-003"
+  ],
+  "committed": false,
+  "execution_authorized": false,
+  "host_source_sha256": "ffae141857d61996ab5e5b53e8b55402a94b3caed39fa623665467610d81d836",
+  "independent_reviews": {
+    "correctness": {
+      "review_sha256": "6e4b9dd0240cd10027dc78802ffdb1b3748adb31d5487a55eea34f855b60f236",
+      "test_report_sha256": "d6bf46767e6c7909789e53ce008dc0e26ebd60f4c3e3f76fe4837747ceab38c4",
+      "tests": 238,
+      "umask": "022",
+      "verdict": "GO_FOR_CONTINUED_IMPLEMENTATION"
+    },
+    "security": {
+      "review_sha256": "7f37b6ed3c89af0cb30c06b7d91f7f64a5d21c29b06ef5454a8677bc258263c5",
+      "test_report_sha256": "d6bf46767e6c7909789e53ce008dc0e26ebd60f4c3e3f76fe4837747ceab38c4",
+      "tests": 238,
+      "umask": "077",
+      "verdict": "GO_FOR_CONTINUED_IMPLEMENTATION"
+    }
+  },
+  "initial_reports_and_failures_preserved": true,
+  "kind": "c0_architecture_contract_final_review_gate",
+  "known_metadata_architectures": [
+    "aarch64",
+    "x86_64"
+  ],
+  "m4_accepted": false,
+  "merged_baseline_ids_retained": 202,
+  "native_artifacts": {
+    "cases.h": "64591020572e8af5afae67856ba79e053afacaf41d08ba10a98f489558e383f4",
+    "observer": "53800d2281f57341269a0f1c9686809883241ed01872338b0544bf0439e88120",
+    "observer-seccomp.json": "abf581851c19631ba5125ac03443f4ad72c6e8fd7b92fa086218060e07b56bf2",
+    "oracle-seccomp.json": "f82e0ae5335e1393c402265c4a14a4e56ad8df27ab48eee70907745fef3b6835",
+    "target": "07ae68522b7e87560bda4d32fcb0f244c74fd748f7cd9ccfe1ac3cf2321deab5",
+    "target-filter.bpf": "701824ff5f8ccafa359f711d2714b23c8a303789cd1987a3a85aba19a3667b93",
+    "target-manifest.json": "973b8cf929720c0cd99cacd1f8c39900290c92fb307ad101ca3cc85f35e1f276",
+    "target-seccomp.json": "6a1ffdf7326ae1370bd55cc2edb2bcfb49b2d65ce7090205576d3b6e9496ab3e",
+    "target_filter.h": "8a1c8f5941860b7acd92f3dc53952aa746fa9d1c57098b214a691fa8a6380b1d",
+    "target_manifest.h": "e9506a8347f34d2d1e752705d72c9819060d40b64bd556c6787fd0c370e58b6c",
+    "toolchain.json": "4926c2e34b92a025c27e0fecdfd64c597da94d53a78d9a4231d51f8c8f0e5eae"
+  },
+  "native_elf_profile_filter_continuity": true,
+  "native_runtime_acceptance": false,
+  "new_blocking_findings": [],
+  "next": [
+    "Separate scoped publication/CI decision",
+    "C0-ARCH-03 x64 native/context/oracle port and C0-ARCH-04 runtime image sets",
+    "Native host/backend selection, per-platform admission/calibration and full M4"
+  ],
+  "oracle_elf_sha256": "cb4548d280f38c2b1df4cba45f12c90a034729e08fce5bf1a223c58add0e21e3",
+  "oracle_manifest_sha256": "6168e220727cb6377e8e637740bb8c297bf7bee929ab19aac6db90aa6fbcbfa5",
+  "oracle_worker_source_sha256": "f55a4c825523fc12e6d5bc3f5efaa97c8266a1ef640e4454c912346d36d3a86a",
+  "package_files": 47,
+  "previous_ids_retained": 229,
+  "publication_authorized": false,
+  "pushed": false,
+  "recorded_utc": "2026-10-12T20:29:44.673406+00:00",
+  "runtime_implemented": [
+    "aarch64"
+  ],
+  "schema_version": 2,
+  "source_inventory_sha256": "a02661da8cb299ff60e4ad9752ea53329b65c384d7f8e15853641dcf6db426cc",
+  "sources_unchanged_after_both_reviews": true,
+  "status": "GO_FOR_CONTINUED_IMPLEMENTATION",
+  "tests_per_run": 238,
+  "transport_source_sha256": "72ca166c9680cf4e37142c83335995ba396deec4d978923f23b83bda2cc98001",
+  "version": 1
+}

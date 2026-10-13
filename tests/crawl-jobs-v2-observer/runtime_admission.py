@@ -5,13 +5,13 @@ container/stream bindings. Native frames alone are not an authority or an oracle
 """
 import copy
 
-from contracts import DOMAIN, LIMITS, TRIALS, canonical, clock_ns, decode, digest, exact, integer, require, sha, validate_preparation
+from contracts import DOMAIN, LIMITS, TRIALS, canonical, clock_ns, decode, digest, exact, integer, platform, require, runtime_architecture, sha, validate_preparation
 
 PHASES = ("IDENTITY", "CONFINEMENT", "RESOURCES", "CLOCK")
 NAMESPACES = ("pid_ns", "user_ns", "time_ns", "cgroup_ns", "mnt_ns", "net_ns", "ipc_ns")
 COMMON = ("case_id", "invocation_sha256", "phase", "role", "version")
 FIELDS = {
-    "IDENTITY": ("boot_sha256", "executable_sha256", "gid_map_sha256", "pid", "start_ticks", "tid", "uid_map_sha256", "ns_device", *NAMESPACES),
+    "IDENTITY": ("architecture", "boot_sha256", "executable_sha256", "gid_map_sha256", "pid", "start_ticks", "tid", "uid_map_sha256", "ns_device", *NAMESPACES),
     "CONFINEMENT": ("caps", "core_hard", "core_soft", "dumpable", "gids", "groups", "nnp", "seccomp", "seccomp_filters", "tasks", "threads", "tracer_pid", "uids"),
     "RESOURCES": ("cgroup_sha256", "cpu_period", "cpu_quota", "memory_current", "memory_max", "memory_peak", "pids_current", "pids_max", "processes", "swap_max"),
     "CLOCK": ("kernel_release_sha256", "lsm_sha256", "monotonic_ns", "resolution_ns", "time_offsets_sha256", "yama_scope")}
@@ -29,11 +29,12 @@ def native_frame(raw, phase):
     require(phase in PHASES, "ADMISSION_PHASE")
     value = decode(raw, LIMITS["receipt_bytes"])
     exact(value, (*COMMON, *FIELDS[phase]))
-    integer(value["version"], 1, 1)
+    integer(value["version"], 2, 2)
     require(value["phase"] == phase and value["role"] in ("target", "observer", "oracle"), "ADMISSION_PHASE")
     require(type(value["case_id"]) is str and value["case_id"] in TRIALS and not value["case_id"].startswith("N."), "ADMISSION_CASE")
     digest(value["invocation_sha256"])
     if phase == "IDENTITY":
+        platform(value["architecture"])
         for name in ("boot_sha256", "executable_sha256", "uid_map_sha256", "gid_map_sha256"):
             digest(value[name])
         for name in (*NAMESPACES, "start_ticks", "pid", "tid"):
@@ -77,7 +78,8 @@ def native_frame(raw, phase):
 
 
 def validate_context(value):
-    exact(value, (*CONTEXT_HASHES, *HOST_NAMESPACES, "user_ns", "time_ns", "ns_device", "resolution_ns", "yama_scope", "seccomp_filters", "not_before_ns", "not_after_ns"))
+    exact(value, ("architecture", *CONTEXT_HASHES, *HOST_NAMESPACES, "user_ns", "time_ns", "ns_device", "resolution_ns", "yama_scope", "seccomp_filters", "not_before_ns", "not_after_ns"))
+    platform(value["architecture"])
     for name in CONTEXT_HASHES:
         digest(value[name])
     for name in (*HOST_NAMESPACES, "user_ns", "time_ns", "ns_device"):
@@ -96,8 +98,10 @@ def validate_context(value):
 def validate(raw_frames, binding, preparation, context, *, target=None):
     """Closed offline validator. Context and channel provenance stay caller obligations."""
     validate_preparation(preparation)
+    runtime_architecture(preparation["architecture"])
     context = validate_context(context)
-    exact(binding, ("case_id", "invocation_sha256", "container_id", "image", "role"))
+    exact(binding, ("architecture", "case_id", "invocation_sha256", "container_id", "image", "role"))
+    require(binding["architecture"] == context["architecture"] == preparation["architecture"], "ADMISSION_ARCHITECTURE")
     require(binding["role"] in ("target", "observer", "oracle"), "ADMISSION_ROLE")
     digest(binding["container_id"])
     digest(binding["invocation_sha256"])
@@ -108,6 +112,7 @@ def validate(raw_frames, binding, preparation, context, *, target=None):
     for frame in frames:
         require(all(frame[key] == binding[key] for key in ("case_id", "invocation_sha256", "role")), "ADMISSION_BINDING")
     identity, security, resources, clock = frames
+    require(identity["architecture"] == preparation["architecture"], "ADMISSION_ARCHITECTURE")
     role = binding["role"]
     require(identity["executable_sha256"] == preparation["artifacts"][role + "_elf"], "ADMISSION_EXECUTABLE")
     for name, expected in (("boot_sha256", "kernel_boot_sha256"), ("uid_map_sha256", "uid_map_sha256"), ("gid_map_sha256", "gid_map_sha256")):
@@ -149,16 +154,18 @@ def validate(raw_frames, binding, preparation, context, *, target=None):
 def summary(value):
     """A digest-only preparation result, not a transferable admission capability."""
     exact(value, ("binding", "frames", "context_sha256", "preparation_sha256", "identity_sha256", "observation_sha256", "execution_authorized", "runtime_evidence"))
-    exact(value["binding"], ("case_id", "invocation_sha256", "container_id", "image", "role"))
+    exact(value["binding"], ("architecture", "case_id", "invocation_sha256", "container_id", "image", "role"))
+    runtime_architecture(value["binding"]["architecture"])
     require(type(value["frames"]) is list and len(value["frames"]) == 4, "ADMISSION_FRAMES")
     frames = [native_frame(raw, phase) for raw, phase in zip(value["frames"], PHASES)]
+    require(frames[0]["architecture"] == value["binding"]["architecture"], "ADMISSION_ARCHITECTURE")
     require(all(all(frame[key] == value["binding"][key] for key in ("case_id", "invocation_sha256", "role")) for frame in frames), "ADMISSION_BINDING")
     for key in ("context_sha256", "preparation_sha256", "identity_sha256", "observation_sha256"):
         digest(value[key])
     digest(value["binding"]["container_id"])
     require(value["identity_sha256"] == sha(canonical(frames[0])) and value["observation_sha256"] == sha(b"".join(value["frames"])), "ADMISSION_DIGEST")
     require(value["execution_authorized"] is False and value["runtime_evidence"] is False, "ADMISSION_AUTHORITY")
-    result = {"domain": DOMAIN, "version": 1, "phase": "native_admission_validated", "role": value["binding"]["role"],
+    result = {"domain": DOMAIN, "version": 2, "architecture": value["binding"]["architecture"], "phase": "native_admission_validated", "role": value["binding"]["role"],
         "case_id": value["binding"]["case_id"], "invocation_sha256": value["binding"]["invocation_sha256"],
         "container_sha256": value["binding"]["container_id"], "identity_sha256": value["identity_sha256"],
         "observation_sha256": value["observation_sha256"], "context_sha256": value["context_sha256"],

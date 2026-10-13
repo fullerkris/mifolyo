@@ -1,0 +1,91 @@
+{
+  "execution_authorized": false,
+  "files": {
+    "final-tests-022.json": {
+      "bytes": 77823,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/final-tests-022.json",
+      "sha256": "c426dc3172d90a4592cfbf8549092ed17c11e79b2245589d65308838be884eaa"
+    },
+    "final-tests-022.log": {
+      "bytes": 37914,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/final-tests-022.log",
+      "sha256": "5c1c831347f803dbd8f305fa787e09787d6e60e0ea530722b0943eca402a608e"
+    },
+    "final-tests-077.json": {
+      "bytes": 77823,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/final-tests-077.json",
+      "sha256": "c426dc3172d90a4592cfbf8549092ed17c11e79b2245589d65308838be884eaa"
+    },
+    "final-tests-077.log": {
+      "bytes": 37914,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/final-tests-077.log",
+      "sha256": "a70f855b9b7abf8613fc305d83809d877e7dc51ccc9a9c87249336f892470e9f"
+    },
+    "merged-main-ci-gate.json": {
+      "bytes": 8348,
+      "private_source": "/tmp/opencode/m4-c0-merge-2026-10-12/ci-gate.json",
+      "sha256": "d0803f350b07ecf037100c8033915b92433659b638574958931f007a08f23666"
+    },
+    "migration-tests.json": {
+      "bytes": 67726,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/migration-tests.json",
+      "sha256": "ff74d56cc9d1efb4e5cd3a0f17c08eb97373ba161769b423a9648c46499d1553"
+    },
+    "migration-tests.log": {
+      "bytes": 35279,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/migration-tests.log",
+      "sha256": "00322fb30d5cc8e9e7a84fe9b75df19acbacd043605eb160447b7086fd72c563"
+    },
+    "native-build.json": {
+      "bytes": 8078,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/native-build.json",
+      "sha256": "4b60d4b4e8c1f32e316fb7891cde4be22a6f1b27426d8b2ee69f28c81213106a"
+    },
+    "native-build.log": {
+      "bytes": 2586,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/native-build.log",
+      "sha256": "68a91e21a4fa0658da57a366fd4128d540f30087b0a40eb2088f01ad11552ed9"
+    },
+    "native-toolchain.json": {
+      "bytes": 1968,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/native-artifacts/toolchain.json",
+      "sha256": "37dea885079efdc106649821bfd9c5f2c9ebf33c4f727af7f16941cd11bbb731"
+    },
+    "oracle-artifacts.json": {
+      "bytes": 1048,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/oracle-artifacts/oracle-artifacts.json",
+      "sha256": "6168e220727cb6377e8e637740bb8c297bf7bee929ab19aac6db90aa6fbcbfa5"
+    },
+    "oracle-build.json": {
+      "bytes": 7202,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/oracle-build.json",
+      "sha256": "9d894e5745fa4dc54bec359083181fe70c080e0a9e2522f577839cdc944ffac1"
+    },
+    "oracle-build.log": {
+      "bytes": 854,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/oracle-build.log",
+      "sha256": "0de651ee78e1d65adb1ddef273c39c088273e13c3e3b496dc4c5bfb46594aa10"
+    },
+    "source-inventory.json": {
+      "bytes": 9536,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/source-inventory.json",
+      "sha256": "b5388bbdf282e286caec43f6a5e12bc5e0129a6630f43bd2c2b15b405b0d7bfb"
+    },
+    "target-manifest.json": {
+      "bytes": 913,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/native-artifacts/target-manifest.json",
+      "sha256": "973b8cf929720c0cd99cacd1f8c39900290c92fb307ad101ca3cc85f35e1f276"
+    },
+    "verification.json": {
+      "bytes": 4965,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/verification.json",
+      "sha256": "c4b6c596b76147d8ac3d2c3f959d728a0836e649b355a8b511439b6f906ed864"
+    }
+  },
+  "independent_review_pending": true,
+  "kind": "c0_architecture_contract_local_exports",
+  "runtime_acceptance": false,
+  "source_inventory_sha256": "b5388bbdf282e286caec43f6a5e12bc5e0129a6630f43bd2c2b15b405b0d7bfb",
+  "verification_sha256": "c4b6c596b76147d8ac3d2c3f959d728a0836e649b355a8b511439b6f906ed864",
+  "version": 1
+}

@@ -9,7 +9,7 @@ import stat
 import subprocess
 import tempfile
 
-from contracts import LIMITS, Invalid, canonical, decode, require, sha, validate_preparation
+from contracts import LIMITS, Invalid, canonical, decode, require, runtime_architecture, sha, validate_preparation
 import context_files as files
 from context_provision import deployment_digest, transport_digest, validate_deployment, write_new
 from runtime_context import ContextSource
@@ -136,6 +136,7 @@ class SSHContextTransport:
     def __call__(self, raw, deadline):
         try:
             deadline.check()
+            runtime_architecture(self._deployment["architecture"])
             require(credentials(self.bundle) == self._credentials, "CONTEXT_CREDENTIALS_CHANGED")
             verify_client(self.deployment["ssh_client_sha256"])
             # SSH opens immutable per-exchange copies, not paths that can be swapped
@@ -171,11 +172,14 @@ def provisioned_source(bundle, preparation, *, authorize=None):
     validate_preparation(preparation)
     transport = SSHContextTransport(bundle)
     value = transport.deployment
+    runtime_architecture(value["architecture"])
+    require(preparation["architecture"] == value["architecture"], "CONTEXT_ARCHITECTURE")
     bindings = {"runtime_context_deployment": deployment_digest(value), "runtime_context_transport": transport_digest(),
         "runtime_context_source": value["anchor"]["source_sha256"]}
     require(all(preparation["artifacts"][name] == digest for name, digest in bindings.items()), "CONTEXT_PROVISIONING_BINDING")
     source = _ProvisionedContextSource(value["anchor"], transport._credentials["context-source.key"], transport, bindings, authorize=authorize)
     source.provisioning_receipt = {"deployment_sha256": bindings["runtime_context_deployment"], "transport_source_sha256": bindings["runtime_context_transport"],
+        "architecture": value["architecture"], "platform_sha256": preparation["platform_sha256"],
         "anchor_sha256": sha(canonical(value["anchor"])), "ssh_client_sha256": value["ssh_client_sha256"],
         "host_installation_verified": False, "execution_authorized": False, "runtime_evidence": False}
     return source

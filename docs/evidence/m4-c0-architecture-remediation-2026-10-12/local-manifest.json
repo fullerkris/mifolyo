@@ -1,0 +1,66 @@
+{
+  "execution_authorized": false,
+  "files": {
+    "final-tests-022.json": {
+      "bytes": 81051,
+      "private_source": "/tmp/opencode/m4-c0-architecture-remediation-2026-10-12/final-tests-022.json",
+      "sha256": "d6bf46767e6c7909789e53ce008dc0e26ebd60f4c3e3f76fe4837747ceab38c4"
+    },
+    "final-tests-022.log": {
+      "bytes": 39492,
+      "private_source": "/tmp/opencode/m4-c0-architecture-remediation-2026-10-12/final-tests-022.log",
+      "sha256": "b828bd24b0b56f2e5b5a5249c9706c4628220ff36a89127a61268710fb0f2abb"
+    },
+    "final-tests-077.json": {
+      "bytes": 81051,
+      "private_source": "/tmp/opencode/m4-c0-architecture-remediation-2026-10-12/final-tests-077.json",
+      "sha256": "d6bf46767e6c7909789e53ce008dc0e26ebd60f4c3e3f76fe4837747ceab38c4"
+    },
+    "final-tests-077.log": {
+      "bytes": 39492,
+      "private_source": "/tmp/opencode/m4-c0-architecture-remediation-2026-10-12/final-tests-077.log",
+      "sha256": "5ded35af814cefc6c3b28403331d9735b034d5b3d212fde38259d76359931a3a"
+    },
+    "native-build.json": {
+      "bytes": 8214,
+      "private_source": "/tmp/opencode/m4-c0-architecture-remediation-2026-10-12/native-build.json",
+      "sha256": "3e3def6ffb319eb0ebb7604581278468da3ea47d86833180f7151261ac505cca"
+    },
+    "native-build.log": {
+      "bytes": 2586,
+      "private_source": "/tmp/opencode/m4-c0-architecture-remediation-2026-10-12/native-build.log",
+      "sha256": "46731c37be6f59e38825dc859c11b64f0a91f3233d633608288dbaeffa861ff4"
+    },
+    "native-toolchain.json": {
+      "bytes": 1968,
+      "private_source": "/tmp/opencode/m4-c0-architecture-remediation-2026-10-12/native-artifacts/toolchain.json",
+      "sha256": "4926c2e34b92a025c27e0fecdfd64c597da94d53a78d9a4231d51f8c8f0e5eae"
+    },
+    "red-tests.json": {
+      "bytes": 10661,
+      "private_source": "/tmp/opencode/m4-c0-architecture-remediation-2026-10-12/red-tests.json",
+      "sha256": "6e58410aea85c684e5a3d19d53d4b6ad918739f5a7ab28def93fba01598cda22"
+    },
+    "red-tests.log": {
+      "bytes": 17544,
+      "private_source": "/tmp/opencode/m4-c0-architecture-remediation-2026-10-12/red-tests.log",
+      "sha256": "919d5d8be3c8d0aa8b148405b4942088e7a6b3657c4d4ce919748bb83d87b88a"
+    },
+    "source-inventory.json": {
+      "bytes": 8781,
+      "private_source": "/tmp/opencode/m4-c0-architecture-remediation-2026-10-12/source-inventory.json",
+      "sha256": "a02661da8cb299ff60e4ad9752ea53329b65c384d7f8e15853641dcf6db426cc"
+    },
+    "verification.json": {
+      "bytes": 2667,
+      "private_source": "/tmp/opencode/m4-c0-architecture-remediation-2026-10-12/verification.json",
+      "sha256": "3617c193c2bbe652ccbc1a526d7710a020e28fc62aa2f808d906bf917b79ea87"
+    }
+  },
+  "independent_rereview_pending": true,
+  "kind": "c0_architecture_remediation_local_exports",
+  "runtime_acceptance": false,
+  "source_inventory_sha256": "a02661da8cb299ff60e4ad9752ea53329b65c384d7f8e15853641dcf6db426cc",
+  "verification_sha256": "3617c193c2bbe652ccbc1a526d7710a020e28fc62aa2f808d906bf917b79ea87",
+  "version": 1
+}

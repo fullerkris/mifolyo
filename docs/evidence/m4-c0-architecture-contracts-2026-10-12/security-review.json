@@ -1,0 +1,550 @@
+{
+  "artifacts": {
+    "compiled_filter": {
+      "bytes": 272,
+      "file_offset": 3498664,
+      "instructions": 34,
+      "sha256": "701824ff5f8ccafa359f711d2714b23c8a303789cd1987a3a85aba19a3667b93",
+      "simulated_cases": 3092
+    },
+    "effect_sequence": {
+      "file_offset": 444480,
+      "meaning": [
+        "mov x4,#42",
+        "str x4,[x3]",
+        "str x2,[x1]",
+        "stlr x2,[x0]",
+        "ret"
+      ],
+      "words": [
+        "0xd2800544",
+        "0xf9000064",
+        "0xf9000022",
+        "0xc89ffc02",
+        "0xd65f03c0"
+      ]
+    },
+    "execution_authorized": false,
+    "filter_installed": false,
+    "kind": "independent_static_artifact_security_review",
+    "limits": [
+      "Static bytes and source/manifests only; no independent rebuild, toolchain-library remeasurement, dynamic dependency closure, load-bias proof, binfmt/emulation attestation, kernel seccomp execution, or native runtime feasibility."
+    ],
+    "manifest_and_headers_regenerated_or_independently_joined": true,
+    "native_admission_formats": {
+      "observer": {
+        "CLOCK": {
+          "format_bytes": 212,
+          "sha256": "f9d607ba56980e65e64b94f2f323785f69f1243a0c39ce161e043fffe65e103a"
+        },
+        "CONFINEMENT": {
+          "format_bytes": 294,
+          "sha256": "2b5353558581df009ce8da477b839dcad844337959af86a2f6d08bcf507c75a3"
+        },
+        "IDENTITY": {
+          "format_bytes": 348,
+          "sha256": "f5ad4e01d92c4f2f1a18b5d34de1b515be990b353b17352b93816786b00d8120"
+        },
+        "RESOURCES": {
+          "format_bytes": 265,
+          "sha256": "82fc77c55ddca53e08fc02f8119d9dade2bc625f7f1c290bd02ba176c4f1a0f1"
+        }
+      },
+      "target": {
+        "CLOCK": {
+          "format_bytes": 212,
+          "sha256": "f9d607ba56980e65e64b94f2f323785f69f1243a0c39ce161e043fffe65e103a"
+        },
+        "CONFINEMENT": {
+          "format_bytes": 294,
+          "sha256": "2b5353558581df009ce8da477b839dcad844337959af86a2f6d08bcf507c75a3"
+        },
+        "IDENTITY": {
+          "format_bytes": 348,
+          "sha256": "f5ad4e01d92c4f2f1a18b5d34de1b515be990b353b17352b93816786b00d8120"
+        },
+        "RESOURCES": {
+          "format_bytes": 265,
+          "sha256": "82fc77c55ddca53e08fc02f8119d9dade2bc625f7f1c290bd02ba176c4f1a0f1"
+        }
+      }
+    },
+    "native_compile_guard_present": true,
+    "native_executed": false,
+    "native_sha256": {
+      "observer": "53800d2281f57341269a0f1c9686809883241ed01872338b0544bf0439e88120",
+      "target": "07ae68522b7e87560bda4d32fcb0f244c74fd748f7cd9ccfe1ac3cf2321deab5"
+    },
+    "native_source_join_files": 9,
+    "native_type": "ELF64 little-endian EM_AARCH64 ET_DYN static PIE, no PT_INTERP, NX stack, RELRO, no W+X PT_LOAD",
+    "oracle_elf_sha256": "cb4548d280f38c2b1df4cba45f12c90a034729e08fce5bf1a223c58add0e21e3",
+    "oracle_interpreter": "/lib/ld-linux-aarch64.so.1",
+    "oracle_manifest_sha256": "6168e220727cb6377e8e637740bb8c297bf7bee929ab19aac6db90aa6fbcbfa5",
+    "oracle_runtime_dependencies_validated": false,
+    "oracle_source_join_files": 7,
+    "platform_sha256": "78eb6e420419bf54ed7f88fb27925cfe56ab66625668bf0ef330ce0540f886d0",
+    "profile_sha256": {
+      "observer": "abf581851c19631ba5125ac03443f4ad72c6e8fd7b92fa086218060e07b56bf2",
+      "oracle": "f82e0ae5335e1393c402265c4a14a4e56ad8df27ab48eee70907745fef3b6835",
+      "target": "6a1ffdf7326ae1370bd55cc2edb2bcfb49b2d65ce7090205576d3b6e9496ab3e"
+    },
+    "status": "PASS",
+    "unsupported_or_relabeled_artifact_refusals": [
+      "ARCHITECTURE_NOT_IMPLEMENTED",
+      "ARCHITECTURE_NOT_IMPLEMENTED",
+      "ELF_ARCHITECTURE"
+    ]
+  },
+  "date": "2026-10-12",
+  "evidence_sha256": {
+    "artifacts.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "artifacts.json": "aaab74f0eee4743568a9b90051811f3f2f5eb2246399745068d58ee4b2ba5c26",
+    "artifacts.log": "aaab74f0eee4743568a9b90051811f3f2f5eb2246399745068d58ee4b2ba5c26",
+    "continuity.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "continuity.json": "fb9b68bb44629bd8131651380dc5152d522766434d2b46e1d8bd83c8b9e78bdf",
+    "continuity.log": "fb9b68bb44629bd8131651380dc5152d522766434d2b46e1d8bd83c8b9e78bdf",
+    "host-join.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "host-join.json": "24c62c6296d2c6c4421df37b15ad859154789b07c9c2d86023c30b12b0a443a5",
+    "host-join.log": "24c62c6296d2c6c4421df37b15ad859154789b07c9c2d86023c30b12b0a443a5",
+    "integrity-after.json": "cf5834cb0cabc8a2db5e375cdeeca45fa9a671b3c2a0131b6f4a09741f4e82cc",
+    "integrity-before.json": "cd7f4dd1d44a4dca215140faf11653942ecf7eacffc3d9a62225f686afbb6671",
+    "probe_artifacts.py": "ca302863f6648c13a8a478b37109961d67ee99c4aed753bd4631685fa273e3b3",
+    "probe_continuity.py": "fe7aa2f023b6642a9f7a044454b0b280b678cd8fc75e006596bcb080ea869872",
+    "probe_host_join.py": "633c12260250588b55cdeda484d454d187c9805883b443d0315c0d3a7b0e6a0e",
+    "probe_security.py": "d2e274fda4ba4e73461cab8cecdaae2ed5592608df3c78816d327ee70e95164f",
+    "probes.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "probes.json": "9eb0aff82a8983a066c9a59c8bbc503db32935cf37f02c2bd7c058210e795f65",
+    "probes.log": "9eb0aff82a8983a066c9a59c8bbc503db32935cf37f02c2bd7c058210e795f65",
+    "review.md": "112354ced20cc42afcf27c02d805bb4297ac467f89a3912aced73755b582d4ed",
+    "tests.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "tests.json": "c426dc3172d90a4592cfbf8549092ed17c11e79b2245589d65308838be884eaa",
+    "tests.log": "d6e2223c1f19e9387940ee5995e726c14897fbf55f35641160170d3dc0733841",
+    "verify_integrity.py": "d13286583ea7d2460bde1a6d03d05d80223620e3fcb6c185b2cbfcf9a6247ae8",
+    "write_review.py": "206db376eb79ed24f1cd71d5e7e0d78739be8ea6ed982694e86f36d420951b34"
+  },
+  "execution": {
+    "agents_spawned": 0,
+    "calibration": false,
+    "docker_or_podman_workload": false,
+    "filter_installation": false,
+    "host_policy_mutation": false,
+    "live_ssh": false,
+    "native_actor": false,
+    "offline_ssh_G_in_suite": true,
+    "oracle_worker": false,
+    "owned_benign_python_processes_files_pipes_sockets": true,
+    "real_collector": false,
+    "repo_frozen_source_docs_or_obsidian_modified": false,
+    "tracing": false
+  },
+  "findings": [],
+  "increment": "C0-ARCH-02",
+  "kind": "independent_security_review",
+  "new_in_scope_exploitable_findings": 0,
+  "not_security_findings": [
+    "Private Python field/callback mutation by trusted code is not an untrusted-input capability boundary.",
+    "x86_64 preparation/deployment metadata acceptance is intentional; runtime/build/profile/resource entrypoints reject.",
+    "ELF header classification is not a full ELF/runtime validator; native-artifact structural and instruction checks were separately performed.",
+    "Version-1 control/receipt wrappers and the unchanged three-line handshake do not allow version-1 native admission frames.",
+    "A source/static GO does not resolve root/operator-controlled emulation, runtime images or real-host placement."
+  ],
+  "preserved_corrections": [
+    {
+      "evidence": "No spawn on selector allocation failure; exchange_process AST identical to merged base.",
+      "id": "COR-SSH-001",
+      "location": "context_transport.py:64-71,120-122",
+      "status": "FIX_PRESERVED"
+    },
+    {
+      "critical_guard": "if setup_complete and not mux.get_map():",
+      "evidence": "All six setup-failure positions kill owned group before reaping exited leader; actual inherited-pipe EOF, pipes/selector closed, fd delta zero.",
+      "id": "COR-SSH-002",
+      "location": "context_transport.py:104-122",
+      "status": "FIX_PRESERVED"
+    },
+    {
+      "evidence": "Per-acquisition copied preparation/private provisioning bindings retained; mutations reject before authorization/I/O; new architecture cannot bypass.",
+      "id": "COR-SSH-003",
+      "location": "context_transport.py:158-167; runtime_context.py:125-143",
+      "status": "FIX_PRESERVED"
+    },
+    {
+      "evidence": "Explicit simulated-install chmod under private parent remains; full suite and independent host join pass under umask 077; production mode checks unweakened.",
+      "id": "QA-ENV-001",
+      "location": "test_context_provisioning.py:230-257",
+      "status": "FIX_PRESERVED"
+    }
+  ],
+  "probes": {
+    "baseline_control_and_security_continuity": {
+      "arm64_filter_sha256_unchanged": "701824ff5f8ccafa359f711d2714b23c8a303789cd1987a3a85aba19a3667b93",
+      "arm64_profiles_byte_identical_to_base": {
+        "observer": "abf581851c19631ba5125ac03443f4ad72c6e8fd7b92fa086218060e07b56bf2",
+        "oracle": "f82e0ae5335e1393c402265c4a14a4e56ad8df27ab48eee70907745fef3b6835",
+        "target": "6a1ffdf7326ae1370bd55cc2edb2bcfb49b2d65ce7090205576d3b6e9496ab3e"
+      },
+      "base_commit": "ced6e1cff36101f76fb54904b6b0fa2cf33cb48f",
+      "byte_identical_files": {
+        "context_files.py": "956ce03c56e6df84006e9bf16775f1d3d83d2acbda5bec8d9d41b1de2e72d396",
+        "native/common.h": "157a7ec3b5c8ec6c0dc031cacb22047216303f4467be5eee7284926d572c53cd",
+        "native/observer.c": "16899c419a9ab4696d22e0b515c56be511eaa77ff80941de3fa899eac1dd1e9c",
+        "native/target.c": "feb94778757ae05268417c1cd76a383f5339bfa701feababda972a5e077451fd",
+        "watchdog.py": "cc2e7e1212caa6be74e2266ce3a4ab156064a3ae96f01281cfa3ba5660ba5813"
+      },
+      "native_nonce_and_expiry_handshake_and_emit_bound_unchanged": true,
+      "shared_LIMITS_unchanged": true,
+      "status": "PASS",
+      "suite_rerun": false,
+      "unchanged_function_AST": {
+        "context_provision.py": [
+          "write_new",
+          "verify_bundle",
+          "validate_sshd_output",
+          "ssh_policy",
+          "sshd_fragment"
+        ],
+        "context_transport.py": [
+          "exchange_process",
+          "credentials",
+          "verify_client",
+          "ssh_argv",
+          "_ProvisionedContextSource.acquire"
+        ],
+        "contracts.py": [
+          "decode",
+          "clock_ns",
+          "hold_bound"
+        ],
+        "controller.py": [
+          "native_message"
+        ],
+        "owned_resources.py": [
+          "cleanup"
+        ],
+        "streams.py": [
+          "ProcessStream.send_case",
+          "ProcessStream.send_oracle_case",
+          "ProcessStream.start_target",
+          "ProcessStream.arm_observer",
+          "ProcessStream.resume_observer"
+        ]
+      }
+    },
+    "expected_invalid_refusals": 280,
+    "groups": [
+      {
+        "details": {
+          "negative_cases": 101,
+          "positive_metadata_architectures": [
+            "aarch64",
+            "x86_64"
+          ]
+        },
+        "elapsed_seconds": 0.0075,
+        "id": "schema-downgrade-relabel-coercion",
+        "status": "PASS"
+      },
+      {
+        "details": {
+          "authenticated_request_mutations": 5,
+          "authenticated_response_mutations": [
+            "kernel_arch_x86",
+            "kernel_arch_alias",
+            "kernel_arch_missing",
+            "kernel_extra_arch",
+            "namespace_arch",
+            "window_arch",
+            "namespace_substitute",
+            "wrong_request_digest",
+            "kernel_duplicate",
+            "reorder",
+            "truncated",
+            "extra_frame",
+            "old_mac",
+            "version_0",
+            "version_1",
+            "version_2",
+            "version_3"
+          ],
+          "replay_rejected": true
+        },
+        "elapsed_seconds": 0.0227,
+        "id": "signed-context-request-response-joins",
+        "status": "PASS"
+      },
+      {
+        "details": {
+          "caller_input_snapshot_and_lease_view_copy": true,
+          "fresh_challenges": true,
+          "matching_reuse": 3,
+          "mutation_refusals_before_authorization_and_io": 12
+        },
+        "elapsed_seconds": 0.0127,
+        "id": "reusable-source-architecture-and-COR-SSH-003",
+        "status": "PASS"
+      },
+      {
+        "details": {
+          "metadata_only_x86_64": true,
+          "spawn_build_output_client_daemon_io": 0
+        },
+        "elapsed_seconds": 0.0033,
+        "id": "unsupported-architecture-before-activation-io",
+        "status": "PASS"
+      },
+      {
+        "details": {
+          "all_four_way_architecture_combinations": 48,
+          "backend_refusal_closes_and_uncaches": 3,
+          "positive_arm64_roles": 3,
+          "rejections_including_legacy_and_coercion": 96
+        },
+        "elapsed_seconds": 0.0747,
+        "id": "native-admission-four-way-join-and-cleanup",
+        "status": "PASS"
+      },
+      {
+        "details": {
+          "exact_profile_arch_sets_rejected": 12,
+          "pre_create_guards": [
+            {
+              "case": "daemon_amd64",
+              "container_create_called": false,
+              "refusal": "PLATFORM"
+            },
+            {
+              "case": "daemon_aarch64",
+              "container_create_called": false,
+              "refusal": "PLATFORM"
+            },
+            {
+              "case": "image_amd64",
+              "container_create_called": false,
+              "refusal": "IMAGE_IDENTITY"
+            },
+            {
+              "case": "image_aarch64",
+              "container_create_called": false,
+              "refusal": "IMAGE_IDENTITY"
+            },
+            {
+              "case": "profile_x86",
+              "container_create_called": false,
+              "refusal": "PROFILE_FILE_CONTENT"
+            },
+            {
+              "case": "profile_other_role",
+              "container_create_called": false,
+              "refusal": "PROFILE_FILE_CONTENT"
+            }
+          ]
+        },
+        "elapsed_seconds": 0.0133,
+        "id": "docker-image-profile-confusion",
+        "status": "PASS"
+      },
+      {
+        "details": {
+          "all_descriptors_closed": true,
+          "fragmented_header_cases": [
+            "arm64",
+            "x86_64",
+            "ELF32",
+            "big-endian",
+            "bad-version",
+            "truncated"
+          ],
+          "real_collector_invoked": false
+        },
+        "elapsed_seconds": 0.0032,
+        "id": "linux-uname-interpreter-classification",
+        "status": "PASS"
+      },
+      {
+        "details": {
+          "COR-SSH-001": "selector before spawn preserved",
+          "COR-SSH-002": [
+            {
+              "descendant_pipe_eof": true,
+              "kill_before_reap": true,
+              "operation": "nonblocking",
+              "position": 1
+            },
+            {
+              "descendant_pipe_eof": true,
+              "kill_before_reap": true,
+              "operation": "nonblocking",
+              "position": 2
+            },
+            {
+              "descendant_pipe_eof": true,
+              "kill_before_reap": true,
+              "operation": "nonblocking",
+              "position": 3
+            },
+            {
+              "descendant_pipe_eof": true,
+              "kill_before_reap": true,
+              "operation": "register",
+              "position": 1
+            },
+            {
+              "descendant_pipe_eof": true,
+              "kill_before_reap": true,
+              "operation": "register",
+              "position": 2
+            },
+            {
+              "descendant_pipe_eof": true,
+              "kill_before_reap": true,
+              "operation": "register",
+              "position": 3
+            }
+          ],
+          "fd_delta": 0
+        },
+        "elapsed_seconds": 0.0826,
+        "id": "COR-SSH-001-002-real-owned-pipe-cleanup",
+        "status": "PASS"
+      },
+      {
+        "details": {
+          "all_base_ids_passed": true,
+          "base_test_ids": 202,
+          "full_suite_invocations": 1,
+          "new_ids": [
+            "test_architecture_contracts.ArchitectureBoundaryTests.test_admission_summary_cannot_promote_an_unsupported_architecture",
+            "test_architecture_contracts.ArchitectureBoundaryTests.test_authenticated_wrong_architecture_context_response_refuses",
+            "test_architecture_contracts.ArchitectureBoundaryTests.test_backend_context_architecture_mismatch_prevents_callbacks",
+            "test_architecture_contracts.ArchitectureBoundaryTests.test_backend_platform_or_image_mismatch_prevents_create",
+            "test_architecture_contracts.ArchitectureBoundaryTests.test_bundle_manifest_and_host_configuration_bind_the_architecture",
+            "test_architecture_contracts.ArchitectureBoundaryTests.test_collector_observation_must_match_the_independent_anchor",
+            "test_architecture_contracts.ArchitectureBoundaryTests.test_deployment_and_anchor_architecture_must_agree",
+            "test_architecture_contracts.ArchitectureBoundaryTests.test_direct_ssh_transport_refuses_x64_before_client_or_process_io",
+            "test_architecture_contracts.ArchitectureBoundaryTests.test_foreign_daemon_blocks_actor_start_and_mixed_context_blocks_oracle",
+            "test_architecture_contracts.ArchitectureBoundaryTests.test_known_x64_deployment_is_metadata_only_until_the_port",
+            "test_architecture_contracts.ArchitectureBoundaryTests.test_legacy_native_frames_and_contexts_do_not_get_an_inferred_architecture",
+            "test_architecture_contracts.ArchitectureBoundaryTests.test_linux_executable_hash_also_checks_fragmented_elf_header",
+            "test_architecture_contracts.ArchitectureBoundaryTests.test_linux_reader_rejects_foreign_kernel_before_observations",
+            "test_architecture_contracts.ArchitectureBoundaryTests.test_mixed_preparation_refuses_before_source_authorization_and_io",
+            "test_architecture_contracts.ArchitectureBoundaryTests.test_native_preparation_context_binding_and_identity_must_agree",
+            "test_architecture_contracts.ArchitectureBoundaryTests.test_observer_and_oracle_cannot_borrow_foreign_architecture_peer",
+            "test_architecture_contracts.ArchitectureBoundaryTests.test_x64_process_stream_refuses_before_spawning",
+            "test_architecture_contracts.ArchitectureContractTests.test_aliases_unknown_platforms_and_coercions_are_rejected",
+            "test_architecture_contracts.ArchitectureContractTests.test_both_preparation_contracts_are_explicit_and_non_authorizing",
+            "test_architecture_contracts.ArchitectureContractTests.test_build_entrypoints_refuse_x64_before_writing_outputs",
+            "test_architecture_contracts.ArchitectureContractTests.test_canonical_platforms_bind_linux_oci_elf_and_seccomp_names",
+            "test_architecture_contracts.ArchitectureContractTests.test_elf_class_endianness_machine_version_and_short_headers_refuse",
+            "test_architecture_contracts.ArchitectureContractTests.test_elf_headers_are_classified_from_bytes_not_requested_labels",
+            "test_architecture_contracts.ArchitectureContractTests.test_existing_arm64_profiles_and_compiled_filter_bytes_are_preserved",
+            "test_architecture_contracts.ArchitectureContractTests.test_mislabeled_oci_profile_cannot_be_admitted",
+            "test_architecture_contracts.ArchitectureContractTests.test_preparation_relabeling_and_legacy_packets_refuse",
+            "test_architecture_contracts.ArchitectureContractTests.test_resource_scope_binds_architecture_and_refuses_legacy_or_relabeling"
+          ]
+        },
+        "elapsed_seconds": 0.0493,
+        "id": "base-test-id-continuity-and-single-run",
+        "status": "PASS"
+      }
+    ],
+    "host_service_anchor_interpreter": {
+      "QA-ENV-001": "private 0700 parent; explicit 0755 simulated install under umask 077; 0444 source checks retained",
+      "host_installation_or_collector_run": false,
+      "note": "Ownership and identity patched only in this probe to map simulated root-owned installation onto owned reviewer files; real LinuxReader.executable reads our header fixture.",
+      "permission_admission_weakened_in_production": false,
+      "results": [
+        {
+          "case": "matching",
+          "result": "accepted_simulated_install"
+        },
+        {
+          "case": "service_x64",
+          "result": "CONTEXT_ARCHITECTURE"
+        },
+        {
+          "case": "anchor_x64",
+          "result": "CONTEXT_ARCHITECTURE"
+        },
+        {
+          "case": "service_alias",
+          "result": "CONTEXT_ARCHITECTURE"
+        },
+        {
+          "case": "both_x64",
+          "result": "ARCHITECTURE_NOT_IMPLEMENTED"
+        },
+        {
+          "case": "wrong_elf_pinned_digest",
+          "result": "LINUX_EXECUTABLE_ARCHITECTURE"
+        },
+        {
+          "case": "wrong_digest",
+          "result": "CONTEXT_PYTHON_IDENTITY"
+        },
+        {
+          "case": "missing_service_arch",
+          "result": "FIELDS"
+        },
+        {
+          "case": "legacy_anchor",
+          "result": "INTEGER"
+        }
+      ],
+      "status": "PASS"
+    },
+    "status": "PASS"
+  },
+  "prohibited_or_out_of_scope_actions_performed": [],
+  "remaining_boundaries": [
+    "C0-ARCH-03 x64 implementation; no x64 profile/filter/runtime activation support yet.",
+    "No Podman runtime adapter; artifact-only build evidence does not establish runtime admission.",
+    "Independent host/daemon placement and installed source/interpreter ownership.",
+    "Effective live sshd configuration, decoded private/public key pairing and live pinned-SSH authentication.",
+    "Runtime image/dependency closure, native/non-emulated host proof, actual ELF load bias and kernel policy feasibility.",
+    "Native tracing/breakpoint calibration, timing/clock guarantees, full-trial acceptance and independent remote cleanup/absence proof.",
+    "Compiler/library integrity was not remeasured or independently rebuilt in this review; supplied record/source/ELF joins only."
+  ],
+  "required_remediation": [],
+  "source": {
+    "base_commit": "ced6e1cff36101f76fb54904b6b0fa2cf33cb48f",
+    "before_after_all_hashes_runner_and_working_tree_verified": true,
+    "branch": "feature/crawl-jobs-v2-c0-architecture-contracts",
+    "inventory_sha256": "b5388bbdf282e286caec43f6a5e12bc5e0129a6630f43bd2c2b15b405b0d7bfb",
+    "new_test_sha256": "6bf71465ff0a4928410e198138a57066890cb53153a9b2e7e38b4531ee06310a",
+    "package_files": 46,
+    "runner_sha256": "9afb715125f734f5b905da63dde5c9787fc5997b2e5a73a0bf62d781b23aef84",
+    "tracked_delta_sha256": "ca198196187d5d5809f6d979141e32bcee5e8d79027998bcbf42fe07b7349036",
+    "uncommitted": true
+  },
+  "tests": {
+    "elapsed_seconds": 13.848,
+    "errors": [],
+    "expected_failures": [],
+    "failures": [],
+    "independent_umask_022_run": false,
+    "new_ids_passed": 27,
+    "passed": 229,
+    "prior_ids_preserved_and_passed": 202,
+    "python_flags": [
+      "-B",
+      "-W",
+      "error::ResourceWarning"
+    ],
+    "pythondontwritebytecode": true,
+    "resource_warnings": 0,
+    "run_count": 1,
+    "skipped": [],
+    "status": "PASS",
+    "tests_run": 229,
+    "tmpdir": "/tmp/opencode",
+    "umask": "077",
+    "unexpected_successes": []
+  },
+  "trust_roots": [
+    "operator and root",
+    "trusted controller code/callbacks and owned creation/journal provenance",
+    "independently provisioned host source/anchor and authentication keys"
+  ],
+  "verdict": "GO_FOR_CONTINUED_IMPLEMENTATION",
+  "verdict_scope": "Frozen source and supplied static artifacts only; not publication approval, live-host admission, native execution authorization or M4 acceptance."
+}

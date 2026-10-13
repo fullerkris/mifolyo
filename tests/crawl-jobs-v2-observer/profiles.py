@@ -1,5 +1,5 @@
 """Deterministic candidate OCI profiles; generation is not runtime admission."""
-from contracts import require
+from contracts import require, runtime_architecture
 
 COMMON = ("read", "write", "close", "fstat", "newfstatat", "statx", "lseek", "pread64", "openat",
     "readlinkat", "getdents64", "munmap", "brk", "madvise", "futex",
@@ -10,7 +10,8 @@ COMMON = ("read", "write", "close", "fstat", "newfstatat", "statx", "lseek", "pr
 PTRACE = (0x4206, 0x4207, 0x4202, 0x4204, 0x4205, 2, 7, 9, 17)
 
 
-def profile(role):
+def profile(role, architecture="aarch64"):
+    selected = runtime_architecture(architecture)
     require(role in ("observer", "target", "oracle"), "ROLE")
     allowed = list(COMMON)
     allowed += ["clock_getres", "uname"]
@@ -57,11 +58,12 @@ def profile(role):
                     args.append({"index": 2, "value": regset, "op": "SCMP_CMP_EQ"})
                 rows.append({"names": ["ptrace"], "action": "SCMP_ACT_ALLOW", "args": args})
     return {"defaultAction": "SCMP_ACT_ERRNO", "defaultErrnoRet": 1,
-        "architectures": ["SCMP_ARCH_AARCH64"], "syscalls": rows}
+        "architectures": [selected["seccomp_architecture"]], "syscalls": rows}
 
 
-def target_filter_program():
+def target_filter_program(architecture="aarch64"):
     """Classic BPF: fixed owned inner TID1, no post-admission exec or write regset."""
+    selected = runtime_architecture(architecture)
     operations, labels = [], {}
 
     def label(name):
@@ -74,7 +76,7 @@ def target_filter_program():
         operations.append((0x15, yes, no, value))
 
     load(4)
-    equal(0xc00000b7, "number", "kill")
+    equal(selected["audit_architecture"], "number", "kill")
     label("number")
     load(0)
     equal(221, "deny")

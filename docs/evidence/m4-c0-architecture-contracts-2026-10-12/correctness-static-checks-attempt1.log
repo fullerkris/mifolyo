@@ -1,0 +1,17 @@
+Reviewer probe harness error (field-name regex omitted digits), corrected before final checks:
+Traceback (most recent call last):
+  File "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/correctness/static_checks.py", line 247, in <module>
+    value = fn()
+  File "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/correctness/static_checks.py", line 152, in artifact_checks
+    assert template_value(values[phase], c.decode(frame)) == frame
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/correctness/static_checks.py", line 81, in template_value
+    return re.sub(r'%[lus]+', replace, fmt).encode()
+           ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib64/python3.14/re/__init__.py", line 208, in sub
+    return _compile(pattern, flags).sub(repl, string, count)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/correctness/static_checks.py", line 77, in replace
+    value = frame[next(pairs)]
+                  ~~~~^^^^^^^
+StopIteration

@@ -1,0 +1,83 @@
+{
+  "execution_authorized": false,
+  "files": {
+    "correctness-artifact-checks.json": {
+      "bytes": 3868,
+      "private_source": "/tmp/opencode/m4-c0-architecture-remediation-2026-10-12/correctness/artifact-checks.json",
+      "sha256": "d6001963dd10e96cde6953828fa0470ff88d31c801d9d82ca89896d65232051a"
+    },
+    "correctness-boundaries.json": {
+      "bytes": 17097,
+      "private_source": "/tmp/opencode/m4-c0-architecture-remediation-2026-10-12/correctness/boundaries.json",
+      "sha256": "7eaec2cea0b8b331cc9809aab42cb9a3dde55c4b99cd7f8aa9a4d41f1603b222"
+    },
+    "correctness-boundaries.log": {
+      "bytes": 13189,
+      "private_source": "/tmp/opencode/m4-c0-architecture-remediation-2026-10-12/correctness/boundaries.log",
+      "sha256": "ce9817a438f12d752e474cfe9f1d0f9a82027fcb2640d3679277c678da2dd2f9"
+    },
+    "correctness-integrity-after.json": {
+      "bytes": 26109,
+      "private_source": "/tmp/opencode/m4-c0-architecture-remediation-2026-10-12/correctness/integrity-after.json",
+      "sha256": "15318faf32e65b0471c0f837d3a18a1b56aa3df1467d9c2967a87d5dbd863861"
+    },
+    "correctness-integrity-after.log": {
+      "bytes": 166,
+      "private_source": "/tmp/opencode/m4-c0-architecture-remediation-2026-10-12/correctness/integrity-after.log",
+      "sha256": "5b52325c201c5fdf97539cf230efd5f26d74ceb730bc35381b3d95dcc8119564"
+    },
+    "correctness-integrity-before.json": {
+      "bytes": 26041,
+      "private_source": "/tmp/opencode/m4-c0-architecture-remediation-2026-10-12/correctness/integrity-before.json",
+      "sha256": "74b62f1a90de1ad10432e1da96d94ff4d76b144200caa9f91ed1dbd85c095200"
+    },
+    "correctness-replay.json": {
+      "bytes": 4381,
+      "private_source": "/tmp/opencode/m4-c0-architecture-remediation-2026-10-12/correctness/replay.json",
+      "sha256": "7d0575f5fc3a69ca9f6c9283e6da2889623d0ae542556a0c26b0f6cb809cc8a2"
+    },
+    "correctness-replay.log": {
+      "bytes": 3138,
+      "private_source": "/tmp/opencode/m4-c0-architecture-remediation-2026-10-12/correctness/replay.log",
+      "sha256": "0bfd8999d59691aa1675735aa711e77b7567791edbb8715272ab830c8ea1e1ee"
+    },
+    "correctness-review.json": {
+      "bytes": 15446,
+      "private_source": "/tmp/opencode/m4-c0-architecture-remediation-2026-10-12/correctness/review.json",
+      "sha256": "6e4b9dd0240cd10027dc78802ffdb1b3748adb31d5487a55eea34f855b60f236"
+    },
+    "correctness-review.md": {
+      "bytes": 14360,
+      "private_source": "/tmp/opencode/m4-c0-architecture-remediation-2026-10-12/correctness/review.md",
+      "sha256": "eba49e8c36da01fa35640619ef417f3c54ecba7721963f4a2bfd3816f87f9893"
+    },
+    "correctness-static-checks.log": {
+      "bytes": 174,
+      "private_source": "/tmp/opencode/m4-c0-architecture-remediation-2026-10-12/correctness/static-checks.log",
+      "sha256": "0efa61298acd076844c04a09ed69ff5d6da9b3653fad6bd03d99bab80c244158"
+    },
+    "correctness-test-verification.json": {
+      "bytes": 3210,
+      "private_source": "/tmp/opencode/m4-c0-architecture-remediation-2026-10-12/correctness/test-verification.json",
+      "sha256": "02fc02d2fc98d46208715593eca8937e93dac1a7887a11ed1c3c8d052971f001"
+    },
+    "correctness-tests.json": {
+      "bytes": 81051,
+      "private_source": "/tmp/opencode/m4-c0-architecture-remediation-2026-10-12/correctness/tests.json",
+      "sha256": "d6bf46767e6c7909789e53ce008dc0e26ebd60f4c3e3f76fe4837747ceab38c4"
+    },
+    "correctness-tests.log": {
+      "bytes": 39492,
+      "private_source": "/tmp/opencode/m4-c0-architecture-remediation-2026-10-12/correctness/tests.log",
+      "sha256": "1d9988d0d4d03077a7cc770d7674f9a6ab83f8452842deb850e0ac35965abafb"
+    }
+  },
+  "kind": "c0_architecture_independent_review_exports",
+  "publication_authorized": false,
+  "review_sha256": "6e4b9dd0240cd10027dc78802ffdb1b3748adb31d5487a55eea34f855b60f236",
+  "reviewer": "correctness",
+  "runtime_acceptance": false,
+  "source_inventory_sha256": "a02661da8cb299ff60e4ad9752ea53329b65c384d7f8e15853641dcf6db426cc",
+  "verdict": "GO_FOR_CONTINUED_IMPLEMENTATION",
+  "version": 1
+}

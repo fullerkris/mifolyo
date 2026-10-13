@@ -1,0 +1,84 @@
+{
+  "build_record_integrity": {
+    "native": {
+      "independently_rebuilt": false,
+      "log_sha256": "68a91e21a4fa0658da57a366fd4128d540f30087b0a40eb2088f01ad11552ed9",
+      "record_sha256": "4b60d4b4e8c1f32e316fb7891cde4be22a6f1b27426d8b2ee69f28c81213106a"
+    },
+    "oracle": {
+      "independently_rebuilt": false,
+      "log_sha256": "0de651ee78e1d65adb1ddef273c39c088273e13c3e3b496dc4c5bfb46594aa10",
+      "record_sha256": "9d894e5745fa4dc54bec359083181fe70c080e0a9e2522f577839cdc944ffac1"
+    }
+  },
+  "compiled_filter": {
+    "file_offset": 3498664,
+    "instructions": 34,
+    "sha256": "701824ff5f8ccafa359f711d2714b23c8a303789cd1987a3a85aba19a3667b93",
+    "size": 272
+  },
+  "maximum_emulated_frame_bytes_over_all_cases_with_fixture_observations": {
+    "observer": 670,
+    "target": 668
+  },
+  "native_elfs": {
+    "observer": {
+      "bytes": 5450312,
+      "elf_class": 2,
+      "elf_data": 1,
+      "elf_machine": 183,
+      "elf_type": 3,
+      "sha256": "53800d2281f57341269a0f1c9686809883241ed01872338b0544bf0439e88120"
+    },
+    "target": {
+      "bytes": 5448416,
+      "elf_class": 2,
+      "elf_data": 1,
+      "elf_machine": 183,
+      "elf_type": 3,
+      "sha256": "07ae68522b7e87560bda4d32fcb0f244c74fd748f7cd9ccfe1ac3cf2321deab5"
+    }
+  },
+  "native_execution": false,
+  "native_toolchain_source_files_checked": 9,
+  "native_v2_templates_sha256": {
+    "observer": {
+      "CLOCK": "f9d607ba56980e65e64b94f2f323785f69f1243a0c39ce161e043fffe65e103a",
+      "CONFINEMENT": "2b5353558581df009ce8da477b839dcad844337959af86a2f6d08bcf507c75a3",
+      "IDENTITY": "f5ad4e01d92c4f2f1a18b5d34de1b515be990b353b17352b93816786b00d8120",
+      "RESOURCES": "82fc77c55ddca53e08fc02f8119d9dade2bc625f7f1c290bd02ba176c4f1a0f1"
+    },
+    "target": {
+      "CLOCK": "f9d607ba56980e65e64b94f2f323785f69f1243a0c39ce161e043fffe65e103a",
+      "CONFINEMENT": "2b5353558581df009ce8da477b839dcad844337959af86a2f6d08bcf507c75a3",
+      "IDENTITY": "f5ad4e01d92c4f2f1a18b5d34de1b515be990b353b17352b93816786b00d8120",
+      "RESOURCES": "82fc77c55ddca53e08fc02f8119d9dade2bc625f7f1c290bd02ba176c4f1a0f1"
+    }
+  },
+  "observer_embeds_target_hash": true,
+  "oracle_elf": {
+    "bytes": 67608,
+    "elf_machine": 183,
+    "elf_type": 3,
+    "sha256": "cb4548d280f38c2b1df4cba45f12c90a034729e08fce5bf1a223c58add0e21e3"
+  },
+  "oracle_payload_files_checked": 7,
+  "platform_sha256": {
+    "aarch64": "78eb6e420419bf54ed7f88fb27925cfe56ab66625668bf0ef330ce0540f886d0",
+    "x86_64": "433d4c86c5964c2a7b40dc29c7316273295f402870e6146c14a8dc2f825ab49a"
+  },
+  "profile_sha256": {
+    "observer": "abf581851c19631ba5125ac03443f4ad72c6e8fd7b92fa086218060e07b56bf2",
+    "oracle": "f82e0ae5335e1393c402265c4a14a4e56ad8df27ab48eee70907745fef3b6835",
+    "target": "6a1ffdf7326ae1370bd55cc2edb2bcfb49b2d65ce7090205576d3b6e9496ab3e"
+  },
+  "profiles_and_bpf_equal_base_commit": true,
+  "source_joins": {
+    "oracle_worker_source": "f55a4c825523fc12e6d5bc3f5efaa97c8266a1ef640e4454c912346d36d3a86a",
+    "runtime_context_source": "aa6db9a37d50c3ab91420de5a4ea55b42718484548811d26b7d668ce73165d0d",
+    "runtime_context_transport": "72ca166c9680cf4e37142c83335995ba396deec4d978923f23b83bda2cc98001"
+  },
+  "status": "PASS",
+  "target_manifest_sha256": "973b8cf929720c0cd99cacd1f8c39900290c92fb307ad101ca3cc85f35e1f276",
+  "target_symbol_instruction_and_header_joins": true
+}

@@ -13,7 +13,7 @@ D = c.sha(b"synthetic-stream")
 
 
 def binding(role="target"):
-    return {"case_id": "P1.pre.1.1", "invocation_sha256": D, "container_id": D,
+    return {"architecture": "aarch64", "case_id": "P1.pre.1.1", "invocation_sha256": D, "container_id": D,
         "image": "sha256:" + D, "role": role}
 
 

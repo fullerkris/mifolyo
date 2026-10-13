@@ -13,7 +13,7 @@ import stat
 import subprocess
 import time
 
-from contracts import LIMITS, Invalid, canonical, digest, exact, integer, require, sha, validate_preparation
+from contracts import LIMITS, Invalid, canonical, digest, exact, integer, require, runtime_architecture, sha, validate_preparation
 from owned_resources import ACTORS, VOLUMES, TMPFS_OPTIONS, Registry, admit_container, admit_volume, container_spec, container_identity, disabled_healthcheck, empty_optional, hex_id, labels, name, validate_scope, validate_snapshot, volume_spec
 from profiles import profile
 from streams import ProcessStream
@@ -82,6 +82,8 @@ class DockerBackend:
 
     def acquire_runtime_context(self, source, preparation, budget, deadline):
         require(isinstance(source, ContextSource) and not self._actor_streams, "CONTEXT_BEFORE_ACTORS")
+        validate_preparation(preparation)
+        require(preparation["architecture"] == self.scope["architecture"] == source.anchor["architecture"], "CONTEXT_ARCHITECTURE")
         self._authorize("runtime_context")
         self.verify_platform(deadline)
         lease = source.acquire(self.scope["case_id"], self.scope_sha256, preparation, self.scope["daemon_sha256"], deadline, budget)
@@ -94,6 +96,8 @@ class DockerBackend:
     def acquire_provisioned_context(self, bundle, preparation, budget, deadline, *, authorize_source=None):
         from context_transport import provisioned_source
         require(not self._actor_streams, "CONTEXT_BEFORE_ACTORS")
+        validate_preparation(preparation)
+        require(preparation["architecture"] == self.scope["architecture"], "CONTEXT_ARCHITECTURE")
         self._authorize("runtime_context")
         source = provisioned_source(bundle, preparation, authorize=authorize_source)
         lease = self.acquire_runtime_context(source, preparation, budget, deadline)
@@ -151,14 +155,16 @@ class DockerBackend:
             raise Invalid("INSPECTION_SHAPE") from None
 
     def verify_platform(self, deadline):
+        selected = runtime_architecture(self.scope["architecture"])
         self._daemon(deadline)
         raw = self._success(["version", "--format", "{{json .Server}}"], deadline)
         try:
             value = json.loads(raw)
         except (ValueError, UnicodeError, RecursionError):
             raise Invalid("PLATFORM") from None
-        require(type(value) is dict and value.get("Os") == "linux" and value.get("Arch") == "arm64", "PLATFORM")
-        return {"os": "linux", "architecture": "arm64", "metadata_sha256": sha(canonical(value)), "runtime_feasibility_proven": False}
+        require(type(value) is dict and value.get("Os") == selected["os"] and value.get("Arch") == selected["image_architecture"], "PLATFORM")
+        return {"os": selected["os"], "architecture": selected["image_architecture"],
+            "platform_sha256": self.scope["platform_sha256"], "metadata_sha256": sha(canonical(value)), "runtime_feasibility_proven": False}
 
     def attachments(self, volume, deadline):
         self._selector("volume", volume)
@@ -185,8 +191,19 @@ class DockerBackend:
                 raw = stream.read(32769)
         except OSError:
             raise Invalid("PROFILE_FILE") from None
-        require(raw == canonical(profile(role)) and sha(raw) == self.scope["profiles"][role], "PROFILE_FILE_CONTENT")
+        require(raw == canonical(profile(role, self.scope["architecture"])) and sha(raw) == self.scope["profiles"][role], "PROFILE_FILE_CONTENT")
         return str(path)
+
+    def _admit_image(self, expected, deadline):
+        image = self.inspect("image", expected["image"], deadline)
+        selected = runtime_architecture(expected["architecture"])
+        require(type(image) is dict and image.get("Id") == expected["image"] and image.get("Os") == selected["os"] and
+            image.get("Architecture") == selected["image_architecture"], "IMAGE_IDENTITY")
+        cfg = image.get("Config")
+        require(type(cfg) is dict and empty_optional(cfg.get("OnBuild"), list) and empty_optional(cfg.get("Volumes"), dict), "IMAGE_DEFAULTS")
+        disabled_healthcheck(cfg.get("Healthcheck"))
+        env = [] if cfg.get("Env") is None else cfg["Env"]
+        require(type(env) is list and sha(canonical(env)) == expected["environment_sha256"], "IMAGE_ENVIRONMENT")
 
     def create_volume(self, expected, deadline):
         require(canonical(expected) == canonical(volume_spec(self.scope, expected.get("role"))), "VOLUME_SPEC")
@@ -206,17 +223,11 @@ class DockerBackend:
         target_id = expected.get("pid_mode", "").removeprefix("container:") if role == "observer" else None
         require(canonical(expected) == canonical(container_spec(self.scope, role, target_id)), "CONTAINER_SPEC")
         self._authorize("create_container")
-        self._daemon(deadline)
+        self.verify_platform(deadline)
         if role == "observer":
             target = self.inspect("container", target_id, deadline)
             container_identity(target, container_spec(self.scope, "target"))
-        image = self.inspect("image", expected["image"], deadline)
-        require(type(image) is dict and image.get("Id") == expected["image"] and image.get("Os") == "linux" and image.get("Architecture") == "arm64", "IMAGE_IDENTITY")
-        cfg = image.get("Config")
-        require(type(cfg) is dict and empty_optional(cfg.get("OnBuild"), list) and empty_optional(cfg.get("Volumes"), dict), "IMAGE_DEFAULTS")
-        disabled_healthcheck(cfg.get("Healthcheck"))
-        env = [] if cfg.get("Env") is None else cfg["Env"]
-        require(type(env) is list and sha(canonical(env)) == expected["environment_sha256"], "IMAGE_ENVIRONMENT")
+        self._admit_image(expected, deadline)
         args = ["container", "create", "--name", expected["name"], "--pull", "never", "--network", "none",
             "--read-only", "--user", "999:999", "--cap-drop", "ALL", "--security-opt", "no-new-privileges:true",
             "--security-opt", "seccomp=" + self._profile_file(role), "--memory", str(expected["memory"]),
@@ -242,7 +253,9 @@ class DockerBackend:
 
     def open_actor(self, ref, expected, snapshot, budget, deadline):
         self._authorize("start")
-        self._daemon(deadline)
+        self.verify_platform(deadline)
+        if self._context_lease is not None:
+            require(self._context_lease._context["architecture"] == self.scope["architecture"], "CONTEXT_ARCHITECTURE")
         saved = validate_snapshot(snapshot)
         require(canonical(saved["scope"]) == canonical(self.scope) and set(saved["entries"]) == set((*VOLUMES, *ACTORS)) and
             all(row["reference"] is not None for row in saved["entries"].values()), "ACTIVATION_INVENTORY")
@@ -265,7 +278,8 @@ class DockerBackend:
             admit_container(target, container_spec(self.scope, "target"), volumes, phase="running")
         observed = self.inspect("container", ref["id"], deadline)
         admit_container(observed, expected, volumes, bound=ref)
-        binding = {"case_id": self.scope["case_id"], "invocation_sha256": sha(canonical(self.scope)),
+        self._admit_image(expected, deadline)
+        binding = {"architecture": self.scope["architecture"], "case_id": self.scope["case_id"], "invocation_sha256": sha(canonical(self.scope)),
             "container_id": ref["id"], "image": expected["image"], "role": expected["role"]}
         require(ref["id"] not in self._actor_streams, "ACTOR_ALREADY_OPENED")
         self._authorize("start")
@@ -359,6 +373,7 @@ class DockerBackend:
             self._authorize("runtime_admission")
             require(role not in self._native_admissions, "NATIVE_ADMISSION_DUPLICATE")
             validate_preparation(preparation)
+            require(preparation["architecture"] == self.scope["architecture"], "ADMISSION_ARCHITECTURE")
             if self._context_lease is not None:
                 expected_context = self._context_lease.view(self.scope["case_id"], self.scope_sha256, preparation, deadline)
                 require(context is self._context_lease or context == expected_context, "CONTEXT_LEASE_BINDING")
@@ -366,6 +381,7 @@ class DockerBackend:
             else:
                 require(not isinstance(context, ContextLease), "CONTEXT_FOREIGN_LEASE")
             runtime_admission.validate_context(context)
+            require(context["architecture"] == preparation["architecture"], "ADMISSION_ARCHITECTURE")
             require(stream.sent_admission_window_end_ns == context["not_after_ns"], "NATIVE_ADMISSION_WINDOW_BINDING")
             saved = validate_snapshot(snapshot)
             require(canonical(saved["scope"]) == canonical(self.scope) and set(saved["entries"]) == set((*VOLUMES, *ACTORS)) and
@@ -373,7 +389,7 @@ class DockerBackend:
             require(canonical(saved["entries"][role]["reference"]) == canonical(ref), "NATIVE_ADMISSION_BINDING")
             require(stream.sent and stream.phase is None and not stream.closed and stream.admission_frames == [], "NATIVE_ADMISSION_PHASE")
             require(stream.deadline is deadline and deadline.remaining() <= LIMITS["admission_ms"] / 1000, "NATIVE_ADMISSION_DEADLINE")
-            binding = {"case_id": self.scope["case_id"], "invocation_sha256": self.scope_sha256,
+            binding = {"architecture": self.scope["architecture"], "case_id": self.scope["case_id"], "invocation_sha256": self.scope_sha256,
                 "container_id": ref["id"], "image": self.scope["images"][role], "role": role}
             require(stream.binding == binding, "NATIVE_ADMISSION_BINDING")
             for actor in ACTORS:
@@ -439,6 +455,10 @@ class DockerBackend:
     def open_oracle(self, ref, snapshot, preparation, context, budget, deadline):
         from oracle_bridge import OracleSession
         require(self._oracle_session is None and type(ref) is dict and ref.get("role") == "oracle", "ORACLE_DUPLICATE")
+        validate_preparation(preparation)
+        require(preparation["architecture"] == self.scope["architecture"], "ADMISSION_ARCHITECTURE")
+        expected_context = context.view(self.scope["case_id"], self.scope_sha256, preparation, deadline) if isinstance(context, ContextLease) else runtime_admission.validate_context(context)
+        require(expected_context["architecture"] == self.scope["architecture"], "ADMISSION_ARCHITECTURE")
         registry = object.__new__(Registry)
         saved = validate_snapshot(snapshot)
         registry.scope, registry.entries = self.scope, saved["entries"]

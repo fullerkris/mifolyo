@@ -1,0 +1,96 @@
+{
+  "compiled_filter": {
+    "bytes": 272,
+    "file_offset": 3498664,
+    "instructions": 34,
+    "sha256": "701824ff5f8ccafa359f711d2714b23c8a303789cd1987a3a85aba19a3667b93",
+    "simulated_cases": 3092
+  },
+  "effect_sequence": {
+    "file_offset": 444480,
+    "meaning": [
+      "mov x4,#42",
+      "str x4,[x3]",
+      "str x2,[x1]",
+      "stlr x2,[x0]",
+      "ret"
+    ],
+    "words": [
+      "0xd2800544",
+      "0xf9000064",
+      "0xf9000022",
+      "0xc89ffc02",
+      "0xd65f03c0"
+    ]
+  },
+  "execution_authorized": false,
+  "filter_installed": false,
+  "kind": "independent_static_artifact_security_review",
+  "limits": [
+    "Static bytes and source/manifests only; no independent rebuild, toolchain-library remeasurement, dynamic dependency closure, load-bias proof, binfmt/emulation attestation, kernel seccomp execution, or native runtime feasibility."
+  ],
+  "manifest_and_headers_regenerated_or_independently_joined": true,
+  "native_admission_formats": {
+    "observer": {
+      "CLOCK": {
+        "format_bytes": 212,
+        "sha256": "f9d607ba56980e65e64b94f2f323785f69f1243a0c39ce161e043fffe65e103a"
+      },
+      "CONFINEMENT": {
+        "format_bytes": 294,
+        "sha256": "2b5353558581df009ce8da477b839dcad844337959af86a2f6d08bcf507c75a3"
+      },
+      "IDENTITY": {
+        "format_bytes": 348,
+        "sha256": "f5ad4e01d92c4f2f1a18b5d34de1b515be990b353b17352b93816786b00d8120"
+      },
+      "RESOURCES": {
+        "format_bytes": 265,
+        "sha256": "82fc77c55ddca53e08fc02f8119d9dade2bc625f7f1c290bd02ba176c4f1a0f1"
+      }
+    },
+    "target": {
+      "CLOCK": {
+        "format_bytes": 212,
+        "sha256": "f9d607ba56980e65e64b94f2f323785f69f1243a0c39ce161e043fffe65e103a"
+      },
+      "CONFINEMENT": {
+        "format_bytes": 294,
+        "sha256": "2b5353558581df009ce8da477b839dcad844337959af86a2f6d08bcf507c75a3"
+      },
+      "IDENTITY": {
+        "format_bytes": 348,
+        "sha256": "f5ad4e01d92c4f2f1a18b5d34de1b515be990b353b17352b93816786b00d8120"
+      },
+      "RESOURCES": {
+        "format_bytes": 265,
+        "sha256": "82fc77c55ddca53e08fc02f8119d9dade2bc625f7f1c290bd02ba176c4f1a0f1"
+      }
+    }
+  },
+  "native_compile_guard_present": true,
+  "native_executed": false,
+  "native_sha256": {
+    "observer": "53800d2281f57341269a0f1c9686809883241ed01872338b0544bf0439e88120",
+    "target": "07ae68522b7e87560bda4d32fcb0f244c74fd748f7cd9ccfe1ac3cf2321deab5"
+  },
+  "native_source_join_files": 9,
+  "native_type": "ELF64 little-endian EM_AARCH64 ET_DYN static PIE, no PT_INTERP, NX stack, RELRO, no W+X PT_LOAD",
+  "oracle_elf_sha256": "cb4548d280f38c2b1df4cba45f12c90a034729e08fce5bf1a223c58add0e21e3",
+  "oracle_interpreter": "/lib/ld-linux-aarch64.so.1",
+  "oracle_manifest_sha256": "6168e220727cb6377e8e637740bb8c297bf7bee929ab19aac6db90aa6fbcbfa5",
+  "oracle_runtime_dependencies_validated": false,
+  "oracle_source_join_files": 7,
+  "platform_sha256": "78eb6e420419bf54ed7f88fb27925cfe56ab66625668bf0ef330ce0540f886d0",
+  "profile_sha256": {
+    "observer": "abf581851c19631ba5125ac03443f4ad72c6e8fd7b92fa086218060e07b56bf2",
+    "oracle": "f82e0ae5335e1393c402265c4a14a4e56ad8df27ab48eee70907745fef3b6835",
+    "target": "6a1ffdf7326ae1370bd55cc2edb2bcfb49b2d65ce7090205576d3b6e9496ab3e"
+  },
+  "status": "PASS",
+  "unsupported_or_relabeled_artifact_refusals": [
+    "ARCHITECTURE_NOT_IMPLEMENTED",
+    "ARCHITECTURE_NOT_IMPLEMENTED",
+    "ELF_ARCHITECTURE"
+  ]
+}

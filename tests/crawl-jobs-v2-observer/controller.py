@@ -1,15 +1,16 @@
 """Offline C0 coordinator contract. No Docker, run command, or approval issuer."""
-from contracts import LIMITS, TRIALS, boolean, canonical, decode, digest, exact, hold_bound, integer, require, sha
+from contracts import LIMITS, TRIALS, boolean, canonical, decode, digest, exact, hold_bound, integer, require, runtime_architecture, sha
 import oracle
 import runtime_admission
 
 
-def role_spec(role, image, profile_sha256):
+def role_spec(role, image, profile_sha256, architecture="aarch64"):
+    runtime_architecture(architecture)
     require(role in ("target", "observer", "oracle"), "ROLE")
     require(type(image) is str and image.startswith("sha256:"), "IMAGE")
     digest(image[7:])
     digest(profile_sha256)
-    return {"role": role, "image": image, "profile_sha256": profile_sha256, "user": "999:999", "network": "none",
+    return {"role": role, "architecture": architecture, "image": image, "profile_sha256": profile_sha256, "user": "999:999", "network": "none",
         "read_only": True, "cap_drop": ["ALL"], "cap_add": [], "no_new_privileges": True,
         "memory": LIMITS[role + "_memory"], "memory_swap": LIMITS[role + "_memory"], "cpus": 1,
         "pids_limit": LIMITS[role + "_pids"], "core_soft": 0, "core_hard": 0,

@@ -1,0 +1,293 @@
+{
+  "added_paths": [
+    "tests/crawl-jobs-v2-observer/test_architecture_review.py"
+  ],
+  "additional_boundary_controls": {
+    "build_record_cases": 7,
+    "cases": 76,
+    "drift_recovery_cases": 9,
+    "positive_defensive_cases": 4,
+    "schema_lifecycle_cases": 16,
+    "startup_cases": 40,
+    "status": "PASS"
+  },
+  "base_commit": "ced6e1cff36101f76fb54904b6b0fa2cf33cb48f",
+  "branch": "feature/crawl-jobs-v2-c0-architecture-contracts",
+  "changed_paths": [
+    "tests/crawl-jobs-v2-observer/build_tools.py",
+    "tests/crawl-jobs-v2-observer/docker_backend.py",
+    "tests/crawl-jobs-v2-observer/runtime_context.py",
+    "tests/crawl-jobs-v2-observer/test_owned_resources.py"
+  ],
+  "closures": [
+    {
+      "evidence": [
+        "replay.json:startup_image_amd64",
+        "replay.json:startup_image_None",
+        "replay.json:startup_image_arm64",
+        "boundaries.json:39 role/image startup cases",
+        "boundaries.json:higher_level_oracle_foreign_image"
+      ],
+      "id": "COR-ARCH-001",
+      "location": {
+        "lines": [
+          "197-206",
+          "230",
+          "279-281",
+          "337-338"
+        ],
+        "path": "tests/crawl-jobs-v2-observer/docker_backend.py"
+      },
+      "original_severity": "P1",
+      "reason": "Shared image admission checks the exact selected immutable image at both create and direct/snapshot startup before start transport.",
+      "status": "CLOSED"
+    },
+    {
+      "evidence": [
+        "replay.json:context_callback_architecture_drift",
+        "replay.json:context_callback_anchor_downgrade",
+        "boundaries.json:16 schema/lifecycle controls",
+        "boundaries.json:9 drift/recovery controls",
+        "boundaries.json:equal_anchor_replacement_and_fresh_reuse",
+        "boundaries.json:operation_key_snapshot controls",
+        "boundaries.json:defensive_lease_architecture_check"
+      ],
+      "id": "COR-ARCH-002",
+      "location": {
+        "lines": [
+          "47-60",
+          "72-98",
+          "112-118",
+          "129-184"
+        ],
+        "path": "tests/crawl-jobs-v2-observer/runtime_context.py"
+      },
+      "original_severity": "P2",
+      "reason": "Operation-local validated anchor/key snapshots, drift checks, explicit request/context/binding architecture joins and defensive lease view validation close the lifecycle mismatch.",
+      "status": "CLOSED"
+    },
+    {
+      "evidence": [
+        "replay.json:record_mode_mixed_target",
+        "boundaries.json:7 real-artifact build-record controls",
+        "artifact-checks.json"
+      ],
+      "id": "COR-ARCH-003",
+      "location": {
+        "lines": [
+          "107-110",
+          "128-132"
+        ],
+        "path": "tests/crawl-jobs-v2-observer/build_tools.py"
+      },
+      "original_severity": "P2",
+      "reason": "Record mode validates one target byte snapshot and its exact canonical instruction manifest before compiler queries/output, and hashes that same snapshot.",
+      "status": "CLOSED"
+    }
+  ],
+  "docs_or_obsidian_modified_by_reviewer": false,
+  "evidence_sha256": {
+    "artifact-checks.json": "d6001963dd10e96cde6953828fa0470ff88d31c801d9d82ca89896d65232051a",
+    "boundaries.json": "7eaec2cea0b8b331cc9809aab42cb9a3dde55c4b99cd7f8aa9a4d41f1603b222",
+    "boundaries.log": "ce9817a438f12d752e474cfe9f1d0f9a82027fcb2640d3679277c678da2dd2f9",
+    "boundaries.py": "6b7f5fcc52c9b0c3e6cdfbd87375440c64bd9c1961a1544b70ba106342d5bcec",
+    "integrity-after.json": "15318faf32e65b0471c0f837d3a18a1b56aa3df1467d9c2967a87d5dbd863861",
+    "integrity-before.json": "74b62f1a90de1ad10432e1da96d94ff4d76b144200caa9f91ed1dbd85c095200",
+    "integrity.py": "4708f7adb0558d5c2613a3299cfb2e086d4fb116c5b8afec83cdd3a5255ab158",
+    "replay-delta.patch": "5172ff7e30d2a613b09d670af6db2395d8244760e711abab69a7760f7c9e9481",
+    "replay.json": "7d0575f5fc3a69ca9f6c9283e6da2889623d0ae542556a0c26b0f6cb809cc8a2",
+    "replay.log": "0bfd8999d59691aa1675735aa711e77b7567791edbb8715272ab830c8ea1e1ee",
+    "replay.py": "85a9a49f992690f5d0ef0c4a6c3fabbb003007e4510307b98a089a2c4c50defa",
+    "static-checks.log": "0efa61298acd076844c04a09ed69ff5d6da9b3653fad6bd03d99bab80c244158",
+    "static_checks.py": "bd81a49c45caf30f8396667cbe2a23be35fc29810252c0fd8de2c95b7ccee277",
+    "test-verification.json": "02fc02d2fc98d46208715593eca8937e93dac1a7887a11ed1c3c8d052971f001",
+    "tests.json": "d6bf46767e6c7909789e53ce008dc0e26ebd60f4c3e3f76fe4837747ceab38c4",
+    "tests.log": "1d9988d0d4d03077a7cc770d7674f9a6ab83f8452842deb850e0ac35965abafb"
+  },
+  "execution_authorized": false,
+  "independent_tests": {
+    "all_existing_test_assertion_asts_preserved": true,
+    "independent_full_suite_runs": 1,
+    "merged_baseline_ids_retained": 202,
+    "new_test_ids": [
+      "test_architecture_review.ArchitectureReviewTests.test_anchor_drift_during_authorization_refuses_before_exchange",
+      "test_architecture_review.ArchitectureReviewTests.test_endpoint_anchor_drift_during_observation_refuses",
+      "test_architecture_review.ArchitectureReviewTests.test_endpoint_and_request_parser_reject_legacy_anchor",
+      "test_architecture_review.ArchitectureReviewTests.test_legacy_anchor_is_revalidated_at_each_source_acquisition",
+      "test_architecture_review.ArchitectureReviewTests.test_record_accepts_matching_arm64_target_and_manifest",
+      "test_architecture_review.ArchitectureReviewTests.test_record_rejects_foreign_target_and_stale_or_legacy_manifest",
+      "test_architecture_review.ArchitectureReviewTests.test_signed_response_cannot_follow_a_mutated_public_anchor",
+      "test_architecture_review.ArchitectureReviewTests.test_start_checks_each_roles_actual_image_architecture",
+      "test_architecture_review.ArchitectureReviewTests.test_valid_context_receipt_remains_bound_to_the_signed_request"
+    ],
+    "previous_ids_retained": 229,
+    "prior_ssh_and_umask_fixes_preserved_by_byte_identity": {
+      "context_transport.py": "43193118350d4d52d0f3901e4a93561fa7cd94dd4e81c2ce99337b5364404af0",
+      "test_architecture_contracts.py": "6bf71465ff0a4928410e198138a57066890cb53153a9b2e7e38b4531ee06310a",
+      "test_context_provisioning.py": "47af7da18e75e311d280927b83cb64bf1b12b01562217f75bfd21b10255e83de"
+    },
+    "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+    "status": "PASS",
+    "supplementary_author_022_077_reports_match": true,
+    "supplementary_author_red_report_sha256": "6e58410aea85c684e5a3d19d53d4b6ad918739f5a7ab28def93fba01598cda22",
+    "supplementary_red_failed_methods": [
+      "test_architecture_review.ArchitectureReviewTests.test_anchor_drift_during_authorization_refuses_before_exchange",
+      "test_architecture_review.ArchitectureReviewTests.test_endpoint_anchor_drift_during_observation_refuses",
+      "test_architecture_review.ArchitectureReviewTests.test_endpoint_and_request_parser_reject_legacy_anchor",
+      "test_architecture_review.ArchitectureReviewTests.test_legacy_anchor_is_revalidated_at_each_source_acquisition",
+      "test_architecture_review.ArchitectureReviewTests.test_record_rejects_foreign_target_and_stale_or_legacy_manifest",
+      "test_architecture_review.ArchitectureReviewTests.test_signed_response_cannot_follow_a_mutated_public_anchor",
+      "test_architecture_review.ArchitectureReviewTests.test_start_checks_each_roles_actual_image_architecture"
+    ],
+    "supplementary_red_positive_methods": [
+      "test_architecture_review.ArchitectureReviewTests.test_record_accepts_matching_arm64_target_and_manifest",
+      "test_architecture_review.ArchitectureReviewTests.test_valid_context_receipt_remains_bound_to_the_signed_request"
+    ],
+    "test_log_sha256": "1d9988d0d4d03077a7cc770d7674f9a6ab83f8452842deb850e0ac35965abafb",
+    "test_report_sha256": "d6bf46767e6c7909789e53ce008dc0e26ebd60f4c3e3f76fe4837747ceab38c4",
+    "tests_run": 238,
+    "umask": "022"
+  },
+  "initial_review_artifacts_modified": false,
+  "kind": "c0_architecture_remediation_independent_correctness_review",
+  "label_date": "2026-10-12",
+  "limitations": [
+    "No native actor, raw ARM64 interpreter, real oracle workload/host collector, live SSH connection, Docker/Podman workload, host-policy mutation, tracing or calibration",
+    "Suite uses owned benign Python processes with simulated observations/witnesses and offline ssh -G only",
+    "No independent rebuild/extraction, builder-state/container-inventory observation or raw compiler/library-byte verification; build records/logs are supplementary static evidence",
+    "Installed host/sshd policy, live image/daemon/kernel placement, OCI enforcement, hardware tracing, timing and remote cleanup remain unaccepted",
+    "Only one independent full suite run under umask 022; author 022/077 reports were hash-checked but do not substitute for independent runs",
+    "Artifact records bind validated byte snapshots, not atomic filesystem sealing against arbitrary concurrent writes; supplied raw artifact hashes were checked before and after",
+    "Python object internals are not an adversarial in-process sandbox; ELF-header classification is not full ELF/runtime admission",
+    "Metadata-only x64 and deferred runtime implementation/host selection are intentional, not findings"
+  ],
+  "new_findings": [],
+  "next_step": "Continue implementation with regenerated host-source/toolchain identities; retain separate publication and actual host/native-runtime approval gates.",
+  "package_files_verified_before_after": 47,
+  "preserved_prior_fixes": {
+    "COR-SSH-001": true,
+    "COR-SSH-002": true,
+    "COR-SSH-003": true,
+    "QA-ENV-001": true,
+    "direct_ssh_unsupported_architecture_guard": true
+  },
+  "previous_source_inventory_sha256": "b5388bbdf282e286caec43f6a5e12bc5e0129a6630f43bd2c2b15b405b0d7bfb",
+  "prior_evidence_preserved": {
+    "manifest_sha256": "5a49eec71edefb9be5cc35f22e5c9b6f18a5d60efa9d8f72de54117173d4bc61",
+    "review_json_sha256": "cfec175b78f6a21f47a6407ffec213a1d2ee09e64cf25941defc168a6796fbe4",
+    "review_manifest_files": 32,
+    "review_md_sha256": "f1920eb21d1d2d50584746fc43086db375af6ca02f2e7f7b9f715ffb625b30ff",
+    "runner": true,
+    "source_package_files": 46
+  },
+  "publication_authorized": false,
+  "replay": {
+    "delta_path": "replay-delta.patch",
+    "result_groups": 9,
+    "same_counterexample_inputs": true,
+    "scope_of_changes": "Relative paths select the new freeze/output; post-fix assertions/result reporting updated only",
+    "status": "PASS"
+  },
+  "repository_modified_by_reviewer": false,
+  "runner_sha256": "9afb715125f734f5b905da63dde5c9787fc5997b2e5a73a0bf62d781b23aef84",
+  "runner_verified_before_after": true,
+  "runtime_acceptance": false,
+  "scope": "Source and supplied static artifacts only; no publication or native-runtime authorization",
+  "snapshot": "/tmp/opencode/m4-c0-architecture-remediation-2026-10-12/snapshot",
+  "snapshot_exact_file_count": 48,
+  "snapshots_modified_by_reviewer": false,
+  "source_and_artifact_bytes_unchanged_during_review": true,
+  "source_inventory_sha256": "a02661da8cb299ff60e4ad9752ea53329b65c384d7f8e15853641dcf6db426cc",
+  "static_artifacts": {
+    "changed_native_outputs": [
+      "toolchain.json"
+    ],
+    "compiled_filter": {
+      "bytes": 272,
+      "file_offset": 3498664,
+      "instructions": 34,
+      "sha256": "701824ff5f8ccafa359f711d2714b23c8a303789cd1987a3a85aba19a3667b93"
+    },
+    "independent_rebuild": false,
+    "native_build_log_sha256": "46731c37be6f59e38825dc859c11b64f0a91f3233d633608288dbaeffa861ff4",
+    "native_build_record_sha256": "3e3def6ffb319eb0ebb7604581278468da3ea47d86833180f7151261ac505cca",
+    "native_elfs": {
+      "observer": {
+        "bytes": 5450312,
+        "elf_class": 2,
+        "elf_data": 1,
+        "elf_machine": 183,
+        "elf_type": 3,
+        "sha256": "53800d2281f57341269a0f1c9686809883241ed01872338b0544bf0439e88120"
+      },
+      "target": {
+        "bytes": 5448416,
+        "elf_class": 2,
+        "elf_data": 1,
+        "elf_machine": 183,
+        "elf_type": 3,
+        "sha256": "07ae68522b7e87560bda4d32fcb0f244c74fd748f7cd9ccfe1ac3cf2321deab5"
+      }
+    },
+    "native_execution": false,
+    "native_outputs_byte_identical": [
+      "cases.h",
+      "observer",
+      "observer-seccomp.json",
+      "oracle-seccomp.json",
+      "target",
+      "target-filter.bpf",
+      "target-manifest.json",
+      "target-seccomp.json",
+      "target_filter.h",
+      "target_manifest.h"
+    ],
+    "oracle_build_log_sha256": "0de651ee78e1d65adb1ddef273c39c088273e13c3e3b496dc4c5bfb46594aa10",
+    "oracle_build_record_sha256": "9d894e5745fa4dc54bec359083181fe70c080e0a9e2522f577839cdc944ffac1",
+    "oracle_input_hashes_unchanged": {
+      "Dockerfile.oracle": "7c3b72b8db003f927f4a34342df7180aa674fa25fce9233cad173032dc735e5e",
+      "Dockerfile.oracle.dockerignore": "679f3cd226874aa189596199b105352137171eed114a1393e478eafc43f330d3",
+      "build_oracle.py": "bb79df8f6a4e588c8f5ab865d94220713f551e8b2d22bc612676b72271849ed3",
+      "contracts.py": "b070ce310e159cbcdf63af478b872da8b0c1d1ddbbaef0b214f05c8d193a2b81",
+      "linux_observation.py": "fda5448917a84a9f3cc85c2fb9cab33fe9e622d6d1ab8a3742929b046799c0ce",
+      "oracle.py": "fa14b08caee86b65d9a01c16bb3e6ea236264275a48a3f32ad6694c57df23bc8",
+      "oracle_protocol.py": "f867fdc33eb271385176ab25c09a573e9662f77b7f6a73e559dbf07fcb115f45",
+      "oracle_worker.py": "3a588a010676238f375644ed2af65d1671ff7c38c81fa4908a419790576b363a",
+      "runtime_admission.py": "307e4486f4c23c426d543ddc3cee65d99dcee77c7c01087f4c8840cc81d3b076",
+      "worker.py": "08c319e7ec3790f619e4bf4ba3160e0db3bdc34f8dd86256bf998639aa2ea273"
+    },
+    "oracle_interpreter": {
+      "bytes": 67608,
+      "elf_machine": 183,
+      "elf_type": 3,
+      "sha256": "cb4548d280f38c2b1df4cba45f12c90a034729e08fce5bf1a223c58add0e21e3"
+    },
+    "oracle_manifest_sha256": "6168e220727cb6377e8e637740bb8c297bf7bee929ab19aac6db90aa6fbcbfa5",
+    "oracle_payload_source_files_verified": 7,
+    "platform_sha256_unchanged": {
+      "aarch64": "78eb6e420419bf54ed7f88fb27925cfe56ab66625668bf0ef330ce0540f886d0",
+      "x86_64": "433d4c86c5964c2a7b40dc29c7316273295f402870e6146c14a8dc2f825ab49a"
+    },
+    "profiles_sha256": {
+      "observer": "abf581851c19631ba5125ac03443f4ad72c6e8fd7b92fa086218060e07b56bf2",
+      "oracle": "f82e0ae5335e1393c402265c4a14a4e56ad8df27ab48eee70907745fef3b6835",
+      "target": "6a1ffdf7326ae1370bd55cc2edb2bcfb49b2d65ce7090205576d3b6e9496ab3e"
+    },
+    "source_joins": {
+      "oracle_worker_source": "f55a4c825523fc12e6d5bc3f5efaa97c8266a1ef640e4454c912346d36d3a86a",
+      "runtime_context_source": "ffae141857d61996ab5e5b53e8b55402a94b3caed39fa623665467610d81d836",
+      "runtime_context_transport": "72ca166c9680cf4e37142c83335995ba396deec4d978923f23b83bda2cc98001"
+    },
+    "status": "PASS",
+    "target_instruction_symbol_mapping_and_header_checks": true,
+    "target_manifest_sha256": "973b8cf929720c0cd99cacd1f8c39900290c92fb307ad101ca3cc85f35e1f276",
+    "toolchain_only_source_delta": "build_tools.py",
+    "toolchain_sha256": "4926c2e34b92a025c27e0fecdfd64c597da94d53a78d9a4231d51f8c8f0e5eae",
+    "toolchain_source_inputs_verified": 9
+  },
+  "subagents_spawned": false,
+  "summary": "All three initial correctness findings are closed on the new freeze; no new blocking finding identified.",
+  "verdict": "GO_FOR_CONTINUED_IMPLEMENTATION",
+  "verification_sha256": "3617c193c2bbe652ccbc1a526d7710a020e28fc62aa2f808d906bf917b79ea87",
+  "version": 1
+}

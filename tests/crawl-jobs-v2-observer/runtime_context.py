@@ -9,7 +9,7 @@ import hashlib
 import hmac
 import secrets
 
-from contracts import LIMITS, TRIALS, Invalid, canonical, clock_ns, decode, digest, exact, integer, require, sha, validate_preparation
+from contracts import LIMITS, TRIALS, Invalid, canonical, clock_ns, decode, digest, exact, integer, platform, platform_digest, require, runtime_architecture, sha, validate_preparation
 from linux_observation import LinuxReader, source_hash
 from runtime_admission import CONTEXT_HASHES, HOST_NAMESPACES, NAMESPACES, validate_context
 
@@ -24,7 +24,9 @@ def source_digest():
 
 
 def validate_anchor(value):
-    exact(value, ("daemon_sha256", "source_sha256", "kernel_boot_sha256", "namespaces", "ns_device", "seccomp_filters"))
+    exact(value, ("version", "architecture", "daemon_sha256", "source_sha256", "kernel_boot_sha256", "namespaces", "ns_device", "seccomp_filters"))
+    integer(value["version"], 2, 2)
+    platform(value["architecture"])
     for key in ("daemon_sha256", "source_sha256", "kernel_boot_sha256"):
         digest(value[key])
     exact(value["namespaces"], NAMESPACES)
@@ -43,12 +45,14 @@ def mac(key, raw):
 
 
 def request(raw, anchor, key):
+    anchor = validate_anchor(anchor)
     value = decode(raw, LIMITS["receipt_bytes"])
     exact(value, ("body", "mac"))
     require(type(value["mac"]) is str and hmac.compare_digest(value["mac"], mac(key, canonical(value["body"]))), "CONTEXT_AUTH")
     body = value["body"]
-    exact(body, ("version", "case_id", "invocation_sha256", "preparation_sha256", "anchor_sha256", "challenge", "window_ns"))
-    integer(body["version"], 1, 1)
+    exact(body, ("version", "architecture", "case_id", "invocation_sha256", "preparation_sha256", "anchor_sha256", "challenge", "window_ns"))
+    integer(body["version"], 2, 2)
+    require(body["architecture"] == anchor["architecture"], "CONTEXT_ARCHITECTURE")
     require(type(body["case_id"]) is str and body["case_id"] in TRIALS and not body["case_id"].startswith("N."), "CONTEXT_CASE")
     for name in ("invocation_sha256", "preparation_sha256", "anchor_sha256", "challenge"):
         digest(body[name])
@@ -61,29 +65,34 @@ class LinuxContextEndpoint:
     """Run on the separately admitted Linux host; the anchor is provisioned out of band."""
     def __init__(self, anchor, key, reader=None):
         self.anchor, self.key = validate_anchor(anchor), key
+        runtime_architecture(self.anchor["architecture"])
         mac(key, b"")
-        self.reader = LinuxReader() if reader is None else reader
+        self.reader = LinuxReader(self.anchor["architecture"]) if reader is None else reader
 
     def exchange(self, raw, deadline):
         try:
             deadline.check()
-            body = request(raw, self.anchor, self.key)
-            require(source_digest() == self.anchor["source_sha256"], "CONTEXT_SOURCE")
+            anchor, key = validate_anchor(self.anchor), self.key
+            runtime_architecture(anchor["architecture"])
+            body = request(raw, anchor, key)
+            require(source_digest() == anchor["source_sha256"], "CONTEXT_SOURCE")
             begin = self.reader.monotonic_ns()
             before = self.reader.kernel()
-            require(before["kernel_boot_sha256"] == self.anchor["kernel_boot_sha256"] and
-                before["namespaces"] == self.anchor["namespaces"] and before["ns_device"] == self.anchor["ns_device"], "CONTEXT_HOST_PLACEMENT")
+            require(before["architecture"] == anchor["architecture"], "CONTEXT_ARCHITECTURE")
+            require(before["kernel_boot_sha256"] == anchor["kernel_boot_sha256"] and
+                before["namespaces"] == anchor["namespaces"] and before["ns_device"] == anchor["ns_device"], "CONTEXT_HOST_PLACEMENT")
             require(self.reader.kernel() == before, "CONTEXT_CHANGED")
             sampled = self.reader.monotonic_ns()
             end = clock_ns(begin + body["window_ns"], begin + 1)
             require(begin <= sampled < end, "CONTEXT_EXPIRED")
-            fields = [{name: before[name] for name in CONTEXT_HASHES},
+            fields = [{"architecture": before["architecture"], **{name: before[name] for name in CONTEXT_HASHES}},
                 {name: before["namespaces"][name.removeprefix("host_")] for name in HOST_NAMESPACES} |
                     {name: before["namespaces"][name] for name in ("user_ns", "time_ns")} | {"ns_device": before["ns_device"]},
                 {"not_before_ns": begin, "not_after_ns": end, "sampled_ns": sampled,
-                    "resolution_ns": before["resolution_ns"], "yama_scope": before["yama_scope"], "seccomp_filters": self.anchor["seccomp_filters"]}]
-            frames = [canonical({"version": 1, "phase": phase, "request_sha256": sha(raw), "payload": payload}) for phase, payload in zip(PHASES, fields)]
-            sealed = canonical({"version": 1, "phase": "SEALED", "request_sha256": sha(raw), "mac": mac(self.key, raw + b"".join(frames))})
+                    "resolution_ns": before["resolution_ns"], "yama_scope": before["yama_scope"], "seccomp_filters": anchor["seccomp_filters"]}]
+            frames = [canonical({"version": 2, "phase": phase, "request_sha256": sha(raw), "payload": payload}) for phase, payload in zip(PHASES, fields)]
+            require(canonical(self.anchor) == canonical(anchor), "CONTEXT_ANCHOR_CHANGED")
+            sealed = canonical({"version": 2, "phase": "SEALED", "request_sha256": sha(raw), "mac": mac(key, raw + b"".join(frames))})
             require(all(len(frame) <= LIMITS["receipt_bytes"] for frame in [*frames, sealed]), "CONTEXT_FRAME_BOUND")
             deadline.check()
             return b"".join([*frames, sealed])
@@ -102,7 +111,9 @@ class ContextLease:
 
     def view(self, case_id, invocation_sha256, preparation, deadline):
         self.check(deadline)
-        require(self.binding == {"case_id": case_id, "invocation_sha256": invocation_sha256,
+        validate_preparation(preparation)
+        require(self._context["architecture"] == preparation["architecture"], "CONTEXT_LEASE_BINDING")
+        require(self.binding == {"architecture": preparation["architecture"], "case_id": case_id, "invocation_sha256": invocation_sha256,
             "preparation_sha256": sha(canonical(validate_preparation(preparation)))}, "CONTEXT_LEASE_BINDING")
         return copy.deepcopy(self._context)
 
@@ -116,11 +127,16 @@ class ContextSource:
         self.exchange, self.authorize, self.used = exchange, authorize, set()
 
     def acquire(self, case_id, invocation_sha256, preparation, daemon_sha256, deadline, budget):
-        validate_preparation(preparation)
+        preparation = copy.deepcopy(validate_preparation(preparation))
+        anchor, key = validate_anchor(self.anchor), self._key
+        mac(key, b"")
+        runtime_architecture(preparation["architecture"])
+        require(preparation["architecture"] == anchor["architecture"], "CONTEXT_ARCHITECTURE")
         digest(invocation_sha256)
-        require(daemon_sha256 == self.anchor["daemon_sha256"] and
-            preparation["artifacts"]["runtime_context_source"] == self.anchor["source_sha256"], "CONTEXT_SOURCE_BINDING")
-        require(callable(self.authorize) and self.authorize("runtime_context", invocation_sha256, sha(canonical(self.anchor))) is True, "CONTEXT_NOT_APPROVED")
+        require(daemon_sha256 == anchor["daemon_sha256"] and
+            preparation["artifacts"]["runtime_context_source"] == anchor["source_sha256"], "CONTEXT_SOURCE_BINDING")
+        require(callable(self.authorize) and self.authorize("runtime_context", invocation_sha256, sha(canonical(anchor))) is True, "CONTEXT_NOT_APPROVED")
+        require(canonical(self.anchor) == canonical(anchor), "CONTEXT_ANCHOR_CHANGED")
         started = deadline.clock()
         window = min(LIMITS["admission_ms"] * 1000000, int(deadline.remaining() * 1000000000))
         require(window > 0 and len(self.used) < LIMITS["receipts"], "CONTEXT_BOUNDS")
@@ -128,13 +144,14 @@ class ContextSource:
         digest(challenge)
         require(challenge not in self.used, "CONTEXT_REPLAY")
         self.used.add(challenge)
-        binding = {"case_id": case_id, "invocation_sha256": invocation_sha256, "preparation_sha256": sha(canonical(preparation))}
-        body = binding | {"version": 1, "anchor_sha256": sha(canonical(self.anchor)), "challenge": challenge, "window_ns": window}
-        raw = canonical({"body": body, "mac": mac(self._key, canonical(body))})
-        request(raw, self.anchor, self._key)
+        binding = {"architecture": preparation["architecture"], "case_id": case_id, "invocation_sha256": invocation_sha256, "preparation_sha256": sha(canonical(preparation))}
+        body = binding | {"version": 2, "anchor_sha256": sha(canonical(anchor)), "challenge": challenge, "window_ns": window}
+        raw = canonical({"body": body, "mac": mac(key, canonical(body))})
+        request(raw, anchor, key)
         deadline.check()
         try:
             received = self.exchange(raw, deadline)
+            require(canonical(self.anchor) == canonical(anchor), "CONTEXT_ANCHOR_CHANGED")
             require(type(received) is bytes and 0 < len(received) <= 4 * LIMITS["receipt_bytes"], "CONTEXT_OUTPUT_BOUND")
             budget.consume(len(received))
             parts = received.splitlines(keepends=True)
@@ -143,24 +160,26 @@ class ContextSource:
             for value, phase in zip(values, (*PHASES, "SEALED")):
                 budget.frame()
                 exact(value, ("version", "phase", "request_sha256", "mac" if phase == "SEALED" else "payload"))
-                integer(value["version"], 1, 1)
+                integer(value["version"], 2, 2)
                 require(value["phase"] == phase and value["request_sha256"] == sha(raw), "CONTEXT_RESPONSE_BINDING")
-            require(type(values[3]["mac"]) is str and hmac.compare_digest(values[3]["mac"], mac(self._key, raw + b"".join(parts[:3]))), "CONTEXT_AUTH")
-            exact(values[0]["payload"], CONTEXT_HASHES)
+            require(type(values[3]["mac"]) is str and hmac.compare_digest(values[3]["mac"], mac(key, raw + b"".join(parts[:3]))), "CONTEXT_AUTH")
+            exact(values[0]["payload"], ("architecture", *CONTEXT_HASHES))
             exact(values[1]["payload"], (*HOST_NAMESPACES, "user_ns", "time_ns", "ns_device"))
             exact(values[2]["payload"], ("not_before_ns", "not_after_ns", "sampled_ns", "resolution_ns", "yama_scope", "seccomp_filters"))
             window_data = dict(values[2]["payload"])
             sampled = clock_ns(window_data.pop("sampled_ns"), 1)
             context = validate_context(values[0]["payload"] | values[1]["payload"] | window_data)
+            require(context["architecture"] == anchor["architecture"] == binding["architecture"], "CONTEXT_ARCHITECTURE")
             require(context["not_after_ns"] - context["not_before_ns"] == window and context["not_before_ns"] <= sampled < context["not_after_ns"], "CONTEXT_WINDOW")
-            require(context["kernel_boot_sha256"] == self.anchor["kernel_boot_sha256"] and context["ns_device"] == self.anchor["ns_device"] and
-                context["seccomp_filters"] == self.anchor["seccomp_filters"], "CONTEXT_ANCHOR")
+            require(context["kernel_boot_sha256"] == anchor["kernel_boot_sha256"] and context["ns_device"] == anchor["ns_device"] and
+                context["seccomp_filters"] == anchor["seccomp_filters"], "CONTEXT_ANCHOR")
             for name in (*HOST_NAMESPACES, "user_ns", "time_ns"):
-                require(context[name] == self.anchor["namespaces"][name.removeprefix("host_")], "CONTEXT_ANCHOR")
+                require(context[name] == anchor["namespaces"][name.removeprefix("host_")], "CONTEXT_ANCHOR")
             end = min(deadline.end, started + window / 1000000000)
             require(deadline.clock() < end, "CONTEXT_LEASE_EXPIRED")
             receipt = {"context_sha256": sha(canonical(context)), "response_sha256": sha(received), "request_sha256": sha(raw),
-                "source_sha256": self.anchor["source_sha256"], "anchor_sha256": sha(canonical(self.anchor)),
+                "architecture": anchor["architecture"], "platform_sha256": platform_digest(anchor["architecture"]),
+                "source_sha256": anchor["source_sha256"], "anchor_sha256": sha(canonical(anchor)),
                 "execution_authorized": False, "runtime_evidence": False}
             return ContextLease(_TOKEN, context, binding, deadline.clock, end, receipt)
         except Exception:

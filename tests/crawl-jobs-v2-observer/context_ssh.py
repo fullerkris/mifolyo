@@ -14,7 +14,7 @@ import context_worker
 def admit_session():
     require(len(sys.argv) == 1 and os.environ.get("SSH_ORIGINAL_COMMAND") == files.REMOTE_COMMAND, "CONTEXT_SSH_COMMAND")
     service = decode(files.read_config("context-service.json", 0, (0o444,)), 4096)
-    exact(service, ("uid", "gid", "python_sha256"))
+    exact(service, ("architecture", "uid", "gid", "python_sha256"))
     digest(service["python_sha256"])
     uid, gid = integer(service["uid"], 1, 2**31 - 1), integer(service["gid"], 1, 2**31 - 1)
     require(uid != 999 and gid != 999 and os.getuid() == os.geteuid() == uid and
@@ -27,7 +27,9 @@ def admit_session():
             files.read_at(fd, name, 0, (0o444,), 262144)
     finally:
         os.close(fd)
-    require(LinuxReader().executable() == service["python_sha256"], "CONTEXT_PYTHON_IDENTITY")
+    anchor = context.validate_anchor(decode(files.read_config("context-source.json", 0, (0o444,)), 4096))
+    require(service["architecture"] == anchor["architecture"], "CONTEXT_ARCHITECTURE")
+    require(LinuxReader(service["architecture"]).executable() == service["python_sha256"], "CONTEXT_PYTHON_IDENTITY")
 
 
 def main():

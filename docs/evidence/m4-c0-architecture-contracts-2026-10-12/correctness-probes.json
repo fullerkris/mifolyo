@@ -1,0 +1,184 @@
+{
+  "method": "Frozen-source imports, synthetic signed responses/metadata, fake start transport and compiler calls; no native actor/real collector/SSH/Docker/Podman executed",
+  "probes": [
+    {
+      "actual": {
+        "execution_authorized": false,
+        "lease_binding_architecture": "aarch64",
+        "lease_context_architecture": "x86_64",
+        "receipt_anchor_matches_request": false,
+        "receipt_architecture": "x86_64",
+        "request_architecture": "aarch64"
+      },
+      "expected": "Refuse or retain the original request/anchor architecture",
+      "finding_reproduced": true,
+      "id": "context_callback_architecture_drift"
+    },
+    {
+      "actual": {
+        "endpoint_anchor_version": 1,
+        "lease_returned": true,
+        "source_anchor_version": 1
+      },
+      "expected": "Reject legacy anchor state before producing an exchange/lease",
+      "finding_reproduced": true,
+      "id": "context_callback_anchor_downgrade"
+    },
+    {
+      "actual": {
+        "binding_architecture": "aarch64",
+        "mutated_preparation_view_refusal": "CONTEXT_LEASE_BINDING",
+        "preparation_sha256_unchanged": true
+      },
+      "expected": "Do not relabel validated preparation after authorization callback",
+      "finding_reproduced": false,
+      "id": "context_callback_preparation_is_copied"
+    },
+    {
+      "actual": [
+        {
+          "phase": "KERNEL",
+          "refusal": "CONTEXT_ACQUISITION_REJECTED"
+        },
+        {
+          "phase": "NAMESPACE",
+          "refusal": "CONTEXT_ACQUISITION_REJECTED"
+        },
+        {
+          "phase": "WINDOW",
+          "refusal": "CONTEXT_ACQUISITION_REJECTED"
+        },
+        {
+          "phase": "SEALED",
+          "refusal": "CONTEXT_ACQUISITION_REJECTED"
+        }
+      ],
+      "expected": "Reject each legacy frame even with a correct test-key MAC",
+      "finding_reproduced": false,
+      "id": "authenticated_context_v1_frames"
+    },
+    {
+      "actual": {
+        "available_image_architecture": "amd64",
+        "image_inspections": 0,
+        "simulated_start_dispatched": [
+          [
+            "docker",
+            "--host",
+            "unix:///var/run/docker.sock",
+            "container",
+            "start",
+            "--attach",
+            "--interactive",
+            "87d5bc2f5613f34b882edf7d664ecc925cb033b58093bad7e7d9912ee67ecfa8"
+          ]
+        ],
+        "stream_architecture": "aarch64"
+      },
+      "expected": "Refuse non-arm64/missing image metadata before invoking the start transport",
+      "finding_reproduced": true,
+      "id": "startup_image_amd64"
+    },
+    {
+      "actual": {
+        "available_image_architecture": null,
+        "image_inspections": 0,
+        "simulated_start_dispatched": [
+          [
+            "docker",
+            "--host",
+            "unix:///var/run/docker.sock",
+            "container",
+            "start",
+            "--attach",
+            "--interactive",
+            "87d5bc2f5613f34b882edf7d664ecc925cb033b58093bad7e7d9912ee67ecfa8"
+          ]
+        ],
+        "stream_architecture": "aarch64"
+      },
+      "expected": "Refuse non-arm64/missing image metadata before invoking the start transport",
+      "finding_reproduced": true,
+      "id": "startup_image_None"
+    },
+    {
+      "actual": {
+        "available_image_architecture": "arm64",
+        "image_inspections": 0,
+        "simulated_start_dispatched": [
+          [
+            "docker",
+            "--host",
+            "unix:///var/run/docker.sock",
+            "container",
+            "start",
+            "--attach",
+            "--interactive",
+            "87d5bc2f5613f34b882edf7d664ecc925cb033b58093bad7e7d9912ee67ecfa8"
+          ]
+        ],
+        "stream_architecture": "aarch64"
+      },
+      "expected": "Allow arm64 metadata",
+      "finding_reproduced": false,
+      "id": "startup_image_arm64"
+    },
+    {
+      "actual": {
+        "compiler_calls_simulated": [
+          [
+            "cc",
+            "--version"
+          ],
+          [
+            "ld",
+            "--version"
+          ],
+          [
+            "cc",
+            "-dumpmachine"
+          ],
+          [
+            "cc",
+            "-print-file-name=libc.a"
+          ],
+          [
+            "cc",
+            "-print-file-name=libcrypto.a"
+          ],
+          [
+            "cc",
+            "-print-file-name=crtbeginS.o"
+          ]
+        ],
+        "private_probe_directory": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/correctness/record-mixed-target-bds4byu_",
+        "record_architecture": "aarch64",
+        "record_platform_sha256": "78eb6e420419bf54ed7f88fb27925cfe56ab66625668bf0ef330ce0540f886d0",
+        "record_version": 2,
+        "target_elf_architecture": "x86_64",
+        "target_manifest_sha256": "07ae68522b7e87560bda4d32fcb0f244c74fd748f7cd9ccfe1ac3cf2321deab5",
+        "target_sha256": "0d64bd6d66d68dac91cdadafc46e22d4f09f22bdc997aaae870f42865b024a3e"
+      },
+      "expected": "Refuse foreign target ELF or stale target manifest before emitting platform-bound toolchain record",
+      "finding_reproduced": true,
+      "id": "record_mode_mixed_target"
+    },
+    {
+      "actual": {
+        "accepted": [
+          [
+            "aarch64",
+            "aarch64",
+            "aarch64",
+            "aarch64"
+          ]
+        ],
+        "rejected": 15
+      },
+      "expected": "Only the all-aarch64 tuple may be admitted",
+      "finding_reproduced": false,
+      "id": "native_architecture_cross_product"
+    }
+  ],
+  "status": "COMPLETED"
+}

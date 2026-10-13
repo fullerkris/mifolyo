@@ -1,0 +1,200 @@
+test_anchor_drift_during_authorization_refuses_before_exchange (test_architecture_review.ArchitectureReviewTests.test_anchor_drift_during_authorization_refuses_before_exchange) ... FAIL
+test_endpoint_anchor_drift_during_observation_refuses (test_architecture_review.ArchitectureReviewTests.test_endpoint_anchor_drift_during_observation_refuses) ... FAIL
+test_endpoint_and_request_parser_reject_legacy_anchor (test_architecture_review.ArchitectureReviewTests.test_endpoint_and_request_parser_reject_legacy_anchor) ... FAIL
+test_legacy_anchor_is_revalidated_at_each_source_acquisition (test_architecture_review.ArchitectureReviewTests.test_legacy_anchor_is_revalidated_at_each_source_acquisition) ... FAIL
+test_record_accepts_matching_arm64_target_and_manifest (test_architecture_review.ArchitectureReviewTests.test_record_accepts_matching_arm64_target_and_manifest) ... ok
+test_record_rejects_foreign_target_and_stale_or_legacy_manifest (test_architecture_review.ArchitectureReviewTests.test_record_rejects_foreign_target_and_stale_or_legacy_manifest) ... 
+  test_record_rejects_foreign_target_and_stale_or_legacy_manifest (test_architecture_review.ArchitectureReviewTests.test_record_rejects_foreign_target_and_stale_or_legacy_manifest) (fault='foreign') ... FAIL
+  test_record_rejects_foreign_target_and_stale_or_legacy_manifest (test_architecture_review.ArchitectureReviewTests.test_record_rejects_foreign_target_and_stale_or_legacy_manifest) (fault='stale') ... FAIL
+  test_record_rejects_foreign_target_and_stale_or_legacy_manifest (test_architecture_review.ArchitectureReviewTests.test_record_rejects_foreign_target_and_stale_or_legacy_manifest) (fault='legacy') ... FAIL
+test_signed_response_cannot_follow_a_mutated_public_anchor (test_architecture_review.ArchitectureReviewTests.test_signed_response_cannot_follow_a_mutated_public_anchor) ... FAIL
+test_start_checks_each_roles_actual_image_architecture (test_architecture_review.ArchitectureReviewTests.test_start_checks_each_roles_actual_image_architecture) ... 
+  test_start_checks_each_roles_actual_image_architecture (test_architecture_review.ArchitectureReviewTests.test_start_checks_each_roles_actual_image_architecture) (role='target', architecture='amd64') ... FAIL
+  test_start_checks_each_roles_actual_image_architecture (test_architecture_review.ArchitectureReviewTests.test_start_checks_each_roles_actual_image_architecture) (role='target', architecture=None) ... FAIL
+  test_start_checks_each_roles_actual_image_architecture (test_architecture_review.ArchitectureReviewTests.test_start_checks_each_roles_actual_image_architecture) (role='target', architecture='arm64') ... FAIL
+  test_start_checks_each_roles_actual_image_architecture (test_architecture_review.ArchitectureReviewTests.test_start_checks_each_roles_actual_image_architecture) (role='observer', architecture='amd64') ... FAIL
+  test_start_checks_each_roles_actual_image_architecture (test_architecture_review.ArchitectureReviewTests.test_start_checks_each_roles_actual_image_architecture) (role='observer', architecture=None) ... FAIL
+  test_start_checks_each_roles_actual_image_architecture (test_architecture_review.ArchitectureReviewTests.test_start_checks_each_roles_actual_image_architecture) (role='observer', architecture='arm64') ... FAIL
+  test_start_checks_each_roles_actual_image_architecture (test_architecture_review.ArchitectureReviewTests.test_start_checks_each_roles_actual_image_architecture) (role='oracle', architecture='amd64') ... FAIL
+  test_start_checks_each_roles_actual_image_architecture (test_architecture_review.ArchitectureReviewTests.test_start_checks_each_roles_actual_image_architecture) (role='oracle', architecture=None) ... FAIL
+  test_start_checks_each_roles_actual_image_architecture (test_architecture_review.ArchitectureReviewTests.test_start_checks_each_roles_actual_image_architecture) (role='oracle', architecture='arm64') ... FAIL
+test_valid_context_receipt_remains_bound_to_the_signed_request (test_architecture_review.ArchitectureReviewTests.test_valid_context_receipt_remains_bound_to_the_signed_request) ... ok
+
+======================================================================
+FAIL: test_anchor_drift_during_authorization_refuses_before_exchange (test_architecture_review.ArchitectureReviewTests.test_anchor_drift_during_authorization_refuses_before_exchange)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/tests/crawl-jobs-v2-observer/test_architecture_review.py", line 90, in test_anchor_drift_during_authorization_refuses_before_exchange
+    with patch.object(parts[5], "exchange", wraps=parts[4].exchange) as exchange, self.assertRaises(c.Invalid):
+                                                                                  ~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+AssertionError: Invalid not raised
+
+======================================================================
+FAIL: test_endpoint_anchor_drift_during_observation_refuses (test_architecture_review.ArchitectureReviewTests.test_endpoint_anchor_drift_during_observation_refuses)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/tests/crawl-jobs-v2-observer/test_architecture_review.py", line 132, in test_endpoint_anchor_drift_during_observation_refuses
+    with self.assertRaises(c.Invalid): acquire(parts)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+AssertionError: Invalid not raised
+
+======================================================================
+FAIL: test_endpoint_and_request_parser_reject_legacy_anchor (test_architecture_review.ArchitectureReviewTests.test_endpoint_and_request_parser_reject_legacy_anchor)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/tests/crawl-jobs-v2-observer/test_architecture_review.py", line 124, in test_endpoint_and_request_parser_reject_legacy_anchor
+    with self.assertRaises(c.Invalid): context.request(raw, parts[4].anchor, KEY)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+AssertionError: Invalid not raised
+
+======================================================================
+FAIL: test_legacy_anchor_is_revalidated_at_each_source_acquisition (test_architecture_review.ArchitectureReviewTests.test_legacy_anchor_is_revalidated_at_each_source_acquisition)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/tests/crawl-jobs-v2-observer/test_architecture_review.py", line 111, in test_legacy_anchor_is_revalidated_at_each_source_acquisition
+    patch.object(parts[5], "exchange", wraps=parts[4].exchange) as exchange, self.assertRaises(c.Invalid):
+                                                                             ~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+AssertionError: Invalid not raised
+
+======================================================================
+FAIL: test_record_rejects_foreign_target_and_stale_or_legacy_manifest (test_architecture_review.ArchitectureReviewTests.test_record_rejects_foreign_target_and_stale_or_legacy_manifest) (fault='foreign')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/tests/crawl-jobs-v2-observer/test_architecture_review.py", line 162, in test_record_rejects_foreign_target_and_stale_or_legacy_manifest
+    with self.assertRaises(c.Invalid): build_tools.main()
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+AssertionError: Invalid not raised
+
+======================================================================
+FAIL: test_record_rejects_foreign_target_and_stale_or_legacy_manifest (test_architecture_review.ArchitectureReviewTests.test_record_rejects_foreign_target_and_stale_or_legacy_manifest) (fault='stale')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/tests/crawl-jobs-v2-observer/test_architecture_review.py", line 162, in test_record_rejects_foreign_target_and_stale_or_legacy_manifest
+    with self.assertRaises(c.Invalid): build_tools.main()
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+AssertionError: Invalid not raised
+
+======================================================================
+FAIL: test_record_rejects_foreign_target_and_stale_or_legacy_manifest (test_architecture_review.ArchitectureReviewTests.test_record_rejects_foreign_target_and_stale_or_legacy_manifest) (fault='legacy')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/tests/crawl-jobs-v2-observer/test_architecture_review.py", line 162, in test_record_rejects_foreign_target_and_stale_or_legacy_manifest
+    with self.assertRaises(c.Invalid): build_tools.main()
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+AssertionError: Invalid not raised
+
+======================================================================
+FAIL: test_signed_response_cannot_follow_a_mutated_public_anchor (test_architecture_review.ArchitectureReviewTests.test_signed_response_cannot_follow_a_mutated_public_anchor)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/tests/crawl-jobs-v2-observer/test_architecture_review.py", line 105, in test_signed_response_cannot_follow_a_mutated_public_anchor
+    with self.assertRaises(c.Invalid): acquire(parts)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+AssertionError: Invalid not raised
+
+======================================================================
+FAIL: test_start_checks_each_roles_actual_image_architecture (test_architecture_review.ArchitectureReviewTests.test_start_checks_each_roles_actual_image_architecture) (role='target', architecture='amd64')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/tests/crawl-jobs-v2-observer/test_architecture_review.py", line 78, in test_start_checks_each_roles_actual_image_architecture
+    with self.assertRaisesRegex(c.Invalid, "IMAGE_IDENTITY"): backend.open_actor(*args)
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Invalid not raised
+
+======================================================================
+FAIL: test_start_checks_each_roles_actual_image_architecture (test_architecture_review.ArchitectureReviewTests.test_start_checks_each_roles_actual_image_architecture) (role='target', architecture=None)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/tests/crawl-jobs-v2-observer/test_architecture_review.py", line 78, in test_start_checks_each_roles_actual_image_architecture
+    with self.assertRaisesRegex(c.Invalid, "IMAGE_IDENTITY"): backend.open_actor(*args)
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Invalid not raised
+
+======================================================================
+FAIL: test_start_checks_each_roles_actual_image_architecture (test_architecture_review.ArchitectureReviewTests.test_start_checks_each_roles_actual_image_architecture) (role='target', architecture='arm64')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/tests/crawl-jobs-v2-observer/test_architecture_review.py", line 80, in test_start_checks_each_roles_actual_image_architecture
+    self.assertEqual(image_reads, [registry.scope["images"][role]])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: [] != ['sha256:1111111111111111111111111111111111111111111111111111111111111111']
+
+Second list contains 1 additional elements.
+First extra element 0:
+'sha256:1111111111111111111111111111111111111111111111111111111111111111'
+
+- []
++ ['sha256:1111111111111111111111111111111111111111111111111111111111111111']
+
+======================================================================
+FAIL: test_start_checks_each_roles_actual_image_architecture (test_architecture_review.ArchitectureReviewTests.test_start_checks_each_roles_actual_image_architecture) (role='observer', architecture='amd64')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/tests/crawl-jobs-v2-observer/test_architecture_review.py", line 78, in test_start_checks_each_roles_actual_image_architecture
+    with self.assertRaisesRegex(c.Invalid, "IMAGE_IDENTITY"): backend.open_actor(*args)
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Invalid not raised
+
+======================================================================
+FAIL: test_start_checks_each_roles_actual_image_architecture (test_architecture_review.ArchitectureReviewTests.test_start_checks_each_roles_actual_image_architecture) (role='observer', architecture=None)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/tests/crawl-jobs-v2-observer/test_architecture_review.py", line 78, in test_start_checks_each_roles_actual_image_architecture
+    with self.assertRaisesRegex(c.Invalid, "IMAGE_IDENTITY"): backend.open_actor(*args)
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Invalid not raised
+
+======================================================================
+FAIL: test_start_checks_each_roles_actual_image_architecture (test_architecture_review.ArchitectureReviewTests.test_start_checks_each_roles_actual_image_architecture) (role='observer', architecture='arm64')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/tests/crawl-jobs-v2-observer/test_architecture_review.py", line 80, in test_start_checks_each_roles_actual_image_architecture
+    self.assertEqual(image_reads, [registry.scope["images"][role]])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: [] != ['sha256:3333333333333333333333333333333333333333333333333333333333333333']
+
+Second list contains 1 additional elements.
+First extra element 0:
+'sha256:3333333333333333333333333333333333333333333333333333333333333333'
+
+- []
++ ['sha256:3333333333333333333333333333333333333333333333333333333333333333']
+
+======================================================================
+FAIL: test_start_checks_each_roles_actual_image_architecture (test_architecture_review.ArchitectureReviewTests.test_start_checks_each_roles_actual_image_architecture) (role='oracle', architecture='amd64')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/tests/crawl-jobs-v2-observer/test_architecture_review.py", line 78, in test_start_checks_each_roles_actual_image_architecture
+    with self.assertRaisesRegex(c.Invalid, "IMAGE_IDENTITY"): backend.open_actor(*args)
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Invalid not raised
+
+======================================================================
+FAIL: test_start_checks_each_roles_actual_image_architecture (test_architecture_review.ArchitectureReviewTests.test_start_checks_each_roles_actual_image_architecture) (role='oracle', architecture=None)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/tests/crawl-jobs-v2-observer/test_architecture_review.py", line 78, in test_start_checks_each_roles_actual_image_architecture
+    with self.assertRaisesRegex(c.Invalid, "IMAGE_IDENTITY"): backend.open_actor(*args)
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Invalid not raised
+
+======================================================================
+FAIL: test_start_checks_each_roles_actual_image_architecture (test_architecture_review.ArchitectureReviewTests.test_start_checks_each_roles_actual_image_architecture) (role='oracle', architecture='arm64')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/tests/crawl-jobs-v2-observer/test_architecture_review.py", line 80, in test_start_checks_each_roles_actual_image_architecture
+    self.assertEqual(image_reads, [registry.scope["images"][role]])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: [] != ['sha256:2222222222222222222222222222222222222222222222222222222222222222']
+
+Second list contains 1 additional elements.
+First extra element 0:
+'sha256:2222222222222222222222222222222222222222222222222222222222222222'
+
+- []
++ ['sha256:2222222222222222222222222222222222222222222222222222222222222222']
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.087s
+
+FAILED (failures=17)

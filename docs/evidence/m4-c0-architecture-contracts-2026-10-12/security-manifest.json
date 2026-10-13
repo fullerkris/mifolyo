@@ -1,0 +1,83 @@
+{
+  "execution_authorized": false,
+  "files": {
+    "security-artifacts.json": {
+      "bytes": 3440,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/security/artifacts.json",
+      "sha256": "aaab74f0eee4743568a9b90051811f3f2f5eb2246399745068d58ee4b2ba5c26"
+    },
+    "security-artifacts.log": {
+      "bytes": 3440,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/security/artifacts.log",
+      "sha256": "aaab74f0eee4743568a9b90051811f3f2f5eb2246399745068d58ee4b2ba5c26"
+    },
+    "security-continuity.json": {
+      "bytes": 1847,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/security/continuity.json",
+      "sha256": "fb9b68bb44629bd8131651380dc5152d522766434d2b46e1d8bd83c8b9e78bdf"
+    },
+    "security-continuity.log": {
+      "bytes": 1847,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/security/continuity.log",
+      "sha256": "fb9b68bb44629bd8131651380dc5152d522766434d2b46e1d8bd83c8b9e78bdf"
+    },
+    "security-host-join.json": {
+      "bytes": 1194,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/security/host-join.json",
+      "sha256": "24c62c6296d2c6c4421df37b15ad859154789b07c9c2d86023c30b12b0a443a5"
+    },
+    "security-host-join.log": {
+      "bytes": 1194,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/security/host-join.log",
+      "sha256": "24c62c6296d2c6c4421df37b15ad859154789b07c9c2d86023c30b12b0a443a5"
+    },
+    "security-integrity-after.json": {
+      "bytes": 8337,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/security/integrity-after.json",
+      "sha256": "cf5834cb0cabc8a2db5e375cdeeca45fa9a671b3c2a0131b6f4a09741f4e82cc"
+    },
+    "security-integrity-before.json": {
+      "bytes": 8338,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/security/integrity-before.json",
+      "sha256": "cd7f4dd1d44a4dca215140faf11653942ecf7eacffc3d9a62225f686afbb6671"
+    },
+    "security-probes.json": {
+      "bytes": 9390,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/security/probes.json",
+      "sha256": "9eb0aff82a8983a066c9a59c8bbc503db32935cf37f02c2bd7c058210e795f65"
+    },
+    "security-probes.log": {
+      "bytes": 9390,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/security/probes.log",
+      "sha256": "9eb0aff82a8983a066c9a59c8bbc503db32935cf37f02c2bd7c058210e795f65"
+    },
+    "security-review.json": {
+      "bytes": 23460,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/security/review.json",
+      "sha256": "9f7ef408e625e1d4401ac7f345a4a5926603fbe777818f997775b0438afbe364"
+    },
+    "security-review.md": {
+      "bytes": 12478,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/security/review.md",
+      "sha256": "112354ced20cc42afcf27c02d805bb4297ac467f89a3912aced73755b582d4ed"
+    },
+    "security-tests.json": {
+      "bytes": 77823,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/security/tests.json",
+      "sha256": "c426dc3172d90a4592cfbf8549092ed17c11e79b2245589d65308838be884eaa"
+    },
+    "security-tests.log": {
+      "bytes": 37914,
+      "private_source": "/tmp/opencode/m4-c0-architecture-contracts-2026-10-12/security/tests.log",
+      "sha256": "d6e2223c1f19e9387940ee5995e726c14897fbf55f35641160170d3dc0733841"
+    }
+  },
+  "kind": "c0_architecture_independent_review_exports",
+  "publication_authorized": false,
+  "review_sha256": "9f7ef408e625e1d4401ac7f345a4a5926603fbe777818f997775b0438afbe364",
+  "reviewer": "security",
+  "runtime_acceptance": false,
+  "source_inventory_sha256": "b5388bbdf282e286caec43f6a5e12bc5e0129a6630f43bd2c2b15b405b0d7bfb",
+  "verdict": "GO_FOR_CONTINUED_IMPLEMENTATION",
+  "version": 1
+}

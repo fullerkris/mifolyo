@@ -67,7 +67,9 @@ services:
       REDIS_CLIENT: predis
       REDIS_HOST: redis
       REDIS_PREFIX: mifolyo_search_ui_staging_
-      MONGODB_URI: mongodb://mongo:27017/?serverSelectionTimeoutMS=2000
+      # Rescan after a restart within the bounded timeout, including FPM workers
+      # whose persistent MongoDB topology still records the previous outage.
+      MONGODB_URI: mongodb://mongo:27017/?serverSelectionTimeoutMS=2000&serverSelectionTryOnce=false
       MONGODB_DATABASE: mifolyo_search_ui_staging
       FORUM_API_BASE_URL: http://forum-engine:8000
       FORUM_API_TIMEOUT_SECONDS: "5"

@@ -23,12 +23,11 @@ export class ThreadBrowser {
         this.page = 1;
         this.source = '';
         root.querySelector('[data-thread-sort-label]').hidden = false;
-        root.querySelector('.mf-create-thread').hidden = false;
         this.sort.addEventListener('change', () => this.load(1));
         this.retry.addEventListener('click', () => this.load(this.page));
         this.previous.addEventListener('click', () => this.load(this.page - 1));
         this.next.addEventListener('click', () => this.load(this.page + 1));
-        this.form.addEventListener('submit', (event) => {
+        this.form?.addEventListener('submit', (event) => {
             event.preventDefault();
             this.create();
         });
@@ -46,10 +45,17 @@ export class ThreadBrowser {
         this.cancel();
         this.source = source;
         this.sort.value = 'top';
-        this.form.reset();
-        this.form.querySelector('button').disabled = false;
-        this.createStatus.textContent = '';
-        this.root.querySelector('.mf-create-thread').open = false;
+        if (this.form) {
+            this.form.reset();
+            this.form.elements.source_url.value = source;
+            this.form.querySelector('button').disabled = false;
+            this.createStatus.textContent = '';
+            this.root.querySelector('.mf-create-thread').open = source === this.root.dataset.sourceUrl
+                && (this.form.elements.title.value.trim() !== '' || Boolean(this.root.querySelector('.mf-form-error')));
+        }
+        const returnTo = `/discussions?${new URLSearchParams({ url: source })}`;
+        this.root.querySelector('[data-forum-sign-in]').href = `/sign-in?${new URLSearchParams({ return_to: returnTo })}`;
+        this.root.querySelector('[data-forum-register]').href = `/register?${new URLSearchParams({ return_to: returnTo })}`;
         this.load(1);
     }
 
@@ -106,9 +112,16 @@ export class ThreadBrowser {
         for (const thread of threads) {
             const article = textElement('article', 'mf-thread', '');
             if (typeof thread.community?.name === 'string') article.append(textElement('p', 'mf-eyebrow', thread.community.name));
-            article.append(textElement('h3', '', thread.title));
+            const heading = textElement('h3', '', thread.title);
+            if (Number.isSafeInteger(thread.id) && thread.id > 0) {
+                const link = textElement('a', '', thread.title);
+                link.href = `/threads/${thread.id}`;
+                heading.replaceChildren(link);
+            }
+            article.append(heading);
             const author = typeof thread.author?.username === 'string' ? thread.author.username : 'Community member';
-            article.append(textElement('p', 'mf-thread-meta', `${author} · ${count(thread.comment_count)} replies · ${count(thread.score)} score`));
+            const replies = count(thread.comment_count);
+            article.append(textElement('p', 'mf-thread-meta', `${author} · ${replies} ${replies === 1 ? 'reply' : 'replies'} · ${count(thread.score)} score`));
             if (typeof thread.body === 'string' && thread.body.trim()) {
                 const body = textElement('p', 'mf-thread-body', thread.body);
                 if (thread.body.length > 350) {
@@ -116,6 +129,11 @@ export class ThreadBrowser {
                     details.append(textElement('summary', '', 'Read discussion'), body);
                     article.append(details);
                 } else article.append(body);
+            }
+            if (Number.isSafeInteger(thread.id) && thread.id > 0) {
+                const link = textElement('a', 'mf-text-link mf-thread-open', 'Read conversation →');
+                link.href = `/threads/${thread.id}`;
+                article.append(link);
             }
             this.list.append(article);
         }
@@ -127,9 +145,8 @@ export class ThreadBrowser {
         const sourceGeneration = this.sourceGeneration;
         const fields = new FormData(this.form);
         const title = String(fields.get('title') ?? '').trim();
-        const token = String(fields.get('token') ?? '').trim();
-        if (!title || !token) {
-            this.createStatus.textContent = 'Enter a discussion title and your forum API token.';
+        if (!title) {
+            this.createStatus.textContent = 'Enter a discussion title.';
             return;
         }
         const controller = new AbortController();
@@ -140,19 +157,25 @@ export class ThreadBrowser {
         try {
             const response = await fetch(this.root.dataset.createEndpoint, {
                 method: 'POST', signal: controller.signal,
-                headers: { Accept: 'application/json', 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                headers: { Accept: 'application/json', 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
                 body: JSON.stringify({ title, body: String(fields.get('body') ?? ''), source_url: this.source }),
             });
             const payload = await response.json();
             if (sourceGeneration !== this.sourceGeneration) return;
             if (!response.ok) {
-                this.createStatus.textContent = response.status === 401 ? 'Your forum token was not accepted. Enter a valid token and try again.'
+                this.root.querySelector('[data-thread-sign-in]').hidden = response.status !== 401;
+                this.createStatus.textContent = response.status === 401 ? 'Your session expired. Sign in again to continue. Your draft is saved.'
                     : typeof payload.message === 'string' ? payload.message : 'Could not create the thread. Please try again.';
                 return;
             }
             this.form.elements.title.value = '';
             this.form.elements.body.value = '';
             this.createStatus.textContent = 'Thread created.';
+            if (Number.isSafeInteger(payload.data?.id)) {
+                const link = textElement('a', 'mf-text-link mf-thread-open', 'Open your conversation →');
+                link.href = `/threads/${payload.data.id}`;
+                this.createStatus.append(link);
+            }
             await this.load(1);
         } catch (_) {
             if (sourceGeneration === this.sourceGeneration) this.createStatus.textContent = 'Could not confirm whether your thread was created. Refresh the discussions before trying again.';

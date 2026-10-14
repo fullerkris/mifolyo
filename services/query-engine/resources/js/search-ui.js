@@ -18,6 +18,12 @@ if (themeButton) {
 }
 
 const navigationStatus = document.querySelector('[data-navigation-status]');
+document.querySelectorAll('[data-posting-form]').forEach((form) => {
+    form.addEventListener('submit', () => {
+        form.setAttribute('aria-busy', 'true');
+        form.querySelector('button[type="submit"]').disabled = true;
+    });
+});
 document.querySelectorAll('[data-search-form]').forEach((form) => {
     form.addEventListener('submit', () => {
         form.setAttribute('aria-busy', 'true');
@@ -25,6 +31,10 @@ document.querySelectorAll('[data-search-form]').forEach((form) => {
     });
 });
 window.addEventListener('pageshow', () => {
+    document.querySelectorAll('[data-posting-form]').forEach((form) => {
+        form.removeAttribute('aria-busy');
+        form.querySelector('button[type="submit"]').disabled = false;
+    });
     document.querySelectorAll('[data-search-form]').forEach((form) => form.removeAttribute('aria-busy'));
     if (navigationStatus) navigationStatus.hidden = true;
     updateThemeButton();

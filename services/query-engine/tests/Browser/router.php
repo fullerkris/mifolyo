@@ -60,6 +60,15 @@ $app->instance(App\Http\Controllers\QuerySearchController::class, new class exte
 });
 Illuminate\Support\Facades\Http::preventStrayRequests();
 Illuminate\Support\Facades\Http::fake([
+    '*/api/posts/1' => Illuminate\Support\Facades\Http::response(['data' => [
+        'id' => 1, 'title' => 'What makes this source useful?', 'body' => 'A full conversation grounded in the original source.',
+        'source_url' => 'https://example.test/source', 'comment_count' => 2, 'author' => ['username' => 'reader'],
+    ]]),
+    '*/api/posts/1/comments' => Illuminate\Support\Facades\Http::response(['data' => [
+        ['id' => 4, 'body' => 'A thoughtful question', 'author' => ['username' => 'reader'], 'depth' => 0, 'children' => [
+            ['id' => 5, 'body' => 'A nested perspective', 'author' => ['username' => 'curious'], 'depth' => 1, 'children' => []],
+        ]],
+    ]]),
     '*' => Illuminate\Support\Facades\Http::response([
         'data' => [
             ['id' => 1, 'title' => 'What makes this source useful?', 'body' => 'The examples give us a starting point. I would like to compare them with other sources and hear which details helped people most.', 'author' => ['username' => 'reader'], 'community' => ['name' => 'Reference'], 'score' => 4, 'comment_count' => 2],

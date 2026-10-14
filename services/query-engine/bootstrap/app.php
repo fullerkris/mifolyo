@@ -17,10 +17,27 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->web(append: [\App\Http\Middleware\ResolveForumAccount::class]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->render(function (Throwable $exception, Request $request) {
+            if ($exception instanceof HttpExceptionInterface && $request->is('threads/*', 'community/*', 'sign-in', 'register', 'sign-out')) {
+                $status = $exception->getStatusCode();
+                if (in_array($status, [401, 403, 404, 419, 429, 503], true)) {
+                    [$heading, $message] = match ($status) {
+                        401 => ['Please sign in again', 'Your session has expired. Sign in to continue the conversation.'],
+                        403 => ['This conversation is private', 'Only members of this community can read this conversation.'],
+                        404 => ['Conversation unavailable', 'This thread may have been removed or the link may be incorrect.'],
+                        419 => ['This page has expired', 'Reload the page before submitting your form again.'],
+                        429 => ['A moment to catch up', 'Please wait a minute before trying again.'],
+                        default => ['Community temporarily unavailable', 'We could not reach the community service. Please try again shortly.'],
+                    };
+
+                    return ($request->expectsJson() ? response()->json(['message' => $message], $status)
+                        : response()->view('community-error', compact('heading', 'message', 'status'), $status))
+                        ->withHeaders($exception->getHeaders())->header('Cache-Control', 'private, no-store');
+                }
+            }
             if ($request->expectsJson() || ! $request->is('search', 'search/exact', 'api/search', 'api/search_force')) {
                 return null;
             }

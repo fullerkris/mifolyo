@@ -14,7 +14,7 @@ test('home to indexed results to persisted source discussions', async ({ page, r
     await expect(first.getByRole('link', { name: 'View page' })).toHaveAttribute('href', sourceURL);
     await page.screenshot({ path: testInfo.outputPath('real-search.png') });
 
-    const threadsResponse = page.waitForResponse((response) => new URL(response.url()).pathname === '/api/threads/by-url');
+    const threadsResponse = page.waitForResponse((response) => new URL(response.url()).pathname === '/community/threads');
     await first.locator('[data-discuss-url]').click();
     const response = await threadsResponse;
     expect(response.status()).toBe(200);
@@ -83,32 +83,132 @@ test('dictionary correction can be declined and empty results have no phantom pa
     await expect(page.getByRole('navigation', { name: 'Search result pages' })).toHaveCount(0);
 });
 
-test('forum login and UI thread creation persist on the selected source', async ({ page, request }, testInfo) => {
+test('sign-in, thread creation, nested replies and expired-session drafts persist', async ({ page, request, isMobile }, testInfo) => {
     const source = `https://example.test/local-staging/${randomUUID()}?a=1&b=two`;
     const title = `Staging browser discussion — ${testInfo.project.name}`;
-    const login = await request.post(`${forumURL}/api/auth/login`, {
-        data: { email: 'reader@staging.mifolyo.test', password: 'local-staging-only-password' },
-    });
-    expect(login.ok()).toBe(true);
-    const { data: { token } } = await login.json();
+    const errors = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    const signIn = async () => {
+        await page.getByLabel('Email', { exact: true }).fill('reader@staging.mifolyo.test');
+        await page.getByLabel('Password', { exact: true }).fill('local-staging-only-password');
+        await page.getByRole('button', { name: 'Sign in', exact: true }).click();
+        await expect(page.getByRole('button', { name: 'Sign out' })).toBeVisible();
+    };
     try {
         await page.goto(`/discussions?${new URLSearchParams({ url: source, title: 'Local staging write check' })}`);
         await expect(page.locator('[data-thread-status]')).toContainText('No discussions yet');
+        await page.getByRole('link', { name: 'Sign in to start a thread' }).click();
+        if (!isMobile) {
+            await page.getByLabel('Email', { exact: true }).fill('reader@staging.mifolyo.test');
+            await page.getByLabel('Password', { exact: true }).fill('incorrect-password');
+            await page.getByRole('button', { name: 'Sign in', exact: true }).click();
+            await expect(page.getByRole('alert')).toContainText('Invalid credentials');
+            await expect(page.getByLabel('Password', { exact: true })).toHaveValue('');
+        }
+        await signIn();
+        expect(new URL(page.url()).searchParams.get('url')).toBe(source);
         await page.locator('.mf-create-thread summary').click();
-        await page.getByLabel('Forum API token').fill(token);
         await page.getByLabel('Discussion title').fill(title);
         await page.getByLabel('Body optional').fill('Created through the real Query Engine proxy and stored by the forum in PostgreSQL.');
-        const created = page.waitForResponse((response) => new URL(response.url()).pathname === '/api/threads' && response.request().method() === 'POST');
+        const created = page.waitForResponse((response) => new URL(response.url()).pathname === '/community/threads' && response.request().method() === 'POST');
         await page.getByRole('button', { name: 'Start thread', exact: true }).click();
         const response = await created;
         expect(response.status()).toBe(201);
-        expect((await response.json()).data.source_url).toBe(source);
-        await expect(page.locator('[data-create-status]')).toHaveText('Thread created.');
-        await page.reload();
+        const thread = (await response.json()).data;
+        expect(thread.source_url).toBe(source);
+        expect(response.request().headers().authorization).toBeUndefined();
+        expect(response.request().headers()['x-csrf-token']).toBeTruthy();
+        await page.getByRole('link', { name: 'Open your conversation →' }).click();
         await expect(page.getByRole('heading', { name: title, exact: true })).toBeVisible();
+        await expect(page.getByText('No replies yet. Add the first perspective.')).toBeVisible();
+        const csrfRejected = await page.request.post(`/threads/${thread.id}/comments`, { data: { body: 'CSRF must reject this' }, headers: { Accept: 'application/json' } });
+        expect(csrfRejected.status()).toBe(419);
+        await page.getByLabel('Your reply').fill('A root perspective from the browser.');
+        await page.getByRole('button', { name: 'Post reply', exact: true }).click();
+        await expect(page.locator('.mf-comment-body')).toHaveText('A root perspective from the browser.');
+        await page.locator('.mf-comment').first().getByRole('link', { name: /^Reply/ }).click();
+        await page.getByLabel('Your reply').fill('A nested reply from the browser.');
+        await page.getByRole('button', { name: 'Post reply', exact: true }).click();
+        await expect(page.locator('.mf-comment-children')).toContainText('A nested reply from the browser.');
+
+        // A separate real login rotates the forum token, invalidating this browser's session.
+        await page.locator('.mf-comment > article').first().getByRole('link', { name: /^Reply/ }).click();
+        const rotation = await request.post(`${forumURL}/api/auth/login`, {
+            data: { email: 'reader@staging.mifolyo.test', password: 'local-staging-only-password' },
+        });
+        expect(rotation.ok()).toBe(true);
+        await page.getByLabel('Your reply').fill('Draft kept after the token expired.');
+        await page.getByRole('button', { name: 'Post reply', exact: true }).click();
+        await expect(page).toHaveURL(/\/sign-in\?/);
+        await signIn();
+        await expect(page.getByRole('heading', { name: /^Reply to / })).toBeVisible();
+        await expect(page.getByLabel('Your reply')).toHaveValue('Draft kept after the token expired.');
+        await page.getByRole('button', { name: 'Post reply', exact: true }).click();
+        await expect(page.locator('.mf-comment-children')).toContainText('Draft kept after the token expired.');
+        await page.reload();
+        await expect(page.locator('.mf-thread-meta').first()).toContainText('3 replies');
+        const comments = await request.get(`${forumURL}/api/posts/${thread.id}/comments`);
+        const tree = (await comments.json()).data;
+        expect(tree).toHaveLength(1);
+        expect(tree[0].children.map((child) => child.body)).toEqual(['A nested reply from the browser.', 'Draft kept after the token expired.']);
+        expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+        await page.screenshot({ path: testInfo.outputPath('real-thread-replies.png'), fullPage: true });
+        expect(await page.evaluate(() => Object.keys(localStorage))).not.toContain('forum.token');
+        expect(errors).toEqual([]);
         const unrelated = await request.get(`/api/threads/by-url?${new URLSearchParams({ url: sourceURL })}`);
         expect((await unrelated.json()).meta.total).toBe(23);
     } finally {
-        await request.post(`${forumURL}/api/auth/logout`, { headers: { Authorization: `Bearer ${token}` } });
+        await page.goto('/');
+        if (await page.getByRole('button', { name: 'Sign out' }).count()) await page.getByRole('button', { name: 'Sign out' }).click();
+    }
+});
+
+test('registration returns to the selected conversation and sign-out ends access to posting', async ({ page, request }, testInfo) => {
+    const threads = await request.get(`/api/threads/by-url?${new URLSearchParams({ url: sourceURL })}`);
+    const thread = (await threads.json()).data[0];
+    const username = `staging_${randomUUID().replaceAll('-', '').slice(0, 16)}`;
+    await page.goto(`/threads/${thread.id}`);
+    await page.getByRole('link', { name: 'create an account', exact: true }).click();
+    await page.getByLabel('Display name').fill('Staging browser reader');
+    await page.getByLabel('Username', { exact: true }).fill(username);
+    await page.getByLabel('Email', { exact: true }).fill(`${username}@staging.mifolyo.test`);
+    await page.getByLabel('Password', { exact: true }).fill('local-staging-only-password');
+    await page.getByLabel('Confirm password').fill('local-staging-only-password');
+    await page.screenshot({ path: testInfo.outputPath('registration.png'), fullPage: true });
+    await page.getByRole('button', { name: 'Create account', exact: true }).click();
+    await expect(page).toHaveURL(new RegExp(`/threads/${thread.id}$`));
+    await expect(page.locator('.mf-account-name')).toHaveText(username);
+    const cookie = (await page.context().cookies()).find((cookie) => cookie.name === 'mifolyo_search_staging_session');
+    expect(cookie.httpOnly).toBe(true);
+    expect(cookie.sameSite).toBe('Lax');
+    await page.getByRole('button', { name: 'Sign out' }).click();
+    await page.goto(`/threads/${thread.id}`);
+    await expect(page.getByRole('link', { name: 'Sign in to reply' })).toBeVisible();
+    await expect(page.getByLabel('Your reply')).toHaveCount(0);
+});
+
+test('account and reply forms work without JavaScript', async ({ browser, request }) => {
+    const context = await browser.newContext({ javaScriptEnabled: false, baseURL: 'http://127.0.0.1:18081' });
+    const page = await context.newPage();
+    try {
+        const source = `https://example.test/no-js/${randomUUID()}`;
+        await page.goto(`/discussions?${new URLSearchParams({ url: source })}`);
+        await page.getByRole('link', { name: 'Sign in to start a thread' }).click();
+        await page.getByLabel('Email', { exact: true }).fill('reader@staging.mifolyo.test');
+        await page.getByLabel('Password', { exact: true }).fill('local-staging-only-password');
+        await page.getByRole('button', { name: 'Sign in', exact: true }).click();
+        await page.locator('.mf-create-thread summary').click();
+        await page.getByLabel('Discussion title').fill('A conversation without JavaScript');
+        await page.getByRole('button', { name: 'Start thread', exact: true }).click();
+        await expect(page).toHaveURL(/\/threads\/\d+$/);
+        await page.getByLabel('Your reply').fill('A persisted no-JavaScript reply.');
+        await page.getByRole('button', { name: 'Post reply', exact: true }).click();
+        await expect(page.locator('.mf-comment-body')).toHaveText('A persisted no-JavaScript reply.');
+        const threadId = new URL(page.url()).pathname.split('/').pop();
+        const comments = await request.get(`${forumURL}/api/posts/${threadId}/comments`);
+        expect((await comments.json()).data[0].body).toBe('A persisted no-JavaScript reply.');
+        await page.getByRole('button', { name: 'Sign out' }).click();
+    } finally {
+        await context.close();
     }
 });

@@ -41,7 +41,7 @@ test('selected source opens real discussion transport on desktop and mobile', as
     await page.goto('/search?q=community');
     const discuss = page.locator('[data-discuss-url]').first();
     const source = await discuss.getAttribute('data-discuss-url');
-    const request = page.waitForRequest((request) => request.url().includes('/api/threads/by-url'));
+    const request = page.waitForRequest((request) => request.url().includes('/community/threads'));
     await discuss.click();
     expect(new URL((await request).url()).searchParams.get('url')).toBe(source);
     await expect(page.getByRole('heading', { name: 'What makes this source useful?' })).toBeVisible();
@@ -76,7 +76,7 @@ test('empty search, service failure and rate limit have useful recovery states',
 
 test('discussion loading, retry, empty and malformed responses', async ({ page }) => {
     let release;
-    await page.route('**/api/threads/by-url?**', async (route) => {
+    await page.route('**/community/threads?**', async (route) => {
         await new Promise((resolve) => { release = resolve; });
         await route.fulfill({ status: 503, json: { message: 'Unavailable' } });
     });
@@ -85,12 +85,12 @@ test('discussion loading, retry, empty and malformed responses', async ({ page }
     await expect.poll(() => typeof release).toBe('function');
     release();
     await expect(page.getByRole('button', { name: 'Try again' })).toBeVisible();
-    await page.unroute('**/api/threads/by-url?**');
-    await page.route('**/api/threads/by-url?**', (route) => route.fulfill({ json: { data: [], meta: { total: 0 } } }));
+    await page.unroute('**/community/threads?**');
+    await page.route('**/community/threads?**', (route) => route.fulfill({ json: { data: [], meta: { total: 0 } } }));
     await page.getByRole('button', { name: 'Try again' }).click();
     await expect(page.locator('[data-thread-status]')).toContainText('No discussions yet');
-    await page.unroute('**/api/threads/by-url?**');
-    await page.route('**/api/threads/by-url?**', (route) => route.fulfill({ json: { data: 'not-a-list' } }));
+    await page.unroute('**/community/threads?**');
+    await page.route('**/community/threads?**', (route) => route.fulfill({ json: { data: 'not-a-list' } }));
     await page.getByLabel('Sort').selectOption('new');
     await expect(page.locator('[data-thread-status]')).toContainText('unexpected response');
     await expect(page.getByRole('button', { name: 'Try again' })).toBeVisible();
@@ -98,7 +98,7 @@ test('discussion loading, retry, empty and malformed responses', async ({ page }
 
 test('discussion page and sort requests keep the exact source and escape content', async ({ page }) => {
     const source = 'https://example.test/source?a=1&b=two+words';
-    await page.route('**/api/threads/by-url?**', (route) => {
+    await page.route('**/community/threads?**', (route) => {
         const params = new URL(route.request().url()).searchParams;
         expect(params.get('url')).toBe(source);
         return route.fulfill({ json: {
@@ -111,7 +111,7 @@ test('discussion page and sort requests keep the exact source and escape content
     await expect(page.locator('.mf-thread img, .mf-thread script')).toHaveCount(0);
     await page.getByRole('button', { name: 'Next', exact: true }).click();
     await expect(page.locator('[data-thread-page]')).toHaveText('Page 2 of 2');
-    const request = page.waitForRequest((req) => req.url().includes('/api/threads/by-url') && new URL(req.url()).searchParams.get('sort') === 'new');
+    const request = page.waitForRequest((req) => req.url().includes('/community/threads') && new URL(req.url()).searchParams.get('sort') === 'new');
     await page.getByLabel('Sort').selectOption('new');
     expect(new URL((await request).url()).searchParams.get('page')).toBe('1');
     await expect(page.locator('[data-thread-page]')).toHaveText('Page 1 of 2');
@@ -123,7 +123,7 @@ test('late response bodies cannot replace a newer source selection', async ({ pa
     await page.evaluate(() => {
         const original = window.fetch;
         window.fetch = (url, options) => {
-            if (String(url).includes('/api/threads/by-url') && new URL(String(url)).searchParams.get('url').includes('/guide/1?')) {
+            if (String(url).includes('/community/threads') && new URL(String(url)).searchParams.get('url').includes('/guide/1?')) {
                 return Promise.resolve({ ok: true, json: () => new Promise((resolve) => {
                     window.releaseStaleBody = () => resolve({ data: [{ title: 'STALE SOURCE' }] });
                 }) });
@@ -151,26 +151,30 @@ test('storage restrictions do not break theme or discussion loading', async ({ p
     expect(errors).toEqual([]);
 });
 
-test('beta thread submission is tied to its source and does not persist credentials', async ({ page }) => {
+test('guest sign-in preserves the selected source through registration links', async ({ page }) => {
     const source = 'https://example.test/source?a=1&b=two';
-    let posted;
-    await page.route('**/api/threads', async (route) => {
-        posted = { body: route.request().postDataJSON(), authorization: route.request().headers().authorization };
-        await route.fulfill({ status: 201, json: { data: { id: 23 } } });
-    });
     await page.goto(`/discussions?${new URLSearchParams({ url: source })}`);
-    await page.locator('.mf-create-thread summary').click();
-    await page.getByLabel('Forum API token').fill('browser-test-token');
-    await page.getByLabel('Discussion title').fill('A question about this page');
-    await page.getByLabel('Body optional').fill('Some useful context.');
-    await page.getByRole('button', { name: 'Start thread', exact: true }).click();
-    await expect(page.locator('[data-create-status]')).toHaveText('Thread created.');
-    expect(posted).toEqual({
-        authorization: 'Bearer browser-test-token',
-        body: { title: 'A question about this page', body: 'Some useful context.', source_url: source },
-    });
-    expect(await page.evaluate(() => JSON.stringify(localStorage))).not.toContain('browser-test-token');
-    await expect(page.getByLabel('Discussion title')).toHaveValue('');
+    await expect(page.getByLabel('Forum API token')).toHaveCount(0);
+    await page.getByRole('link', { name: 'Sign in to start a thread' }).click();
+    const returnTo = new URL(page.url()).searchParams.get('return_to');
+    expect(new URL(returnTo, page.url()).searchParams.get('url')).toBe(source);
+    await page.getByRole('link', { name: 'Create an account', exact: true }).click();
+    expect(new URL(page.url()).searchParams.get('return_to')).toBe(returnTo);
+    await expect(page.getByLabel('Confirm password')).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
+
+test('conversation links open the full thread and accessible nested replies', async ({ page }, testInfo) => {
+    await page.goto('/discussions?url=https%3A%2F%2Fexample.test%2Fsource');
+    await page.getByRole('link', { name: 'Read conversation →' }).first().click();
+    await expect(page).toHaveURL(/\/threads\/1$/);
+    await expect(page.getByRole('heading', { name: 'What makes this source useful?' })).toBeVisible();
+    await expect(page.locator('#comment-5')).toContainText('A nested perspective');
+    await page.getByRole('link', { name: 'Reply to reader', exact: true }).click();
+    await expect(page.getByRole('heading', { name: 'Reply to reader' })).toBeVisible();
+    await page.screenshot({ path: testInfo.outputPath('thread-replies.png'), fullPage: true });
+    await page.getByRole('link', { name: 'Sign in to reply', exact: true }).click();
+    expect(new URL(page.url()).searchParams.get('return_to')).toBe('/threads/1?reply_to=4');
 });
 
 test('search and discussion fallback links work without JavaScript', async ({ browser, baseURL }) => {

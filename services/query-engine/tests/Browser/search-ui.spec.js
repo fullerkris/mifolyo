@@ -187,5 +187,126 @@ test('search and discussion fallback links work without JavaScript', async ({ br
     await page.locator('[data-discuss-url]').first().click();
     await expect(page.getByText('Enable JavaScript to load community discussions.')).toBeVisible();
     await expect(page.locator('.mf-create-thread')).toBeHidden();
+    await page.getByRole('link', { name: 'Back to results' }).click();
+    await expect(page.getByRole('searchbox')).toHaveValue('community');
     await context.close();
+});
+
+test('thread navigation restores the exact search, scroll, source and discussion panel', async ({ page, isMobile }) => {
+    const query = 'C++ & café #1';
+    await page.route('**/community/threads?**', route => {
+        const params = new URL(route.request().url()).searchParams;
+        return route.fulfill({ json: { data: [{ id: 1, title: 'A source conversation' }], meta: { total: 21, current_page: Number(params.get('page')), last_page: 2 } } });
+    });
+    await page.goto(`/search/exact?${new URLSearchParams({ q: query, page: '2' })}`);
+    const selected = page.locator('[data-discuss-url]').nth(7);
+    await expect(selected.locator('[data-discussion-count]')).toHaveText('0');
+    await selected.scrollIntoViewIfNeeded();
+    const source = await selected.getAttribute('data-discuss-url');
+    const scroll = await page.evaluate(() => scrollY);
+    expect(scroll).toBeGreaterThan(500);
+    await selected.click();
+    if (!isMobile) {
+        await page.getByRole('combobox', { name: 'Sort', exact: true }).selectOption('new');
+        await page.getByRole('button', { name: 'Next', exact: true }).click();
+        await expect(page.locator('[data-thread-page]')).toHaveText('Page 2 of 2');
+    }
+    await page.getByRole('link', { name: 'Read conversation →' }).click();
+    const from = new URL(page.url()).searchParams.get('from');
+    expect(new URL(from, page.url()).pathname).toBe('/search/exact');
+    expect(new URL(from, page.url()).searchParams.get('q')).toBe(query);
+    expect(new URL(from, page.url()).searchParams.get('page')).toBe('2');
+
+    // Browser Back restores the desktop panel, or the mobile list that led to the thread.
+    await page.goBack();
+    if (!isMobile) {
+        await expect(page.getByRole('dialog')).toBeVisible();
+        await expect(page.getByRole('combobox', { name: 'Sort', exact: true })).toHaveValue('new');
+        await expect(page.locator('[data-thread-page]')).toHaveText('Page 2 of 2');
+    }
+    await page.goForward();
+    await page.reload();
+    await page.getByRole('link', { name: 'Back to results' }).click();
+    await expect(page.getByRole('searchbox')).toHaveValue(query);
+    expect(new URL(page.url()).pathname).toBe('/search/exact');
+    expect(new URL(page.url()).searchParams.get('page')).toBe('2');
+    if (!isMobile) {
+        await expect(page.getByRole('dialog')).toBeVisible();
+        await expect(page.locator('[data-panel-source]')).toHaveAttribute('href', source);
+        await expect(page.locator('[data-thread-page]')).toHaveText('Page 2 of 2');
+        await page.getByRole('button', { name: 'Close discussions' }).click();
+    }
+    await expect(selected).toBeFocused();
+    await expect.poll(async () => Math.abs(await page.evaluate(() => scrollY) - scroll)).toBeLessThan(5);
+    await page.reload();
+    await expect(page.getByRole('dialog')).not.toBeVisible();
+});
+
+test('return context survives sign-in links and blocked storage with a safe direct-entry fallback', async ({ page }) => {
+    await page.addInitScript(() => {
+        for (const name of ['localStorage', 'sessionStorage']) Object.defineProperty(window, name, { get() { throw new DOMException('Blocked', 'SecurityError'); } });
+    });
+    const errors = [];
+    page.on('pageerror', error => errors.push(error.message));
+    const from = '/search/exact?q=source%20quality&page=2';
+    await page.goto(`/threads/1?${new URLSearchParams({ from })}`);
+    await page.getByRole('link', { name: 'Sign in to reply', exact: true }).click();
+    await page.getByRole('link', { name: 'Create an account', exact: true }).click();
+    const returnTo = new URL(page.url()).searchParams.get('return_to');
+    expect(new URL(returnTo, page.url()).searchParams.get('from')).toBe(from);
+    await page.goto(returnTo);
+    await page.getByRole('link', { name: 'Back to results' }).click();
+    await expect(page.getByRole('searchbox')).toHaveValue('source quality');
+    expect(new URL(page.url()).searchParams.get('page')).toBe('2');
+    await page.goto('/threads/1');
+    await expect(page.locator('[data-back-to-results]')).toHaveCount(0);
+    await expect(page.getByRole('link', { name: 'All discussions for this source' })).toBeVisible();
+    expect(errors).toEqual([]);
+});
+
+test('conversation counts use one batch and distinguish loading, zero, unavailable and retry', async ({ page }) => {
+    let release;
+    const requests = [];
+    await page.route('**/community/thread-counts', async route => {
+        const request = route.request();
+        requests.push(request);
+        if (requests.length === 1) await new Promise(resolve => { release = resolve; });
+        const { urls } = request.postDataJSON();
+        await route.fulfill({ json: { data: urls.map((url, index) => ({ url, count: index === 0 ? 23 : index === 2 && requests.length === 1 ? null : 0 })) } });
+    });
+    await page.goto('/search?q=community');
+    await expect(page.locator('[data-discussion-count]').first()).toHaveText('…');
+    await expect(page.locator('.mf-result-card')).toHaveCount(20);
+    await expect.poll(() => typeof release).toBe('function');
+    release();
+    const badges = page.locator('[data-discussion-count]');
+    await expect(badges.nth(0)).toHaveText('23');
+    await expect(badges.nth(0)).toHaveAttribute('aria-label', '23 conversations');
+    await expect(badges.nth(1)).toHaveText('0');
+    await expect(badges.nth(2)).toHaveText('—');
+    expect(requests).toHaveLength(1);
+    expect(requests[0].postDataJSON().urls).toHaveLength(20);
+    expect(requests[0].headers()['x-csrf-token']).toBeTruthy();
+    await page.getByRole('button', { name: 'Retry counts' }).click();
+    await expect(badges.nth(2)).toHaveText('0');
+    await expect(page.locator('[data-counts-status]')).toBeHidden();
+    expect(requests).toHaveLength(2);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
+
+test('late batch counts cannot replace newer conversation totals', async ({ page, isMobile }) => {
+    test.skip(isMobile, 'The panel remains on the results page only on desktop.');
+    let release;
+    await page.route('**/community/thread-counts', async route => {
+        await new Promise(resolve => { release = resolve; });
+        await route.fulfill({ json: { data: route.request().postDataJSON().urls.map(url => ({ url, count: 0 })) } });
+    });
+    await page.goto('/search?q=community');
+    await page.locator('[data-discuss-url]').first().click();
+    await expect(page.locator('[data-thread-status]')).toContainText('2 conversations');
+    await expect.poll(() => typeof release).toBe('function');
+    release();
+    await page.getByRole('button', { name: 'Close discussions' }).click();
+    await expect(page.locator('[data-discussion-count]').nth(1)).toHaveText('0');
+    await expect(page.locator('[data-discussion-count]').first()).toHaveText('2');
 });

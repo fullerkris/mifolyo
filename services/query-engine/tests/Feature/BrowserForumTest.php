@@ -47,6 +47,33 @@ class BrowserForumTest extends TestCase
             && $request->hasHeader('Authorization', 'Bearer server-token'));
     }
 
+    public function test_counts_forward_a_single_session_authenticated_batch_and_validate_the_response(): void
+    {
+        $urls = ['https://example.test/a?x=1&b=two', 'https://example.test/b'];
+        Http::fake([
+            'forum.test/api/auth/me' => Http::response(['data' => ['id' => 3, 'username' => 'reader']]),
+            'forum.test/api/threads/counts' => Http::sequence()
+                ->push(['data' => [['url' => $urls[0], 'count' => 3], ['url' => $urls[1], 'count' => 0]]])
+                ->push(['data' => [['url' => $urls[0], 'count' => -1], ['url' => $urls[1], 'count' => 0]]])
+                ->pushFailedConnection(),
+        ]);
+        $this->withSession(['forum' => ['token' => Crypt::encryptString('server-token'), 'user' => ['id' => 3, 'username' => 'reader']]])
+            ->postJson('/community/thread-counts', ['urls' => $urls])->assertOk()->assertJsonPath('data.0.count', 3)->assertJsonPath('data.1.count', 0);
+        Http::assertSentCount(2); // Account lookup and one batch, rather than one request per source.
+        Http::assertSent(fn ($request) => $request->url() === 'http://forum.test/api/threads/counts' && $request['urls'] === $urls
+            && $request->hasHeader('Authorization', 'Bearer server-token'));
+        $this->postJson('/community/thread-counts', ['urls' => $urls])->assertStatus(503);
+        $this->postJson('/community/thread-counts', ['urls' => $urls])->assertStatus(503);
+    }
+
+    public function test_counts_require_csrf_and_reject_oversized_batches_before_contacting_the_forum(): void
+    {
+        $this->postJson('/community/thread-counts', ['urls' => array_fill(0, 21, 'https://example.test')])->assertUnprocessable();
+        $this->app['env'] = 'local';
+        $this->postJson('/community/thread-counts', ['urls' => ['https://example.test']])->assertStatus(419);
+        Http::assertNothingSent();
+    }
+
     public function test_html_validation_keeps_the_source_and_draft_visible(): void
     {
         Http::fake(['forum.test/api/auth/me' => Http::response(['data' => ['id' => 3, 'username' => 'reader']])]);

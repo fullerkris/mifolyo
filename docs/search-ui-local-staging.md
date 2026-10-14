@@ -53,13 +53,17 @@ encoding/history, source-linked discussions and their pagination, mobile
 navigation, theme persistence, and login plus thread creation persisted through
 the proxy. It also checks account registration/sign-out, full thread pages,
 nested replies, draft recovery after token rotation, CSRF rejection, and
-posting without JavaScript. Recovery tests briefly stop/restart **this project's** forum and
+posting without JavaScript. Exact-search return checks cover the query/mode/page,
+selected source, scroll, desktop panel, and live counts after sign-in/thread/reply
+posting. Recovery tests briefly stop/restart **this project's** forum and
 MongoDB services and verify error/retry behavior. They restore the services in
 `finally` blocks. Run the suite when the local staging UI can be interrupted.
 
 Tests verify the staging response marker before operating and use fixed
 loopback endpoints. Write tests create source-specific threads and registration
-tests create uniquely named staging accounts. Screenshots and failure traces go to
+tests create uniquely named staging accounts. The exact-search return check adds
+a discussion to an indexed source on page two; its count assertion uses the
+existing count so reruns are safe. Screenshots and failure traces go to
 `services/query-engine/test-results/staging/` (ignored by Git and image builds).
 
 For manual posting, use **Sign in** on the Search UI with
@@ -89,6 +93,32 @@ after completing their account journeys.
   endpoints reject expired forum tokens.
 - Repository CI runs PHP/MongoDB tests and desktop/mobile browser-fixture checks.
   `npm run test:staging` separately validates the real local services.
+
+## Search return navigation and result counts
+
+- Discussion and thread pages provide **Back to results** when opened from a
+  search. The validated `from` URL preserves the original query, exact/normal
+  search mode, and results page through thread/reply links and authentication.
+  Direct-entry discussion/thread links retain their usual source/Home fallback.
+- Tab-local history/session storage restores the selected result, scroll position,
+  and desktop discussion panel (including its sort and page). The last ten search
+  journeys are retained, with a two-hour restoration window. Browser Back/Forward
+  and explicit return links work; closing a restored panel returns keyboard focus
+  to the source result. Without storage or JavaScript, the return link still keeps
+  the query/mode/page.
+- Result cards load conversation counts through one CSRF-protected
+  `POST /community/thread-counts` request for up to 20 source URLs. The Query Engine
+  calls the forum's `POST /api/threads/counts` using its server-held session token.
+  Request: `{"urls":["https://example.com/source"]}`; response:
+  `{"data":[{"url":"https://example.com/source","count":0}]}`.
+- The forum uses the same canonical source identity and private-membership/removed
+  content filters as its source thread list, in one grouped database query.
+  Unsupported identities return `null`; failures remain unavailable rather than
+  becoming zero. Responses are private and non-cacheable.
+- Badges distinguish loading (`…`), confirmed zero (`0`), and unavailable (`—`).
+  **Retry counts** recovers independently of search results. Counts refresh on
+  return navigation and after loading/creating a source conversation; a late
+  batch response cannot overwrite a fresher source total.
 
 ## Inspect and stop
 
@@ -159,4 +189,46 @@ Validated local image IDs for the thread/account implementation:
 ```text
 query: sha256:f6e23869dc841b4b711bc15d34d1c0e7a489e154b4af246eb6b3749faf58f7a9
 forum: sha256:c8e5c52875a6592ee11341f160d4d6d36e7f92907c06350e97380833cced17e5
+```
+
+## UX-03 / UX-04 validation — 2026-10-14
+
+- Exact-search return navigation and batched result-card conversation counts are
+  implemented on `feature/search-ui`. PR #27 is open and ready for review; the
+  owner's merge hold remains active.
+- Query Engine PHP/MongoDB: **66 passed, 426 assertions**. This includes bounded
+  local search destinations, thread/reply/reauthentication return context, count
+  response validation, CSRF rejection, and throttled sign-in retry context.
+- Forum: **135 passed, 596 assertions**. Counts share the thread list's visibility
+  filter and canonical URL/version identity; tests cover private membership,
+  removed content, hash collisions, unsupported identities, batch bounds, expired
+  tokens, and a single grouped count query for 20 URLs.
+- Browser fixtures: **28 passed, 2 expected mobile skips** for desktop-only panel
+  race checks. Exact query/mode/page, scroll, source, panel sort/page, browser
+  Back/Forward, explicit return, restricted storage, zero/unavailable/retry counts,
+  and late-batch versus fresh-source totals are covered.
+- Real-service staging: **18 passed, 0 skipped** (1.6 minutes). Verified live
+  counts before/after persisted threads, exact-results return after sign-in and
+  replies, reauthentication drafts, no-JavaScript return links, and both service
+  outage recoveries. Forum outages leave search usable and counts unavailable;
+  independent count retry recovers after the forum restarts.
+- The expanded staging suite reached the real sign-in rate limit and exposed a
+  retry link that dropped the destination. The fix and regression check pass;
+  staging now honors the server's `Retry-After` before submitting again.
+- Browser fixtures now retain file sessions for real CSRF validation on the
+  count route. The staging seed's MongoDB guard now matches the recovery-enabled
+  URI; the query seed ran successfully and retained all 25 sources.
+- Reviewed badges and return links at **320/768/1440px in both themes**: no
+  horizontal overflow or browser JavaScript errors. Final return-link spacing,
+  touch targets and desktop panel restoration passed focused walkthroughs after
+  the full suite. Screenshots: `test-results/staging/ux03-ux04-layouts/`.
+- Both application images built successfully; focused PHP formatting and Git
+  whitespace checks passed. Both readiness endpoints returned HTTP 200 and all
+  six long-running staging containers were healthy after recovery testing.
+
+Validated local image IDs (not registry digests):
+
+```text
+query: sha256:914f6be467c7cef91496ef598115199c0e1949312635bd7d5f2e1241b62ad97b
+forum: sha256:2b826e97a30a1bcd121a8a302a7487c851f1cda6442d1d4d16cd5a2366c08c74
 ```

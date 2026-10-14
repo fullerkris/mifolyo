@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\ForumApi;
+use App\Support\SearchContext;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
@@ -51,28 +52,29 @@ class ThreadPageController extends Controller
             'parent_comment_id' => ['nullable', 'integer', 'min:1'],
         ]);
         $request->session()->put('forum_drafts.'.$thread, $input);
+        $back = route('threads.show', ['thread' => $thread] + SearchContext::parameters($request), false);
         if (! $request->session()->has('forum.user')) {
-            return redirect()->route('account.sign-in', ['return_to' => '/threads/'.$thread]);
+            return redirect()->route('account.sign-in', ['return_to' => $back]);
         }
         try {
             $response = $forum->call($request, 'post', '/api/posts/'.$thread.'/comments', $input);
         } catch (HttpExceptionInterface) {
-            return redirect()->route('threads.show', $thread)->withErrors(['body' => 'Could not confirm whether your reply was posted. Check the conversation before trying again.']);
+            return redirect($back)->withErrors(['body' => 'Could not confirm whether your reply was posted. Check the conversation before trying again.']);
         }
         if ($response->status() === 401) {
-            return redirect()->route('account.sign-in', ['return_to' => '/threads/'.$thread])->with('notice', 'Please sign in again to post your reply. Your draft is saved.');
+            return redirect()->route('account.sign-in', ['return_to' => $back])->with('notice', 'Please sign in again to post your reply. Your draft is saved.');
         }
         if (! $response->successful()) {
             $message = in_array($response->status(), [403, 422, 423, 429], true)
                 ? ($response->json('message') ?? 'Your reply could not be posted.') : 'Could not confirm whether your reply was posted. Check the conversation before trying again.';
 
-            return redirect()->route('threads.show', $thread)->withErrors(['body' => $message]);
+            return redirect($back)->withErrors(['body' => $message]);
         }
         if (! is_int($response->json('data.id')) || $response->json('data.id') < 1) {
-            return redirect()->route('threads.show', $thread)->withErrors(['body' => 'Could not confirm whether your reply was posted. Check the conversation before trying again.']);
+            return redirect($back)->withErrors(['body' => 'Could not confirm whether your reply was posted. Check the conversation before trying again.']);
         }
         $request->session()->forget('forum_drafts.'.$thread);
 
-        return redirect()->to(route('threads.show', $thread).'#comment-'.(int) $response->json('data.id'))->with('notice', 'Your reply was posted.');
+        return redirect()->to($back.'#comment-'.(int) $response->json('data.id'))->with('notice', 'Your reply was posted.');
     }
 }

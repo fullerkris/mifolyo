@@ -14,7 +14,7 @@ $mode = $argv[1] ?? '';
 
 if ($mode === 'query') {
     if (config('database.connections.mongodb.database') !== 'mifolyo_search_ui_staging'
-        || config('database.connections.mongodb.dsn') !== 'mongodb://mongo:27017/?serverSelectionTimeoutMS=2000') {
+        || config('database.connections.mongodb.dsn') !== 'mongodb://mongo:27017/?serverSelectionTimeoutMS=2000&serverSelectionTryOnce=false') {
         throw new RuntimeException('Unexpected staging MongoDB target.');
     }
     $database = (new MongoDB\Client(config('database.connections.mongodb.dsn')))

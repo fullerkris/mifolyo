@@ -19,6 +19,7 @@ Route::middleware(['auth.token.fresh', 'throttle:api-read'])->group(function () 
     Route::get('/feeds/community/{community:slug}', [FeedController::class, 'community']);
     Route::get('/communities', [CommunityController::class, 'index']);
     Route::get('/threads/by-url', [ThreadController::class, 'byUrl']);
+    Route::post('/threads/counts', [ThreadController::class, 'counts']);
     Route::get('/posts/{post}/comments', [CommentController::class, 'index']);
     Route::get('/posts/{post}', [PostController::class, 'show']);
 });

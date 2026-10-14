@@ -117,6 +117,9 @@ main:focus { outline: none; }
 .mf-result-card h2 a:hover { color: var(--mf-blue); text-decoration: underline; text-underline-offset: 4px; }
 .mf-result-excerpt { margin-top: 10px; color: var(--mf-muted); font-size: 14px; line-height: 1.8; overflow-wrap: anywhere; }
 .mf-result-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 20px; }
+.mf-discussion-count { min-width: 3ch; text-align: center; padding: 1px 5px; border-radius: 5px; background: var(--mf-soft); font-size: 11px; font-variant-numeric: tabular-nums; }
+.mf-counts-status { margin-bottom: 16px; font-size: 13px; color: var(--mf-muted); }
+.mf-counts-status button { min-height: 44px; margin-left: 8px; }
 .mf-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; border: 1px solid transparent; border-radius: 10px; padding: 9px 17px; font-size: 13px; font-weight: 650; text-decoration: none; }
 .mf-button .mf-icon { width: 16px; height: 16px; }
 .mf-primary { background: var(--mf-orange); color: var(--mf-primary-text); }
@@ -178,6 +181,8 @@ body:has(.mf-discussion-dialog[open]) { overflow: hidden; }
 .mf-form-error { color: var(--mf-error); margin: 12px 0; font-size: 14px; }
 .mf-discussion-page { max-width: 920px; }
 .mf-back-link { display: inline-block; margin-bottom: 28px; }
+.mf-reading-nav { display: flex; flex-wrap: wrap; gap: 8px 24px; margin-bottom: 24px; }
+.mf-reading-nav .mf-back-link { display: inline-flex; align-items: center; min-height: 44px; margin-bottom: 0; }
 .mf-discussion-heading h1 { margin-bottom: 16px; overflow-wrap: anywhere; }
 .mf-discussion-heading > p:last-child { color: var(--mf-muted); font-size: 14px; margin-top: 18px; }
 .mf-thread h3 a { text-decoration: underline; text-decoration-color: var(--mf-line); text-underline-offset: 4px; }

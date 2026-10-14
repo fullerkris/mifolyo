@@ -11,6 +11,7 @@ use App\Support\SourceUrlNormalizationException;
 use App\Support\SourceUrlNormalizer;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -65,25 +66,11 @@ class ThreadController extends Controller
         $source = $this->normalizeSourceUrl($validated['url'], 'url');
         $sort = $validated['sort'] ?? 'top';
         $perPage = (int) ($validated['per_page'] ?? 20);
-        $user = $request->user('api');
-
-        $query = Post::query()
+        $query = $this->visibleThreads($request->user('api'))
             ->with(['author', 'community'])
             ->where('source_url_canonicalization_version', SourceUrlNormalizer::CANONICALIZATION_VERSION)
             ->where('source_url_hash', $source['source_url_hash'])
-            ->where('source_url', $source['source_url'])
-            ->where('is_removed', false)
-            ->where(function (Builder $query) use ($user): void {
-                $query->whereHas('community', function (Builder $communityQuery): void {
-                    $communityQuery->where('is_private', false);
-                });
-
-                if ($user instanceof User) {
-                    $query->orWhereHas('community.memberships', function (Builder $membershipQuery) use ($user): void {
-                        $membershipQuery->where('user_id', $user->id);
-                    });
-                }
-            });
+            ->where('source_url', $source['source_url']);
 
         if ($sort === 'new') {
             $query->orderByDesc('published_at')->orderByDesc('id');
@@ -113,6 +100,58 @@ class ThreadController extends Controller
                 'last_page' => $threads->lastPage(),
             ],
         ]);
+    }
+
+    public function counts(Request $request): JsonResponse
+    {
+        $input = $request->validate([
+            'urls' => ['required', 'array', 'list', 'min:1', 'max:20'],
+            'urls.*' => ['required', 'string', 'max:2048'],
+        ]);
+        $sources = [];
+        foreach ($input['urls'] as $url) {
+            try {
+                $sources[$url] = SourceUrlNormalizer::normalizeV1($url);
+            } catch (SourceUrlNormalizationException) {
+                // One unsupported source must not turn every other count into zero.
+                $sources[$url] = null;
+            }
+        }
+        $identities = array_filter($sources);
+        $counts = collect();
+        if ($identities !== []) {
+            $counts = $this->visibleThreads($request->user('api'))
+                ->where('source_url_canonicalization_version', SourceUrlNormalizer::CANONICALIZATION_VERSION)
+                ->where(function (Builder $query) use ($identities): void {
+                    foreach ($identities as $source) {
+                        $query->orWhere(fn (Builder $match) => $match
+                            ->where('source_url_hash', $source['source_url_hash'])
+                            ->where('source_url', $source['source_url']));
+                    }
+                })
+                ->select(['source_url_hash', 'source_url'])
+                ->selectRaw('COUNT(*) as conversation_count')
+                ->groupBy('source_url_hash', 'source_url')->get()
+                ->keyBy(fn (Post $post) => $post->source_url_hash."\n".$post->source_url);
+        }
+
+        return response()->json(['data' => array_map(function (string $url) use ($sources, $counts): array {
+            $source = $sources[$url];
+            $count = $source === null ? null : (int) ($counts->get($source['source_url_hash']."\n".$source['source_url'])?->conversation_count ?? 0);
+
+            return ['url' => $url, 'count' => $count];
+        }, $input['urls'])])->header('Cache-Control', 'private, no-store');
+    }
+
+    private function visibleThreads(?User $user): Builder
+    {
+        return Post::query()->where('is_removed', false)
+            ->where(function (Builder $query) use ($user): void {
+                $query->whereHas('community', fn (Builder $community) => $community->where('is_private', false));
+                if ($user !== null) {
+                    $query->orWhereHas('community.memberships', fn (Builder $membership) => $membership->where('user_id', $user->id));
+                }
+            });
     }
 
     private function canCreateInCommunity(Community $community, User $user): bool

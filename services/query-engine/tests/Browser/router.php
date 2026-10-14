@@ -17,6 +17,9 @@ $app = require __DIR__.'/../../bootstrap/app.php';
 $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
 $kernel->bootstrap();
 
+// Counts use the real CSRF-protected browser route and need a session across requests.
+config(['session.driver' => 'file', 'session.cookie' => 'mifolyo_browser_fixture_session']);
+
 // Deterministic UI data; the separate MongoDB feature tests cover actual query execution.
 foreach ([App\Http\Middleware\FuzzySearch::class, App\Http\Middleware\StoreSearchTerm::class] as $middleware) {
     $app->instance($middleware, new class
@@ -60,6 +63,9 @@ $app->instance(App\Http\Controllers\QuerySearchController::class, new class exte
 });
 Illuminate\Support\Facades\Http::preventStrayRequests();
 Illuminate\Support\Facades\Http::fake([
+    '*/api/threads/counts' => fn ($request) => Illuminate\Support\Facades\Http::response(['data' => array_map(
+        fn ($url) => ['url' => $url, 'count' => str_contains($url, '/guide/1?') ? 2 : 0], $request['urls']
+    )]),
     '*/api/posts/1' => Illuminate\Support\Facades\Http::response(['data' => [
         'id' => 1, 'title' => 'What makes this source useful?', 'body' => 'A full conversation grounded in the original source.',
         'source_url' => 'https://example.test/source', 'comment_count' => 2, 'author' => ['username' => 'reader'],

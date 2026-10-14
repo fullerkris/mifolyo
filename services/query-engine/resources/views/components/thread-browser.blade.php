@@ -1,5 +1,7 @@
 @props(['prefix', 'sourceUrl' => ''])
-<section class="mf-thread-browser" data-thread-browser data-source-url="{{ $sourceUrl }}" data-threads-endpoint="{{ route('community.threads', [], false) }}" data-create-endpoint="{{ route('community.create', [], false) }}">
+@php($searchReturn = \App\Support\SearchContext::url(request()->input('from')) ?? \App\Support\SearchContext::url(request()->getRequestUri()))
+@php($searchContext = $searchReturn ? ['from' => $searchReturn] : [])
+<section class="mf-thread-browser" data-thread-browser data-source-url="{{ $sourceUrl }}" data-search-return="{{ $searchReturn }}" data-threads-endpoint="{{ route('community.threads', [], false) }}" data-create-endpoint="{{ route('community.create', [], false) }}">
     <div class="mf-thread-toolbar">
         <h2>Conversations</h2>
         <label for="{{ $prefix }}-sort" data-thread-sort-label hidden>Sort <select id="{{ $prefix }}-sort" data-thread-sort><option value="top">Top</option><option value="new">Newest</option></select></label>
@@ -13,8 +15,8 @@
         <button type="button" class="mf-button mf-secondary" data-thread-next>Next</button>
     </nav>
     <p class="mf-sign-in-prompt" data-thread-sign-in @if (session()->has('forum.user')) hidden @endif>
-        <a class="mf-text-link" data-forum-sign-in href="{{ route('account.sign-in', ['return_to' => '/discussions?'.http_build_query(['url' => $sourceUrl])]) }}">Sign in to start a thread</a>
-        or <a class="mf-text-link" data-forum-register href="{{ route('account.register', ['return_to' => '/discussions?'.http_build_query(['url' => $sourceUrl])]) }}">create an account</a>.
+        <a class="mf-text-link" data-forum-sign-in href="{{ route('account.sign-in', ['return_to' => '/discussions?'.http_build_query(['url' => $sourceUrl] + $searchContext)]) }}">Sign in to start a thread</a>
+        or <a class="mf-text-link" data-forum-register href="{{ route('account.register', ['return_to' => '/discussions?'.http_build_query(['url' => $sourceUrl] + $searchContext)]) }}">create an account</a>.
     </p>
     @if (session()->has('forum.user'))
     @php($draft = old('source_url') === $sourceUrl ? old() : (session('forum_thread_draft.source_url') === $sourceUrl ? session('forum_thread_draft') : []))
@@ -22,6 +24,7 @@
         <summary>Start a thread</summary>
         <form method="POST" action="{{ route('community.create') }}" data-thread-create>
             @csrf
+            @if ($searchReturn)<input type="hidden" name="from" value="{{ $searchReturn }}">@endif
             <input type="hidden" name="source_url" value="{{ $sourceUrl }}">
             <p>Attach your question or perspective to this source.</p>
             <label for="{{ $prefix }}-title">Discussion title</label>

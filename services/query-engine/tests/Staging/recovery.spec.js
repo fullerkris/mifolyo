@@ -14,9 +14,13 @@ test.beforeEach(async ({ request }) => assertStaging(request));
 test('forum outage shows retry and recovers against the real service', async ({ page, request }, testInfo) => {
     let stopped = false;
     try {
-        await page.goto('/search?q=staging');
         compose('stop', '--timeout', '5', 'forum-engine');
         stopped = true;
+        await page.goto('/search?q=staging');
+        await expect(page.locator('.mf-result-card')).toHaveCount(20);
+        await expect(page.locator('[data-discussion-count]').first()).toHaveText('—', { timeout: 15000 });
+        await expect(page.locator('[data-counts-status]')).toBeVisible();
+        await page.screenshot({ path: testInfo.outputPath('counts-unavailable.png') });
         await page.locator('[data-discuss-url]').first().click();
         await expect(page.locator('[data-thread-status]')).toContainText('unavailable', { timeout: 15000 });
         await expect(page.getByRole('button', { name: 'Try again' })).toBeVisible();
@@ -26,6 +30,11 @@ test('forum outage shows retry and recovers against the real service', async ({ 
         stopped = false;
         await page.getByRole('button', { name: 'Try again' }).click();
         await expect(page.locator('.mf-thread')).toHaveCount(20);
+        await page.getByRole('button', { name: 'Close discussions' }).click();
+        await expect(page.locator('[data-discussion-count]').first()).toHaveText('23');
+        await page.getByRole('button', { name: 'Retry counts' }).click();
+        await expect(page.locator('[data-discussion-count]').nth(1)).toHaveText('0');
+        await expect(page.locator('[data-counts-status]')).toBeHidden();
     } finally {
         if (stopped) {
             compose('start', 'forum-engine');

@@ -1,4 +1,6 @@
 import { ThreadBrowser } from './thread-browser.js';
+import { initSearchJourney } from './search-journey.js';
+import { initDiscussionCounts } from './discussion-counts.js';
 
 const themeButton = document.querySelector('[data-theme-toggle]');
 const updateThemeButton = () => {
@@ -43,34 +45,9 @@ window.addEventListener('pageshow', () => {
 const dialog = document.querySelector('[data-discussion-dialog]');
 const panelRoot = dialog?.querySelector('[data-thread-browser]');
 const panel = panelRoot ? new ThreadBrowser(panelRoot) : null;
-let opener;
-if (dialog && panel) {
-    document.querySelectorAll('[data-discuss-url]').forEach((link) => {
-        link.addEventListener('click', (event) => {
-            if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey
-                || matchMedia('(max-width: 768px)').matches || typeof dialog.showModal !== 'function') return;
-            event.preventDefault();
-            opener = link;
-            dialog.querySelector('[data-panel-title]').textContent = link.dataset.discussTitle;
-            const source = dialog.querySelector('[data-panel-source]');
-            source.textContent = link.dataset.discussUrl;
-            source.href = link.dataset.discussUrl;
-            dialog.querySelector('[data-panel-page]').href = link.href;
-            dialog.showModal();
-            panel.setSource(link.dataset.discussUrl);
-        });
-    });
-    dialog.querySelector('[data-close-discussions]').addEventListener('click', () => dialog.close());
-    dialog.addEventListener('click', (event) => {
-        const rect = dialog.getBoundingClientRect();
-        if (event.target === dialog && (event.clientX < rect.left || event.clientX > rect.right
-            || event.clientY < rect.top || event.clientY > rect.bottom)) dialog.close();
-    });
-    dialog.addEventListener('close', () => {
-        panel.cancel();
-        opener?.focus();
-    });
-}
+const results = document.querySelector('[data-search-context]');
+initDiscussionCounts(results);
+initSearchJourney(results, dialog, panel);
 document.querySelectorAll('[data-thread-browser]').forEach((root) => {
     if (root !== panelRoot && root.dataset.sourceUrl) new ThreadBrowser(root).setSource(root.dataset.sourceUrl);
 });

@@ -41,10 +41,16 @@ export class ThreadBrowser {
         this.root.removeAttribute('aria-busy');
     }
 
-    setSource(source) {
+    link(path) {
+        const url = new URL(path, location.origin);
+        if (this.root.dataset.searchReturn) url.searchParams.set('from', this.root.dataset.searchReturn);
+        return url.pathname + url.search + url.hash;
+    }
+
+    setSource(source, state = {}) {
         this.cancel();
         this.source = source;
-        this.sort.value = 'top';
+        this.sort.value = state.sort === 'new' ? 'new' : 'top';
         if (this.form) {
             this.form.reset();
             this.form.elements.source_url.value = source;
@@ -53,10 +59,10 @@ export class ThreadBrowser {
             this.root.querySelector('.mf-create-thread').open = source === this.root.dataset.sourceUrl
                 && (this.form.elements.title.value.trim() !== '' || Boolean(this.root.querySelector('.mf-form-error')));
         }
-        const returnTo = `/discussions?${new URLSearchParams({ url: source })}`;
+        const returnTo = this.link(`/discussions?${new URLSearchParams({ url: source })}`);
         this.root.querySelector('[data-forum-sign-in]').href = `/sign-in?${new URLSearchParams({ return_to: returnTo })}`;
         this.root.querySelector('[data-forum-register]').href = `/register?${new URLSearchParams({ return_to: returnTo })}`;
-        this.load(1);
+        this.load(Number.isSafeInteger(state.page) ? state.page : 1);
     }
 
     async load(page) {
@@ -65,6 +71,7 @@ export class ThreadBrowser {
         this.controller = controller;
         const generation = ++this.generation;
         this.page = Math.max(1, Math.min(10000, page));
+        this.root.dispatchEvent(new CustomEvent('threads:state', { bubbles: true }));
         const url = new URL(this.root.dataset.threadsEndpoint, location.origin);
         url.search = new URLSearchParams({ url: this.source, sort: this.sort.value, page: this.page, per_page: 20 });
         this.list.replaceChildren();
@@ -91,6 +98,7 @@ export class ThreadBrowser {
                 || !Number.isSafeInteger(lastPage) || lastPage < 1
                 || !Number.isSafeInteger(total) || total < 0) throw new Error('Could not read the discussion pages. Please try again.');
             this.render(payload.data);
+            this.root.dispatchEvent(new CustomEvent('threads:loaded', { bubbles: true, detail: { source: this.source, total } }));
             this.status.textContent = total === 0 ? 'No discussions yet for this page. A good question can start a conversation.'
                 : `${total.toLocaleString()} ${total === 1 ? 'conversation' : 'conversations'} for this page`;
             this.pagination.hidden = lastPage <= 1;
@@ -115,7 +123,7 @@ export class ThreadBrowser {
             const heading = textElement('h3', '', thread.title);
             if (Number.isSafeInteger(thread.id) && thread.id > 0) {
                 const link = textElement('a', '', thread.title);
-                link.href = `/threads/${thread.id}`;
+                link.href = this.link(`/threads/${thread.id}`);
                 heading.replaceChildren(link);
             }
             article.append(heading);
@@ -132,7 +140,7 @@ export class ThreadBrowser {
             }
             if (Number.isSafeInteger(thread.id) && thread.id > 0) {
                 const link = textElement('a', 'mf-text-link mf-thread-open', 'Read conversation →');
-                link.href = `/threads/${thread.id}`;
+                link.href = this.link(`/threads/${thread.id}`);
                 article.append(link);
             }
             this.list.append(article);
@@ -158,7 +166,7 @@ export class ThreadBrowser {
             const response = await fetch(this.root.dataset.createEndpoint, {
                 method: 'POST', signal: controller.signal,
                 headers: { Accept: 'application/json', 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
-                body: JSON.stringify({ title, body: String(fields.get('body') ?? ''), source_url: this.source }),
+                body: JSON.stringify({ title, body: String(fields.get('body') ?? ''), source_url: this.source, ...(this.root.dataset.searchReturn ? { from: this.root.dataset.searchReturn } : {}) }),
             });
             const payload = await response.json();
             if (sourceGeneration !== this.sourceGeneration) return;
@@ -173,7 +181,7 @@ export class ThreadBrowser {
             this.createStatus.textContent = 'Thread created.';
             if (Number.isSafeInteger(payload.data?.id)) {
                 const link = textElement('a', 'mf-text-link mf-thread-open', 'Open your conversation →');
-                link.href = `/threads/${payload.data.id}`;
+                link.href = this.link(`/threads/${payload.data.id}`);
                 this.createStatus.append(link);
             }
             await this.load(1);

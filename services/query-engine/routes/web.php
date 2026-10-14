@@ -23,6 +23,7 @@ Route::post('/sign-out', [ForumAccountController::class, 'logout'])->name('accou
 Route::get('/threads/{thread}', [ThreadPageController::class, 'show'])->whereNumber('thread')->name('threads.show');
 Route::post('/threads/{thread}/comments', [ThreadPageController::class, 'comment'])->whereNumber('thread')->middleware('throttle:30,1,forum-write')->name('threads.comment');
 Route::get('/community/threads', [BrowserForumController::class, 'index'])->middleware('throttle:90,1,forum-read')->name('community.threads');
+Route::post('/community/thread-counts', [BrowserForumController::class, 'counts'])->middleware('throttle:90,1,forum-read')->name('community.counts');
 Route::post('/community/threads', [BrowserForumController::class, 'create'])->middleware('throttle:30,1,forum-write')->name('community.create');
 
 Route::get('/search', [QuerySearchController::class, 'search'])

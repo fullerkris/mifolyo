@@ -32,7 +32,8 @@
                 <span class="mf-account-name">{{ session('forum.user.username') }}</span>
                 <form method="POST" action="{{ route('account.sign-out') }}">@csrf<button class="mf-text-link" type="submit">Sign out</button></form>
             @else
-                <a href="{{ route('account.sign-in', ['return_to' => request()->getRequestUri()]) }}">Sign in</a>
+                @php($searchReturn = \App\Support\SearchContext::url(request()->getRequestUri()))
+                <a href="{{ route('account.sign-in', ['return_to' => $searchReturn ? $searchReturn.'#mf-return' : request()->getRequestUri()]) }}">Sign in</a>
             @endif
             <button type="button" class="mf-icon-button" data-theme-toggle aria-label="Switch color theme" aria-pressed="false" hidden><x-search-icon name="theme" /></button>
         </nav>

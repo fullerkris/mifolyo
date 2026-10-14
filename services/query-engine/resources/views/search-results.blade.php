@@ -1,5 +1,5 @@
 <x-search-layout :title="'Search results for '.($originalQuery ?? $query).' — MiFolyo'" :query="$originalQuery ?? $query">
-    <main id="main" class="mf-page" tabindex="-1">
+    <main id="main" class="mf-page" tabindex="-1" data-search-context="{{ \App\Support\SearchContext::url(request()->getRequestUri()) }}" data-counts-endpoint="{{ route('community.counts', [], false) }}">
         <div class="mf-results-heading">
             <div><p class="mf-eyebrow">Web search</p><h1>{{ $query !== '' ? 'Results for “'.$query.'”' : 'What are you curious about?' }}</h1></div>
             @if ($total > 0)
@@ -11,6 +11,7 @@
         @endif
         <div class="mf-results-grid">
             <section aria-label="Search results" class="mf-results">
+                <p class="mf-counts-status" data-counts-status role="status" hidden>Some conversation counts are unavailable. <button type="button" class="mf-text-link" data-counts-retry>Retry counts</button></p>
                 @if (count($results) > 0)
                     <ul class="mf-results-list">
                         @foreach ($results as $res)

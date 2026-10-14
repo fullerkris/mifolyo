@@ -1,7 +1,13 @@
 <x-search-layout :title="$post['title'].' — MiFolyo'">
+    @php($searchContext = \App\Support\SearchContext::parameters(request()))
     <main id="main" class="mf-page mf-discussion-page" tabindex="-1">
-        @if ($sourceUrl)
-            <a href="{{ route('discussions', ['url' => $sourceUrl]) }}" class="mf-text-link mf-back-link">← All discussions for this source</a>
+        @if ($sourceUrl || $searchContext)
+            <nav class="mf-reading-nav" aria-label="Return navigation">
+                <x-search-return />
+                @if ($sourceUrl)
+                    <a href="{{ route('discussions', ['url' => $sourceUrl] + $searchContext) }}" class="mf-text-link mf-back-link">← All discussions for this source</a>
+                @endif
+            </nav>
         @endif
         <article class="mf-thread mf-thread-detail">
             <p class="mf-eyebrow">{{ data_get($post, 'community.name', 'Community discussion') }}</p>
@@ -13,7 +19,7 @@
         <section class="mf-comments" aria-labelledby="comments-heading">
             <h2 id="comments-heading">Comments &amp; replies</h2>
             @if ($commentsUnavailable)
-                <p class="mf-form-error" role="alert">Replies are temporarily unavailable. <a href="{{ route('threads.show', $post['id']) }}">Try again</a></p>
+                <p class="mf-form-error" role="alert">Replies are temporarily unavailable. <a href="{{ route('threads.show', ['thread' => $post['id']] + $searchContext) }}">Try again</a></p>
             @elseif (count($comments) === 0)
                 <p class="mf-thread-status">No replies yet. Add the first perspective.</p>
             @else
@@ -31,14 +37,15 @@
             @if ($post['is_locked'] ?? false)
                 <p>This conversation is closed to new replies.</p>
             @elseif ($replyUnavailable)
-                <p>The selected comment is unavailable for replies. @if ($draft) Your draft is saved. @endif <a class="mf-text-link" href="{{ route('threads.show', ['thread' => $post['id'], 'reply_to' => 0]) }}#reply-form">Reply to the thread instead</a></p>
+                <p>The selected comment is unavailable for replies. @if ($draft) Your draft is saved. @endif <a class="mf-text-link" href="{{ route('threads.show', ['thread' => $post['id'], 'reply_to' => 0] + $searchContext) }}#reply-form">Reply to the thread instead</a></p>
             @elseif (! session()->has('forum.user'))
                 <p><a class="mf-text-link" href="{{ route('account.sign-in', ['return_to' => request()->getRequestUri()]) }}">Sign in to reply</a> or <a class="mf-text-link" href="{{ route('account.register', ['return_to' => request()->getRequestUri()]) }}">create an account</a> to join the conversation.</p>
             @else
                 <form method="POST" action="{{ route('threads.comment', $post['id']) }}" class="mf-account-form" data-posting-form>
                     @csrf
+                    @if ($searchContext)<input type="hidden" name="from" value="{{ $searchContext['from'] }}">@endif
                     <input type="hidden" name="parent_comment_id" value="{{ $reply['id'] ?? '' }}">
-                    @if ($reply)<blockquote>{{ Str::limit($reply['body'], 200) }}</blockquote><a class="mf-text-link" href="{{ route('threads.show', ['thread' => $post['id'], 'reply_to' => 0]) }}#reply-form">Reply to the thread instead</a>@endif
+                    @if ($reply)<blockquote>{{ Str::limit($reply['body'], 200) }}</blockquote><a class="mf-text-link" href="{{ route('threads.show', ['thread' => $post['id'], 'reply_to' => 0] + $searchContext) }}#reply-form">Reply to the thread instead</a>@endif
                     <label for="reply-body">Your reply</label>
                     <textarea id="reply-body" name="body" rows="5" maxlength="10000" required>{{ old('body', $draft['body'] ?? '') }}</textarea>
                     <button type="submit" class="mf-button mf-primary">Post reply</button>

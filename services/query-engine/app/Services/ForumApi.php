@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Support\SearchContext;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Response;
@@ -46,6 +47,12 @@ class ForumApi
 
     public static function returnTo(mixed $path): string
     {
+        if (is_string($path) && str_ends_with($path, '#mf-return')) {
+            $search = SearchContext::url(substr($path, 0, -strlen('#mf-return')));
+
+            return $search === null ? '/' : $search.'#mf-return';
+        }
+
         // Only local reading journeys are valid authentication return targets.
         return is_string($path) && ! preg_match('/[\\\\\x00-\x20\x7f]/', $path)
             && preg_match('~\A/(?:threads/[1-9][0-9]*|discussions|search(?:/exact)?)?(?:\?[^#]*)?\z~', $path)

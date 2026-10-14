@@ -1,6 +1,10 @@
 <x-search-layout :title="'Discussions for '.($sourceTitle ?: $sourceUrl).' — MiFolyo'">
     <main id="main" class="mf-page mf-discussion-page" tabindex="-1">
-        <a href="{{ route('home') }}" class="mf-text-link mf-back-link">← Search MiFolyo</a>
+        @if (\App\Support\SearchContext::url(request()->input('from')))
+            <x-search-return />
+        @else
+            <a href="{{ route('home') }}" class="mf-text-link mf-back-link">← Search MiFolyo</a>
+        @endif
         <header class="mf-discussion-heading">
             <p class="mf-eyebrow">Community discussion</p>
             <h1>{{ $sourceTitle ?: 'Discussions for this page' }}</h1>

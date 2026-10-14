@@ -22,7 +22,7 @@ export default defineConfig({
             APP_DEBUG: 'false',
             APP_KEY: 'base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=',
             SEARCH_UI_BROWSER_FIXTURES: '1',
-            SESSION_DRIVER: 'array',
+            SESSION_DRIVER: 'file',
             CACHE_STORE: 'array',
         },
     },

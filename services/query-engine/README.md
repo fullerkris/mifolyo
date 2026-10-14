@@ -78,6 +78,10 @@ values from `playwright.config.js`, expose it on a loopback port, and run
 point to the fixture server: each test checks its response marker. Screenshots
 and failure traces are written to ignored `test-results/`.
 
+For validation with the actual search and forum services, use the dedicated
+[local staging stack](../../docs/search-ui-local-staging.md) and
+`npm run test:staging`.
+
 ### Using Docker
 
 The recommended way to run the Query Engine is with Docker. This ensures all dependencies are handled and the service runs in an isolated environment.

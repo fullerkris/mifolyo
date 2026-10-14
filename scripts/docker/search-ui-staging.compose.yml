@@ -1,0 +1,165 @@
+name: mifolyo-search-ui-staging
+
+services:
+  mongo:
+    image: mongo:8
+    volumes:
+      - mongo-data:/data/db
+      - mongo-config:/data/configdb
+    networks: [data]
+    mem_limit: 512m
+    healthcheck:
+      test: [CMD, mongosh, --quiet, --eval, "quit(db.adminCommand({ping: 1}).ok ? 0 : 1)"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: mifolyo_search_ui_staging
+      POSTGRES_USER: staging
+      POSTGRES_PASSWORD: local-search-staging-only
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks: [data]
+    mem_limit: 384m
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U staging -d mifolyo_search_ui_staging"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    networks: [data]
+    mem_limit: 128m
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  query-assets:
+    image: mifolyo-search-ui-staging-query:local
+    entrypoint: [/bin/sh, -ec]
+    command: ["cp -R /var/www/public/. /assets/"]
+    network_mode: none
+    volumes:
+      - query-public:/assets
+
+  query-engine:
+    image: mifolyo-search-ui-staging-query:local
+    build:
+      context: ../../services/query-engine
+    entrypoint: [php-fpm]
+    environment:
+      APP_NAME: MiFolyo Search UI Staging
+      APP_ENV: staging
+      APP_KEY: base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+      APP_DEBUG: "false"
+      APP_URL: http://127.0.0.1:18081
+      LOG_CHANNEL: stderr
+      SESSION_DRIVER: file
+      SESSION_COOKIE: mifolyo_search_staging_session
+      CACHE_STORE: redis
+      QUEUE_CONNECTION: sync
+      REDIS_CLIENT: predis
+      REDIS_HOST: redis
+      REDIS_PREFIX: mifolyo_search_ui_staging_
+      MONGODB_URI: mongodb://mongo:27017/?serverSelectionTimeoutMS=2000
+      MONGODB_DATABASE: mifolyo_search_ui_staging
+      FORUM_API_BASE_URL: http://forum-engine:8000
+      FORUM_API_TIMEOUT_SECONDS: "5"
+      FORUM_DEFAULT_COMMUNITY_SLUG: general
+      MIFOLYO_LOCAL_SEARCH_STAGING: "1"
+    volumes:
+      - query-public:/var/www/public:ro
+      - ../search-ui-staging-seed.php:/staging/seed.php:ro
+    networks: [data, web]
+    mem_limit: 512m
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      query-assets:
+        condition: service_completed_successfully
+    healthcheck:
+      test: [CMD, php, -r, "exit(@fsockopen('127.0.0.1', 9000) ? 0 : 1);"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  forum-engine:
+    image: mifolyo-search-ui-staging-forum:local
+    build:
+      context: ../../services/forum-engine
+    command: [/bin/sh, -ec, "php artisan migrate --force && exec php artisan serve --host=0.0.0.0 --port=8000"]
+    environment:
+      APP_NAME: MiFolyo Forum Staging
+      APP_ENV: staging
+      APP_KEY: base64:BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=
+      APP_DEBUG: "false"
+      APP_URL: http://127.0.0.1:18082
+      LOG_CHANNEL: stderr
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_DATABASE: mifolyo_search_ui_staging
+      DB_USERNAME: staging
+      DB_PASSWORD: local-search-staging-only
+      SESSION_DRIVER: database
+      SESSION_COOKIE: mifolyo_forum_staging_session
+      CACHE_STORE: database
+      QUEUE_CONNECTION: sync
+      MAIL_MAILER: log
+      SEARCH_API_BASE_URL: http://caddy
+      MIFOLYO_LOCAL_SEARCH_STAGING: "1"
+    volumes:
+      - ../search-ui-staging-seed.php:/staging/seed.php:ro
+    networks: [data, web]
+    mem_limit: 384m
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, php, -r, "exit(@file_get_contents('http://127.0.0.1:8000/api/health/ready') === false ? 1 : 0);"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+
+  caddy:
+    image: caddy:2-alpine
+    ports:
+      - "127.0.0.1:18081:80"
+      - "127.0.0.1:18082:8080"
+    volumes:
+      - ./search-ui-staging.Caddyfile:/etc/caddy/Caddyfile:ro
+      - query-public:/srv:ro
+    networks: [web, ingress]
+    mem_limit: 128m
+    depends_on:
+      query-engine:
+        condition: service_healthy
+      forum-engine:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, wget, -q, -O, /dev/null, http://127.0.0.1/api/health/ready]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  mongo-data:
+  mongo-config:
+  postgres-data:
+  query-public:
+
+networks:
+  data:
+    internal: true
+  web:
+    internal: true
+  ingress:

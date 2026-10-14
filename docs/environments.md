@@ -1,6 +1,6 @@
 # MiFolyo Environments
 
-MiFolyo has three intentionally separate operating environments. Never reuse
+MiFolyo has intentionally separate operating environments. Never reuse
 Compose projects, volumes, credentials, or database endpoints between them.
 
 > [!IMPORTANT]
@@ -23,7 +23,12 @@ not approved. See the
 |---|---|---|---|
 | Development local | Root `docker-compose.yml` | Developer workstation | Long-lived developer state; not a cleanup target for baseline tests |
 | Isolated test local | `scripts/docker/v1-baseline.compose.yml`, project `mifolyo-v1-baseline-test` | Caddy only, on loopback port `18080` by default | Project-scoped test state; preserve retained evidence until a separately approved, backup/restore-tested reset |
+| Search UI staging local | `scripts/docker/search-ui-staging.compose.yml`, project `mifolyo-search-ui-staging` | Search UI `http://127.0.0.1:18081`; forum `http://127.0.0.1:18082` | Dedicated databases with controlled index and source-linked forum data |
 | Production | Tailscale-only host | `https://srv1459482.tail11b93a.ts.net` | Durable production state with backups; never reused by local Compose |
+
+For the current Home → search results → discussions journey, use the
+[Search UI local staging runbook](search-ui-local-staging.md). It builds the real
+query/forum services and provides repeatable browser and service-recovery checks.
 
 ## Development local
 

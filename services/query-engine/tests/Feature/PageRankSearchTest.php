@@ -147,6 +147,27 @@ class PageRankSearchTest extends TestCase
         }
     }
 
+    public function test_html_search_renders_indexed_sources_and_the_second_page(): void
+    {
+        $words = [];
+        $metadata = [];
+        for ($index = 1; $index <= 21; $index++) {
+            $url = sprintf('https://source-%02d.test/article?a=1&b=two', $index);
+            $words[] = ['word' => 'alpha', 'url' => $url, 'weight' => 1.0];
+            $metadata[] = $this->metadataDocument($url, 'Indexed source '.$index);
+        }
+        $this->mongoDatabase->selectCollection('words')->insertMany($words);
+        $this->mongoDatabase->selectCollection('metadata')->insertMany($metadata);
+
+        $this->get('/search/exact?q=alpha')->assertOk()
+            ->assertSee('Indexed source 1')->assertSee('Indexed source 20')->assertDontSee('Indexed source 21')
+            ->assertSee('data-discuss-url="https://source-01.test/article?a=1&amp;b=two"', false)
+            ->assertSee('q=alpha&amp;page=2', false);
+        $this->get('/search/exact?q=alpha&page=2')->assertOk()
+            ->assertSee('Indexed source 21')->assertDontSee('Indexed source 20')
+            ->assertSee('aria-current="page" aria-label="Page 2"', false);
+    }
+
     public function test_image_association_results_keep_source_url_as_public_id(): void
     {
         $source = 'https://cdn.example.test/shared.jpg';

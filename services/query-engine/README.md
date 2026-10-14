@@ -22,6 +22,62 @@ The Query Engine is the main API and web interface for the Moogle search engine.
 
 ## Setup
 
+### MiFolyo Search UI
+
+The current UI uses Laravel's existing search pipeline and forum proxy:
+
+- `/` — prototype-derived MiFolyo home and keyboard search.
+- `/search?q=...&page=...` — server-rendered indexed results; `/search/exact`
+  is the spelling-correction opt-out. The JSON `/api/search` interface remains
+  available to clients using `Accept: application/json`.
+- `/discussions?url=...&title=...` — source-linked discussion browsing. Desktop
+  result links enhance to a modal side panel; mobile and non-JavaScript links
+  navigate to the full page. Loading discussions requires JavaScript.
+
+Light/dark preference is stored in `mifolyo-theme`, with the system preference
+as the initial default. Search forms and pagination use regular GET navigation,
+so query text and page state survive refresh and browser history. Source text is
+escaped, and result actions require an HTTP(S) URL. Discussion fetches support
+sorting, pagination, timeout/retry and stale-response cancellation. The existing
+beta thread-creation form accepts a forum token for that submission; it does not
+persist the token in browser storage. Account UI and individual comment journeys
+are subsequent product work.
+
+The design lives in `resources/css/search-ui.css`, shared Blade components and
+`resources/js/{search-ui,thread-browser}.js`; the mark comes from the existing
+MiFolyo prototype. Every displayed result and discussion comes from the configured
+services. Set `MONGODB_URI` / `MONGODB_DATABASE` to the intended local index and
+`FORUM_API_BASE_URL` to the forum service before running the application. The UI
+can be developed against an existing index independently of the crawler runtime.
+
+#### Verification
+
+With PHP 8.4+ and the locked MongoDB extension dependency available:
+
+```sh
+composer install
+npm ci
+npm run build
+php artisan test
+npx playwright install chromium
+npm run test:browser
+```
+
+`QUERY_MONGO_INTEGRATION_URI` enables the real MongoDB feature tests; they use
+randomized, disposable database names. Browser tests start the explicitly gated
+`tests/Browser/router.php` fixture server on loopback port 18765 and exercise the
+real Blade/JS with deterministic search/forum responses, including simulated
+failures. They do not depend on a crawl or a running forum. The fixture entrypoint
+is outside `public/` and requires `APP_ENV=testing` and
+`SEARCH_UI_BROWSER_FIXTURES=1`; production never loads it. Browser fixtures are
+UI behavior evidence, while MongoDB feature tests cover query execution.
+
+If PHP runs in a container, start that same fixture router with the test env
+values from `playwright.config.js`, expose it on a loopback port, and run
+`SEARCH_UI_BASE_URL=http://127.0.0.1:18765 npm run test:browser`. This override must
+point to the fixture server: each test checks its response marker. Screenshots
+and failure traces are written to ignored `test-results/`.
+
 ### Using Docker
 
 The recommended way to run the Query Engine is with Docker. This ensures all dependencies are handled and the service runs in an isolated environment.

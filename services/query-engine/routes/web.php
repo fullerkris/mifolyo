@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\QuerySearchController;
+use App\Http\Middleware\FuzzySearch;
+use App\Http\Middleware\StoreSearchTerm;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Validator;
@@ -8,6 +11,11 @@ use Illuminate\Validation\Rule;
 Route::get('/', function () {
     return view('home');
 })->name('home');
+
+Route::get('/search', [QuerySearchController::class, 'search'])
+    ->middleware(['throttle:30,1', FuzzySearch::class, StoreSearchTerm::class])->name('search');
+Route::get('/search/exact', [QuerySearchController::class, 'search'])
+    ->middleware('throttle:30,1')->name('search.exact');
 
 Route::get('/explore', function (Request $request) {
     $mode = $request->query('mode', 'search');
@@ -44,7 +52,7 @@ Route::get('/explore', function (Request $request) {
         return redirect()->route('discussions', ['url' => $validated['q']]);
     }
 
-    return redirect('/api/search?'.http_build_query(
+    return redirect('/search?'.http_build_query(
         ['q' => $validated['q']],
         '',
         '&',

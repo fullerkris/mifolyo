@@ -27,7 +27,21 @@ class ForumThreadsProxyTest extends TestCase
             ->assertJsonPath('data.0.id', 12)
             ->assertJsonPath('meta.total', 1);
 
-        Http::assertSent(fn ($request) => $request->url() === 'http://forum.test/api/threads/by-url?url=https%3A%2F%2Fexample.com%2Fsource&sort=top&per_page=20');
+        Http::assertSent(fn ($request) => $request->url() === 'http://forum.test/api/threads/by-url?url=https%3A%2F%2Fexample.com%2Fsource&sort=top&per_page=20&page=1');
+    }
+
+    public function test_threads_proxy_preserves_page_sort_and_source_query(): void
+    {
+        config(['services.forum.base_url' => 'http://forum.test']);
+        Http::fake(['forum.test/*' => Http::response(['data' => [], 'meta' => ['current_page' => 3]])]);
+        $url = 'https://example.com/source?a=1&b=two+words';
+
+        $this->getJson('/api/threads/by-url?'.http_build_query(['url' => $url, 'sort' => 'new', 'page' => 3]))
+            ->assertOk()->assertJsonPath('meta.current_page', 3);
+
+        Http::assertSent(fn ($request) => $request['url'] === $url && $request['sort'] === 'new' && $request['page'] === '3');
+        $this->getJson('/api/threads/by-url?'.http_build_query(['url' => $url, 'page' => 0]))->assertUnprocessable();
+        $this->getJson('/api/threads/by-url?'.http_build_query(['url' => $url, 'page' => 10001]))->assertUnprocessable();
     }
 
     public function test_threads_by_url_proxy_returns_degraded_response_when_forum_is_unavailable(): void

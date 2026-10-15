@@ -46,4 +46,19 @@ class ImageContainerTest extends TestCase
             $this->assertStringContainsString('href="'.$expected.'"', $html);
         }
     }
+
+    public function test_image_cards_escape_metadata_and_reject_unsafe_or_malformed_urls(): void
+    {
+        foreach (['javascript:alert(1)', 'data:image/svg+xml,bad', '//evil.test/image', 'https://good.test\\@evil.test/image', [], null] as $url) {
+            $html = view('components.image-container', [
+                'page_url' => $url, 'url' => $url, 'alt' => [],
+                'title' => '<img src=x onerror=bad()>', 'text' => '<script>bad()</script>',
+            ])->render();
+            $this->assertStringContainsString('Source page unavailable', $html);
+            $this->assertStringContainsString('&lt;img src=x onerror=bad()&gt;', $html);
+            $this->assertStringContainsString('&lt;script&gt;bad()&lt;/script&gt;', $html);
+            $this->assertStringNotContainsString('<img ', $html);
+            $this->assertStringNotContainsString('href=', $html);
+        }
+    }
 }

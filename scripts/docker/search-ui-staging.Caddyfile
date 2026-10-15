@@ -1,10 +1,16 @@
 :80 {
     header X-MiFolyo-Environment local-search-staging
-    root * /srv
-    php_fastcgi query-engine:9000 {
-        root /var/www/public
+    handle_path /staging-media/* {
+        root * /staging-media
+        file_server
     }
-    file_server
+    handle {
+        root * /srv
+        php_fastcgi query-engine:9000 {
+            root /var/www/public
+        }
+        file_server
+    }
 }
 
 :8080 {

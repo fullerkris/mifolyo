@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="640" viewBox="0 0 480 640">
+  <rect width="480" height="640" fill="#fff0e5"/>
+  <rect x="80" y="100" width="320" height="400" rx="20" fill="#fff" stroke="#e5ddd1" stroke-width="3"/>
+  <circle cx="150" cy="175" r="26" fill="#c4470d"/>
+  <g stroke="#b7b0a2" stroke-width="12" stroke-linecap="round"><path d="M125 250h230M125 290h180M125 330h230M125 370h160M125 410h210"/></g>
+  <text x="240" y="560" text-anchor="middle" font-family="sans-serif" font-size="19" fill="#8c3c16">Local staging artwork</text>
+  <text x="240" y="590" text-anchor="middle" font-family="sans-serif" font-size="19" fill="#8c3c16">Reading a source</text>
+</svg>

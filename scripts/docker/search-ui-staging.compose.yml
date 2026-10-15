@@ -140,6 +140,7 @@ services:
     volumes:
       - ./search-ui-staging.Caddyfile:/etc/caddy/Caddyfile:ro
       - query-public:/srv:ro
+      - ../fixtures/search-ui-media:/staging-media:ro
     networks: [web, ingress]
     mem_limit: 128m
     depends_on:

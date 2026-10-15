@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\SearchContext;
+use App\Support\SearchResultPresenter;
+use App\Support\SourceUrl;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -10,115 +13,61 @@ class QuerySearchController extends Controller
     public function get_page_connections(Request $request)
     {
         $validated = $request->validate([
-            'url' => ['required', 'url:http,https', 'max:2048'],
+            'url' => [$request->is('api/*') ? 'required' : 'nullable', 'string', 'url:http,https', 'max:2048'],
+            'direction' => ['sometimes', 'in:outgoing,incoming'],
+            'page' => ['sometimes', 'integer', 'min:1', 'max:100'],
         ]);
-        $url = $validated['url'];
+        $url = $validated['url'] ?? '';
+        $direction = $validated['direction'] ?? 'outgoing';
+        $page = (int) ($validated['page'] ?? 1);
+        $title = '';
+        $connections = $mapLinks = [];
+        $counts = ['outgoing' => 0, 'incoming' => 0];
+        $parameters = ['url' => $url, 'direction' => $direction] + SearchContext::parameters($request);
 
-        // Fetch page outlinks
-        $outlinksData = DB::connection('mongodb')
-            ->table('outlinks')
-            ->where('id', $url)
-            ->first();
-
-        // if (!$outlinksData) {
-        //     return response()->json([
-        //         'status' => 'error',
-        //         'message' => 'URL not found in outlinks database'
-        //     ], 404);
-        // }
-
-        $outlinks = $outlinksData->links ?? [];
-
-        // Fetch metadata for each outlink
-        $enrichedOutlinks = [];
-        if (count($outlinks) > 0) {
-            $metadataCollection = DB::connection('mongodb')
-                ->table('metadata')
-                ->whereIn('_id', $outlinks)
-                ->get();
-
-            $metadataMap = [];
-            foreach ($metadataCollection as $metadata) {
-                $metadataMap[$metadata->id] = $metadata;
-            }
-
-            foreach ($outlinks as $link) {
-                if (isset($metadataMap[$link])) {
-                    $enrichedOutlinks[] = [
-                        'url' => $link,
-                        'title' => $metadataMap[$link]->title ?? 'Page Not Indexed',
-                    ];
-                } else {
-                    $enrichedOutlinks[] = [
-                        'url' => $link,
-                        'title' => 'Page Not Indexed',
-                    ];
+        if ($url !== '') {
+            $links = [];
+            foreach (['outgoing' => 'outlinks', 'incoming' => 'backlinks'] as $key => $collection) {
+                $document = DB::connection('mongodb')->table($collection)->where('_id', $url)->first();
+                $valid = [];
+                foreach (is_iterable($document->links ?? null) ? $document->links : [] as $link) {
+                    if (SourceUrl::http($link) !== null) {
+                        $valid[$link] = true;
+                    }
                 }
+                $links[$key] = array_keys($valid);
+                sort($links[$key], SORT_STRING);
+                $counts[$key] = count($links[$key]);
             }
+            // Enrich only the visible list and a bounded overview of the other direction.
+            $visible = array_slice($links[$direction], ($page - 1) * 20, 20);
+            $other = $direction === 'outgoing' ? 'incoming' : 'outgoing';
+            $mapUrls = array_values(array_unique(array_merge($visible, array_slice($links[$other], 0, 20))));
+            $metadata = DB::connection('mongodb')->table('metadata')->whereIn('_id', array_merge([$url], $mapUrls))->get();
+            $titles = [];
+            foreach ($metadata as $item) {
+                $titles[$item->id] = SearchResultPresenter::text($item->title ?? null, 2048);
+            }
+            $title = $titles[$url] ?? '';
+            $outgoing = array_fill_keys($links['outgoing'], true);
+            $incoming = array_fill_keys($links['incoming'], true);
+            foreach ($mapUrls as $link) {
+                $mapLinks[$link] = [
+                    'url' => $link, 'title' => $titles[$link] ?? '',
+                    'outgoing' => isset($outgoing[$link]), 'incoming' => isset($incoming[$link]),
+                ];
+            }
+            $connections = array_map(fn ($link) => $mapLinks[$link], $visible);
         }
 
-        // Fetch page backlinks
-        $backlinksData = DB::connection('mongodb')
-            ->table('backlinks')
-            ->where('id', $url)
-            ->first();
-
-        // if (!$backlinksData) {
-        //     return response()->json([
-        //         'status' => 'error',
-        //         'message' => 'URL not found in backlinks database'
-        //     ], 404);
-        // }
-
-        $backlinks = $backlinksData->links ?? [];
-
-        // Fetch metadata for each backlink
-        $enrichedBacklinks = [];
-        if (count($backlinks) > 0) {
-            $metadataCollection = DB::connection('mongodb')
-                ->table('metadata')
-                ->whereIn('_id', $backlinks)
-                ->get();
-
-            $metadataMap = [];
-            foreach ($metadataCollection as $metadata) {
-                $metadataMap[$metadata->id] = $metadata;
-            }
-
-            foreach ($backlinks as $link) {
-                if (isset($metadataMap[$link])) {
-                    $enrichedBacklinks[] = [
-                        'url' => $link,
-                        'title' => $metadataMap[$link]->title ?? 'Page Not Indexed',
-                    ];
-                } else {
-                    $enrichedBacklinks[] = [
-                        'url' => $link,
-                        'title' => 'Page Not Indexed',
-                    ];
-                }
-            }
-        }
-
-        // Get url metadata
-        $urlMetadata = DB::connection('mongodb')
-            ->table('metadata')
-            ->where('_id', $url)
-            ->first();
-
-        return view('page-connections', [
-            'url' => $url,
-            'title' => $urlMetadata->title ?? 'Page Not Indexed',
-            'outlinks' => $enrichedOutlinks,
-            'backlinks' => $enrichedBacklinks,
-        ]);
+        return view('page-connections', compact('url', 'title', 'direction', 'page', 'connections', 'mapLinks', 'counts', 'parameters'));
     }
 
     public function getTopImages($query, $page = 1, $perPage = 5)
     {
         // Split the query string
         $query = str_replace('+', ' ', $query);
-        $words = explode(' ', mb_strtolower($query, 'UTF-8'));
+        $words = preg_split('/\s+/u', mb_strtolower(trim($query), 'UTF-8'), -1, PREG_SPLIT_NO_EMPTY) ?: [];
 
         // Use a count aggregation to get total results more efficiently
         $countPipeline = [
@@ -149,7 +98,7 @@ class QuerySearchController extends Controller
                     'matchCount' => ['$sum' => 1],
                 ],
             ],
-            ['$sort' => ['matchCount' => -1, 'cumWeight' => -1]],
+            ['$sort' => ['matchCount' => -1, 'cumWeight' => -1, '_id' => 1]],
             ['$skip' => ($page - 1) * $perPage],
             ['$limit' => $perPage],
         ];
@@ -188,7 +137,9 @@ class QuerySearchController extends Controller
         // Get all the page urls
         $pageUrls = [];
         foreach ($imageDataByUrl as $result) {
-            $pageUrls[] = $result->page_url ?? '';
+            if (is_string($result->page_url ?? null)) {
+                $pageUrls[] = $result->page_url;
+            }
         }
 
         // Fetch all pages metadata
@@ -211,17 +162,10 @@ class QuerySearchController extends Controller
             $result['_id'] = $imageData->source_url ?? $result['_id'];
             $result['alt'] = $imageData->alt ?? '';
             $result['filname'] = $imageData->filename ?? '';
-            $result['page_url'] = $imageData->page_url ?? '';
+            $result['page_url'] = is_string($imageData->page_url ?? null) ? $imageData->page_url : '';
             $pageMetadata = $pageMetadataByUrl[$result['page_url']] ?? null;
             $result['page_title'] = $pageMetadata->title ?? '';
-            // Shorten the summary text to 300 characters
-            $result['page_text'] = '';
-            $length = 100;
-            if (isset($pageMetadata->summary_text)) {
-                $result['page_text'] = mb_strlen($pageMetadata->summary_text, 'UTF-8') > $length
-                    ? mb_substr($pageMetadata->summary_text, 0, $length, 'UTF-8').'...'
-                    : $pageMetadata->summary_text;
-            }
+            $result['page_text'] = SearchResultPresenter::shorten(SearchResultPresenter::text($pageMetadata->summary_text ?? null), 100);
         }
 
         return [$paginatedResults, $totalResults];
@@ -530,10 +474,10 @@ class QuerySearchController extends Controller
             'suggestions' => ['sometimes', 'boolean'],
         ]);
         $suggestions = (bool) ($validated['suggestions'] ?? false);
-        $originalQuery = $validated['q'] ?? null;
-        // $query = $request->input('processed_query');
+        $originalQuery = $validated['q'] ?? '';
+        $page = (int) ($validated['page'] ?? 1);
         $query = $originalQuery;
-        if ($query === null || $query === '') {
+        if (trim($query) === '') {
             $query = '';
 
             return view('search-image-results', [
@@ -543,6 +487,7 @@ class QuerySearchController extends Controller
                 'topImages' => [],
                 'suggestions' => $suggestions,
                 'originalQuery' => $originalQuery,
+                'page' => $page,
             ]);
         }
 
@@ -554,7 +499,6 @@ class QuerySearchController extends Controller
 
         // Set the number of results per page
         $perPage = 20;
-        $page = (int) ($validated['page'] ?? 1);
 
         [$paginatedResults, $totalResults] = $this->getTopImages($query, $page, $perPage);
 
@@ -565,6 +509,7 @@ class QuerySearchController extends Controller
             'topImages' => [],
             'suggestions' => $suggestions,
             'originalQuery' => $originalQuery,
+            'page' => $page,
         ]);
     }
 

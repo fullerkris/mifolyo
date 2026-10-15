@@ -1,6 +1,7 @@
 import { ThreadBrowser } from './thread-browser.js';
 import { initSearchJourney } from './search-journey.js';
 import { initDiscussionCounts } from './discussion-counts.js';
+import { initConnectionMap } from './connection-map.js';
 
 const themeButton = document.querySelector('[data-theme-toggle]');
 const updateThemeButton = () => {
@@ -20,6 +21,7 @@ if (themeButton) {
 }
 
 const navigationStatus = document.querySelector('[data-navigation-status]');
+const navigationMessage = navigationStatus?.textContent;
 document.querySelectorAll('[data-posting-form]').forEach((form) => {
     form.addEventListener('submit', () => {
         form.setAttribute('aria-busy', 'true');
@@ -29,7 +31,10 @@ document.querySelectorAll('[data-posting-form]').forEach((form) => {
 document.querySelectorAll('[data-search-form]').forEach((form) => {
     form.addEventListener('submit', () => {
         form.setAttribute('aria-busy', 'true');
-        if (navigationStatus) navigationStatus.hidden = false;
+        if (navigationStatus) {
+            navigationStatus.textContent = form.dataset.navigationMessage || navigationMessage;
+            navigationStatus.hidden = false;
+        }
     });
 });
 window.addEventListener('pageshow', () => {
@@ -51,3 +56,13 @@ initSearchJourney(results, dialog, panel);
 document.querySelectorAll('[data-thread-browser]').forEach((root) => {
     if (root !== panelRoot && root.dataset.sourceUrl) new ThreadBrowser(root).setSource(root.dataset.sourceUrl);
 });
+
+document.querySelectorAll('[data-image-preview]').forEach((image) => {
+    const failed = () => {
+        image.hidden = true;
+        image.parentElement.querySelector('.mf-image-fallback').setAttribute('aria-hidden', 'false');
+    };
+    image.addEventListener('error', failed);
+    if (image.complete && image.naturalWidth === 0) failed();
+});
+document.querySelectorAll('[data-connection-map]').forEach(initConnectionMap);

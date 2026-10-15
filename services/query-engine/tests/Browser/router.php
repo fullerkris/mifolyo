@@ -32,6 +32,60 @@ foreach ([App\Http\Middleware\FuzzySearch::class, App\Http\Middleware\StoreSearc
 }
 $app->instance(App\Http\Controllers\QuerySearchController::class, new class extends App\Http\Controllers\QuerySearchController
 {
+    public function getTopImages($query, $page = 1, $perPage = 5)
+    {
+        if ($query === 'unavailable') {
+            throw new MongoDB\Driver\Exception\ConnectionTimeoutException('Fixture index unavailable');
+        }
+        if ($query === 'rate-limited') {
+            abort(429, '', ['Retry-After' => '60']);
+        }
+        $total = in_array($query, ['', 'no-matches'], true) ? 0 : 25;
+        $results = [];
+        for ($number = ($page - 1) * $perPage + 1; $number <= min($total, $page * $perPage); $number++) {
+            $results[] = [
+                '_id' => request()->getSchemeAndHttpHost().'/mifolyo-mark.svg?image='.$number,
+                'page_url' => 'https://example.test/guide/'.$number.'?ref=search&lang=en',
+                'alt' => 'MiFolyo sample image '.$number, 'page_title' => 'A visual guide to community search · '.$number,
+                'page_text' => 'A synthetic indexed image associated with this exact source page.',
+            ];
+        }
+        if ($query === 'metadata') {
+            $results[0]['page_title'] = '<img src=x onerror=window.unsafeMetadata=1>';
+            $results[0]['alt'] = '<svg onload=window.unsafeMetadata=1>';
+            $results[1]['_id'] = 'javascript:alert(1)';
+            $results[1]['page_url'] = 'data:text/html,bad';
+            $results[1]['page_title'] = $results[1]['alt'] = [];
+            $results[2]['_id'] = request()->getSchemeAndHttpHost().'/missing-preview.png';
+        }
+
+        return [$results, $total];
+    }
+
+    public function get_page_connections(Illuminate\Http\Request $request)
+    {
+        $input = $request->validate(['url' => 'nullable|string|url:http,https|max:2048', 'direction' => 'sometimes|in:outgoing,incoming', 'page' => 'sometimes|integer|min:1|max:100']);
+        $url = $input['url'] ?? '';
+        if (str_contains($url, '/unavailable')) {
+            throw new MongoDB\Driver\Exception\ConnectionTimeoutException('Fixture index unavailable');
+        }
+        if (str_contains($url, '/rate-limited')) {
+            abort(429, '', ['Retry-After' => '60']);
+        }
+        $direction = $input['direction'] ?? 'outgoing';
+        $page = (int) ($input['page'] ?? 1);
+        $title = 'An indexed source <em>with literal metadata</em>';
+        $counts = ['outgoing' => $url === '' || str_contains($url, '/empty') ? 0 : 25, 'incoming' => 2];
+        $connections = [];
+        for ($number = ($page - 1) * 20 + 1; $number <= min($counts[$direction], $page * 20); $number++) {
+            $connections[] = ['url' => 'https://example.test/linked/'.$number.'?b=2&a=1#part', 'title' => 'Connected page '.$number, 'outgoing' => true, 'incoming' => $number <= 2];
+        }
+        $mapLinks = $connections;
+        $parameters = ['url' => $url, 'direction' => $direction] + App\Support\SearchContext::parameters($request);
+
+        return view('page-connections', compact('url', 'title', 'counts', 'direction', 'page', 'connections', 'mapLinks', 'parameters'));
+    }
+
     public function search(Illuminate\Http\Request $request)
     {
         $input = $request->validate(['q' => 'nullable|string|max:500', 'page' => 'sometimes|integer|min:1|max:100']);

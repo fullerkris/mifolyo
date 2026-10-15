@@ -3,6 +3,7 @@
 @endphp
 <x-search-layout :title="'Search results for '.($originalQuery ?? $query).' — MiFolyo'" :query="$originalQuery ?? $query">
     <main id="main" class="mf-page" tabindex="-1" data-search-context="{{ \App\Support\SearchContext::url(request()->getRequestUri()) }}" data-counts-endpoint="{{ route('community.counts', [], false) }}">
+        <x-search-tabs :query="$originalQuery ?? $query" />
         <div class="mf-results-heading">
             <div><p class="mf-eyebrow">Web search</p><h1>{{ $displayQuery !== '' ? 'Results for “'.$displayQuery.'”' : 'What are you curious about?' }}</h1></div>
             @if ($total > 0)
@@ -48,6 +49,7 @@
                 @if (count($topImages) > 0)
                     <section class="mf-related-images" aria-label="Related images">
                         <h2>Related images</h2>
+                        <a class="mf-text-link" href="{{ route('search.images', ['q' => $originalQuery ?? $query, 'from' => \App\Support\SearchContext::url(request()->getRequestUri())]) }}">Explore all images →</a>
                         @foreach ($topImages as $image)
                             @php
                                 $imageUrl = data_get($image, '_id', '');

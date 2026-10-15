@@ -293,3 +293,35 @@ Validated local image IDs (not registry digests):
 query: sha256:c0c09679aca7738499b10eb7435b5a57c887aabf80f625224fcd82cfeaada7c7
 forum: sha256:2b826e97a30a1bcd121a8a302a7487c851f1cda6442d1d4d16cd5a2366c08c74
 ```
+
+## UX-05 dependency-audit follow-up — 2026-10-15
+
+Hosted Required Checks at `79f41d0` passed build and smoke, but its Composer
+audit failed. Local lockfile audits reproduced HttpFoundation CVE-2026-108082
+in both services and development-only Symfony YAML CVE-2026-109413 in Query
+Engine. The missing C0 test artifact followed the early audit failure.
+
+Applied compatible patch releases in the existing dependency lines:
+
+- Query Engine: `symfony/http-foundation` 7.4.17 → **7.4.19** and
+  `symfony/yaml` 7.4.17 → **7.4.18**.
+- Forum: `symfony/http-foundation` 8.1.5 → **8.1.7**.
+
+Both services pass `composer validate --strict` and `composer audit --locked`
+(including development dependencies). Post-patch service tests pass: **75 Query
+Engine tests / 486 assertions** with MongoDB and **135 forum tests / 596
+assertions** with isolated SQLite. Browser fixtures pass **34 checks**, with the
+same two expected mobile skips. Both application images rebuilt successfully.
+
+The full post-patch real-service staging suite passes **20 checks, 0 skipped**
+(1.5 minutes), including both outage recoveries. Both readiness endpoints return
+HTTP 200 and all six long-running services are healthy after the run. Updated
+screenshots are retained under `test-results/staging-ux05-patched/` in Query
+Engine; the previous UX-05 visual-review record remains above.
+
+Local image IDs for the dependency patches (not registry digests):
+
+```text
+query: sha256:4ef6bc7577bde5bb0fb30c495af02a2c3383c259f500300395d0a8236f844e67
+forum: sha256:bd4ce860a792bc1e00046559cf4569e280a7bbd7f3686d47a7549a82e5fbd261
+```

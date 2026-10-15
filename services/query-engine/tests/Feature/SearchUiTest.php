@@ -49,6 +49,48 @@ class SearchUiTest extends TestCase
             ->assertSee('Source URL unavailable')->assertDontSee('href="javascript:', false);
     }
 
+    public function test_highlighting_escapes_indexed_markup_and_uses_the_effective_query(): void
+    {
+        $this->results(['query' => 'café', 'originalQuery' => 'caffé', 'suggestions' => true, 'results' => [[
+            '_id' => 'https://example.test/caf%C3%A9?x=1&b=two',
+            'title' => '<script>alert("CAFÉ")</script>',
+            'summary_text' => 'An unrelated summary.',
+            'description' => '<img src=x onerror=bad()> A café description; caffé was the typo.',
+        ]]]);
+        $this->get('/ui-test-results')->assertOk()
+            ->assertSee('<mark class="mf-result-match">CAFÉ</mark>', false)
+            ->assertSee('<mark class="mf-result-match">café</mark>', false)
+            ->assertDontSee('<mark class="mf-result-match">caffé</mark>', false)
+            ->assertSee('&lt;script&gt;', false)->assertSee('&lt;img src=x', false)
+            ->assertDontSee('<script>alert(', false)->assertDontSee('<img src=x', false)
+            ->assertDontSee('An unrelated summary.');
+    }
+
+    public function test_long_metadata_is_expandable_and_source_links_keep_exact_url_identity(): void
+    {
+        $source = 'https://EXAMPLE.test:443/'.str_repeat('long-path/', 20).'?b=two&a=1#section';
+        $title = str_repeat('A long indexed title with useful detail ', 12);
+        $this->results(['results' => [['_id' => $source, 'title' => $title, 'summary_text' => ['invalid' => 'shape'], 'description' => 'A usable description.']]]);
+        $this->get('/ui-test-results')->assertOk()
+            ->assertSee('Full title and URL')->assertSee('A usable description.')
+            ->assertSee('class="mf-result-full-title"', false)->assertSee(trim($title))
+            ->assertSee('href="'.e($source).'"', false)->assertSee('data-discuss-url="'.e($source).'"', false)
+            ->assertSee('EXAMPLE.test:443')->assertSee('dir="ltr"', false);
+    }
+
+    public function test_malformed_and_zero_metadata_do_not_create_warnings_or_fake_text(): void
+    {
+        $this->results(['results' => [
+            ['_id' => 'https://example.test/empty', 'title' => [], 'summary_text' => new \stdClass, 'description' => " \n\t"],
+            ['_id' => null, 'title' => null],
+            ['_id' => 'https://example.test/zero', 'title' => '0', 'summary_text' => '0'],
+            ['_id' => 'https://example.test/'.str_repeat('x', 2048), 'title' => 'Oversized source'],
+        ]]);
+        $this->get('/ui-test-results')->assertOk()->assertSee('example.test')->assertSee('Untitled page')
+            ->assertSee('No excerpt is available.')->assertSee('No excerpt is available for this indexed entry.')
+            ->assertDontSee('>Array<', false)->assertDontSee('data-discuss-url="https://example.test/'.str_repeat('x', 2048), false);
+    }
+
     public function test_pagination_encodes_query_and_reaches_pages_past_ten(): void
     {
         $query = 'C++ & café #1';

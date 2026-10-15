@@ -35,7 +35,21 @@ if ($mode === 'query') {
             $database->dictionary->updateOne(['_id' => $word], ['$setOnInsert' => ['word' => $word]], ['upsert' => true]);
         }
     }
-    echo 'Seeded '.count($pages)." indexed sources. Search for staging, search, or documentation.\n";
+    // Dedicated presentation examples do not change the 25-result baseline searches.
+    $presentation = [
+        ['_id' => 'https://example.test/ux05/caf%C3%A9?topic=c%2B%2B&lang=fr#examples', 'title' => 'CAFÉ & C++ — literal <em>indexed text</em>',
+            'summary_text' => str_repeat('Synthetic opening material without a query match. ', 20).'A useful café guide explains C++ with literal <em>examples</em>. '.str_repeat('More synthetic context follows. ', 15), 'description' => 'A generic description.'],
+        ['_id' => 'https://example.test/ux05/'.str_repeat('long-path/', 20).'?b=two&a=1#section', 'title' => str_repeat('A long café metadata title with useful detail ', 12), 'summary_text' => str_repeat('unbroken', 100), 'description' => ''],
+        ['_id' => 'https://example.test/ux05/fallback', 'title' => null, 'summary_text' => " \n\t", 'description' => 'A description about café and C++.'],
+        ['_id' => 'https://example.test/ux05/missing', 'title' => ['legacy' => 'malformed'], 'summary_text' => [], 'description' => null],
+    ];
+    foreach ($presentation as $index => $sample) {
+        $url = $sample['_id'];
+        unset($sample['_id']);
+        $database->metadata->updateOne(['_id' => $url], ['$set' => $sample], ['upsert' => true]);
+        $database->words->updateOne(['word' => 'ux05', 'url' => $url], ['$set' => ['weight' => 1.0 - $index / 100]], ['upsert' => true]);
+    }
+    echo 'Seeded '.count($pages).' baseline sources and '.count($presentation)." UX-05 examples. Search for staging or ux05.\n";
 } elseif ($mode === 'forum') {
     if (config('database.connections.pgsql.database') !== 'mifolyo_search_ui_staging'
         || config('database.connections.pgsql.host') !== 'postgres') {

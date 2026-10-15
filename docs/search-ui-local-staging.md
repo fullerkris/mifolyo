@@ -7,9 +7,11 @@ controllers and databases; the browser-fixture router and HTTP mocks are absent.
 
 - Search UI: <http://127.0.0.1:18081>
 - Forum: <http://127.0.0.1:18082>
-- Search terms: **staging**, **search**, **documentation**
-- Data: 25 indexed documentation URLs; the first result has 23 discussions and
-  one persisted reply per discussion. Metadata and conversations are synthetic.
+- Search terms: **staging**, **search**, **documentation**; use exact search for
+  **ux05 café C++** to review highlighting and metadata edge cases.
+- Data: 25 baseline documentation URLs plus four synthetic `example.test` UX-05
+  entries. The first baseline result has 23 discussions and one persisted reply
+  per discussion. Metadata and conversations are synthetic.
 
 ## Start and seed
 
@@ -55,8 +57,10 @@ the proxy. It also checks account registration/sign-out, full thread pages,
 nested replies, draft recovery after token rotation, CSRF rejection, and
 posting without JavaScript. Exact-search return checks cover the query/mode/page,
 selected source, scroll, desktop panel, and live counts after sign-in/thread/reply
-posting. Recovery tests briefly stop/restart **this project's** forum and
-MongoDB services and verify error/retry behavior. They restore the services in
+posting. Result-presentation checks cover literal/Unicode highlighting, late
+matches in indexed snippets, missing/malformed metadata and expandable titles
+and URLs in both themes. Recovery tests briefly stop/restart **this project's**
+forum and MongoDB services and verify error/retry behavior. They restore the services in
 `finally` blocks. Run the suite when the local staging UI can be interrupted.
 
 Tests verify the staging response marker before operating and use fixed
@@ -119,6 +123,26 @@ after completing their account journeys.
   **Retry counts** recovers independently of search results. Counts refresh on
   return navigation and after loading/creating a source conversation; a late
   batch response cannot overwrite a fresher source total.
+
+## Result highlighting and metadata
+
+- Title and excerpt matches use case-insensitive literal terms, with Unicode word
+  boundaries (CJK terms can match without spaces). Exact search retains literal
+  punctuation such as `C++`; spelling-corrected results use the corrected query.
+- Metadata stays plain text. Blade escapes every segment before wrapping matches
+  in `<mark>`; indexed markup and query punctuation cannot become executable HTML
+  or regular-expression syntax. JSON search responses retain the raw index data.
+- Excerpts use a roughly 240-character window around a query match rather than
+  always taking the page's introduction. A description with more distinct matching
+  terms takes precedence over the summary; ties prefer the summary. Whitespace is
+  normalized, absent/malformed fields fall back cleanly, and clipping is marked.
+- Cards show the source domain and a compact path/query/fragment. Long titles and
+  URLs have keyboard/touch-operable native **Full title / Full URL** disclosure.
+  Source/discussion links retain the exact indexed HTTP(S) URL. Missing titles use
+  the domain or **Untitled page**; missing excerpts have an explicit fallback.
+- Highlighting, excerpts and metadata disclosure render on the server and work
+  without JavaScript. Both themes have dedicated highlight colors; long text wraps
+  within narrow cards.
 
 ## Inspect and stop
 
@@ -230,5 +254,42 @@ Validated local image IDs (not registry digests):
 
 ```text
 query: sha256:914f6be467c7cef91496ef598115199c0e1949312635bd7d5f2e1241b62ad97b
+forum: sha256:2b826e97a30a1bcd121a8a302a7487c851f1cda6442d1d4d16cd5a2366c08c74
+```
+
+## UX-05 validation — 2026-10-15
+
+- Safe title/excerpt highlighting, query-focused snippet selection, compact URL
+  paths and expandable long metadata are implemented on `feature/search-ui`.
+  The displayed query preserves literal punctuation such as `C++`.
+- Query Engine PHP/MongoDB: **75 passed, 486 assertions**. Coverage includes
+  literal/Unicode/CJK matches, late-match windows, relevant descriptions,
+  malformed/missing metadata, escaped markup, exact source URL identity and
+  unmodified JSON metadata.
+- Browser fixtures: **34 passed, 2 expected mobile skips** for desktop-only panel
+  race checks. The final presentation checks passed again on desktop/mobile
+  (**6 passes**), including keyboard disclosure and JavaScript-disabled 320px and
+  1440px contexts after the displayed-query refinement.
+- Real-service staging: **20 passed, 0 skipped** (1.5 minutes), including search,
+  discussions/counts, persisted account/thread/reply journeys, and both real
+  outage recoveries. Final corrected-query/presentation checks passed on the
+  rebuilt image (**4 passes**, desktop/mobile).
+- Reviewed cards and expanded metadata at **320/768/1440px in both themes**;
+  no horizontal overflow or browser JavaScript errors. Screenshots disable
+  transitions to capture settled theme colors. Final captures are under
+  `services/query-engine/test-results/staging-ux05-final/`.
+- Four isolated UX-05 entries supplement the 25-result baseline; baseline search
+  pagination and discussion counts passed unchanged. Search `/search/exact` for
+  `ux05 café C++` to reproduce the metadata cases.
+- Production asset/application builds, focused PHP formatting (seven files),
+  and whitespace checks passed. Both readiness endpoints return HTTP 200 after
+  validation; all six long-running staging services are healthy.
+- PR #27 remains subject to the owner's merge hold. UX-06 secondary-view styling
+  is the next Search UI refinement.
+
+Validated local image IDs (not registry digests):
+
+```text
+query: sha256:c0c09679aca7738499b10eb7435b5a57c887aabf80f625224fcd82cfeaada7c7
 forum: sha256:2b826e97a30a1bcd121a8a302a7487c851f1cda6442d1d4d16cd5a2366c08c74
 ```

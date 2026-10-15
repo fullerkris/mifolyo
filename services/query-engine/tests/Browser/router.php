@@ -55,6 +55,19 @@ $app->instance(App\Http\Controllers\QuerySearchController::class, new class exte
             $results[] = ['_id' => 'https://example.test/guide/'.$number.'?ref=search&lang=en', 'title' => $title.' · '.$number, 'summary_text' => $summary];
         }
 
+        if ($query === 'café C++') {
+            $results = [
+                ['_id' => 'https://example.test/caf%C3%A9?topic=c%2B%2B&lang=fr#examples', 'title' => 'CAFÉ & C++ <img src=x onerror=window.unsafeMetadata=1>',
+                    'summary_text' => str_repeat('Opening material without a match. ', 25).'A useful café guide explains C++ and <svg onload=window.unsafeMetadata=1>. '.str_repeat('Further context follows. ', 20)],
+                ['_id' => 'https://example.test/'.str_repeat('long-path/', 20).'?b=two&a=1#section', 'title' => str_repeat('A long café metadata title with useful detail ', 12), 'summary_text' => str_repeat('unbroken', 100)],
+                ['_id' => 'https://example.test/fallback', 'title' => null, 'summary_text' => " \n\t", 'description' => 'A description about café and C++.'],
+                ['_id' => 'javascript:alert(1)', 'title' => [], 'summary_text' => [], 'description' => null],
+                ['_id' => 'https://example.test/relevant', 'title' => 'Choosing an excerpt', 'summary_text' => 'An unrelated site introduction.', 'description' => 'A relevant café and C++ description.'],
+                ['_id' => 'https://example.test/zero', 'title' => '0', 'summary_text' => '0'],
+            ];
+            $total = count($results);
+        }
+
         return view('search-results', [
             'query' => $query, 'originalQuery' => $query, 'page' => $page, 'total' => $total,
             'results' => $results, 'topImages' => [], 'suggestions' => false,

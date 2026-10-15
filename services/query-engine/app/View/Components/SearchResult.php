@@ -2,6 +2,7 @@
 
 namespace App\View\Components;
 
+use App\Support\SearchResultPresenter;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
@@ -12,16 +13,22 @@ class SearchResult extends Component
 
     public $title;
 
-    public $text;
+    public $summary;
+
+    public $description;
+
+    public SearchResultPresenter $presenter;
 
     /**
      * Create a new component instance.
      */
-    public function __construct($url, $title, $text)
+    public function __construct($url, $title, $summary, $description, SearchResultPresenter $presenter)
     {
         $this->url = $url;
         $this->title = $title;
-        $this->text = $text;
+        $this->summary = $summary;
+        $this->description = $description;
+        $this->presenter = $presenter;
     }
 
     /**

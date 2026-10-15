@@ -19,6 +19,8 @@
     --mf-blue-soft: #edf2ff;
     --mf-green: #2c7245;
     --mf-error: #aa2d23;
+    --mf-match-bg: #fff0bd;
+    --mf-match-text: #4a3507;
 }
 :root[data-theme='dark'] {
     color-scheme: dark;
@@ -35,6 +37,8 @@
     --mf-blue-soft: #202b42;
     --mf-green: #8bcca2;
     --mf-error: #ffb1a8;
+    --mf-match-bg: #51411d;
+    --mf-match-text: #ffe6a4;
 }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--mf-bg); color: var(--mf-text); }
@@ -112,10 +116,19 @@ main:focus { outline: none; }
 .mf-result-card { border: 1px solid var(--mf-line); border-radius: 16px; background: var(--mf-surface); padding: 25px 28px; box-shadow: 0 2px 4px #45311505; }
 .mf-result-source { display: flex; align-items: center; gap: 9px; color: var(--mf-green); font-size: 12px; overflow-wrap: anywhere; }
 .mf-source-monogram { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 7px; background: var(--mf-soft); color: var(--mf-muted); font-weight: 700; flex-shrink: 0; }
+.mf-result-location { min-width: 0; }
+.mf-result-domain, .mf-result-path { display: block; }
+.mf-result-path { margin-top: 2px; color: var(--mf-muted); font-size: 11px; overflow-wrap: anywhere; }
 .mf-result-card h2 { margin-top: 12px; font-size: 20px; line-height: 1.45; overflow-wrap: anywhere; }
 .mf-result-card h2 a { text-decoration: none; }
 .mf-result-card h2 a:hover { color: var(--mf-blue); text-decoration: underline; text-underline-offset: 4px; }
 .mf-result-excerpt { margin-top: 10px; color: var(--mf-muted); font-size: 14px; line-height: 1.8; overflow-wrap: anywhere; }
+.mf-result-match { background: var(--mf-match-bg); color: var(--mf-match-text); border-radius: 2px; font-weight: 650; }
+.mf-result-excerpt-empty { font-style: italic; }
+.mf-result-details { margin-top: 8px; font-size: 13px; overflow-wrap: anywhere; }
+.mf-result-details summary { display: list-item; width: fit-content; min-height: 44px; padding: 10px 0; color: var(--mf-blue); cursor: pointer; }
+.mf-result-details p, .mf-result-details > a { display: block; margin: 4px 0 12px; }
+.mf-result-details > a { color: var(--mf-blue); text-underline-offset: 4px; }
 .mf-result-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 20px; }
 .mf-discussion-count { min-width: 3ch; text-align: center; padding: 1px 5px; border-radius: 5px; background: var(--mf-soft); font-size: 11px; font-variant-numeric: tabular-nums; }
 .mf-counts-status { margin-bottom: 16px; font-size: 13px; color: var(--mf-muted); }

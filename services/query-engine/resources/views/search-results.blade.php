@@ -1,7 +1,10 @@
+@php
+    $displayQuery = $suggestions ? $query : ($originalQuery ?? $query);
+@endphp
 <x-search-layout :title="'Search results for '.($originalQuery ?? $query).' — MiFolyo'" :query="$originalQuery ?? $query">
     <main id="main" class="mf-page" tabindex="-1" data-search-context="{{ \App\Support\SearchContext::url(request()->getRequestUri()) }}" data-counts-endpoint="{{ route('community.counts', [], false) }}">
         <div class="mf-results-heading">
-            <div><p class="mf-eyebrow">Web search</p><h1>{{ $query !== '' ? 'Results for “'.$query.'”' : 'What are you curious about?' }}</h1></div>
+            <div><p class="mf-eyebrow">Web search</p><h1>{{ $displayQuery !== '' ? 'Results for “'.$displayQuery.'”' : 'What are you curious about?' }}</h1></div>
             @if ($total > 0)
                 <p class="mf-muted">{{ number_format($total) }} {{ $total == 1 ? 'result' : 'results' }} · Page {{ $page }}</p>
             @endif
@@ -13,9 +16,12 @@
             <section aria-label="Search results" class="mf-results">
                 <p class="mf-counts-status" data-counts-status role="status" hidden>Some conversation counts are unavailable. <button type="button" class="mf-text-link" data-counts-retry>Retry counts</button></p>
                 @if (count($results) > 0)
+                    @php
+                        $presenter = new \App\Support\SearchResultPresenter($displayQuery);
+                    @endphp
                     <ul class="mf-results-list">
                         @foreach ($results as $res)
-                            <x-search-result :url="data_get($res, '_id')" :title="data_get($res, 'title')" :text="data_get($res, 'summary_text') ?: data_get($res, 'description', '')" />
+                            <x-search-result :url="data_get($res, '_id')" :title="data_get($res, 'title')" :summary="data_get($res, 'summary_text')" :description="data_get($res, 'description')" :presenter="$presenter" />
                         @endforeach
                     </ul>
                 @else

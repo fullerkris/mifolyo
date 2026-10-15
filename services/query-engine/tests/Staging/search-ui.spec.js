@@ -78,11 +78,46 @@ test('real search pagination preserves encoded query and browser history', async
 test('dictionary correction can be declined and empty results have no phantom pages', async ({ page }) => {
     await page.goto('/search?q=stagng');
     await expect(page.locator('.mf-spelling')).toContainText('Showing results for staging.');
+    await expect(page.locator('.mf-result-excerpt').first().locator('mark')).toHaveText(['staging']);
     await page.locator('.mf-spelling').getByRole('link', { name: 'stagng', exact: true }).click();
     await expect(page).toHaveURL(/\/search\/exact\?q=stagng/);
     await expect(page.getByRole('heading', { name: 'No results found' })).toBeVisible();
     await expect(page.getByRole('searchbox')).toHaveValue('stagng');
     await expect(page.getByRole('navigation', { name: 'Search result pages' })).toHaveCount(0);
+});
+
+test('indexed highlights, snippets and full metadata render safely in both themes', async ({ page, isMobile }, testInfo) => {
+    const errors = [];
+    page.on('pageerror', error => errors.push(error.message));
+    await page.goto(`/search/exact?${new URLSearchParams({ q: 'ux05 café C++' })}`);
+    await expect(page.locator('h1')).toHaveText('Results for “ux05 café C++”');
+    const cards = page.locator('.mf-result-card');
+    await expect(cards).toHaveCount(4);
+    await expect(cards.first().locator('h2 mark')).toHaveText(['CAFÉ', 'C++']);
+    await expect(cards.first().locator('.mf-result-excerpt')).toContainText('A useful café guide explains C++');
+    await expect(cards.first().locator('.mf-result-excerpt mark')).toHaveText(['café', 'C++']);
+    await expect(cards.first().locator('h2 em, .mf-result-excerpt em')).toHaveCount(0);
+    await expect(cards.nth(2).locator('h2')).toHaveText('example.test');
+    await expect(cards.nth(2).locator('.mf-result-excerpt')).toHaveText('A description about café and C++.');
+    await expect(cards.nth(3).locator('.mf-result-excerpt')).toContainText('No excerpt is available.');
+    await expect(cards.first().locator('[data-discussion-count]')).toHaveText('0');
+    const source = 'https://example.test/ux05/caf%C3%A9?topic=c%2B%2B&lang=fr#examples';
+    await expect(cards.first().getByRole('link', { name: 'View page' })).toHaveAttribute('href', source);
+    await expect(cards.first().locator('[data-discuss-url]')).toHaveAttribute('data-discuss-url', source);
+    for (const width of isMobile ? [320, 768] : [1440]) {
+        await page.setViewportSize({ width, height: 1000 });
+        for (const theme of ['light', 'dark']) {
+            if (await page.locator('html').getAttribute('data-theme') !== theme) await page.locator('[data-theme-toggle]').click();
+            await page.evaluate(() => window.scrollTo(0, 0));
+            await page.screenshot({ path: testInfo.outputPath(`result-highlights-${width}-${theme}.png`), animations: 'disabled' });
+            await cards.nth(1).locator('summary').click();
+            await expect(cards.nth(1).locator('.mf-result-full-title')).toBeVisible();
+            expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+            await page.screenshot({ path: testInfo.outputPath(`full-metadata-${width}-${theme}.png`), animations: 'disabled' });
+            await cards.nth(1).locator('summary').click();
+        }
+    }
+    expect(errors).toEqual([]);
 });
 
 test('sign-in, thread creation, nested replies and expired-session drafts persist', async ({ page, request, isMobile }, testInfo) => {

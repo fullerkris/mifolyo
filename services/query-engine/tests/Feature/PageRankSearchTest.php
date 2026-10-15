@@ -168,6 +168,26 @@ class PageRankSearchTest extends TestCase
             ->assertSee('aria-current="page" aria-label="Page 2"', false);
     }
 
+    public function test_indexed_metadata_is_presented_as_relevant_escaped_text_while_json_stays_raw(): void
+    {
+        $source = 'https://example.test/caf%C3%A9?x=1&y=two';
+        $summary = str_repeat('An introductory paragraph. ', 30).'Useful café context from the stored page. '.str_repeat('More background. ', 20);
+        $this->mongoDatabase->words->insertOne(['word' => 'café', 'url' => $source, 'weight' => 1]);
+        $this->mongoDatabase->metadata->insertOne([
+            '_id' => $source, 'title' => 'CAFÉ <img src=x onerror=bad()>',
+            'summary_text' => $summary, 'description' => 'A generic description.',
+        ]);
+        $this->get('/search/exact?q=caf%C3%A9%20C%2B%2B')->assertOk()
+            ->assertSee('Results for “café C++”')
+            ->assertSee('<mark class="mf-result-match">CAFÉ</mark>', false)
+            ->assertSee('<mark class="mf-result-match">café</mark>', false)
+            ->assertSee('context from the stored page.')->assertSee('&lt;img src=x', false)
+            ->assertDontSee('<img src=x', false)->assertSee('data-discuss-url="'.e($source).'"', false);
+        $this->getJson('/api/search_force?q=caf%C3%A9')->assertOk()
+            ->assertJsonPath('results.0.summary_text', $summary)
+            ->assertJsonPath('results.0.title', 'CAFÉ <img src=x onerror=bad()>');
+    }
+
     public function test_image_association_results_keep_source_url_as_public_id(): void
     {
         $source = 'https://cdn.example.test/shared.jpg';

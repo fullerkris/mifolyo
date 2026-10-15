@@ -15,6 +15,7 @@
             <p class="mf-thread-meta">{{ data_get($post, 'author.username') ?: 'Community member' }} · {{ $post['comment_count'] ?? 0 }} {{ ($post['comment_count'] ?? 0) == 1 ? 'reply' : 'replies' }}</p>
             @if ($sourceUrl)<p class="mf-thread-body"><a class="mf-source-link" href="{{ $sourceUrl }}" target="_blank" rel="noopener noreferrer">{{ $sourceUrl }} <x-search-icon name="external" /></a></p>@endif
             <p class="mf-thread-body">{{ $post['body'] ?? '' }}</p>
+            <x-vote-controls :item="$post" :thread="$post" />
         </article>
         <section class="mf-comments" aria-labelledby="comments-heading">
             <h2 id="comments-heading">Comments &amp; replies</h2>

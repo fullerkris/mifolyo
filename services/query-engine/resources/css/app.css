@@ -10,6 +10,12 @@
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
+/* Shared pagination on the legacy image-results page. */
+.mf-pagination { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: .5rem; margin: 2rem 0; color: var(--text); }
+.mf-pagination a, .mf-pagination > span { padding: .6rem .8rem; border-radius: .5rem; }
+.mf-pagination [aria-current] { background: var(--another); }
+.mf-pagination a:hover, .mf-pagination a:focus-visible { text-decoration: underline; }
+
 :root {
     --bg: #1f2335;
     --text: #c0caf5;

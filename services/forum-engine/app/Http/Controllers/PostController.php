@@ -8,18 +8,25 @@ use App\Models\Post;
 use App\Support\SourceUrlNormalizationException;
 use App\Support\SourceUrlNormalizer;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class PostController extends Controller
 {
-    public function show(Post $post): JsonResponse
+    public function show(Request $request, Post $post): JsonResponse
     {
+        abort_if($post->is_removed, 404);
         $post->load(['community', 'author']);
+        $user = $request->user('api');
+        abort_if($post->community->is_private && (! $user || ! $post->community->memberships()->where('user_id', $user->id)->exists()), 403);
+
+        $data = $post->toArray();
+        $data['author'] = $post->author?->only(['id', 'username', 'name', 'level']);
 
         return response()->json([
-            'data' => $post,
+            'data' => $data,
         ]);
     }
 

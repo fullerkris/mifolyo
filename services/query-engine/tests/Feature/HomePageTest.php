@@ -29,7 +29,7 @@ class HomePageTest extends TestCase
         $this->get('/explore?'.http_build_query([
             'mode' => 'search',
             'q' => 'community search',
-        ]))->assertRedirect('/api/search?q=community%20search');
+        ]))->assertRedirect('/search?q=community%20search');
     }
 
     public function test_community_mode_opens_discussions_for_a_page_url(): void

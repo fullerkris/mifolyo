@@ -12,13 +12,14 @@ use App\Http\Controllers\ThreadController;
 use App\Http\Controllers\VoteController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('throttle:api-read')->group(function () {
+Route::middleware(['auth.token.fresh', 'throttle:api-read'])->group(function () {
     Route::get('/health/live', [HealthController::class, 'live']);
     Route::get('/health/ready', [HealthController::class, 'ready']);
     Route::get('/feeds/home', [FeedController::class, 'home']);
     Route::get('/feeds/community/{community:slug}', [FeedController::class, 'community']);
     Route::get('/communities', [CommunityController::class, 'index']);
     Route::get('/threads/by-url', [ThreadController::class, 'byUrl']);
+    Route::post('/threads/counts', [ThreadController::class, 'counts']);
     Route::get('/posts/{post}/comments', [CommentController::class, 'index']);
     Route::get('/posts/{post}', [PostController::class, 'show']);
 });

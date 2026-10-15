@@ -1,330 +1,75 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    @vite('resources/css/app.css')
-    <title>Search Results for "{{ $originalQuery }}"</title>
-</head>
-
-<body class="mifolyo-results-body">
-    <header class="mifolyo-results-header">
-        <a href="/" class="mifolyo-app-icon" aria-label="MiFolyo home">
-            <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
-                <circle cx="12" cy="7" r="3"></circle>
-                <path d="M8 21V12a4 4 0 0 1 8 0v9"></path>
-            </svg>
-        </a>
-        <form class="mifolyo-results-search" action="/api/search" method="GET" role="search">
-            <label for="mifolyo-results-search-input" class="sr-only">Search</label>
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-                <circle cx="11" cy="11" r="7"></circle>
-                <path d="m16.5 16.5 4 4"></path>
-            </svg>
-            <input id="mifolyo-results-search-input" name="q" type="search" value="{{ $query }}" autocomplete="off">
-            <button type="submit">Search</button>
-        </form>
-        <nav class="mifolyo-results-nav" aria-label="Account actions">
-            <a href="#sign-in">Sign in</a>
-            <a href="#create-account" class="mifolyo-results-create">Create account</a>
-        </nav>
-    </header>
-
-    <main class="mifolyo-results-page">
-    <div class="results-counter">
-        @php
-            $suggestion = '';
-            if ($suggestions) {
-                $suggestion = "Did you mean $query? ";
-            }
-        @endphp
-        <span id="suggestion">{{ $suggestion }}</span><span>Showing {{ $total }} results for
-            {{ $query }}</span>
-        @if ($suggestions)
-            <p>Search for <a id="suggestion-link"
-                    href="{{ route('search_force', ['processed_query' => $originalQuery]) }}">{{ $originalQuery }}</a>
-                instead
-            </p>
-        @endif
-    </div>
-
-    <div class="results-container">
-        <section class="pages-container" aria-label="Search results">
-            @if (count($results) > 0)
-                <ul>
-                    @foreach ($results as $res)
-                        <x-search-result url="{{ $res->_id }}" title="{{ $res->title }}"
-                            text="{{ $res->summary_text }}" />
-                    @endforeach
-                </ul>
-            @else
-                <div class="mifolyo-empty-results">
-                    <h2>No results found</h2>
-                    <p>Try a broader search, or start a community discussion once you have a source URL.</p>
-                </div>
+@php
+    $displayQuery = $suggestions ? $query : ($originalQuery ?? $query);
+@endphp
+<x-search-layout :title="'Search results for '.($originalQuery ?? $query).' — MiFolyo'" :query="$originalQuery ?? $query">
+    <main id="main" class="mf-page" tabindex="-1" data-search-context="{{ \App\Support\SearchContext::url(request()->getRequestUri()) }}" data-counts-endpoint="{{ route('community.counts', [], false) }}">
+        <div class="mf-results-heading">
+            <div><p class="mf-eyebrow">Web search</p><h1>{{ $displayQuery !== '' ? 'Results for “'.$displayQuery.'”' : 'What are you curious about?' }}</h1></div>
+            @if ($total > 0)
+                <p class="mf-muted">{{ number_format($total) }} {{ $total == 1 ? 'result' : 'results' }} · Page {{ $page }}</p>
             @endif
-        </section>
-        @if ($page != null && $page == 1)
-            <aside class="images-container" aria-label="Related images">
-                <h2 class="top-images-text">Related images</h2>
-                @foreach ($topImages as $res)
-                    <div class="my-2">
-                        <x-image-container url="{{ $res->_id }}" alt="{{ $res->alt }}"
-                            title="{{ $res->page_title }}" page="{{ $res->page_url }}"
-                            text="{{ $res->page_text }}" />
-                    </div>
-                @endforeach
-            </aside>
+        </div>
+        @if ($suggestions)
+            <p class="mf-spelling">Showing results for <strong>{{ $query }}</strong>. Search for <a href="{{ route('search.exact', ['q' => $originalQuery]) }}">{{ $originalQuery }}</a> instead.</p>
         @endif
-        <div class="mifolyo-results-pagination">
-            <x-pagination-bar totalResults="{{ $total }}" />
+        <div class="mf-results-grid">
+            <section aria-label="Search results" class="mf-results">
+                <p class="mf-counts-status" data-counts-status role="status" hidden>Some conversation counts are unavailable. <button type="button" class="mf-text-link" data-counts-retry>Retry counts</button></p>
+                @if (count($results) > 0)
+                    @php
+                        $presenter = new \App\Support\SearchResultPresenter($displayQuery);
+                    @endphp
+                    <ul class="mf-results-list">
+                        @foreach ($results as $res)
+                            <x-search-result :url="data_get($res, '_id')" :title="data_get($res, 'title')" :summary="data_get($res, 'summary_text')" :description="data_get($res, 'description')" :presenter="$presenter" />
+                        @endforeach
+                    </ul>
+                @else
+                    <div class="mf-empty-state">
+                        <x-search-icon />
+                        <h2>{{ $query === '' ? 'Start with a search' : ($total > 0 ? 'No results on this page' : 'No results found') }}</h2>
+                        <p>{{ $total > 0 ? 'Go back to the first page to explore the available results.' : 'Try a different phrase or fewer words. You can edit your search above.' }}</p>
+                        @if ($total > 0)
+                            <a class="mf-button mf-primary" href="{{ request()->url().'?'.http_build_query(['q' => $originalQuery ?? $query, 'page' => 1], '', '&', PHP_QUERY_RFC3986) }}">Back to first page</a>
+                        @endif
+                    </div>
+                @endif
+                <x-pagination-bar :total-results="$total" />
+            </section>
+            <aside class="mf-search-aside" aria-label="About these results">
+                <div class="mf-context-card">
+                    <x-search-icon name="chat" />
+                    <p class="mf-eyebrow">Beyond the link</p>
+                    <h2>There’s more to a result.</h2>
+                    <p>Questions, experiences, and useful context belong alongside the source.</p>
+                    <p>Choose <strong>Discuss</strong> on any result to explore its conversations.</p>
+                </div>
+                <p class="mf-aside-note">Results come from MiFolyo’s indexed pages. Open the original source for its latest content.</p>
+                @if (count($topImages) > 0)
+                    <section class="mf-related-images" aria-label="Related images">
+                        <h2>Related images</h2>
+                        @foreach ($topImages as $image)
+                            @php
+                                $imageUrl = data_get($image, '_id', '');
+                                $imagePage = data_get($image, 'page_url', '');
+                                $isHttp = fn ($value) => is_string($value) && filter_var($value, FILTER_VALIDATE_URL) && in_array(strtolower(parse_url($value, PHP_URL_SCHEME) ?? ''), ['http', 'https'], true);
+                            @endphp
+                            @if ($isHttp($imageUrl) && $isHttp($imagePage))
+                                <a href="{{ $imagePage }}"><img src="{{ $imageUrl }}" alt="{{ data_get($image, 'alt', '') }}" loading="lazy" referrerpolicy="no-referrer"><span>{{ data_get($image, 'page_title') ?: 'View image source' }}</span></a>
+                            @endif
+                        @endforeach
+                    </section>
+                @endif
+            </aside>
         </div>
-    </div>
     </main>
-
-    <div id="thread-panel-backdrop" class="thread-panel-backdrop hidden" data-thread-panel-close></div>
-    <aside id="thread-panel" class="thread-panel" aria-hidden="true" aria-labelledby="thread-panel-title">
-        <div class="thread-panel-header">
-            <div>
-                <p class="thread-panel-kicker">Community discussion</p>
-                <h2 id="thread-panel-title">Threads for this result</h2>
-                <p id="thread-panel-source" class="thread-panel-source"></p>
-            </div>
-            <button type="button" class="thread-panel-close" data-thread-panel-close aria-label="Close discussion panel">
-                ×
-            </button>
+    <dialog class="mf-discussion-dialog" data-discussion-dialog aria-labelledby="panel-title">
+        <div class="mf-dialog-heading">
+            <div><p class="mf-eyebrow">Community discussion</p><h2 id="panel-title" data-panel-title>Discussions for this page</h2></div>
+            <button type="button" class="mf-icon-button" data-close-discussions aria-label="Close discussions" autofocus><x-search-icon name="close" /></button>
         </div>
-        <div id="thread-panel-status" class="thread-panel-status">Select a result to view discussions.</div>
-        <div id="thread-panel-list" class="thread-panel-list"></div>
-        <form id="thread-create-form" class="thread-create-form hidden">
-            <h3>Start a thread</h3>
-            <p class="thread-create-help">Create a discussion tied to this exact search result.</p>
-            <label for="thread-create-token">Forum API token</label>
-            <input id="thread-create-token" name="token" type="password" autocomplete="off"
-                placeholder="Temporary beta token">
-            <label for="thread-create-title">Title</label>
-            <input id="thread-create-title" name="title" type="text" maxlength="300"
-                placeholder="What should people discuss?" required>
-            <label for="thread-create-body">Body <span>optional</span></label>
-            <textarea id="thread-create-body" name="body" rows="4"
-                placeholder="Add context, evidence, or a question."></textarea>
-            <button type="submit" class="btn-discuss">Start thread</button>
-            <p id="thread-create-message" class="thread-create-message"></p>
-        </form>
-    </aside>
-
-    <footer class="mifolyo-results-footer">MiFolyo search is better with community context.</footer>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const threadsEndpoint = '/api/threads/by-url';
-            const createThreadEndpoint = '/api/threads';
-            const panel = document.getElementById('thread-panel');
-            const backdrop = document.getElementById('thread-panel-backdrop');
-            const status = document.getElementById('thread-panel-status');
-            const list = document.getElementById('thread-panel-list');
-            const title = document.getElementById('thread-panel-title');
-            const source = document.getElementById('thread-panel-source');
-            const createForm = document.getElementById('thread-create-form');
-            const createToken = document.getElementById('thread-create-token');
-            const createTitle = document.getElementById('thread-create-title');
-            const createBody = document.getElementById('thread-create-body');
-            const createMessage = document.getElementById('thread-create-message');
-            let activeRequestId = 0;
-            let activeSourceUrl = '';
-            let activeResultTitle = '';
-
-            createToken.value = localStorage.getItem('mifolyo_api_token') || '';
-
-            const openPanel = () => {
-                panel.classList.add('open');
-                panel.setAttribute('aria-hidden', 'false');
-                backdrop.classList.remove('hidden');
-            };
-
-            const closePanel = () => {
-                panel.classList.remove('open');
-                panel.setAttribute('aria-hidden', 'true');
-                backdrop.classList.add('hidden');
-            };
-
-            const showCreateForm = () => {
-                createForm.classList.remove('hidden');
-                createMessage.textContent = '';
-            };
-
-            const renderSource = (url) => {
-                try {
-                    const parsed = new URL(url);
-                    return `${parsed.hostname}${parsed.pathname === '/' ? '' : parsed.pathname}`;
-                } catch (error) {
-                    return url;
-                }
-            };
-
-            const renderThread = (thread) => {
-                const author = thread.author?.username || 'unknown';
-                const level = thread.author?.level || 1;
-                const sourceLabel = `${thread.source_domain || ''}${thread.source_path || ''}`;
-
-                return `
-                    <article class="thread-panel-thread">
-                        <h3>${escapeHtml(thread.title)}</h3>
-                        <p class="thread-panel-thread-meta">${escapeHtml(author)} · Level ${level} · ${thread.comment_count} replies · ${thread.score} score</p>
-                        <p class="thread-panel-thread-source">${escapeHtml(sourceLabel)}</p>
-                    </article>
-                `;
-            };
-
-            const escapeHtml = (value) => String(value ?? '')
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#039;');
-
-            const loadThreads = async (url, resultTitle) => {
-                const requestId = ++activeRequestId;
-                activeSourceUrl = url;
-                activeResultTitle = resultTitle || 'Threads for this result';
-                title.textContent = resultTitle || 'Threads for this result';
-                source.textContent = renderSource(url);
-                list.innerHTML = '';
-                createTitle.value = '';
-                createBody.value = '';
-                createMessage.textContent = '';
-                status.textContent = 'Loading community threads...';
-                openPanel();
-
-                try {
-                    const response = await fetch(`${threadsEndpoint}?url=${encodeURIComponent(url)}&sort=top`, {
-                        headers: {
-                            'Accept': 'application/json',
-                        },
-                    });
-
-                    if (requestId !== activeRequestId) {
-                        return;
-                    }
-
-                    if (!response.ok) {
-                        status.textContent = response.status === 503
-                            ? 'Forum threads are unavailable right now.'
-                            : 'Could not load discussions for this result.';
-                        return;
-                    }
-
-                    const payload = await response.json();
-                    const threads = payload.data || [];
-
-                    if (threads.length === 0) {
-                        status.innerHTML = `No discussions yet for this page. <span>You can start the first thread below.</span>`;
-                        showCreateForm();
-                        return;
-                    }
-
-                    status.textContent = `${threads.length} discussion${threads.length === 1 ? '' : 's'} found`;
-                    list.innerHTML = threads.map(renderThread).join('');
-                    showCreateForm();
-                } catch (error) {
-                    if (requestId === activeRequestId) {
-                        status.textContent = 'Could not reach the discussion service.';
-                        createForm.classList.add('hidden');
-                    }
-                }
-            };
-
-            createForm.addEventListener('submit', async (event) => {
-                event.preventDefault();
-
-                if (!activeSourceUrl) {
-                    createMessage.textContent = 'Choose a search result first.';
-                    return;
-                }
-
-                const token = createToken.value.trim();
-                const threadTitle = createTitle.value.trim();
-                const body = createBody.value.trim();
-
-                if (!threadTitle) {
-                    createMessage.textContent = 'Add a title before starting a thread.';
-                    return;
-                }
-
-                if (token) {
-                    localStorage.setItem('mifolyo_api_token', token);
-                }
-
-                createMessage.textContent = 'Creating thread...';
-
-                try {
-                    const headers = {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                    };
-
-                    if (token) {
-                        headers.Authorization = `Bearer ${token}`;
-                    }
-
-                    const response = await fetch(createThreadEndpoint, {
-                        method: 'POST',
-                        headers,
-                        body: JSON.stringify({
-                            title: threadTitle,
-                            body,
-                            source_url: activeSourceUrl,
-                        }),
-                    });
-
-                    const payload = await response.json().catch(() => ({}));
-
-                    if (response.status === 401) {
-                        createMessage.textContent = 'Log in to the forum, then paste your beta API token to start a thread.';
-                        return;
-                    }
-
-                    if (response.status === 403) {
-                        createMessage.textContent = payload.message || 'You do not have permission to post in this community.';
-                        return;
-                    }
-
-                    if (!response.ok) {
-                        createMessage.textContent = payload.message || 'Could not create the thread.';
-                        return;
-                    }
-
-                    createTitle.value = '';
-                    createBody.value = '';
-                    createMessage.textContent = 'Thread created.';
-                    await loadThreads(activeSourceUrl, activeResultTitle);
-                } catch (error) {
-                    createMessage.textContent = 'Could not reach the discussion service.';
-                }
-            });
-
-            document.querySelectorAll('[data-discuss-url]').forEach((button) => {
-                button.addEventListener('click', () => {
-                    if (window.matchMedia('(max-width: 768px)').matches && button.dataset.discussPage) {
-                        window.location.href = button.dataset.discussPage;
-                        return;
-                    }
-
-                    loadThreads(button.dataset.discussUrl, button.dataset.discussTitle);
-                });
-            });
-
-            document.querySelectorAll('[data-thread-panel-close]').forEach((element) => {
-                element.addEventListener('click', closePanel);
-            });
-
-            document.addEventListener('keydown', (event) => {
-                if (event.key === 'Escape') {
-                    closePanel();
-                }
-            });
-        });
-    </script>
-</body>
-
-</html>
+        <a class="mf-source-link" data-panel-source target="_blank" rel="noopener noreferrer"></a>
+        <a class="mf-full-page-link" data-panel-page>Open discussion page →</a>
+        <x-thread-browser prefix="panel" />
+    </dialog>
+</x-search-layout>

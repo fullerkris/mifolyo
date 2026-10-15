@@ -1,0 +1,13 @@
+:80 {
+    header X-MiFolyo-Environment local-search-staging
+    root * /srv
+    php_fastcgi query-engine:9000 {
+        root /var/www/public
+    }
+    file_server
+}
+
+:8080 {
+    header X-MiFolyo-Environment local-search-staging
+    reverse_proxy forum-engine:8000
+}

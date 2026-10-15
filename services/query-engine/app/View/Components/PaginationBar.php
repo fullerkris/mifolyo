@@ -12,13 +12,21 @@ class PaginationBar extends Component
 
     public $totalPages;
 
+    public $currentPage;
+
+    public $pages;
+
     /**
      * Create a new component instance.
      */
-    public function __construct($totalResults)
+    public function __construct($totalResults, $perPage = 20)
     {
         $this->totalResults = $totalResults;
-        $this->totalPages = ceil($totalResults / 20);
+        $this->totalPages = min(100, (int) ceil($totalResults / $perPage));
+        $page = filter_var(request()->query('page', 1), FILTER_VALIDATE_INT);
+        $this->currentPage = max(1, min(100, $page ?: 1));
+        $start = max(1, min($this->currentPage - 2, $this->totalPages - 4));
+        $this->pages = $this->totalPages > 0 ? range($start, min($this->totalPages, $start + 4)) : [];
     }
 
     /**

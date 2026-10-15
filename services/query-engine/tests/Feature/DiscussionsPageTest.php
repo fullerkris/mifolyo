@@ -14,8 +14,8 @@ class DiscussionsPageTest extends TestCase
             ->assertOk()
             ->assertSee('Useful Source')
             ->assertSee('https://example.com/source')
-            ->assertSee('/api/threads/by-url')
-            ->assertSee('/api/threads');
+            ->assertSee('/community/threads')
+            ->assertSee('Sign in to start a thread');
     }
 
     public function test_discussions_page_requires_http_url(): void

@@ -8,6 +8,7 @@ use App\Models\Post;
 use App\Models\User;
 use App\Support\SourceUrlNormalizer;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
@@ -214,6 +215,52 @@ class ThreadByUrlEndpointTest extends TestCase
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['url'])
             ->assertJsonPath('errors.url.0', 'invalid_host');
+    }
+
+    public function test_batch_counts_share_list_identity_and_visibility_in_one_grouped_query(): void
+    {
+        $owner = User::factory()->create();
+        $public = $this->makeCommunity($owner, false);
+        $private = $this->makeCommunity($owner, true);
+        $source = SourceUrlNormalizer::normalize('https://example.com/source?a=1&b=two');
+        $this->makePost($public, $owner, 'public', $source);
+        $this->makePost($private, $owner, 'private', $source);
+        $this->makePost($public, $owner, 'removed', $source, ['is_removed' => true]);
+        $this->makePost($public, $owner, 'legacy', $source, ['source_url_canonicalization_version' => null]);
+        $this->makePost($public, $owner, 'collision', $source, ['source_url' => 'https://example.com/other']);
+        $this->makePost($public, $owner, 'other-query', SourceUrlNormalizer::normalize('https://example.com/source?a=2&b=two'));
+        $urls = ['https://EXAMPLE.com:443/source?a=1&b=two#section', $source['source_url'], 'https://example.com/source?a=2&b=two'];
+        for ($i = 3; $i < 20; $i++) {
+            $urls[] = 'https://example.com/empty/'.$i;
+        }
+        DB::enableQueryLog();
+        $response = $this->postJson('/api/threads/counts', ['urls' => $urls]);
+        $queries = DB::getQueryLog();
+        DB::disableQueryLog();
+        $response->assertOk()->assertJsonCount(20, 'data')->assertJsonPath('data.0.url', $urls[0])
+            ->assertJsonPath('data.0.count', 1)->assertJsonPath('data.1.count', 1)
+            ->assertJsonPath('data.2.count', 1)->assertJsonPath('data.19.count', 0);
+        $this->assertCount(1, array_filter($queries, fn ($query) => str_contains(strtolower($query['query']), 'conversation_count')));
+        $this->assertStringContainsString('no-store', $response->headers->get('Cache-Control'));
+        CommunityMembership::query()->create(['community_id' => $private->id, 'user_id' => $owner->id, 'role' => 'owner']);
+        $headers = $this->headersForUser($owner);
+        app('auth')->forgetGuards();
+        $this->postJson('/api/threads/counts', ['urls' => [$source['source_url']]], $headers)->assertOk()->assertJsonPath('data.0.count', 2);
+        CommunityMembership::query()->where('user_id', $owner->id)->delete();
+        app('auth')->forgetGuards();
+        $this->postJson('/api/threads/counts', ['urls' => [$source['source_url']]], $headers)->assertOk()->assertJsonPath('data.0.count', 1);
+        $owner->forceFill(['api_token_expires_at' => now()->subMinute()])->save();
+        app('auth')->forgetGuards();
+        $this->postJson('/api/threads/counts', ['urls' => [$source['source_url']]], $headers)->assertUnauthorized();
+    }
+
+    public function test_batch_counts_bound_input_and_keep_unsupported_sources_distinct_from_zero(): void
+    {
+        $this->postJson('/api/threads/counts', ['urls' => ['https://example.com/empty', 'https://example.com./', 'javascript:alert(1)']])
+            ->assertOk()->assertJsonPath('data.0.count', 0)->assertJsonPath('data.1.count', null)->assertJsonPath('data.2.count', null);
+        foreach ([[], array_fill(0, 21, 'https://example.com'), ['key' => 'https://example.com'], [str_repeat('a', 2049)], [null]] as $urls) {
+            $this->postJson('/api/threads/counts', ['urls' => $urls])->assertUnprocessable();
+        }
     }
 
     private function makeCommunity(User $owner, bool $isPrivate): Community

@@ -15,6 +15,7 @@ class CommentController extends Controller
 
     public function index(Request $request, Post $post): JsonResponse
     {
+        abort_if($post->is_removed, 404);
         if (! $this->canAccessPost($request, $post)) {
             return response()->json([
                 'message' => 'This post is in a private community.',
@@ -33,6 +34,10 @@ class CommentController extends Controller
             return ($grouped->get($parentKey) ?? collect())
                 ->map(function (Comment $comment) use (&$buildTree): array {
                     $node = $comment->toArray();
+                    $node['author'] = $comment->is_removed ? null : $comment->author?->only(['id', 'username', 'name', 'level']);
+                    if ($comment->is_removed) {
+                        $node['body'] = '[Comment removed]';
+                    }
                     $node['children'] = $buildTree((string) $comment->id);
 
                     return $node;
@@ -80,6 +85,10 @@ class CommentController extends Controller
                 ], 422);
             }
 
+            if ($parentComment->is_locked || $parentComment->is_removed) {
+                return response()->json(['message' => 'This comment is closed to replies.'], 423);
+            }
+
             $depth = $parentComment->depth + 1;
 
             if ($depth > self::MAX_DEPTH) {
@@ -118,7 +127,7 @@ class CommentController extends Controller
             return true;
         }
 
-        $user = $request->user();
+        $user = $request->user('api');
 
         if (! $user) {
             return false;

@@ -31,6 +31,7 @@ Route::get('/threads/by-url', function (Request $request) {
         'url' => ['required', 'url:http,https', 'max:2048'],
         'sort' => ['sometimes', 'in:top,new'],
         'per_page' => ['sometimes', 'integer', 'min:1', 'max:100'],
+        'page' => ['sometimes', 'integer', 'min:1', 'max:10000'],
     ]);
 
     try {
@@ -41,6 +42,7 @@ Route::get('/threads/by-url', function (Request $request) {
                 'url' => $validated['url'],
                 'sort' => $validated['sort'] ?? 'top',
                 'per_page' => $validated['per_page'] ?? 20,
+                'page' => $validated['page'] ?? 1,
             ]);
     } catch (\Throwable) {
         return response()->json([

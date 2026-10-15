@@ -609,6 +609,19 @@ jobs:
         env:
           QUERY_MONGO_INTEGRATION_URI: mongodb://127.0.0.1:27017
         run: php artisan test
+      - name: Install browser for Search UI checks
+        working-directory: ./services/query-engine
+        run: npx playwright install --with-deps chromium
+      - name: Test desktop and mobile Search UI
+        working-directory: ./services/query-engine
+        run: npm run test:browser
+      - name: Retain Search UI failure traces
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: search-ui-browser-results
+          path: services/query-engine/test-results/
+          retention-days: 7
 
   test-page-rank:
     name: Test PageRank Service

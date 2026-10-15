@@ -87,6 +87,65 @@ class CommentEndpointsTest extends TestCase
             ->assertJsonPath('message', 'You must be a member to comment in this private community.');
     }
 
+    public function test_private_thread_and_comments_require_current_membership(): void
+    {
+        $owner = User::factory()->create();
+        $outsider = User::factory()->create();
+        $post = $this->makePost($owner, isPrivate: true);
+        CommunityMembership::query()->create(['community_id' => $post->community_id, 'user_id' => $owner->id, 'role' => 'owner']);
+        $ownerHeaders = $this->headersForUser($owner);
+        $outsiderHeaders = $this->headersForUser($outsider);
+
+        foreach (['', '/comments'] as $suffix) {
+            foreach ([[[], 403], [$outsiderHeaders, 403], [$ownerHeaders, 200]] as [$headers, $status]) {
+                app('auth')->forgetGuards();
+                $this->getJson('/api/posts/'.$post->id.$suffix, $headers)->assertStatus($status);
+            }
+        }
+    }
+
+    public function test_expired_tokens_cannot_read_private_threads_comments_or_source_lists(): void
+    {
+        $owner = User::factory()->create();
+        $post = $this->makePost($owner, isPrivate: true);
+        CommunityMembership::query()->create(['community_id' => $post->community_id, 'user_id' => $owner->id, 'role' => 'owner']);
+        foreach (['/api/posts/'.$post->id, '/api/posts/'.$post->id.'/comments', '/api/threads/by-url?url=https://example.test'] as $path) {
+            $headers = $this->headersForUser($owner);
+            $owner->forceFill(['api_token_expires_at' => now()->subMinute()])->save();
+            app('auth')->forgetGuards();
+            $this->getJson($path, $headers)->assertUnauthorized();
+            $this->assertNull($owner->fresh()->api_token);
+        }
+    }
+
+    public function test_removed_comments_hide_content_but_keep_their_reply_tree(): void
+    {
+        $user = User::factory()->create();
+        $post = $this->makePost($user);
+        $root = Comment::query()->create(['post_id' => $post->id, 'author_user_id' => $user->id, 'body' => 'Removed content', 'depth' => 0, 'is_removed' => true]);
+        Comment::query()->create(['post_id' => $post->id, 'parent_comment_id' => $root->id, 'author_user_id' => $user->id, 'body' => 'Visible reply', 'depth' => 1]);
+        $this->getJson('/api/posts/'.$post->id.'/comments')->assertOk()->assertJsonPath('data.0.body', '[Comment removed]')
+            ->assertJsonPath('data.0.author', null)->assertJsonPath('data.0.children.0.body', 'Visible reply')->assertDontSee($user->email);
+        $this->getJson('/api/posts/'.$post->id)->assertOk()->assertDontSee($user->email);
+        $post->update(['is_removed' => true]);
+        $this->getJson('/api/posts/'.$post->id)->assertNotFound();
+        $this->getJson('/api/posts/'.$post->id.'/comments')->assertNotFound();
+    }
+
+    public function test_closed_and_cross_thread_parent_comments_cannot_receive_replies(): void
+    {
+        $user = User::factory()->create();
+        $post = $this->makePost($user);
+        $otherPost = $this->makePost($user);
+        $headers = $this->headersForUser($user);
+        foreach ([['is_locked' => true], ['is_removed' => true], ['post_id' => $otherPost->id], ['depth' => 8]] as $attributes) {
+            $parent = Comment::query()->create($attributes + ['post_id' => $post->id, 'author_user_id' => $user->id, 'body' => 'Parent', 'depth' => 0]);
+            $status = isset($attributes['is_locked']) || isset($attributes['is_removed']) ? 423 : 422;
+            $this->postJson('/api/posts/'.$post->id.'/comments', ['body' => 'Rejected reply', 'parent_comment_id' => $parent->id], $headers)->assertStatus($status);
+        }
+        $this->assertDatabaseMissing('comments', ['body' => 'Rejected reply']);
+    }
+
     private function makePost(User $user, bool $isPrivate = false): Post
     {
         $community = Community::query()->create([

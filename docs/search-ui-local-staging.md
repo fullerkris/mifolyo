@@ -482,3 +482,25 @@ Validated local image IDs (not registry digests):
 query: sha256:69bce813a4adfad77a3fdc966effaa86df9e697916b056dac666649faf1dc305
 forum: sha256:c340b41de504141562b60f698b54f03d5ac5d445af9f28e05fa16dd3eba10dd7
 ```
+
+### Hosted CI follow-up — fixture publication race
+
+At voting implementation head `2e3eac2`, all 20
+[Unit Tests jobs](https://github.com/fullerkris/mifolyo/actions/runs/38787942820)
+passed. [Required Checks](https://github.com/fullerkris/mifolyo/actions/runs/38787942798)
+passed build and smoke; its test job passed the forum suite (139 tests / 762
+assertions), Composer audit and formatting, then failed one existing crawler
+regression, `test_nonreaping_exit_observation_and_inherited_open_pipes`.
+
+The test waited for marker-file existence, but `Path.write_text` creates the file
+before writing its contents. CI observed the empty intermediate file (`''`
+instead of `'True'`). Publishing a completed sibling file with atomic rename
+closes that window. The assertions, process checks and deadlines are preserved.
+The subsequent missing C0 artifact was a consequence of the earlier failed step.
+
+A controlled 100ms open-before-write delay reproduced the original failure in
+Linux/Python 3.13; the corrected fixture passes with the same injected delay.
+All 18 related recovery-review/parked-command tests pass on macOS and Linux,
+including Linux-native filesystem and Docker `--init` runs. The latter supplies
+a normal parent process for the existing worker-PID-greater-than-one invariant.
+Updated exact-head hosted results are tracked in PR #29 and the Obsidian notes.

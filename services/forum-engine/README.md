@@ -110,3 +110,31 @@ Configured in `config/services.php` under `search` and backed by env vars:
 - `POST /api/reports` (Bearer token)
 - `GET /api/mod/queue` (Bearer token, moderator/owner)
 - `POST /api/mod/actions` (Bearer token, moderator/owner)
+
+## Thread and comment votes
+
+`POST /api/votes` sets the authenticated user's vote explicitly:
+
+```json
+{"votable_type":"comment","votable_id":42,"value":1,"post_id":12}
+```
+
+- `votable_type`: `post` or `comment`; `votable_id`: a positive integer.
+- `value`: `1` (upvote), `-1` (downvote), or `0` (remove the existing vote).
+  Repeating the same value is a successful no-op, including repeated removals.
+- Optional `post_id` binds the target to a thread. A mismatch returns 422.
+  The Search UI proxy always supplies this from its route, ignoring browser input.
+- Success returns `data.changed`, `data.viewer_vote`, `data.vote` (null after
+  removal), and `data.votable` with `type`, `id`, `score`, `upvote_count` and
+  `downvote_count`. Scores/counters change atomically under row locks.
+- Authentication and private-community membership are required as applicable.
+  Locked/removed posts and locked/removed comments reject writes with 423;
+  missing resources return 404. Rate-limited requests return 429.
+- `GET /api/posts/{post}` and every node in `GET /api/posts/{post}/comments`
+  include `viewer_vote` (`-1`, `0`, `1`; `0` for guests/removed comments).
+  Comment selections use one batched lookup for the whole tree. These reads and
+  vote responses use `Cache-Control: private, no-store`.
+
+Clients should retry an uncertain write with the **same explicit value** and
+apply only confirmed response totals. Authentication recovery requires a fresh
+user action to vote; it does not replay the failed request.

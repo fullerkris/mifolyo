@@ -2,6 +2,7 @@ import { ThreadBrowser } from './thread-browser.js';
 import { initSearchJourney } from './search-journey.js';
 import { initDiscussionCounts } from './discussion-counts.js';
 import { initConnectionMap } from './connection-map.js';
+import { initVoteControls } from './vote-controls.js';
 
 const themeButton = document.querySelector('[data-theme-toggle]');
 const updateThemeButton = () => {
@@ -66,3 +67,4 @@ document.querySelectorAll('[data-image-preview]').forEach((image) => {
     if (image.complete && image.naturalWidth === 0) failed();
 });
 document.querySelectorAll('[data-connection-map]').forEach(initConnectionMap);
+document.querySelectorAll('[data-vote]').forEach(initVoteControls);

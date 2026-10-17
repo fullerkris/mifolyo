@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CommunityController;
@@ -28,6 +29,14 @@ Route::middleware('throttle:auth')->group(function () {
     Route::post('/auth/register', [AuthController::class, 'register']);
     Route::post('/auth/login', [AuthController::class, 'login']);
 });
+
+Route::middleware('throttle:account-recovery')->group(function () {
+    Route::post('/auth/forgot-password', [AccountController::class, 'forgotPassword']);
+    Route::post('/auth/reset-password', [AccountController::class, 'resetPassword']);
+});
+
+Route::delete('/auth/account', [AccountController::class, 'destroy'])
+    ->middleware(['auth:api', 'auth.token.fresh', 'throttle:account-recovery']);
 
 Route::middleware(['auth:api', 'auth.token.fresh', 'throttle:api-read'])->group(function () {
     Route::get('/auth/me', [AuthController::class, 'me']);

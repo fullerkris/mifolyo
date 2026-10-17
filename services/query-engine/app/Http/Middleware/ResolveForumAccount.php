@@ -22,6 +22,11 @@ class ResolveForumAccount
             }
         }
 
-        return $next($request)->header('Cache-Control', 'private, no-store');
+        $response = $next($request)->header('Cache-Control', 'private, no-store');
+        if ($request->is('forgot-password', 'reset-password', 'account')) {
+            $response->headers->set('Referrer-Policy', 'no-referrer');
+        }
+
+        return $response;
     }
 }

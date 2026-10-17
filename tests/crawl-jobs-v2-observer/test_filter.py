@@ -15,6 +15,8 @@ def interpret(program, number=117, architecture=0xc00000b7, args=(0, 1, 0, 0, 0,
             pc += 1
         elif code == 0x15:
             pc += 1 + (yes if accumulator == operand else no)
+        elif code == 0x35:
+            pc += 1 + (yes if accumulator >= operand else no)
         elif code == 0x06:
             return operand
         else:

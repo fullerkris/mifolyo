@@ -1,0 +1,70 @@
+
+/tmp/opencode/m4-c0-x64-runtime-2026-10-12/final-build/x86_64/artifacts/observer:     file format elf64-x86-64
+
+
+Disassembly of section .init:
+
+Disassembly of section .plt:
+
+Disassembly of section .plt.got:
+
+Disassembly of section .text:
+
+000000000006fa40 <request>:
+   6fa40:	41 55                	push   %r13
+   6fa42:	41 54                	push   %r12
+   6fa44:	49 89 f4             	mov    %rsi,%r12
+   6fa47:	55                   	push   %rbp
+   6fa48:	89 fd                	mov    %edi,%ebp
+   6fa4a:	bf 01 00 00 00       	mov    $0x1,%edi
+   6fa4f:	53                   	push   %rbx
+   6fa50:	48 83 ec 28          	sub    $0x28,%rsp
+   6fa54:	64 4c 8b 2c 25 28 00 	mov    %fs:0x28,%r13
+   6fa5b:	00 00 
+   6fa5d:	4c 89 6c 24 18       	mov    %r13,0x18(%rsp)
+   6fa62:	49 89 d5             	mov    %rdx,%r13
+   6fa65:	48 89 e6             	mov    %rsp,%rsi
+   6fa68:	e8 43 0e 27 00       	call   2e08b0 <clock_gettime>
+   6fa6d:	85 c0                	test   %eax,%eax
+   6fa6f:	75 7d                	jne    6faee <request+0xae>
+   6fa71:	48 69 04 24 00 ca 9a 	imul   $0x3b9aca00,(%rsp),%rax
+   6fa78:	3b 
+   6fa79:	48 03 44 24 08       	add    0x8(%rsp),%rax
+   6fa7e:	48 3b 05 6b 2f 44 00 	cmp    0x442f6b(%rip),%rax        # 4b29f0 <deadline>
+   6fa85:	73 5b                	jae    6fae2 <request+0xa2>
+   6fa87:	e8 24 c9 22 00       	call   29c3b0 <__errno_location>
+   6fa8c:	4c 89 e9             	mov    %r13,%rcx
+   6fa8f:	4c 89 e2             	mov    %r12,%rdx
+   6fa92:	be 01 00 00 00       	mov    $0x1,%esi
+   6fa97:	c7 00 00 00 00 00    	movl   $0x0,(%rax)
+   6fa9d:	48 89 c3             	mov    %rax,%rbx
+   6faa0:	89 ef                	mov    %ebp,%edi
+   6faa2:	31 c0                	xor    %eax,%eax
+   6faa4:	e8 a7 6f 27 00       	call   2e6a50 <ptrace>
+   6faa9:	48 83 f8 ff          	cmp    $0xffffffffffffffff,%rax
+   6faad:	74 21                	je     6fad0 <request+0x90>
+   6faaf:	48 8b 54 24 18       	mov    0x18(%rsp),%rdx
+   6fab4:	64 48 2b 14 25 28 00 	sub    %fs:0x28,%rdx
+   6fabb:	00 00 
+   6fabd:	75 39                	jne    6faf8 <request+0xb8>
+   6fabf:	48 83 c4 28          	add    $0x28,%rsp
+   6fac3:	5b                   	pop    %rbx
+   6fac4:	5d                   	pop    %rbp
+   6fac5:	41 5c                	pop    %r12
+   6fac7:	41 5d                	pop    %r13
+   6fac9:	c3                   	ret
+   6faca:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+   6fad0:	8b 13                	mov    (%rbx),%edx
+   6fad2:	85 d2                	test   %edx,%edx
+   6fad4:	74 d9                	je     6faaf <request+0x6f>
+   6fad6:	48 8d 3d f9 ec 2e 00 	lea    0x2eecf9(%rip),%rdi        # 35e7d6 <_IO_stdin_used+0x7d6>
+   6fadd:	e8 fe ec ff ff       	call   6e7e0 <invalid>
+   6fae2:	48 8d 3d d4 ec 2e 00 	lea    0x2eecd4(%rip),%rdi        # 35e7bd <_IO_stdin_used+0x7bd>
+   6fae9:	e8 f2 ec ff ff       	call   6e7e0 <invalid>
+   6faee:	bf 46 00 00 00       	mov    $0x46,%edi
+   6faf3:	e8 b8 12 27 00       	call   2e0db0 <_Exit>
+   6faf8:	e8 73 8f 27 00       	call   2e8a70 <__stack_chk_fail>
+
+Disassembly of section __libc_freeres_fn:
+
+Disassembly of section .fini:

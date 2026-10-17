@@ -1,0 +1,43 @@
+[2/4] STEP 1/1: FROM docker.io/library/gcc@sha256:a689e29bc3adf4663ef9a141d23081252764d1319c63f591a027bd6fd676f4c1 AS compiler-x86_64
+--> f3d916a48840
+[3/4] STEP 1/9: FROM f3d916a4884034b89cb6148781f07d8c92d94b6c6dc1b74dcbec3475d16400da AS build
+[3/4] STEP 2/9: ARG C0_ARCHITECTURE
+[3/4] STEP 3/9: WORKDIR /src
+[3/4] STEP 4/9: COPY . .
+[3/4] STEP 5/9: RUN mkdir /out && python3 -B build_tools.py headers /out "$C0_ARCHITECTURE"
+[3/4] STEP 6/9: RUN cc -O2 -g -Wall -Wextra -Werror -Wformat=2 -fstack-protector-strong -D_FORTIFY_SOURCE=2 -fPIE -static-pie -pthread -Wl,-z,relro,-z,now,--build-id=sha1 -I/out native/target.c -lcrypto -ldl -o /out/target
+/usr/bin/ld: /lib/x86_64-linux-gnu/libcrypto.a(libcrypto-lib-dso_dlfcn.o): in function `dlfcn_globallookup':
+(.text+0x11): warning: Using 'dlopen' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/usr/bin/ld: /lib/x86_64-linux-gnu/libcrypto.a(libcrypto-lib-bio_addr.o): in function `BIO_lookup_ex':
+(.text+0xc5c): warning: Using 'getaddrinfo' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/usr/bin/ld: /lib/x86_64-linux-gnu/libcrypto.a(libcrypto-lib-bio_sock.o): in function `BIO_gethostbyname':
+(.text+0x81): warning: Using 'gethostbyname' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+[3/4] STEP 7/9: RUN python3 -B build_tools.py manifest /out "$C0_ARCHITECTURE"
+[3/4] STEP 8/9: RUN cc -O2 -g -Wall -Wextra -Werror -Wformat=2 -fstack-protector-strong -D_FORTIFY_SOURCE=2 -fPIE -static-pie -pthread -Wl,-z,relro,-z,now,--build-id=sha1 -I/out native/observer.c -lcrypto -ldl -o /out/observer
+In file included from /usr/include/x86_64-linux-gnu/asm/ptrace.h:6,
+                 from native/observer.c:5:
+/usr/include/x86_64-linux-gnu/sys/ptrace.h:74:3: error: expected identifier before numeric constant
+   74 |   PTRACE_GETREGS = 12,
+      |   ^~~~~~~~~~~~~~
+In file included from native/observer.c:12:
+native/observer.c: In function 'stopped_pc':
+native/observer.c:190:13: error: 'PTRACE_GETREGSET' undeclared (first use in this function)
+  190 |     request(PTRACE_GETREGSET, NT_PRSTATUS, (uintptr_t)&regs);
+      |             ^~~~~~~~~~~~~~~~
+native/observer.c:190:13: note: each undeclared identifier is reported only once for each function it appears in
+native/observer.c: In function 'main':
+native/observer.c:251:13: error: 'PTRACE_SEIZE' undeclared (first use in this function); did you mean 'PTRACE_KILL'?
+  251 |     request(PTRACE_SEIZE, 0, PTRACE_O_EXITKILL | PTRACE_O_TRACEEXEC);
+      |             ^~~~~~~~~~~~
+native/observer.c:252:13: error: 'PTRACE_INTERRUPT' undeclared (first use in this function)
+  252 |     request(PTRACE_INTERRUPT, 0, 0);
+      |             ^~~~~~~~~~~~~~~~
+native/observer.c:271:17: error: 'PTRACE_GETSIGINFO' undeclared (first use in this function); did you mean 'PTRACE_PEEKSIGINFO'?
+  271 |         request(PTRACE_GETSIGINFO, 0, (uintptr_t)&signal);
+      |                 ^~~~~~~~~~~~~~~~~
+      |                 PTRACE_PEEKSIGINFO
+native/observer.c:298:21: error: 'PTRACE_DETACH' undeclared (first use in this function); did you mean 'PT_DETACH'?
+  298 |             request(PTRACE_DETACH, 0, 0);
+      |                     ^~~~~~~~~~~~~
+      |                     PT_DETACH
+Error: building at STEP "RUN cc -O2 -g -Wall -Wextra -Werror -Wformat=2 -fstack-protector-strong -D_FORTIFY_SOURCE=2 -fPIE -static-pie -pthread -Wl,-z,relro,-z,now,--build-id=sha1 -I/out native/observer.c -lcrypto -ldl -o /out/observer": while running runtime: exit status 1

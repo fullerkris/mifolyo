@@ -1,0 +1,55 @@
+{
+  "aarch64_base": "docker.io/library/python@sha256:2325bb286ec344af3e5898cc224b5844e2707ac6e26b1632516fd3edc84a5e26",
+  "aarch64_command": [
+    "podman",
+    "build",
+    "--platform",
+    "linux/arm64",
+    "--pull=never",
+    "--network",
+    "none",
+    "--http-proxy=false",
+    "--no-cache",
+    "--layers=false",
+    "--force-rm",
+    "--target",
+    "artifacts",
+    "--ignorefile",
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/snapshot/tests/crawl-jobs-v2-observer/Dockerfile.oracle.dockerignore",
+    "--file",
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/snapshot/tests/crawl-jobs-v2-observer/Dockerfile.oracle",
+    "--iidfile",
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/oracle-probes/aarch64-image.id",
+    "--output",
+    "type=local,dest=/tmp/opencode/m4-c0-x64-runtime-2026-10-12/oracle-probes/aarch64-artifacts",
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/snapshot/tests/crawl-jobs-v2-observer"
+  ],
+  "kind": "c0_x64_port_oracle_manifest_probes",
+  "manifests": {
+    "aarch64": {
+      "manifest_sha256": "45cc9cba72c6fa63cce223b694cc50134ae80c25715747992e83ffb6b1b1bb0b",
+      "oracle_elf_sha256": "cb4548d280f38c2b1df4cba45f12c90a034729e08fce5bf1a223c58add0e21e3",
+      "python": "3.13.15 (main, Sep 19 2026, 01:12:45) [GCC 12.2.0]"
+    },
+    "x86_64": {
+      "manifest_sha256": "64b01577de97863ed996c3ab1305c1c6cac224b164897a0d916390ecf47fd8b5",
+      "oracle_elf_sha256": "0d64bd6d66d68dac91cdadafc46e22d4f09f22bdc997aaae870f42865b024a3e",
+      "python": "3.14.7 (main, Aug 10 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]"
+    }
+  },
+  "oracle_worker_executed": false,
+  "runtime_acceptance": false,
+  "source_inventory_sha256": "7ed3b955be1fe4d2621a43896d1a3e4d49cf9edcf6e86a0c2dd567d105f14720",
+  "source_sha256": "ddbe957a80cbe1a490c5536719dd080be0793d53ea511f1e72e430905e5c95ed",
+  "status": "PASS",
+  "version": 1,
+  "x86_64_command": [
+    "/usr/bin/python3",
+    "-I",
+    "-B",
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/snapshot/tests/crawl-jobs-v2-observer/build_oracle.py",
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/oracle-probes/x86_64-host-interpreter",
+    "x86_64"
+  ],
+  "x86_64_environment": "workstation interpreter only; not the C0-ARCH-04 runtime image"
+}

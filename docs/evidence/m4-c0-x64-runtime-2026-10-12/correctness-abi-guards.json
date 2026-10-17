@@ -1,0 +1,92 @@
+{
+  "checks": [
+    {
+      "command": [
+        "cc",
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsyntax-only",
+        "-I/tmp/opencode/m4-c0-x64-runtime-2026-10-12/snapshot/tests/crawl-jobs-v2-observer/native",
+        "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/abi_guard.c"
+      ],
+      "id": "native_lp64",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "cc",
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsyntax-only",
+        "-I/tmp/opencode/m4-c0-x64-runtime-2026-10-12/snapshot/tests/crawl-jobs-v2-observer/native",
+        "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/abi_guard.c",
+        "-D__ILP32__=1"
+      ],
+      "id": "x32_macro",
+      "returncode": 1,
+      "status": "PASS",
+      "stderr": "In file included from /tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/abi_guard.c:1:\n/tmp/opencode/m4-c0-x64-runtime-2026-10-12/snapshot/tests/crawl-jobs-v2-observer/native/architecture.h:4:2: error: #error \"C0 requires a little-endian Linux LP64 ABI\"\n    4 | #error \"C0 requires a little-endian Linux LP64 ABI\"\n      |  ^~~~~\n"
+    },
+    {
+      "command": [
+        "cc",
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsyntax-only",
+        "-I/tmp/opencode/m4-c0-x64-runtime-2026-10-12/snapshot/tests/crawl-jobs-v2-observer/native",
+        "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/abi_guard.c",
+        "-U__linux__"
+      ],
+      "id": "foreign_os",
+      "returncode": 1,
+      "status": "PASS",
+      "stderr": "In file included from /tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/abi_guard.c:1:\n/tmp/opencode/m4-c0-x64-runtime-2026-10-12/snapshot/tests/crawl-jobs-v2-observer/native/architecture.h:4:2: error: #error \"C0 requires a little-endian Linux LP64 ABI\"\n    4 | #error \"C0 requires a little-endian Linux LP64 ABI\"\n      |  ^~~~~\n"
+    },
+    {
+      "command": [
+        "cc",
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsyntax-only",
+        "-I/tmp/opencode/m4-c0-x64-runtime-2026-10-12/snapshot/tests/crawl-jobs-v2-observer/native",
+        "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/abi_guard.c",
+        "-U__x86_64__"
+      ],
+      "id": "foreign_machine",
+      "returncode": 1,
+      "status": "PASS",
+      "stderr": "In file included from /tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/abi_guard.c:1:\n/tmp/opencode/m4-c0-x64-runtime-2026-10-12/snapshot/tests/crawl-jobs-v2-observer/native/architecture.h:14:2: error: #error \"Unsupported C0 native architecture\"\n   14 | #error \"Unsupported C0 native architecture\"\n      |  ^~~~~\n/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/abi_guard.c:2:16: error: \u2018OBS_ELF_MACHINE\u2019 undeclared here (not in a function)\n    2 | _Static_assert(OBS_ELF_MACHINE == 62, \"offline host guard probe is x64\");\n      |                ^~~~~~~~~~~~~~~\n/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/abi_guard.c:2:16: error: expression in static assertion is not an integer\n"
+    },
+    {
+      "command": [
+        "cc",
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsyntax-only",
+        "-I/tmp/opencode/m4-c0-x64-runtime-2026-10-12/snapshot/tests/crawl-jobs-v2-observer/native",
+        "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/abi_guard.c",
+        "-U__BYTE_ORDER__",
+        "-D__BYTE_ORDER__=__ORDER_BIG_ENDIAN__"
+      ],
+      "id": "big_endian",
+      "returncode": 1,
+      "status": "PASS",
+      "stderr": "In file included from /tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/abi_guard.c:1:\n/tmp/opencode/m4-c0-x64-runtime-2026-10-12/snapshot/tests/crawl-jobs-v2-observer/native/architecture.h:4:2: error: #error \"C0 requires a little-endian Linux LP64 ABI\"\n    4 | #error \"C0 requires a little-endian Linux LP64 ABI\"\n      |  ^~~~~\n"
+    }
+  ],
+  "limit": "macro rejection controls and host LP64 static assertions; not a cross compiler or foreign ABI runtime",
+  "native_actor_executed": false,
+  "status": "PASS"
+}

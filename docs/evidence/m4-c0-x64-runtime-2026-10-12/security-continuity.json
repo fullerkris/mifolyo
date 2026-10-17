@@ -1,0 +1,94 @@
+{
+  "base": "d8016469a5ffcceeb04329deec4e3dea2c72dd97",
+  "changed_retained_test_method_asts": [
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_linux_reader_rejects_foreign_kernel_before_observations",
+    "test_architecture_contracts.ArchitectureContractTests.test_both_preparation_contracts_are_explicit_and_non_authorizing",
+    "test_architecture_contracts.ArchitectureContractTests.test_elf_headers_are_classified_from_bytes_not_requested_labels",
+    "test_architecture_contracts.ArchitectureContractTests.test_existing_arm64_profiles_and_compiled_filter_bytes_are_preserved"
+  ],
+  "current_test_count": 256,
+  "new_ids": [
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_admission_summary_refuses_mixed_architectures",
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_direct_x64_ssh_transport_still_requires_pinned_client",
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_unknown_abi_process_stream_refuses_before_spawning",
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_x64_deployment_generates_a_bound_private_bundle",
+    "test_architecture_contracts.ArchitectureContractTests.test_build_entrypoints_refuse_unknown_abi_before_writing_outputs",
+    "test_x64_runtime.DualArchitectureRuntimeTests.test_all_native_roles_admit_both_architectures_and_refuse_opposite_peer",
+    "test_x64_runtime.DualArchitectureRuntimeTests.test_oracle_selects_observed_native_abi_and_rejects_unknown_or_ilp32",
+    "test_x64_runtime.DualArchitectureRuntimeTests.test_signed_x64_context_binds_request_receipt_and_lease",
+    "test_x64_runtime.DualArchitectureRuntimeTests.test_x64_backend_and_benign_oracle_join_real_stream_protocol",
+    "test_x64_runtime.DualArchitectureRuntimeTests.test_x64_benign_stream_keeps_three_line_handshake_and_binding",
+    "test_x64_runtime.DualArchitectureRuntimeTests.test_x64_reader_requires_matching_elf_even_when_uname_matches",
+    "test_x64_runtime.DualArchitectureRuntimeTests.test_x64_resource_profiles_cannot_reuse_arm64_digests",
+    "test_x64_runtime.DualArchitectureRuntimeTests.test_x64_start_refuses_actual_arm64_image_before_transport",
+    "test_x64_runtime.X64BuildTests.test_every_effect_and_marker_byte_mutation_is_rejected",
+    "test_x64_runtime.X64BuildTests.test_oracle_manifest_binds_x64_interpreter_without_running_worker",
+    "test_x64_runtime.X64BuildTests.test_record_rejects_foreign_compiled_filter_before_toolchain_queries",
+    "test_x64_runtime.X64BuildTests.test_shifted_truncated_nonexec_and_aliased_markers_are_rejected",
+    "test_x64_runtime.X64BuildTests.test_variable_instruction_lengths_and_complete_effect_boundary",
+    "test_x64_runtime.X64BuildTests.test_x64_headers_and_manifest_bind_the_compiler_abi",
+    "test_x64_runtime.X64FilterTests.test_only_dr0_address_dr6_reset_and_dr7_local_execute_are_writable",
+    "test_x64_runtime.X64FilterTests.test_ptrace_requests_tid_high_bits_and_gp_write_denials_in_both_filters",
+    "test_x64_runtime.X64FilterTests.test_x32_compat_negative_and_foreign_syscalls_cannot_bypass_self_filter",
+    "test_x64_runtime.X64FilterTests.test_x64_loader_tls_and_chmod_are_narrow_and_roles_remain_confined"
+  ],
+  "note": "Fixture defaults/data changed for dual-ABI tests; changed retained methods are separately reviewed, not claimed unchanged.",
+  "oracle_worker_source_sha256": "ddbe957a80cbe1a490c5536719dd080be0793d53ea511f1e72e430905e5c95ed",
+  "prior_test_count": 238,
+  "removed_ids": [
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_admission_summary_cannot_promote_an_unsupported_architecture",
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_direct_ssh_transport_refuses_x64_before_client_or_process_io",
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_known_x64_deployment_is_metadata_only_until_the_port",
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_x64_process_stream_refuses_before_spawning",
+    "test_architecture_contracts.ArchitectureContractTests.test_build_entrypoints_refuse_x64_before_writing_outputs"
+  ],
+  "removed_test_method_asts": {
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_admission_summary_cannot_promote_an_unsupported_architecture": "FunctionDef(name='test_admission_summary_cannot_promote_an_unsupported_architecture', args=arguments(args=[arg(arg='self')]), body=[Assign(targets=[Name(id='value', ctx=Store())], value=Call(func=Attribute(value=Name(id='admission', ctx=Load()), attr='validate', ctx=Load()), args=[Call(func=Attribute(value=Name(id='native', ctx=Load()), attr='frames', ctx=Load())), Call(func=Attribute(value=Name(id='native', ctx=Load()), attr='binding', ctx=Load())), Call(func=Attribute(value=Name(id='native', ctx=Load()), attr='preparation', ctx=Load())), Call(func=Attribute(value=Name(id='native', ctx=Load()), attr='context', ctx=Load()))])), Assign(targets=[Name(id='summary', ctx=Store())], value=Call(func=Attribute(value=Name(id='admission', ctx=Load()), attr='summary', ctx=Load()), args=[Name(id='value', ctx=Load())])), Expr(value=Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='assertEqual', ctx=Load()), args=[Tuple(elts=[Subscript(value=Name(id='summary', ctx=Load()), slice=Constant(value='version'), ctx=Load()), Subscript(value=Name(id='summary', ctx=Load()), slice=Constant(value='architecture'), ctx=Load())], ctx=Load()), Tuple(elts=[Constant(value=2), Constant(value='aarch64')], ctx=Load())])), Assign(targets=[Subscript(value=Subscript(value=Name(id='value', ctx=Load()), slice=Constant(value='binding'), ctx=Load()), slice=Constant(value='architecture'), ctx=Store())], value=Constant(value='x86_64')), Assign(targets=[Subscript(value=Name(id='value', ctx=Load()), slice=Constant(value='frames'), ctx=Store())], value=Call(func=Attribute(value=Name(id='native', ctx=Load()), attr='changed', ctx=Load()), args=[Subscript(value=Name(id='value', ctx=Load()), slice=Constant(value='frames'), ctx=Load()), Constant(value=0)], keywords=[keyword(arg='architecture', value=Constant(value='x86_64'))])), Assign(targets=[Subscript(value=Name(id='value', ctx=Load()), slice=Constant(value='identity_sha256'), ctx=Store())], value=Call(func=Attribute(value=Name(id='c', ctx=Load()), attr='sha', ctx=Load()), args=[Subscript(value=Subscript(value=Name(id='value', ctx=Load()), slice=Constant(value='frames'), ctx=Load()), slice=Constant(value=0), ctx=Load())])), Assign(targets=[Subscript(value=Name(id='value', ctx=Load()), slice=Constant(value='observation_sha256'), ctx=Store())], value=Call(func=Attribute(value=Name(id='c', ctx=Load()), attr='sha', ctx=Load()), args=[Call(func=Attribute(value=Constant(value=b''), attr='join', ctx=Load()), args=[Subscript(value=Name(id='value', ctx=Load()), slice=Constant(value='frames'), ctx=Load())])])), With(items=[withitem(context_expr=Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='assertRaises', ctx=Load()), args=[Attribute(value=Name(id='c', ctx=Load()), attr='Invalid', ctx=Load())]))], body=[Expr(value=Call(func=Attribute(value=Name(id='admission', ctx=Load()), attr='summary', ctx=Load()), args=[Name(id='value', ctx=Load())]))])])",
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_direct_ssh_transport_refuses_x64_before_client_or_process_io": "FunctionDef(name='test_direct_ssh_transport_refuses_x64_before_client_or_process_io', args=arguments(args=[arg(arg='self')]), body=[Assign(targets=[Name(id='value', ctx=Store())], value=Call(func=Attribute(value=Name(id='provisioning', ctx=Load()), attr='deployment', ctx=Load()))), Assign(targets=[Subscript(value=Name(id='value', ctx=Load()), slice=Constant(value='architecture'), ctx=Store()), Subscript(value=Subscript(value=Name(id='value', ctx=Load()), slice=Constant(value='anchor'), ctx=Load()), slice=Constant(value='architecture'), ctx=Store())], value=Constant(value='x86_64')), With(items=[withitem(context_expr=Call(func=Attribute(value=Name(id='tempfile', ctx=Load()), attr='TemporaryDirectory', ctx=Load())), optional_vars=Name(id='folder', ctx=Store()))], body=[Assign(targets=[Name(id='root', ctx=Store())], value=Call(func=Name(id='Path', ctx=Load()), args=[Name(id='folder', ctx=Load())])), For(target=Tuple(elts=[Name(id='name', ctx=Store()), Name(id='raw', ctx=Store())], ctx=Store()), iter=Tuple(elts=[Tuple(elts=[Constant(value='deployment.json'), Call(func=Attribute(value=Name(id='c', ctx=Load()), attr='canonical', ctx=Load()), args=[Name(id='value', ctx=Load())])], ctx=Load()), Tuple(elts=[Constant(value='context-source.key'), Name(id='KEY', ctx=Load())], ctx=Load()), Tuple(elts=[Constant(value='id_ed25519'), Call(func=Attribute(value=Name(id='provisioning', ctx=Load()), attr='identity_bytes', ctx=Load()))], ctx=Load())], ctx=Load()), body=[Expr(value=Call(func=Attribute(value=Name(id='provision', ctx=Load()), attr='write_new', ctx=Load()), args=[BinOp(left=Name(id='root', ctx=Load()), op=Div(), right=Name(id='name', ctx=Load())), Name(id='raw', ctx=Load())]))]), Assign(targets=[Name(id='channel', ctx=Store())], value=Call(func=Attribute(value=Name(id='transport', ctx=Load()), attr='SSHContextTransport', ctx=Load()), args=[Name(id='root', ctx=Load())])), With(items=[withitem(context_expr=Call(func=Attribute(value=Name(id='patch', ctx=Load()), attr='object', ctx=Load()), args=[Name(id='transport', ctx=Load()), Constant(value='verify_client')]), optional_vars=Name(id='client', ctx=Store())), withitem(context_expr=Call(func=Attribute(value=Name(id='patch', ctx=Load()), attr='object', ctx=Load()), args=[Name(id='transport', ctx=Load()), Constant(value='exchange_process')], keywords=[keyword(arg='return_value', value=Constant(value=b'reply\\n'))]), optional_vars=Name(id='exchange', ctx=Store()))], body=[With(items=[withitem(context_expr=Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='assertRaises', ctx=Load()), args=[Attribute(value=Name(id='c', ctx=Load()), attr='Invalid', ctx=Load())]))], body=[Expr(value=Call(func=Name(id='channel', ctx=Load()), args=[Constant(value=b'probe\\n'), Call(func=Name(id='Deadline', ctx=Load()), args=[Constant(value=2)])]))]), Expr(value=Call(func=Attribute(value=Name(id='client', ctx=Load()), attr='assert_not_called', ctx=Load()))), Expr(value=Call(func=Attribute(value=Name(id='exchange', ctx=Load()), attr='assert_not_called', ctx=Load())))])])])",
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_known_x64_deployment_is_metadata_only_until_the_port": "FunctionDef(name='test_known_x64_deployment_is_metadata_only_until_the_port', args=arguments(args=[arg(arg='self')]), body=[Assign(targets=[Name(id='value', ctx=Store())], value=Call(func=Attribute(value=Name(id='provisioning', ctx=Load()), attr='deployment', ctx=Load()))), Assign(targets=[Subscript(value=Name(id='value', ctx=Load()), slice=Constant(value='architecture'), ctx=Store()), Subscript(value=Subscript(value=Name(id='value', ctx=Load()), slice=Constant(value='anchor'), ctx=Load()), slice=Constant(value='architecture'), ctx=Store())], value=Constant(value='x86_64')), Expr(value=Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='assertEqual', ctx=Load()), args=[Call(func=Attribute(value=Name(id='provision', ctx=Load()), attr='validate_deployment', ctx=Load()), args=[Name(id='value', ctx=Load())]), Name(id='value', ctx=Load())])), With(items=[withitem(context_expr=Call(func=Attribute(value=Name(id='tempfile', ctx=Load()), attr='TemporaryDirectory', ctx=Load())), optional_vars=Name(id='folder', ctx=Store()))], body=[Assign(targets=[Name(id='output', ctx=Store())], value=BinOp(left=Call(func=Name(id='Path', ctx=Load()), args=[Name(id='folder', ctx=Load())]), op=Div(), right=Constant(value='bundle'))), With(items=[withitem(context_expr=Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='assertRaisesRegex', ctx=Load()), args=[Attribute(value=Name(id='c', ctx=Load()), attr='Invalid', ctx=Load()), Constant(value='ARCHITECTURE_NOT_IMPLEMENTED')]))], body=[Expr(value=Call(func=Attribute(value=Name(id='provision', ctx=Load()), attr='create_bundle', ctx=Load()), args=[Name(id='output', ctx=Load()), Name(id='value', ctx=Load()), Call(func=Attribute(value=Name(id='provisioning', ctx=Load()), attr='identity_bytes', ctx=Load()))], keywords=[keyword(arg='key', value=Name(id='KEY', ctx=Load()))]))]), Expr(value=Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='assertFalse', ctx=Load()), args=[Call(func=Attribute(value=Name(id='output', ctx=Load()), attr='exists', ctx=Load()))]))]), With(items=[withitem(context_expr=Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='assertRaises', ctx=Load()), args=[Attribute(value=Name(id='c', ctx=Load()), attr='Invalid', ctx=Load())]))], body=[Expr(value=Call(func=Attribute(value=Name(id='context', ctx=Load()), attr='LinuxContextEndpoint', ctx=Load()), args=[Subscript(value=Name(id='value', ctx=Load()), slice=Constant(value='anchor'), ctx=Load()), Name(id='KEY', ctx=Load()), Subscript(value=Call(func=Name(id='fixture', ctx=Load())), slice=Constant(value=0), ctx=Load())]))])])",
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_x64_process_stream_refuses_before_spawning": "FunctionDef(name='test_x64_process_stream_refuses_before_spawning', args=arguments(args=[arg(arg='self')]), body=[Assign(targets=[Name(id='bound', ctx=Store())], value=BinOp(left=Call(func=Name(id='stream_binding', ctx=Load())), op=BitOr(), right=Dict(keys=[Constant(value='architecture')], values=[Constant(value='x86_64')]))), With(items=[withitem(context_expr=Call(func=Name(id='patch', ctx=Load()), args=[Constant(value='streams.subprocess.Popen')]), optional_vars=Name(id='spawn', ctx=Store())), withitem(context_expr=Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='assertRaisesRegex', ctx=Load()), args=[Attribute(value=Name(id='c', ctx=Load()), attr='Invalid', ctx=Load()), Constant(value='ARCHITECTURE_NOT_IMPLEMENTED')]))], body=[Expr(value=Call(func=Name(id='ProcessStream', ctx=Load()), args=[List(elts=[Attribute(value=Name(id='sys', ctx=Load()), attr='executable', ctx=Load()), Constant(value='-c'), Constant(value='pass')], ctx=Load()), Name(id='bound', ctx=Load()), Call(func=Name(id='WireBudget', ctx=Load())), Call(func=Name(id='Deadline', ctx=Load()), args=[Constant(value=1)])]))]), Expr(value=Call(func=Attribute(value=Name(id='spawn', ctx=Load()), attr='assert_not_called', ctx=Load())))])",
+    "test_architecture_contracts.ArchitectureContractTests.test_build_entrypoints_refuse_x64_before_writing_outputs": "FunctionDef(name='test_build_entrypoints_refuse_x64_before_writing_outputs', args=arguments(args=[arg(arg='self')]), body=[With(items=[withitem(context_expr=Call(func=Attribute(value=Name(id='tempfile', ctx=Load()), attr='TemporaryDirectory', ctx=Load())), optional_vars=Name(id='folder', ctx=Store()))], body=[Assign(targets=[Name(id='root', ctx=Store())], value=Call(func=Name(id='Path', ctx=Load()), args=[Name(id='folder', ctx=Load())])), With(items=[withitem(context_expr=Call(func=Attribute(value=Name(id='patch', ctx=Load()), attr='object', ctx=Load()), args=[Name(id='sys', ctx=Load()), Constant(value='argv'), List(elts=[Constant(value='build_tools.py'), Constant(value='headers'), Call(func=Name(id='str', ctx=Load()), args=[Name(id='root', ctx=Load())]), Constant(value='x86_64')], ctx=Load())])), withitem(context_expr=Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='assertRaises', ctx=Load()), args=[Attribute(value=Name(id='c', ctx=Load()), attr='Invalid', ctx=Load())]))], body=[Expr(value=Call(func=Attribute(value=Name(id='build_tools', ctx=Load()), attr='main', ctx=Load())))]), Expr(value=Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='assertEqual', ctx=Load()), args=[Call(func=Name(id='list', ctx=Load()), args=[Call(func=Attribute(value=Name(id='root', ctx=Load()), attr='iterdir', ctx=Load()))]), List(ctx=Load())])), With(items=[withitem(context_expr=Call(func=Attribute(value=Name(id='patch', ctx=Load()), attr='object', ctx=Load()), args=[Name(id='sys', ctx=Load()), Constant(value='argv'), List(elts=[Constant(value='build_oracle.py'), Call(func=Name(id='str', ctx=Load()), args=[BinOp(left=Name(id='root', ctx=Load()), op=Div(), right=Constant(value='oracle'))]), Constant(value='x86_64')], ctx=Load())])), withitem(context_expr=Call(func=Attribute(value=Name(id='patch', ctx=Load()), attr='object', ctx=Load()), args=[Attribute(value=Name(id='build_oracle', ctx=Load()), attr='os', ctx=Load()), Constant(value='uname')]), optional_vars=Name(id='uname', ctx=Store())), withitem(context_expr=Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='assertRaises', ctx=Load()), args=[Attribute(value=Name(id='c', ctx=Load()), attr='Invalid', ctx=Load())]))], body=[Expr(value=Call(func=Attribute(value=Name(id='build_oracle', ctx=Load()), attr='main', ctx=Load())))]), Expr(value=Call(func=Attribute(value=Name(id='uname', ctx=Load()), attr='assert_not_called', ctx=Load()))), Expr(value=Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='assertFalse', ctx=Load()), args=[Call(func=Attribute(value=BinOp(left=Name(id='root', ctx=Load()), op=Div(), right=Constant(value='oracle')), attr='exists', ctx=Load()))]))])])"
+  },
+  "reports": {
+    "independent": {
+      "matching_inventory_and_source": true,
+      "sha256": "b88d7f34a8fbbd4de29b93e6614921f619ce667bd3539c5d126ff79d1c00dd2f",
+      "tests_run": 256
+    },
+    "owner-022": {
+      "matching_inventory_and_source": true,
+      "sha256": "b88d7f34a8fbbd4de29b93e6614921f619ce667bd3539c5d126ff79d1c00dd2f",
+      "tests_run": 256
+    },
+    "owner-077": {
+      "matching_inventory_and_source": true,
+      "sha256": "b88d7f34a8fbbd4de29b93e6614921f619ce667bd3539c5d126ff79d1c00dd2f",
+      "tests_run": 256
+    }
+  },
+  "retained_prior_test_ids": 233,
+  "runtime_context_source_sha256": "1710b96326062a711ed549e1172440e53c4ef1b3a760a45524dbce10d110bb32",
+  "status": "PASS",
+  "unchanged_control_files": [
+    "docker_backend.py",
+    "owned_resources.py",
+    "runtime_context.py",
+    "runtime_admission.py",
+    "context_provision.py",
+    "context_transport.py",
+    "context_files.py",
+    "context_ssh.py",
+    "context_worker.py",
+    "oracle_bridge.py",
+    "oracle_protocol.py",
+    "oracle.py",
+    "streams.py",
+    "watchdog.py",
+    "controller.py",
+    "d02.py",
+    "worker.py",
+    "build_oracle.py",
+    "Dockerfile.oracle"
+  ],
+  "unchanged_retained_method_asts": 229
+}

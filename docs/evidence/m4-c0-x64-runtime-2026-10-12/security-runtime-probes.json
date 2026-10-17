@@ -1,0 +1,1286 @@
+{
+  "accepted": [
+    "aarch64:native:target",
+    "aarch64:native:observer",
+    "aarch64:native:oracle",
+    "aarch64:authenticated-context",
+    "aarch64:provisioning-bundle",
+    "aarch64:target:create:image-none",
+    "aarch64:target:start:image-none",
+    "aarch64:observer:create:image-none",
+    "aarch64:observer:start:image-none",
+    "aarch64:oracle:create:image-none",
+    "aarch64:oracle:start:image-none",
+    "aarch64:observed-fragmented-oracle-elf",
+    "x86_64:native:target",
+    "x86_64:native:observer",
+    "x86_64:native:oracle",
+    "x86_64:authenticated-context",
+    "x86_64:provisioning-bundle",
+    "x86_64:target:create:image-none",
+    "x86_64:target:start:image-none",
+    "x86_64:observer:create:image-none",
+    "x86_64:observer:start:image-none",
+    "x86_64:oracle:create:image-none",
+    "x86_64:oracle:start:image-none",
+    "x86_64:observed-fragmented-oracle-elf"
+  ],
+  "kind": "independent_runtime_security_probes",
+  "native_execution": false,
+  "real_docker_or_host_collector": false,
+  "refusals": [
+    {
+      "code": "ADMISSION_ARCHITECTURE",
+      "name": "aarch64:target:foreign-preparation"
+    },
+    {
+      "code": "ADMISSION_ARCHITECTURE",
+      "name": "aarch64:target:foreign-context"
+    },
+    {
+      "code": "ADMISSION_ARCHITECTURE",
+      "name": "aarch64:target:foreign-binding"
+    },
+    {
+      "code": "ADMISSION_ARCHITECTURE",
+      "name": "aarch64:target:foreign-frame"
+    },
+    {
+      "code": "ADMISSION_EXECUTABLE",
+      "name": "aarch64:target:foreign-elf"
+    },
+    {
+      "code": "INTEGER",
+      "name": "aarch64:target:invalid-frame-0-pid"
+    },
+    {
+      "code": "INTEGER",
+      "name": "aarch64:target:invalid-frame-0-version"
+    },
+    {
+      "code": "ADMISSION_FILTER_COUNT",
+      "name": "aarch64:target:invalid-frame-1-seccomp_filters"
+    },
+    {
+      "code": "INTEGER",
+      "name": "aarch64:target:invalid-frame-1-caps"
+    },
+    {
+      "code": "INTEGER",
+      "name": "aarch64:target:invalid-frame-1-uids"
+    },
+    {
+      "code": "INTEGER",
+      "name": "aarch64:target:invalid-frame-2-memory_max"
+    },
+    {
+      "code": "ADMISSION_STALE",
+      "name": "aarch64:target:invalid-frame-3-monotonic_ns"
+    },
+    {
+      "code": "INTEGER",
+      "name": "aarch64:target:invalid-frame-3-monotonic_ns"
+    },
+    {
+      "code": "INTEGER",
+      "name": "aarch64:target:invalid-frame-3-monotonic_ns"
+    },
+    {
+      "code": "ADMISSION_ARCHITECTURE",
+      "name": "aarch64:observer:foreign-preparation"
+    },
+    {
+      "code": "ADMISSION_ARCHITECTURE",
+      "name": "aarch64:observer:foreign-context"
+    },
+    {
+      "code": "ADMISSION_ARCHITECTURE",
+      "name": "aarch64:observer:foreign-binding"
+    },
+    {
+      "code": "ADMISSION_ARCHITECTURE",
+      "name": "aarch64:observer:foreign-frame"
+    },
+    {
+      "code": "ADMISSION_EXECUTABLE",
+      "name": "aarch64:observer:foreign-elf"
+    },
+    {
+      "code": "ADMISSION_ARCHITECTURE",
+      "name": "aarch64:observer:foreign-peer"
+    },
+    {
+      "code": "INTEGER",
+      "name": "aarch64:observer:invalid-frame-0-pid"
+    },
+    {
+      "code": "INTEGER",
+      "name": "aarch64:observer:invalid-frame-0-version"
+    },
+    {
+      "code": "ADMISSION_FILTER_COUNT",
+      "name": "aarch64:observer:invalid-frame-1-seccomp_filters"
+    },
+    {
+      "code": "INTEGER",
+      "name": "aarch64:observer:invalid-frame-1-caps"
+    },
+    {
+      "code": "INTEGER",
+      "name": "aarch64:observer:invalid-frame-1-uids"
+    },
+    {
+      "code": "INTEGER",
+      "name": "aarch64:observer:invalid-frame-2-memory_max"
+    },
+    {
+      "code": "ADMISSION_STALE",
+      "name": "aarch64:observer:invalid-frame-3-monotonic_ns"
+    },
+    {
+      "code": "INTEGER",
+      "name": "aarch64:observer:invalid-frame-3-monotonic_ns"
+    },
+    {
+      "code": "INTEGER",
+      "name": "aarch64:observer:invalid-frame-3-monotonic_ns"
+    },
+    {
+      "code": "ADMISSION_ARCHITECTURE",
+      "name": "aarch64:oracle:foreign-preparation"
+    },
+    {
+      "code": "ADMISSION_ARCHITECTURE",
+      "name": "aarch64:oracle:foreign-context"
+    },
+    {
+      "code": "ADMISSION_ARCHITECTURE",
+      "name": "aarch64:oracle:foreign-binding"
+    },
+    {
+      "code": "ADMISSION_ARCHITECTURE",
+      "name": "aarch64:oracle:foreign-frame"
+    },
+    {
+      "code": "ADMISSION_EXECUTABLE",
+      "name": "aarch64:oracle:foreign-elf"
+    },
+    {
+      "code": "ADMISSION_ARCHITECTURE",
+      "name": "aarch64:oracle:foreign-peer"
+    },
+    {
+      "code": "INTEGER",
+      "name": "aarch64:oracle:invalid-frame-0-pid"
+    },
+    {
+      "code": "INTEGER",
+      "name": "aarch64:oracle:invalid-frame-0-version"
+    },
+    {
+      "code": "ADMISSION_FILTER_COUNT",
+      "name": "aarch64:oracle:invalid-frame-1-seccomp_filters"
+    },
+    {
+      "code": "INTEGER",
+      "name": "aarch64:oracle:invalid-frame-1-caps"
+    },
+    {
+      "code": "INTEGER",
+      "name": "aarch64:oracle:invalid-frame-1-uids"
+    },
+    {
+      "code": "INTEGER",
+      "name": "aarch64:oracle:invalid-frame-2-memory_max"
+    },
+    {
+      "code": "ADMISSION_STALE",
+      "name": "aarch64:oracle:invalid-frame-3-monotonic_ns"
+    },
+    {
+      "code": "INTEGER",
+      "name": "aarch64:oracle:invalid-frame-3-monotonic_ns"
+    },
+    {
+      "code": "INTEGER",
+      "name": "aarch64:oracle:invalid-frame-3-monotonic_ns"
+    },
+    {
+      "code": "CONTEXT_LEASE_BINDING",
+      "name": "aarch64:lease-foreign-prep"
+    },
+    {
+      "code": "CONTEXT_LEASE_EXPIRED",
+      "name": "aarch64:lease-exact-expiry"
+    },
+    {
+      "code": "CONTEXT_NOT_APPROVED",
+      "name": "aarch64:context-before-io:missing-authorization"
+    },
+    {
+      "code": "CONTEXT_NOT_APPROVED",
+      "name": "aarch64:context-before-io:truthy-authorization"
+    },
+    {
+      "code": "CONTEXT_SOURCE_BINDING",
+      "name": "aarch64:context-before-io:wrong-daemon"
+    },
+    {
+      "code": "CONTEXT_SOURCE_BINDING",
+      "name": "aarch64:context-before-io:wrong-source"
+    },
+    {
+      "code": "CONTEXT_ARCHITECTURE",
+      "name": "aarch64:context-before-io:foreign-preparation"
+    },
+    {
+      "code": "INTEGER",
+      "name": "aarch64:context-before-io:legacy-anchor"
+    },
+    {
+      "code": "CONTEXT_ACQUISITION_REJECTED",
+      "name": "aarch64:signed-context:foreign-architecture"
+    },
+    {
+      "code": "CONTEXT_ACQUISITION_REJECTED",
+      "name": "aarch64:signed-context:legacy"
+    },
+    {
+      "code": "CONTEXT_ACQUISITION_REJECTED",
+      "name": "aarch64:signed-context:foreign-request"
+    },
+    {
+      "code": "CONTEXT_ACQUISITION_REJECTED",
+      "name": "aarch64:signed-context:window-growth"
+    },
+    {
+      "code": "CONTEXT_ACQUISITION_REJECTED",
+      "name": "aarch64:signed-context:stale-sample"
+    },
+    {
+      "code": "CONTEXT_ACQUISITION_REJECTED",
+      "name": "aarch64:signed-context:foreign-boot"
+    },
+    {
+      "code": "CONTEXT_ACQUISITION_REJECTED",
+      "name": "aarch64:signed-context:foreign-namespace"
+    },
+    {
+      "code": "CONTEXT_ACQUISITION_REJECTED",
+      "name": "aarch64:signed-context:extra-field"
+    },
+    {
+      "code": "CONTEXT_ACQUISITION_REJECTED",
+      "name": "aarch64:signed-context:missing-field"
+    },
+    {
+      "code": "CONTEXT_ACQUISITION_REJECTED",
+      "name": "aarch64:signed-context:bad-mac"
+    },
+    {
+      "code": "CONTEXT_ACQUISITION_REJECTED",
+      "name": "aarch64:signed-context:reorder"
+    },
+    {
+      "code": "CONTEXT_ACQUISITION_REJECTED",
+      "name": "aarch64:signed-context:duplicate"
+    },
+    {
+      "code": "CONTEXT_ACQUISITION_REJECTED",
+      "name": "aarch64:signed-context:oversize"
+    },
+    {
+      "code": "CONTEXT_ACQUISITION_REJECTED",
+      "name": "aarch64:signed-context:delay"
+    },
+    {
+      "code": "CONTEXT_ACQUISITION_REJECTED",
+      "name": "aarch64:context-replay"
+    },
+    {
+      "code": "CONTEXT_ANCHOR_CHANGED",
+      "name": "aarch64:anchor-mutation:authorization"
+    },
+    {
+      "code": "CONTEXT_ACQUISITION_REJECTED",
+      "name": "aarch64:anchor-mutation:exchange"
+    },
+    {
+      "code": "CONTEXT_ARCHITECTURE",
+      "name": "aarch64:mixed-deployment:deployment"
+    },
+    {
+      "code": "CONTEXT_ARCHITECTURE",
+      "name": "aarch64:mixed-deployment:anchor"
+    },
+    {
+      "code": "CONTEXT_PROVISIONING_BINDING",
+      "name": "aarch64:bundle-substitution:runtime_context_deployment"
+    },
+    {
+      "code": "CONTEXT_PROVISIONING_BINDING",
+      "name": "aarch64:bundle-substitution:runtime_context_transport"
+    },
+    {
+      "code": "CONTEXT_PROVISIONING_BINDING",
+      "name": "aarch64:bundle-substitution:runtime_context_source"
+    },
+    {
+      "code": "CONTEXT_ARCHITECTURE",
+      "name": "aarch64:bundle-foreign-preparation"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "aarch64:target:create:image-foreign"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "aarch64:target:create:image-missing-arch"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "aarch64:target:create:image-alias"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "aarch64:target:create:image-x32"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "aarch64:target:create:image-wrong-os"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "aarch64:target:create:image-wrong-id"
+    },
+    {
+      "code": "INSPECTION_SHAPE",
+      "name": "aarch64:target:create:image-missing-image"
+    },
+    {
+      "code": "IMAGE_DEFAULTS",
+      "name": "aarch64:target:create:image-missing-config"
+    },
+    {
+      "code": "IMAGE_DEFAULTS",
+      "name": "aarch64:target:create:image-onbuild"
+    },
+    {
+      "code": "HEALTHCHECK",
+      "name": "aarch64:target:create:image-healthcheck"
+    },
+    {
+      "code": "IMAGE_ENVIRONMENT",
+      "name": "aarch64:target:create:image-environment"
+    },
+    {
+      "code": "IMAGE_DEFAULTS",
+      "name": "aarch64:target:create:image-volumes"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "aarch64:target:start:image-foreign"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "aarch64:target:start:image-missing-arch"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "aarch64:target:start:image-alias"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "aarch64:target:start:image-x32"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "aarch64:target:start:image-wrong-os"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "aarch64:target:start:image-wrong-id"
+    },
+    {
+      "code": "INSPECTION_SHAPE",
+      "name": "aarch64:target:start:image-missing-image"
+    },
+    {
+      "code": "IMAGE_DEFAULTS",
+      "name": "aarch64:target:start:image-missing-config"
+    },
+    {
+      "code": "IMAGE_DEFAULTS",
+      "name": "aarch64:target:start:image-onbuild"
+    },
+    {
+      "code": "HEALTHCHECK",
+      "name": "aarch64:target:start:image-healthcheck"
+    },
+    {
+      "code": "IMAGE_ENVIRONMENT",
+      "name": "aarch64:target:start:image-environment"
+    },
+    {
+      "code": "IMAGE_DEFAULTS",
+      "name": "aarch64:target:start:image-volumes"
+    },
+    {
+      "code": "EXECUTION_NOT_APPROVED",
+      "name": "aarch64:target:unapproved-start"
+    },
+    {
+      "code": "PROFILE_CONTENT",
+      "name": "aarch64:target:inspected-foreign-profile"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "aarch64:observer:create:image-foreign"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "aarch64:observer:create:image-missing-arch"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "aarch64:observer:create:image-alias"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "aarch64:observer:create:image-x32"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "aarch64:observer:create:image-wrong-os"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "aarch64:observer:create:image-wrong-id"
+    },
+    {
+      "code": "INSPECTION_SHAPE",
+      "name": "aarch64:observer:create:image-missing-image"
+    },
+    {
+      "code": "IMAGE_DEFAULTS",
+      "name": "aarch64:observer:create:image-missing-config"
+    },
+    {
+      "code": "IMAGE_DEFAULTS",
+      "name": "aarch64:observer:create:image-onbuild"
+    },
+    {
+      "code": "HEALTHCHECK",
+      "name": "aarch64:observer:create:image-healthcheck"
+    },
+    {
+      "code": "IMAGE_ENVIRONMENT",
+      "name": "aarch64:observer:create:image-environment"
+    },
+    {
+      "code": "IMAGE_DEFAULTS",
+      "name": "aarch64:observer:create:image-volumes"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "aarch64:observer:start:image-foreign"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "aarch64:observer:start:image-missing-arch"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "aarch64:observer:start:image-alias"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "aarch64:observer:start:image-x32"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "aarch64:observer:start:image-wrong-os"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "aarch64:observer:start:image-wrong-id"
+    },
+    {
+      "code": "INSPECTION_SHAPE",
+      "name": "aarch64:observer:start:image-missing-image"
+    },
+    {
+      "code": "IMAGE_DEFAULTS",
+      "name": "aarch64:observer:start:image-missing-config"
+    },
+    {
+      "code": "IMAGE_DEFAULTS",
+      "name": "aarch64:observer:start:image-onbuild"
+    },
+    {
+      "code": "HEALTHCHECK",
+      "name": "aarch64:observer:start:image-healthcheck"
+    },
+    {
+      "code": "IMAGE_ENVIRONMENT",
+      "name": "aarch64:observer:start:image-environment"
+    },
+    {
+      "code": "IMAGE_DEFAULTS",
+      "name": "aarch64:observer:start:image-volumes"
+    },
+    {
+      "code": "EXECUTION_NOT_APPROVED",
+      "name": "aarch64:observer:unapproved-start"
+    },
+    {
+      "code": "PROFILE_CONTENT",
+      "name": "aarch64:observer:inspected-foreign-profile"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "aarch64:oracle:create:image-foreign"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "aarch64:oracle:create:image-missing-arch"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "aarch64:oracle:create:image-alias"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "aarch64:oracle:create:image-x32"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "aarch64:oracle:create:image-wrong-os"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "aarch64:oracle:create:image-wrong-id"
+    },
+    {
+      "code": "INSPECTION_SHAPE",
+      "name": "aarch64:oracle:create:image-missing-image"
+    },
+    {
+      "code": "IMAGE_DEFAULTS",
+      "name": "aarch64:oracle:create:image-missing-config"
+    },
+    {
+      "code": "IMAGE_DEFAULTS",
+      "name": "aarch64:oracle:create:image-onbuild"
+    },
+    {
+      "code": "HEALTHCHECK",
+      "name": "aarch64:oracle:create:image-healthcheck"
+    },
+    {
+      "code": "IMAGE_ENVIRONMENT",
+      "name": "aarch64:oracle:create:image-environment"
+    },
+    {
+      "code": "IMAGE_DEFAULTS",
+      "name": "aarch64:oracle:create:image-volumes"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "aarch64:oracle:start:image-foreign"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "aarch64:oracle:start:image-missing-arch"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "aarch64:oracle:start:image-alias"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "aarch64:oracle:start:image-x32"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "aarch64:oracle:start:image-wrong-os"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "aarch64:oracle:start:image-wrong-id"
+    },
+    {
+      "code": "INSPECTION_SHAPE",
+      "name": "aarch64:oracle:start:image-missing-image"
+    },
+    {
+      "code": "IMAGE_DEFAULTS",
+      "name": "aarch64:oracle:start:image-missing-config"
+    },
+    {
+      "code": "IMAGE_DEFAULTS",
+      "name": "aarch64:oracle:start:image-onbuild"
+    },
+    {
+      "code": "HEALTHCHECK",
+      "name": "aarch64:oracle:start:image-healthcheck"
+    },
+    {
+      "code": "IMAGE_ENVIRONMENT",
+      "name": "aarch64:oracle:start:image-environment"
+    },
+    {
+      "code": "IMAGE_DEFAULTS",
+      "name": "aarch64:oracle:start:image-volumes"
+    },
+    {
+      "code": "EXECUTION_NOT_APPROVED",
+      "name": "aarch64:oracle:unapproved-start"
+    },
+    {
+      "code": "PROFILE_CONTENT",
+      "name": "aarch64:oracle:inspected-foreign-profile"
+    },
+    {
+      "code": "LINUX_EXECUTABLE_ARCHITECTURE",
+      "name": "aarch64:foreign-observed-interpreter"
+    },
+    {
+      "code": "ADMISSION_ARCHITECTURE",
+      "name": "x86_64:target:foreign-preparation"
+    },
+    {
+      "code": "ADMISSION_ARCHITECTURE",
+      "name": "x86_64:target:foreign-context"
+    },
+    {
+      "code": "ADMISSION_ARCHITECTURE",
+      "name": "x86_64:target:foreign-binding"
+    },
+    {
+      "code": "ADMISSION_ARCHITECTURE",
+      "name": "x86_64:target:foreign-frame"
+    },
+    {
+      "code": "ADMISSION_EXECUTABLE",
+      "name": "x86_64:target:foreign-elf"
+    },
+    {
+      "code": "INTEGER",
+      "name": "x86_64:target:invalid-frame-0-pid"
+    },
+    {
+      "code": "INTEGER",
+      "name": "x86_64:target:invalid-frame-0-version"
+    },
+    {
+      "code": "ADMISSION_FILTER_COUNT",
+      "name": "x86_64:target:invalid-frame-1-seccomp_filters"
+    },
+    {
+      "code": "INTEGER",
+      "name": "x86_64:target:invalid-frame-1-caps"
+    },
+    {
+      "code": "INTEGER",
+      "name": "x86_64:target:invalid-frame-1-uids"
+    },
+    {
+      "code": "INTEGER",
+      "name": "x86_64:target:invalid-frame-2-memory_max"
+    },
+    {
+      "code": "ADMISSION_STALE",
+      "name": "x86_64:target:invalid-frame-3-monotonic_ns"
+    },
+    {
+      "code": "INTEGER",
+      "name": "x86_64:target:invalid-frame-3-monotonic_ns"
+    },
+    {
+      "code": "INTEGER",
+      "name": "x86_64:target:invalid-frame-3-monotonic_ns"
+    },
+    {
+      "code": "ADMISSION_ARCHITECTURE",
+      "name": "x86_64:observer:foreign-preparation"
+    },
+    {
+      "code": "ADMISSION_ARCHITECTURE",
+      "name": "x86_64:observer:foreign-context"
+    },
+    {
+      "code": "ADMISSION_ARCHITECTURE",
+      "name": "x86_64:observer:foreign-binding"
+    },
+    {
+      "code": "ADMISSION_ARCHITECTURE",
+      "name": "x86_64:observer:foreign-frame"
+    },
+    {
+      "code": "ADMISSION_EXECUTABLE",
+      "name": "x86_64:observer:foreign-elf"
+    },
+    {
+      "code": "ADMISSION_ARCHITECTURE",
+      "name": "x86_64:observer:foreign-peer"
+    },
+    {
+      "code": "INTEGER",
+      "name": "x86_64:observer:invalid-frame-0-pid"
+    },
+    {
+      "code": "INTEGER",
+      "name": "x86_64:observer:invalid-frame-0-version"
+    },
+    {
+      "code": "ADMISSION_FILTER_COUNT",
+      "name": "x86_64:observer:invalid-frame-1-seccomp_filters"
+    },
+    {
+      "code": "INTEGER",
+      "name": "x86_64:observer:invalid-frame-1-caps"
+    },
+    {
+      "code": "INTEGER",
+      "name": "x86_64:observer:invalid-frame-1-uids"
+    },
+    {
+      "code": "INTEGER",
+      "name": "x86_64:observer:invalid-frame-2-memory_max"
+    },
+    {
+      "code": "ADMISSION_STALE",
+      "name": "x86_64:observer:invalid-frame-3-monotonic_ns"
+    },
+    {
+      "code": "INTEGER",
+      "name": "x86_64:observer:invalid-frame-3-monotonic_ns"
+    },
+    {
+      "code": "INTEGER",
+      "name": "x86_64:observer:invalid-frame-3-monotonic_ns"
+    },
+    {
+      "code": "ADMISSION_ARCHITECTURE",
+      "name": "x86_64:oracle:foreign-preparation"
+    },
+    {
+      "code": "ADMISSION_ARCHITECTURE",
+      "name": "x86_64:oracle:foreign-context"
+    },
+    {
+      "code": "ADMISSION_ARCHITECTURE",
+      "name": "x86_64:oracle:foreign-binding"
+    },
+    {
+      "code": "ADMISSION_ARCHITECTURE",
+      "name": "x86_64:oracle:foreign-frame"
+    },
+    {
+      "code": "ADMISSION_EXECUTABLE",
+      "name": "x86_64:oracle:foreign-elf"
+    },
+    {
+      "code": "ADMISSION_ARCHITECTURE",
+      "name": "x86_64:oracle:foreign-peer"
+    },
+    {
+      "code": "INTEGER",
+      "name": "x86_64:oracle:invalid-frame-0-pid"
+    },
+    {
+      "code": "INTEGER",
+      "name": "x86_64:oracle:invalid-frame-0-version"
+    },
+    {
+      "code": "ADMISSION_FILTER_COUNT",
+      "name": "x86_64:oracle:invalid-frame-1-seccomp_filters"
+    },
+    {
+      "code": "INTEGER",
+      "name": "x86_64:oracle:invalid-frame-1-caps"
+    },
+    {
+      "code": "INTEGER",
+      "name": "x86_64:oracle:invalid-frame-1-uids"
+    },
+    {
+      "code": "INTEGER",
+      "name": "x86_64:oracle:invalid-frame-2-memory_max"
+    },
+    {
+      "code": "ADMISSION_STALE",
+      "name": "x86_64:oracle:invalid-frame-3-monotonic_ns"
+    },
+    {
+      "code": "INTEGER",
+      "name": "x86_64:oracle:invalid-frame-3-monotonic_ns"
+    },
+    {
+      "code": "INTEGER",
+      "name": "x86_64:oracle:invalid-frame-3-monotonic_ns"
+    },
+    {
+      "code": "CONTEXT_LEASE_BINDING",
+      "name": "x86_64:lease-foreign-prep"
+    },
+    {
+      "code": "CONTEXT_LEASE_EXPIRED",
+      "name": "x86_64:lease-exact-expiry"
+    },
+    {
+      "code": "CONTEXT_NOT_APPROVED",
+      "name": "x86_64:context-before-io:missing-authorization"
+    },
+    {
+      "code": "CONTEXT_NOT_APPROVED",
+      "name": "x86_64:context-before-io:truthy-authorization"
+    },
+    {
+      "code": "CONTEXT_SOURCE_BINDING",
+      "name": "x86_64:context-before-io:wrong-daemon"
+    },
+    {
+      "code": "CONTEXT_SOURCE_BINDING",
+      "name": "x86_64:context-before-io:wrong-source"
+    },
+    {
+      "code": "CONTEXT_ARCHITECTURE",
+      "name": "x86_64:context-before-io:foreign-preparation"
+    },
+    {
+      "code": "INTEGER",
+      "name": "x86_64:context-before-io:legacy-anchor"
+    },
+    {
+      "code": "CONTEXT_ACQUISITION_REJECTED",
+      "name": "x86_64:signed-context:foreign-architecture"
+    },
+    {
+      "code": "CONTEXT_ACQUISITION_REJECTED",
+      "name": "x86_64:signed-context:legacy"
+    },
+    {
+      "code": "CONTEXT_ACQUISITION_REJECTED",
+      "name": "x86_64:signed-context:foreign-request"
+    },
+    {
+      "code": "CONTEXT_ACQUISITION_REJECTED",
+      "name": "x86_64:signed-context:window-growth"
+    },
+    {
+      "code": "CONTEXT_ACQUISITION_REJECTED",
+      "name": "x86_64:signed-context:stale-sample"
+    },
+    {
+      "code": "CONTEXT_ACQUISITION_REJECTED",
+      "name": "x86_64:signed-context:foreign-boot"
+    },
+    {
+      "code": "CONTEXT_ACQUISITION_REJECTED",
+      "name": "x86_64:signed-context:foreign-namespace"
+    },
+    {
+      "code": "CONTEXT_ACQUISITION_REJECTED",
+      "name": "x86_64:signed-context:extra-field"
+    },
+    {
+      "code": "CONTEXT_ACQUISITION_REJECTED",
+      "name": "x86_64:signed-context:missing-field"
+    },
+    {
+      "code": "CONTEXT_ACQUISITION_REJECTED",
+      "name": "x86_64:signed-context:bad-mac"
+    },
+    {
+      "code": "CONTEXT_ACQUISITION_REJECTED",
+      "name": "x86_64:signed-context:reorder"
+    },
+    {
+      "code": "CONTEXT_ACQUISITION_REJECTED",
+      "name": "x86_64:signed-context:duplicate"
+    },
+    {
+      "code": "CONTEXT_ACQUISITION_REJECTED",
+      "name": "x86_64:signed-context:oversize"
+    },
+    {
+      "code": "CONTEXT_ACQUISITION_REJECTED",
+      "name": "x86_64:signed-context:delay"
+    },
+    {
+      "code": "CONTEXT_ACQUISITION_REJECTED",
+      "name": "x86_64:context-replay"
+    },
+    {
+      "code": "CONTEXT_ANCHOR_CHANGED",
+      "name": "x86_64:anchor-mutation:authorization"
+    },
+    {
+      "code": "CONTEXT_ACQUISITION_REJECTED",
+      "name": "x86_64:anchor-mutation:exchange"
+    },
+    {
+      "code": "CONTEXT_ARCHITECTURE",
+      "name": "x86_64:mixed-deployment:deployment"
+    },
+    {
+      "code": "CONTEXT_ARCHITECTURE",
+      "name": "x86_64:mixed-deployment:anchor"
+    },
+    {
+      "code": "CONTEXT_PROVISIONING_BINDING",
+      "name": "x86_64:bundle-substitution:runtime_context_deployment"
+    },
+    {
+      "code": "CONTEXT_PROVISIONING_BINDING",
+      "name": "x86_64:bundle-substitution:runtime_context_transport"
+    },
+    {
+      "code": "CONTEXT_PROVISIONING_BINDING",
+      "name": "x86_64:bundle-substitution:runtime_context_source"
+    },
+    {
+      "code": "CONTEXT_ARCHITECTURE",
+      "name": "x86_64:bundle-foreign-preparation"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "x86_64:target:create:image-foreign"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "x86_64:target:create:image-missing-arch"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "x86_64:target:create:image-alias"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "x86_64:target:create:image-x32"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "x86_64:target:create:image-wrong-os"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "x86_64:target:create:image-wrong-id"
+    },
+    {
+      "code": "INSPECTION_SHAPE",
+      "name": "x86_64:target:create:image-missing-image"
+    },
+    {
+      "code": "IMAGE_DEFAULTS",
+      "name": "x86_64:target:create:image-missing-config"
+    },
+    {
+      "code": "IMAGE_DEFAULTS",
+      "name": "x86_64:target:create:image-onbuild"
+    },
+    {
+      "code": "HEALTHCHECK",
+      "name": "x86_64:target:create:image-healthcheck"
+    },
+    {
+      "code": "IMAGE_ENVIRONMENT",
+      "name": "x86_64:target:create:image-environment"
+    },
+    {
+      "code": "IMAGE_DEFAULTS",
+      "name": "x86_64:target:create:image-volumes"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "x86_64:target:start:image-foreign"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "x86_64:target:start:image-missing-arch"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "x86_64:target:start:image-alias"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "x86_64:target:start:image-x32"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "x86_64:target:start:image-wrong-os"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "x86_64:target:start:image-wrong-id"
+    },
+    {
+      "code": "INSPECTION_SHAPE",
+      "name": "x86_64:target:start:image-missing-image"
+    },
+    {
+      "code": "IMAGE_DEFAULTS",
+      "name": "x86_64:target:start:image-missing-config"
+    },
+    {
+      "code": "IMAGE_DEFAULTS",
+      "name": "x86_64:target:start:image-onbuild"
+    },
+    {
+      "code": "HEALTHCHECK",
+      "name": "x86_64:target:start:image-healthcheck"
+    },
+    {
+      "code": "IMAGE_ENVIRONMENT",
+      "name": "x86_64:target:start:image-environment"
+    },
+    {
+      "code": "IMAGE_DEFAULTS",
+      "name": "x86_64:target:start:image-volumes"
+    },
+    {
+      "code": "EXECUTION_NOT_APPROVED",
+      "name": "x86_64:target:unapproved-start"
+    },
+    {
+      "code": "PROFILE_CONTENT",
+      "name": "x86_64:target:inspected-foreign-profile"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "x86_64:observer:create:image-foreign"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "x86_64:observer:create:image-missing-arch"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "x86_64:observer:create:image-alias"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "x86_64:observer:create:image-x32"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "x86_64:observer:create:image-wrong-os"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "x86_64:observer:create:image-wrong-id"
+    },
+    {
+      "code": "INSPECTION_SHAPE",
+      "name": "x86_64:observer:create:image-missing-image"
+    },
+    {
+      "code": "IMAGE_DEFAULTS",
+      "name": "x86_64:observer:create:image-missing-config"
+    },
+    {
+      "code": "IMAGE_DEFAULTS",
+      "name": "x86_64:observer:create:image-onbuild"
+    },
+    {
+      "code": "HEALTHCHECK",
+      "name": "x86_64:observer:create:image-healthcheck"
+    },
+    {
+      "code": "IMAGE_ENVIRONMENT",
+      "name": "x86_64:observer:create:image-environment"
+    },
+    {
+      "code": "IMAGE_DEFAULTS",
+      "name": "x86_64:observer:create:image-volumes"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "x86_64:observer:start:image-foreign"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "x86_64:observer:start:image-missing-arch"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "x86_64:observer:start:image-alias"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "x86_64:observer:start:image-x32"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "x86_64:observer:start:image-wrong-os"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "x86_64:observer:start:image-wrong-id"
+    },
+    {
+      "code": "INSPECTION_SHAPE",
+      "name": "x86_64:observer:start:image-missing-image"
+    },
+    {
+      "code": "IMAGE_DEFAULTS",
+      "name": "x86_64:observer:start:image-missing-config"
+    },
+    {
+      "code": "IMAGE_DEFAULTS",
+      "name": "x86_64:observer:start:image-onbuild"
+    },
+    {
+      "code": "HEALTHCHECK",
+      "name": "x86_64:observer:start:image-healthcheck"
+    },
+    {
+      "code": "IMAGE_ENVIRONMENT",
+      "name": "x86_64:observer:start:image-environment"
+    },
+    {
+      "code": "IMAGE_DEFAULTS",
+      "name": "x86_64:observer:start:image-volumes"
+    },
+    {
+      "code": "EXECUTION_NOT_APPROVED",
+      "name": "x86_64:observer:unapproved-start"
+    },
+    {
+      "code": "PROFILE_CONTENT",
+      "name": "x86_64:observer:inspected-foreign-profile"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "x86_64:oracle:create:image-foreign"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "x86_64:oracle:create:image-missing-arch"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "x86_64:oracle:create:image-alias"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "x86_64:oracle:create:image-x32"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "x86_64:oracle:create:image-wrong-os"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "x86_64:oracle:create:image-wrong-id"
+    },
+    {
+      "code": "INSPECTION_SHAPE",
+      "name": "x86_64:oracle:create:image-missing-image"
+    },
+    {
+      "code": "IMAGE_DEFAULTS",
+      "name": "x86_64:oracle:create:image-missing-config"
+    },
+    {
+      "code": "IMAGE_DEFAULTS",
+      "name": "x86_64:oracle:create:image-onbuild"
+    },
+    {
+      "code": "HEALTHCHECK",
+      "name": "x86_64:oracle:create:image-healthcheck"
+    },
+    {
+      "code": "IMAGE_ENVIRONMENT",
+      "name": "x86_64:oracle:create:image-environment"
+    },
+    {
+      "code": "IMAGE_DEFAULTS",
+      "name": "x86_64:oracle:create:image-volumes"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "x86_64:oracle:start:image-foreign"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "x86_64:oracle:start:image-missing-arch"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "x86_64:oracle:start:image-alias"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "x86_64:oracle:start:image-x32"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "x86_64:oracle:start:image-wrong-os"
+    },
+    {
+      "code": "IMAGE_IDENTITY",
+      "name": "x86_64:oracle:start:image-wrong-id"
+    },
+    {
+      "code": "INSPECTION_SHAPE",
+      "name": "x86_64:oracle:start:image-missing-image"
+    },
+    {
+      "code": "IMAGE_DEFAULTS",
+      "name": "x86_64:oracle:start:image-missing-config"
+    },
+    {
+      "code": "IMAGE_DEFAULTS",
+      "name": "x86_64:oracle:start:image-onbuild"
+    },
+    {
+      "code": "HEALTHCHECK",
+      "name": "x86_64:oracle:start:image-healthcheck"
+    },
+    {
+      "code": "IMAGE_ENVIRONMENT",
+      "name": "x86_64:oracle:start:image-environment"
+    },
+    {
+      "code": "IMAGE_DEFAULTS",
+      "name": "x86_64:oracle:start:image-volumes"
+    },
+    {
+      "code": "EXECUTION_NOT_APPROVED",
+      "name": "x86_64:oracle:unapproved-start"
+    },
+    {
+      "code": "PROFILE_CONTENT",
+      "name": "x86_64:oracle:inspected-foreign-profile"
+    },
+    {
+      "code": "LINUX_EXECUTABLE_ARCHITECTURE",
+      "name": "x86_64:foreign-observed-interpreter"
+    },
+    {
+      "code": "LINUX_PLATFORM",
+      "name": "observed-abi:Linux:x32:4"
+    },
+    {
+      "code": "LINUX_PLATFORM",
+      "name": "observed-abi:Linux:x86_64:4"
+    },
+    {
+      "code": "ARCHITECTURE",
+      "name": "observed-abi:Linux:amd64:8"
+    },
+    {
+      "code": "ARCHITECTURE",
+      "name": "observed-abi:Linux:i686:8"
+    },
+    {
+      "code": "LINUX_PLATFORM",
+      "name": "observed-abi:Darwin:x86_64:8"
+    }
+  ],
+  "status": "PASS"
+}

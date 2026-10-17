@@ -1,0 +1,9 @@
+{
+  "after_sha256": "2d682c5fbfc68c5f9cccc76b41182062307082fed1a4eba94a08f8e9fef35d7a",
+  "all_22_declared_artifacts_unchanged": true,
+  "baseline_evidence_matches_base_commit": true,
+  "before_sha256": "2d682c5fbfc68c5f9cccc76b41182062307082fed1a4eba94a08f8e9fef35d7a",
+  "source_inventory_sha256": "7ed3b955be1fe4d2621a43896d1a3e4d49cf9edcf6e86a0c2dd567d105f14720",
+  "status": "PASS",
+  "tracked_diff_unchanged": true
+}

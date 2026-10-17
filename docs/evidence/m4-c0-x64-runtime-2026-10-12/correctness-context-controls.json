@@ -1,0 +1,139 @@
+{
+  "checks": [
+    {
+      "id": "aarch64:matched-host-lease",
+      "status": "PASS"
+    },
+    {
+      "id": "aarch64:lease-foreign-preparation",
+      "status": "PASS"
+    },
+    {
+      "id": "aarch64:valid-MAC-foreign-kernel-reply",
+      "status": "PASS"
+    },
+    {
+      "id": "aarch64:recomputed-observer-foreign-peer",
+      "status": "PASS"
+    },
+    {
+      "id": "aarch64:recomputed-oracle-foreign-peer",
+      "status": "PASS"
+    },
+    {
+      "id": "aarch64:matching-ELF",
+      "status": "PASS"
+    },
+    {
+      "id": "aarch64:foreign-ELF-after-matching-uname",
+      "status": "PASS"
+    },
+    {
+      "id": "aarch64:x32-class",
+      "status": "PASS"
+    },
+    {
+      "id": "aarch64:big-endian",
+      "status": "PASS"
+    },
+    {
+      "id": "aarch64:ELF-version",
+      "status": "PASS"
+    },
+    {
+      "id": "aarch64:anchored-reader-rejects-before-procfs",
+      "status": "PASS"
+    },
+    {
+      "id": "x86_64:matched-host-lease",
+      "status": "PASS"
+    },
+    {
+      "id": "x86_64:lease-foreign-preparation",
+      "status": "PASS"
+    },
+    {
+      "id": "x86_64:valid-MAC-foreign-kernel-reply",
+      "status": "PASS"
+    },
+    {
+      "id": "x86_64:recomputed-observer-foreign-peer",
+      "status": "PASS"
+    },
+    {
+      "id": "x86_64:recomputed-oracle-foreign-peer",
+      "status": "PASS"
+    },
+    {
+      "id": "x86_64:foreign-ELF-after-matching-uname",
+      "status": "PASS"
+    },
+    {
+      "id": "x86_64:matching-ELF",
+      "status": "PASS"
+    },
+    {
+      "id": "x86_64:x32-class",
+      "status": "PASS"
+    },
+    {
+      "id": "x86_64:big-endian",
+      "status": "PASS"
+    },
+    {
+      "id": "x86_64:ELF-version",
+      "status": "PASS"
+    },
+    {
+      "id": "x86_64:anchored-reader-rejects-before-procfs",
+      "status": "PASS"
+    },
+    {
+      "id": "native-selector:alias-or-unknown:amd64",
+      "status": "PASS"
+    },
+    {
+      "id": "native-selector:alias-or-unknown:arm64",
+      "status": "PASS"
+    },
+    {
+      "id": "native-selector:alias-or-unknown:x32",
+      "status": "PASS"
+    },
+    {
+      "id": "native-selector:alias-or-unknown:i686",
+      "status": "PASS"
+    },
+    {
+      "id": "native-selector:alias-or-unknown:aarch64_be",
+      "status": "PASS"
+    },
+    {
+      "id": "native-selector:alias-or-unknown:riscv64",
+      "status": "PASS"
+    },
+    {
+      "id": "native-selector:alias-or-unknown:",
+      "status": "PASS"
+    },
+    {
+      "id": "native-selector:pointer-size:0",
+      "status": "PASS"
+    },
+    {
+      "id": "native-selector:pointer-size:4",
+      "status": "PASS"
+    },
+    {
+      "id": "native-selector:pointer-size:16",
+      "status": "PASS"
+    }
+  ],
+  "collectors_executed": false,
+  "count": 32,
+  "kernel_and_uname_simulated": true,
+  "limit": "ELF-header classifier and mocked source/peer boundaries; not interpreter or deployment acceptance",
+  "native_actors_executed": false,
+  "oracle_workers_executed": false,
+  "status": "PASS"
+}

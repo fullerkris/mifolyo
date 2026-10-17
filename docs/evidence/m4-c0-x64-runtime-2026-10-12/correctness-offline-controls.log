@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "ptrace_controls_per_layer": 26232,
+  "syscall_controls": 1049,
+  "matched_admissions": 6,
+  "rejected_mismatches": 42,
+  "legacy_rejections": 24,
+  "native_actors_executed": false,
+  "ptrace_invoked": false,
+  "filters_installed": false
+}

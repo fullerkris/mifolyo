@@ -1,0 +1,168 @@
+{
+  "execution_authorized": false,
+  "files": {
+    "security-continuity.json": {
+      "bytes": 18409,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/security/continuity.json",
+      "sha256": "890738f9644aa0c07fe4a580fe9edbf4ce5fbf9abb21c90dee8d0cf751d7aea1"
+    },
+    "security-continuity.log": {
+      "bytes": 3883,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/security/continuity.log",
+      "sha256": "c8bdcb945d182d27a9e5b671d97eaa3d122f1ffa3a778193c76b295983c95f0b"
+    },
+    "security-debug-probe.log": {
+      "bytes": 60,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/security/debug-probe.log",
+      "sha256": "65f5d7c45e804d8f1282f068d2538019eb8bff5c020fbe02aa4c57cb780122fe"
+    },
+    "security-debug-undefined-symbols.log": {
+      "bytes": 243,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/security/debug-undefined-symbols.log",
+      "sha256": "dbea1f147ef6ec84548978244cdff0184345b6d2f3287e68c65e741504bbb2c6"
+    },
+    "security-integrity-after-initial-global-status.json": {
+      "bytes": 30582,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/security/integrity-after-initial-global-status.json",
+      "sha256": "39174274d8017004e8217cd8e0a727b8f5aa44ca2109c4fd76bbca04c70c5bc0"
+    },
+    "security-integrity-after-initial-global-status.log": {
+      "bytes": 192,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/security/integrity-after-initial-global-status.log",
+      "sha256": "bd57a83b9ef1fe1f96d61568ab5b2f3ab04eabb0a4c1a152a0e802df4687f8b5"
+    },
+    "security-integrity-after.json": {
+      "bytes": 30929,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/security/integrity-after.json",
+      "sha256": "faf44835e5b1a987e000177e436e2471867ed317f3bd41f1972aca233bb934ca"
+    },
+    "security-integrity-after.log": {
+      "bytes": 256,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/security/integrity-after.log",
+      "sha256": "605fd555187141078b41d1330d6dde32eea4c3fbac67773ae84d41081c665625"
+    },
+    "security-integrity-before.json": {
+      "bytes": 30357,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/security/integrity-before.json",
+      "sha256": "40cd5fa7caba7cbba7444919e7ac3e8e89d3e9fe15a16077062ff7c48f304474"
+    },
+    "security-integrity.py": {
+      "bytes": 2843,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/security/integrity.py",
+      "sha256": "c6848a291ea6482b6f05e09c73b1ecc05302f4524a1cebfe3962063d65395eda"
+    },
+    "security-probe-compiler.log": {
+      "bytes": 246,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/security/probe-compiler.log",
+      "sha256": "361c40d813a1a40b1b818cd65102f5fc41e57c783abda737f65ccc790d0372db"
+    },
+    "security-probe_continuity.py": {
+      "bytes": 4263,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/security/probe_continuity.py",
+      "sha256": "829eae9e6e371505072ea9edbe5abc53a83bb0e29354645f64c29910bd3f1647"
+    },
+    "security-probe_runtime.py": {
+      "bytes": 16292,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/security/probe_runtime.py",
+      "sha256": "e4a052dc2031e970972cadcad692cb9c168b8367f666edb61c860d13ec5dcf0e"
+    },
+    "security-probe_static.py": {
+      "bytes": 13347,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/security/probe_static.py",
+      "sha256": "72dcdcdf903f0641275fa7e3529466de2c0058af13717fca35b24eb9ec6c0e04"
+    },
+    "security-replay_x64_guards.py": {
+      "bytes": 3179,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/security/replay_x64_guards.py",
+      "sha256": "8245bae657edaf24dce37b1ed52d4b1982b893bcbb6215c44b12bd0e9b11d7e5"
+    },
+    "security-review.json": {
+      "bytes": 14324,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/security/review.json",
+      "sha256": "0303b1fb74b96edcaf8c2a5aa2fcdf3751fc870ee8fa8b8afa6c93c0e140ba7d"
+    },
+    "security-review.md": {
+      "bytes": 13522,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/security/review.md",
+      "sha256": "143f727a2fdbad70ab8a89f266ee18ad7bb7fc351a17a02a936a8fcda240bab0"
+    },
+    "security-runtime-probes.json": {
+      "bytes": 32537,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/security/runtime-probes.json",
+      "sha256": "cc2b29aaf4ca0f625bc358dc3723c118544236f229d161ce7b0aba53bf8f32e1"
+    },
+    "security-runtime-probes.log": {
+      "bytes": 61,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/security/runtime-probes.log",
+      "sha256": "a3f2bf9f036365126da8f51add6ba58882f91caaecad44398ccb66bb91196960"
+    },
+    "security-static-probes-initial-reviewer-assertion.log": {
+      "bytes": 527,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/security/static-probes-initial-reviewer-assertion.log",
+      "sha256": "7463b4ee7b4691bdbf0cafdddaef7371737c549856699f735bbb8dbc2f4cc095"
+    },
+    "security-static-probes.json": {
+      "bytes": 7682,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/security/static-probes.json",
+      "sha256": "dc3bd174de6fd85a60dde19a23fb40b8472c308133dd13f65a05768e37817016"
+    },
+    "security-static-probes.log": {
+      "bytes": 981,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/security/static-probes.log",
+      "sha256": "8ac27a81de8bb85e0e825923041f6e863dead12620c91fa8ab935e7f8184fe76"
+    },
+    "security-tests.json": {
+      "bytes": 87369,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/security/tests.json",
+      "sha256": "b88d7f34a8fbbd4de29b93e6614921f619ce667bd3539c5d126ff79d1c00dd2f"
+    },
+    "security-tests.log": {
+      "bytes": 42598,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/security/tests.log",
+      "sha256": "75cfecedc3ab26ef9bd4903ba393c494dfb223ee59ca1242e53c25fb1910a697"
+    },
+    "security-write_review.py": {
+      "bytes": 9428,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/security/write_review.py",
+      "sha256": "53811cb4ffeea2fbcb2cafda527f0452b3f11e506356a19f733d4ccd04471524"
+    },
+    "security-x64-breakpoint-disassembly.log": {
+      "bytes": 2899,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/security/x64-breakpoint-disassembly.log",
+      "sha256": "5012299e39dd77898962cf6c9573be1f745a4f18da3b4c7b6b0e8fdb0b135708"
+    },
+    "security-x64-debug-verify-disassembly.log": {
+      "bytes": 2433,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/security/x64-debug-verify-disassembly.log",
+      "sha256": "ef3b72e2016da901d77b44c14214570c9419f02e43224f751eada9ac2cdf074d"
+    },
+    "security-x64-guards.json": {
+      "bytes": 11268,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/security/x64-guards.json",
+      "sha256": "1b66e2931d16567cab391594d225fe35ba9e5d5affdc0bd8a882417c8edb9788"
+    },
+    "security-x64-guards.log": {
+      "bytes": 5328,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/security/x64-guards.log",
+      "sha256": "171b5873f0a5fee4133fe97747a968463a179c6a7a6728fb2f73f6f4e42a3b54"
+    },
+    "security-x64-main-disassembly.log": {
+      "bytes": 45578,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/security/x64-main-disassembly.log",
+      "sha256": "21ef19c49edb113c764ddb3c046e7dc49a79f3da06df72eeb6f83905426cadb8"
+    },
+    "security-x64-request-disassembly.log": {
+      "bytes": 3113,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/security/x64-request-disassembly.log",
+      "sha256": "455964fef9bd6499da41c36d27523b5215f1b0137729795257c569b83cf61b2f"
+    },
+    "security-x64-stopped-pc-disassembly.log": {
+      "bytes": 1763,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/security/x64-stopped-pc-disassembly.log",
+      "sha256": "b3583f115b616982f33ffa2d4e937d6314e7cad1a2b480af0bb0e9e3cdc05dd4"
+    }
+  },
+  "kind": "c0_x64_runtime_security_evidence_exports",
+  "source_inventory_sha256": "7ed3b955be1fe4d2621a43896d1a3e4d49cf9edcf6e86a0c2dd567d105f14720",
+  "version": 1
+}

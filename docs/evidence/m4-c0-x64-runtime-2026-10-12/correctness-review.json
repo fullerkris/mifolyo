@@ -1,0 +1,438 @@
+{
+  "authorization_and_safety": {
+    "benign_test_processes_run": true,
+    "committed": false,
+    "deployed": false,
+    "execution_authorized": false,
+    "filters_installed": false,
+    "m4_accepted": false,
+    "native_actors_executed": false,
+    "ptrace_invoked": false,
+    "pushed": false,
+    "real_host_collectors_executed": false,
+    "real_oracle_workers_executed": false,
+    "repository_or_snapshot_modified": false,
+    "runtime_acceptance": false,
+    "scope": "source/static-artifact implementation only",
+    "simulated_oracle_protocol_test_processes_run": true,
+    "writes_confined_to": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness"
+  },
+  "base_commit": "d8016469a5ffcceeb04329deec4e3dea2c72dd97",
+  "blocker_count": 0,
+  "branch": "feature/crawl-jobs-v2-c0-x64-runtime",
+  "checks": [
+    {
+      "evidence_paths": [
+        "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/offline-controls.json",
+        "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/target-objdump.txt",
+        "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/helper-probe.json"
+      ],
+      "id": "COR-X64-CHECK-01",
+      "result": {
+        "instruction_widths": [
+          7,
+          1,
+          1,
+          1
+        ],
+        "real_elf_effect_marker_bit_mutations_rejected": 144,
+        "release_ordering_basis": "static x86 TSO/aligned-store analysis, not hardware observation"
+      },
+      "source_locations": [
+        "native/target.c:23-35,126-135",
+        "build_tools.py:54-105,129-144"
+      ],
+      "status": "PASS",
+      "topic": "instruction boundaries and SysV witness stores"
+    },
+    {
+      "evidence_paths": [
+        "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/test_x86_debug.log",
+        "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/helper-probe.json",
+        "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/helper-provenance.json",
+        "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/helper_probe.c",
+        "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/helper-undefined-symbols.txt"
+      ],
+      "id": "COR-X64-CHECK-02",
+      "result": {
+        "all_ptrace_requests_simulated": true,
+        "debug_controls": 1191,
+        "independent_helper_controls": 3703,
+        "regset_controls": 72,
+        "request_instruction_controls": 2440,
+        "supplied_simulated_debug_controls": 29,
+        "ubsan_trap_mode_passed": true
+      },
+      "source_locations": [
+        "native/x86_debug.h:7-54",
+        "native/observer.c:127-156,185-208,253-318"
+      ],
+      "status": "PASS",
+      "topic": "debug protocol and observer helper integration"
+    },
+    {
+      "evidence_paths": [
+        "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/helper-probe.json",
+        "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/abi-guards.json"
+      ],
+      "id": "COR-X64-CHECK-03",
+      "result": {
+        "completed_offset": 8,
+        "cs_offset": 136,
+        "foreign_runtime_tested": false,
+        "last_value_offset": 72,
+        "macro_configurations_rejected": 4,
+        "rip_offset": 128,
+        "transcript_offset": 80,
+        "user_regs_bytes": 216,
+        "witness_bytes": 8480
+      },
+      "source_locations": [
+        "native/architecture.h:1-16",
+        "native/common.h:28-41",
+        "native/x86_debug.h:7-13",
+        "native/observer.c:21-26"
+      ],
+      "status": "PASS",
+      "topic": "LP64 and UAPI/structure offsets"
+    },
+    {
+      "evidence_paths": [
+        "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/offline-controls.json",
+        "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/offline_controls.py",
+        "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/provenance.json",
+        "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/final-integrity.json"
+      ],
+      "id": "COR-X64-CHECK-04",
+      "result": {
+        "arm64_bpf_bytes": 272,
+        "arm64_profiles_and_bpf_baseline_identical": true,
+        "artifact_sets": [
+          "aarch64",
+          "x86_64"
+        ],
+        "filters_installed": false,
+        "oci_compiler": "libseccomp 2.6.1 offline export only",
+        "ptrace_inputs_per_filter_layer": 26232,
+        "source_files_per_build": 51,
+        "syscall_numbers": 1049,
+        "toolchain_source_inputs_per_build": 12,
+        "x64_bpf_bytes": 440
+      },
+      "source_locations": [
+        "build_tools.py:12-43,145-172",
+        "profiles.py:16-84,87-173",
+        "Dockerfile:1-18"
+      ],
+      "status": "PASS",
+      "topic": "actual static artifacts and confinement joins"
+    },
+    {
+      "evidence_paths": [
+        "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/offline-controls.json",
+        "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/context-controls.json",
+        "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/context_controls.py"
+      ],
+      "id": "COR-X64-CHECK-05",
+      "result": {
+        "additional_simulated_context_controls": 32,
+        "legacy_role_phase_frames_rejected": 24,
+        "matching_role_combinations_accepted": 6,
+        "mixed_architecture_combinations_rejected": 42,
+        "real_host_collectors_or_oracle_workers_run": false,
+        "valid_mac_foreign_replies_rejected": true
+      },
+      "source_locations": [
+        "linux_observation.py:38-51,89-103,113-134,168-195",
+        "oracle_worker.py:146-188",
+        "build_oracle.py:11-27",
+        "runtime_context.py:64-98,112-184",
+        "runtime_admission.py:28-44,98-151",
+        "docker_backend.py:254-283,360-474"
+      ],
+      "status": "PASS",
+      "topic": "context/oracle ABI selection and version-2 admission joins"
+    },
+    {
+      "evidence_paths": [
+        "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/offline-tests.json",
+        "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/offline-tests.log",
+        "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/offline-controls.json",
+        "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/provenance.json",
+        "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/inventory-before.json",
+        "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/inventory-after.json",
+        "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/final-integrity.json"
+      ],
+      "id": "COR-X64-CHECK-06",
+      "result": {
+        "additional_tests": 18,
+        "approved_replacements": 5,
+        "base_tests": 238,
+        "expected_failures": 0,
+        "retained_old_ids": 233,
+        "skips": 0,
+        "supplied_umask_022_and_077_reports_verified": true,
+        "tests_passed": 256,
+        "tests_run": 256
+      },
+      "source_locations": [
+        "scripts/test-crawl-jobs-v2-observer.py:42-86",
+        "test_architecture_contracts.py"
+      ],
+      "status": "PASS",
+      "topic": "test continuity and frozen integrity"
+    }
+  ],
+  "date": "2026-10-12",
+  "evidence_files": {
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/abi-guards.json": {
+      "bytes": 4223,
+      "sha256": "e1c1eae5980f6988ceb20306a36c556c9e8d06acccd82f8028430cf824113cbe"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/abi-guards.log": {
+      "bytes": 68,
+      "sha256": "e3b7ea43701fa1a910e5cc8a27d06dd4f1e569204f49eefb532deee8a3445b29"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/abi_guard.c": {
+      "bytes": 100,
+      "sha256": "034cc455c517443e2461bf9de87d7492f6ab8808bcc01aaae55d1b2c180f0316"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/abi_guard_probe.py": {
+      "bytes": 1384,
+      "sha256": "b199a3eaf466ab67744a1b3906292109641a32955cb54299a3439e43325bc54d"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/context-controls.json": {
+      "bytes": 2986,
+      "sha256": "05d5fa32c4918733a9effa8792c8ac33a7fbb2902f3d1fdde902e40ec05be3f2"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/context-controls.log": {
+      "bytes": 59,
+      "sha256": "8a5a57d1d0c96103192e679e7bdaf9fc2626c940a3d588a07bd223575f183a98"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/context_controls.py": {
+      "bytes": 5663,
+      "sha256": "27e186d321f73cb22b3ec1b1d399fefcb5278ca991d7eef528b47a980799c840"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/elf-header-aarch64-ELF-version": {
+      "bytes": 64,
+      "sha256": "8782e519d3ea4a83f4998ceab6f662d908331f2b0a4e98190cf82f45da398318"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/elf-header-aarch64-aarch64": {
+      "bytes": 64,
+      "sha256": "88f05d2187222dd5bbe7d62ae198b0463170f564c0edf82270ca5264de91561a"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/elf-header-aarch64-big-endian": {
+      "bytes": 64,
+      "sha256": "52d9a2a893bfca9b3fcd58a94f68f63072a156f3c51d0aa1847059510f96a929"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/elf-header-aarch64-x32-class": {
+      "bytes": 64,
+      "sha256": "16af68598b9e1c5abe520d3a85d700e930eb5fa6efaee32b62e785f66a3e770a"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/elf-header-aarch64-x86_64": {
+      "bytes": 64,
+      "sha256": "d179e15af0b8acfa97b9b6cce4425c5c8ece333da2c4ff4bf689d9f4a048b65a"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/elf-header-x86_64-ELF-version": {
+      "bytes": 64,
+      "sha256": "367a38b4ff3dafd17adfb9eb6848979863dbe93694fc8306372a024d95150b73"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/elf-header-x86_64-aarch64": {
+      "bytes": 64,
+      "sha256": "88f05d2187222dd5bbe7d62ae198b0463170f564c0edf82270ca5264de91561a"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/elf-header-x86_64-big-endian": {
+      "bytes": 64,
+      "sha256": "1b220112c1cd5c0ec41a2d6a71e0047474b4b7f09d38d1ff6f441d1f37d9f943"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/elf-header-x86_64-x32-class": {
+      "bytes": 64,
+      "sha256": "1a0a3c543dda85086e902635cc593e220de50e2f89216faa535e0b3ad900fb60"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/elf-header-x86_64-x86_64": {
+      "bytes": 64,
+      "sha256": "d179e15af0b8acfa97b9b6cce4425c5c8ece333da2c4ff4bf689d9f4a048b65a"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/final-integrity.json": {
+      "bytes": 423,
+      "sha256": "8d234fae53b7f1c03b4261aa20e511156d18eeabf2d9d98a23c611e1394aca3e"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/generate_helper_probe.py": {
+      "bytes": 9022,
+      "sha256": "62ce9e0f9b0c0fe7f30cd1c64a2c367961371c84875e58e921975c4f56b3d2ac"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/helper-probe.json": {
+      "bytes": 202,
+      "sha256": "c1716020b50999c0931bdeb998428e7f4107dbf761c0b47ef0932aac723cbedb"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/helper-provenance.json": {
+      "bytes": 673,
+      "sha256": "cf012e18098f172149384710257aa60568fa04c202f30e27f7eb09f07fc8afa1"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/helper-sanitizer-link.log": {
+      "bytes": 212,
+      "sha256": "0d91b9096fc95f2b6a82bc23b9b843033a30e92ea0384d109205045943b8c382"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/helper-undefined-symbols.txt": {
+      "bytes": 405,
+      "sha256": "8904a5eddcd65db6c65c4beda2bae53a57a1811bd5c52a98183109d3d74d3dc7"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/helper_probe": {
+      "bytes": 43464,
+      "sha256": "72044b66c6b292c703cd66abaab8f73216272185b4c4bba4d53d6db3e29ab7a2"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/helper_probe.c": {
+      "bytes": 9429,
+      "sha256": "296ea9d419196c01f413a8c9412d4a0be503b4af40fbc2dffe925639392157ca"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/inventory-after.json": {
+      "bytes": 28762,
+      "sha256": "2d682c5fbfc68c5f9cccc76b41182062307082fed1a4eba94a08f8e9fef35d7a"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/inventory-before.json": {
+      "bytes": 28762,
+      "sha256": "2d682c5fbfc68c5f9cccc76b41182062307082fed1a4eba94a08f8e9fef35d7a"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/linux-v6.18-debugreg.h.txt": {
+      "bytes": 4039,
+      "sha256": "0a24618ea3c5d8ccd80fca8ebfa41ed9453741843d7db9c48c708952ce0a988e"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/linux-v6.18-ptrace.c.txt": {
+      "bytes": 35873,
+      "sha256": "bc52f48380e5ecbe5580af8d64c9464cfa145cb6514f061ae581964fdc2bec32"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/linux-v6.18-traps.c.txt": {
+      "bytes": 43071,
+      "sha256": "7ab78c8a751a8e2443706266100189d13636ff79f3316eb522311a18e8498e9a"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/linux-v6.18-user_64.h.txt": {
+      "bytes": 5192,
+      "sha256": "adbcd49103f151d32046e17222b8eafc30777ad34bfa1699063f3f12d175b025"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/observer-objdump.txt": {
+      "bytes": 43537409,
+      "sha256": "8c325d2d18c12157b783e961f1ee978960574f17796cca04f68caab78a645cd9"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/observer-readelf.txt": {
+      "bytes": 1272750,
+      "sha256": "96231ec118146a93a7872b121f6122740e5fb1a65b5de42164aba53fca6e84f6"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/oci-observer-compiled.bpf": {
+      "bytes": 1408,
+      "sha256": "ebb9a2e8cb4cb12c6081533909629b9d25824f286589e895e3cbbf91f99744b6"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/oci-oracle-compiled.bpf": {
+      "bytes": 928,
+      "sha256": "40e75542bb3bb2e51d8cf55df41d58b1b52cf3ce7070f4c7602dfaff09cd2e46"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/oci-target-compiled.bpf": {
+      "bytes": 760,
+      "sha256": "78938a3bc5e9349b98b6698f705cde05673e7e8c1979396f7aa3223274a93f79"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/offline-controls.json": {
+      "bytes": 8432,
+      "sha256": "0f29eae824da5b5440c3935a39b4eacc471a823049042d34c44a78ee577d6677"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/offline-controls.log": {
+      "bytes": 264,
+      "sha256": "a8e301fdaefa78585f377ec4025ee82e1d7c9e3291c1de66a2cbe4974e9bf888"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/offline-tests.json": {
+      "bytes": 87369,
+      "sha256": "b88d7f34a8fbbd4de29b93e6614921f619ce667bd3539c5d126ff79d1c00dd2f"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/offline-tests.log": {
+      "bytes": 42598,
+      "sha256": "1aea9ab89cde3e1b3baf1a1d29d3ec49bd531f73ad46ca1c2a246088483b43ab"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/offline_controls.py": {
+      "bytes": 18335,
+      "sha256": "06f296f1e33a83a46a8920d970b30ec040b924379bec1d2b95e51158555f5e62"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/provenance.json": {
+      "bytes": 2500,
+      "sha256": "77fe4038b48b2c8fef1a228022fe6a8b857144191b04c36a655184cf4c93ea07"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/provenance.log": {
+      "bytes": 64,
+      "sha256": "a217cdae831f5a446d32df61bf950319e3e1e820af36633e343005fc95b644c3"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/retain_evidence.py": {
+      "bytes": 2685,
+      "sha256": "130127eb824d781c9736d7dff275bed3be6a6f101d2bb174e6684d2d5cf424b9"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/review.md": {
+      "bytes": 10510,
+      "sha256": "2b583d1f8c5c4fdd168eae86e13e115aff7aef41f7775c76f295e6567cc4a26f"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/seccomp.2.html.txt": {
+      "bytes": 53415,
+      "sha256": "95eca2f89204259e96055c099662dc27c4cf68818f082c35f3dc4d715bb150fa"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/target-objdump.txt": {
+      "bytes": 43639911,
+      "sha256": "b81f928ddfb850f04b1a27c84b85c17a6267521f23155d9bcbf1869210544321"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/target-readelf.txt": {
+      "bytes": 1280892,
+      "sha256": "f44a56cd15236bdc880e09158a6ff4e4d09e373da2521e213ecf82682a026835"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/test_x86_debug": {
+      "bytes": 26904,
+      "sha256": "f80d19f4fc072f94dfdef2483823b39259cfd9758e77707cc51d547fd0007f5b"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/test_x86_debug.log": {
+      "bytes": 60,
+      "sha256": "65f5d7c45e804d8f1282f068d2538019eb8bff5c020fbe02aa4c57cb780122fe"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/tracked-diff.patch": {
+      "bytes": 55712,
+      "sha256": "56d060208012f57f7818b762719151c4595a3d7935cf47b29f8971bf186dd1d6"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/verify_inventory.py": {
+      "bytes": 1392,
+      "sha256": "0c84fc01fc19ca636a4e3c1b7b3c120a7455969fa93f0624349111a708e23c90"
+    },
+    "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/write_review_json.py": {
+      "bytes": 8155,
+      "sha256": "532b6646cfc476d120bff407f61faffed07d29eea89b47b519eb7a8e6b634565"
+    }
+  },
+  "findings": [],
+  "kind": "c0_arch_03_x64_read_only_correctness_review",
+  "limits": [
+    "C0-ARCH-05 hardware breakpoint/kernel/LSM/backend/timing acceptance remains untested and unaccepted.",
+    "C0-ARCH-04 complete dual-runtime image set is outside scope; oracle Dockerfile intentionally remains ARM64-only.",
+    "No native actor or real collector/worker was executed. C probes substitute all ptrace requests with in-memory callbacks.",
+    "Supplied native builds were inspected and hash-joined, not independently rebuilt during this review.",
+    "Offline OCI compilation used local libseccomp 2.6.1, not a deployment-admitted OCI compiler.",
+    "ASan/shared UBSan could not link due to missing host sanitizer libraries. The independent helper passed UBSan trap instrumentation instead.",
+    "Linux v6.18 primary sources and seccomp(2) are references, not evidence of running-host capabilities.",
+    "Admission fixtures are synthetic; hashes/ELF header classification do not replace full interpreter/image/runtime admission."
+  ],
+  "next_step": "Continue implementation; keep image completion and separately owner-approved native acceptance behind their existing gates.",
+  "positive_patterns": [
+    "Exact full x64 effect decoding with explicit variable-width instruction boundaries.",
+    "Disable/change/reset/arm ordering with exact debug-state readback and fixed owned TID.",
+    "Architecture-bound context, image/profile and version-2 admission joins.",
+    "ARM64 OCI/BPF byte continuity and explicit unsigned syscall cutoff for x32/compat aliases."
+  ],
+  "remediation_suggestion_count": 0,
+  "repository": "/var/home/kfuller/Documents/Git_Projects/mifolyo",
+  "review_markdown_path": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/correctness/review.md",
+  "review_markdown_sha256": "2b583d1f8c5c4fdd168eae86e13e115aff7aef41f7775c76f295e6567cc4a26f",
+  "snapshot_path": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/snapshot",
+  "source_integrity": {
+    "all_22_declared_artifacts_unchanged": true,
+    "package_files": 51,
+    "repository_before_and_after_match": true,
+    "runner_files": 1,
+    "snapshot_before_and_after_match": true,
+    "tracked_diff_unchanged": true
+  },
+  "source_inventory_path": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/source-inventory.json",
+  "source_inventory_sha256": "7ed3b955be1fe4d2621a43896d1a3e4d49cf9edcf6e86a0c2dd567d105f14720",
+  "summary": "No actionable source/static-artifact correctness defect established. No native-runtime acceptance or execution/deployment authority.",
+  "verdict": "GO_FOR_CONTINUED_IMPLEMENTATION",
+  "version": 1
+}

@@ -1,0 +1,109 @@
+{
+  "arm64_byte_identical_outputs": [
+    "cases.h",
+    "target-filter.bpf",
+    "target_filter.h",
+    "observer-seccomp.json",
+    "target-seccomp.json",
+    "oracle-seccomp.json"
+  ],
+  "committed": false,
+  "independent_review": "pending",
+  "kind": "c0_x64_runtime_local_verification",
+  "m4_accepted": false,
+  "native_actors_executed": false,
+  "native_builds": {
+    "aarch64": {
+      "artifacts": {
+        "cases.h": "64591020572e8af5afae67856ba79e053afacaf41d08ba10a98f489558e383f4",
+        "observer": "a995ae45fff124d4949325700e8bbf04fd0bdc4fe2ed76e782ad236784f937a6",
+        "observer-seccomp.json": "abf581851c19631ba5125ac03443f4ad72c6e8fd7b92fa086218060e07b56bf2",
+        "oracle-seccomp.json": "f82e0ae5335e1393c402265c4a14a4e56ad8df27ab48eee70907745fef3b6835",
+        "target": "74f88a9a5af266f5a414abfca241a6162284c8c6da749c5cafed771e87049644",
+        "target-filter.bpf": "701824ff5f8ccafa359f711d2714b23c8a303789cd1987a3a85aba19a3667b93",
+        "target-manifest.json": "da627a29851deb9fa5196db1b10c3319d93fdb2d6ba95afd1ef9b7c2aa8baa65",
+        "target-seccomp.json": "6a1ffdf7326ae1370bd55cc2edb2bcfb49b2d65ce7090205576d3b6e9496ab3e",
+        "target_filter.h": "8a1c8f5941860b7acd92f3dc53952aa746fa9d1c57098b214a691fa8a6380b1d",
+        "target_manifest.h": "1aaf4cc1da879f924c69cbeef4523cf0da8e62c664bd1b1b93abacb09088e6bb",
+        "toolchain.json": "6f50da1a0f09718036aa11c5c191e42657ef97228fa07f9a3d09951b84ad2de5"
+      },
+      "build_record_sha256": "d7149a6cef748604d2745a24ff8d532ba650d35e95d647ed77225c4d1622e308"
+    },
+    "x86_64": {
+      "artifacts": {
+        "cases.h": "64591020572e8af5afae67856ba79e053afacaf41d08ba10a98f489558e383f4",
+        "observer": "a82b61b0d1000195087543dec812c42489c807013739555f32e2f8728874f77d",
+        "observer-seccomp.json": "68111f7b57683bfcf4e8e0dd99a93c4c040b6d3afa37ae4f7ee4180fda58a013",
+        "oracle-seccomp.json": "8397f4c4f904a40e43d17bc8552ccff4f53f3fc7da72922aa45cae46b1ad5f5b",
+        "target": "28e15e20192695839ae5ffe9491fd392fbaa77472edf6df6f5ce75dd3f0f6fa7",
+        "target-filter.bpf": "b080f5d5047014d30d7f9e40280b6dd89f71abc029fb75081a7a8b40e1f2b88b",
+        "target-manifest.json": "d3e44a6cd06249e5fa10a2fe0d3b1150906f57fe56477580bc152a8e13dfbf00",
+        "target-seccomp.json": "c05b23afcec906e98cfa7dada5b095c4a553cb7d7fc0745608cf0f69aa70ead9",
+        "target_filter.h": "bd83fc8f1018dfe0fb4129a87835e0b10a2cd827f61b1c6e619d990792a675b8",
+        "target_manifest.h": "1e04c2cd8569eb85f3ead22a6747c505dedd52f0162f97d3afc95a9d1489de77",
+        "toolchain.json": "96336154f765a6d8c89748b0b130f60723e6f9585258b848b64a021d6b4c14ad"
+      },
+      "build_record_sha256": "e24ed9a382cc4fcbf41bc4b425e229aaf62027886c6590c1d1d078e438aa4a3d"
+    }
+  },
+  "native_mock": {
+    "binary_sha256": "b4b9832a32ed810b992c999409fe58465237b1bc975a9d80f95aae8e757451aa",
+    "checks": 29,
+    "command": [
+      "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/test-x86-debug"
+    ],
+    "ptrace_simulated": true,
+    "status": "PASS",
+    "stdout": "PASS: 29 offline x86 debug-state controls; ptrace simulated\n"
+  },
+  "new_test_methods": 18,
+  "oracle_manifest_probes_sha256": "400038ec69910a7b6659c653eadfba93aece10e7397b0347de937a0397411c33",
+  "oracle_worker_source": "ddbe957a80cbe1a490c5536719dd080be0793d53ea511f1e72e430905e5c95ed",
+  "previous_test_ids_unchanged": 233,
+  "pushed": false,
+  "real_collector_executed": false,
+  "real_oracle_worker_executed": false,
+  "replacement_and_new_test_ids": [
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_admission_summary_refuses_mixed_architectures",
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_direct_x64_ssh_transport_still_requires_pinned_client",
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_unknown_abi_process_stream_refuses_before_spawning",
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_x64_deployment_generates_a_bound_private_bundle",
+    "test_architecture_contracts.ArchitectureContractTests.test_build_entrypoints_refuse_unknown_abi_before_writing_outputs",
+    "test_x64_runtime.DualArchitectureRuntimeTests.test_all_native_roles_admit_both_architectures_and_refuse_opposite_peer",
+    "test_x64_runtime.DualArchitectureRuntimeTests.test_oracle_selects_observed_native_abi_and_rejects_unknown_or_ilp32",
+    "test_x64_runtime.DualArchitectureRuntimeTests.test_signed_x64_context_binds_request_receipt_and_lease",
+    "test_x64_runtime.DualArchitectureRuntimeTests.test_x64_backend_and_benign_oracle_join_real_stream_protocol",
+    "test_x64_runtime.DualArchitectureRuntimeTests.test_x64_benign_stream_keeps_three_line_handshake_and_binding",
+    "test_x64_runtime.DualArchitectureRuntimeTests.test_x64_reader_requires_matching_elf_even_when_uname_matches",
+    "test_x64_runtime.DualArchitectureRuntimeTests.test_x64_resource_profiles_cannot_reuse_arm64_digests",
+    "test_x64_runtime.DualArchitectureRuntimeTests.test_x64_start_refuses_actual_arm64_image_before_transport",
+    "test_x64_runtime.X64BuildTests.test_every_effect_and_marker_byte_mutation_is_rejected",
+    "test_x64_runtime.X64BuildTests.test_oracle_manifest_binds_x64_interpreter_without_running_worker",
+    "test_x64_runtime.X64BuildTests.test_record_rejects_foreign_compiled_filter_before_toolchain_queries",
+    "test_x64_runtime.X64BuildTests.test_shifted_truncated_nonexec_and_aliased_markers_are_rejected",
+    "test_x64_runtime.X64BuildTests.test_variable_instruction_lengths_and_complete_effect_boundary",
+    "test_x64_runtime.X64BuildTests.test_x64_headers_and_manifest_bind_the_compiler_abi",
+    "test_x64_runtime.X64FilterTests.test_only_dr0_address_dr6_reset_and_dr7_local_execute_are_writable",
+    "test_x64_runtime.X64FilterTests.test_ptrace_requests_tid_high_bits_and_gp_write_denials_in_both_filters",
+    "test_x64_runtime.X64FilterTests.test_x32_compat_negative_and_foreign_syscalls_cannot_bypass_self_filter",
+    "test_x64_runtime.X64FilterTests.test_x64_loader_tls_and_chmod_are_narrow_and_roles_remain_confined"
+  ],
+  "runtime_acceptance": false,
+  "runtime_context_source": "1710b96326062a711ed549e1172440e53c4ef1b3a760a45524dbce10d110bb32",
+  "source_files": 51,
+  "source_inventory_sha256": "7ed3b955be1fe4d2621a43896d1a3e4d49cf9edcf6e86a0c2dd567d105f14720",
+  "status": "PASS_LOCAL_SOURCE_STATIC_ARTIFACT_CHECKS",
+  "superseded_x64_unimplemented_test_ids": [
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_admission_summary_cannot_promote_an_unsupported_architecture",
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_direct_ssh_transport_refuses_x64_before_client_or_process_io",
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_known_x64_deployment_is_metadata_only_until_the_port",
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_x64_process_stream_refuses_before_spawning",
+    "test_architecture_contracts.ArchitectureContractTests.test_build_entrypoints_refuse_x64_before_writing_outputs"
+  ],
+  "tests": {
+    "022": "b88d7f34a8fbbd4de29b93e6614921f619ce667bd3539c5d126ff79d1c00dd2f",
+    "077": "b88d7f34a8fbbd4de29b93e6614921f619ce667bd3539c5d126ff79d1c00dd2f"
+  },
+  "tests_under_each_umask": 256,
+  "version": 1
+}

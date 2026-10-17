@@ -1,0 +1,54 @@
+{
+  "hardlink_targets": {
+    "aarch64": {
+      "observer": {},
+      "oracle": {
+        "/usr/bin/perl5.36.0": {
+          "resolved": "/usr/bin/perl",
+          "target": "/usr/bin/perl"
+        },
+        "/usr/bin/uncompress": {
+          "resolved": "/usr/bin/gunzip",
+          "target": "/usr/bin/gunzip"
+        }
+      },
+      "target": {}
+    },
+    "x86_64": {
+      "observer": {},
+      "oracle": {
+        "/usr/bin/perl5.36.0": {
+          "resolved": "/usr/bin/perl",
+          "target": "/usr/bin/perl"
+        },
+        "/usr/bin/uncompress": {
+          "resolved": "/usr/bin/gunzip",
+          "target": "/usr/bin/gunzip"
+        }
+      },
+      "target": {}
+    }
+  },
+  "in_memory_module_sha256": "1025b56d335db5395b47019a1310c26689786142d7d0c80d2c0719db3a3ee2e7",
+  "pass": true,
+  "positive_hardlink_and_symlink_cases_pass": true,
+  "refusals": {
+    "C0-IMG-SEC-04": "IMAGE_HARDLINK_LINK_TARGET",
+    "C0-IMG-SEC-05-conflict": "IMAGE_ROOT_CHANGED",
+    "C0-IMG-SEC-05-duplicate": "IMAGE_ROOT_DUPLICATE"
+  },
+  "repository_patch_applied": false,
+  "retained_content_records_unchanged": {
+    "aarch64": [
+      "observer",
+      "oracle",
+      "target"
+    ],
+    "x86_64": [
+      "observer",
+      "oracle",
+      "target"
+    ]
+  },
+  "root_alias_with_and_without_observation_pass": true
+}

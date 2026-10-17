@@ -1,0 +1,49 @@
+{
+  "status": "PASS_RETAINED_ARTIFACTS",
+  "content_records_identical": 6,
+  "construction_inputs_unchanged": 21,
+  "delta_from_go": {
+    "tests/crawl-jobs-v2-observer/image_artifacts.py": {
+      "before": "106a355ce8e9da11c0baad5ff2d37c0281ecf8b2bd49c90bf2ef5fc521132695",
+      "after": "d13b720e62727d27a3d37c7cf2f2bc6726baf14d5d01025c6f0dd0437da5e64b"
+    },
+    "tests/crawl-jobs-v2-observer/test_image_review.py": {
+      "before": "1a7f078566072bd3347ed74a5ee7caec05a0a46ca5351e8341c844f2e66bf66a",
+      "after": "18b01b5f504e1359469e8d239564aa21ddb5e692d00c0c7b51acbaee807fec2b"
+    }
+  },
+  "hardlinks_scanned": {
+    "aarch64": {
+      "observer": 0,
+      "oracle": 2,
+      "target": 0
+    },
+    "x86_64": {
+      "observer": 0,
+      "oracle": 2,
+      "target": 0
+    }
+  },
+  "tests": [
+    {
+      "umask": "022",
+      "count": 287,
+      "retained_ids": 286,
+      "new_ids": [
+        "test_image_review.ImageReviewTests.test_unused_hardlinks_are_checked_after_the_complete_archive_map"
+      ],
+      "report_sha256": "b9eebe803a46be33e0ea89e6d9c332fca5e7a6abede9eb5a9512ce9834023c8f",
+      "log_sha256": "3b49516cbdd6304ebdc286d57d197c2285e27f5f54a0fef9899ce2fbcee5f056"
+    },
+    {
+      "umask": "077",
+      "count": 287,
+      "retained_ids": 286,
+      "new_ids": [
+        "test_image_review.ImageReviewTests.test_unused_hardlinks_are_checked_after_the_complete_archive_map"
+      ],
+      "report_sha256": "b9eebe803a46be33e0ea89e6d9c332fca5e7a6abede9eb5a9512ce9834023c8f",
+      "log_sha256": "4328611a033bda4a7dc49918e564ec22cf0e518c750868ad34f22310b5e87f6d"
+    }
+  ]
+}

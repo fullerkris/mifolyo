@@ -1,0 +1,17 @@
+{
+  "phase": "after",
+  "source_pairs": 58,
+  "protected_files": 1253,
+  "protected_roots": {
+    "/tmp/opencode/c0-images-aarch64-pass5-2026-10-17": 137,
+    "/tmp/opencode/c0-images-aarch64-remediation-2026-10-17": 146,
+    "/tmp/opencode/c0-images-x86_64-pass5-2026-10-17": 137,
+    "/tmp/opencode/c0-images-x86_64-remediation-2026-10-17": 146,
+    "/tmp/opencode/c0-runtime-images-2026-10-17": 184,
+    "/tmp/opencode/c0-runtime-images-remediation-2026-10-17": 173,
+    "/var/home/kfuller/Documents/Git_Projects/mifolyo/out/c0-runtime-images-2026-10-17/14ac223d10a72": 104,
+    "/tmp/opencode/c0-runtime-images-final-2026-10-17": 226
+  },
+  "match": true,
+  "head": "7ef2041e2844aa34bec54da61c2e8469c1382bac"
+}

@@ -1,0 +1,77 @@
+name: C0 Runtime Images
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "tests/crawl-jobs-v2-observer/**"
+      - "scripts/prepare-crawl-jobs-v2-observer-images.py"
+      - "scripts/test-crawl-jobs-v2-observer.py"
+      - ".github/workflows/c0-runtime-images.yml"
+  push:
+    branches: ["main"]
+    paths:
+      - "tests/crawl-jobs-v2-observer/**"
+      - "scripts/prepare-crawl-jobs-v2-observer-images.py"
+      - "scripts/test-crawl-jobs-v2-observer.py"
+      - ".github/workflows/c0-runtime-images.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: c0-runtime-images-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  images:
+    name: C0 runtime images (${{ matrix.architecture }})
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - architecture: aarch64
+            runner: ubuntu-24.04-arm
+          - architecture: x86_64
+            runner: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.13"
+      - name: Run source-bound offline controls
+        run: python -B -W error::ResourceWarning scripts/test-crawl-jobs-v2-observer.py --report "${RUNNER_TEMP}/c0-offline-tests.json"
+      - name: Verify rootless image builder
+        run: |
+          podman --remote=false version
+          test "$(podman --remote=false info --format '{{.Host.Security.Rootless}}')" = true
+      - name: Run simulated x64 debug-register controls
+        if: matrix.architecture == 'x86_64'
+        run: |
+          cc -O2 -Wall -Wextra -Werror -std=c11 tests/crawl-jobs-v2-observer/native/test_x86_debug.c -o "${RUNNER_TEMP}/c0-debug-probe"
+          "${RUNNER_TEMP}/c0-debug-probe" > "${RUNNER_TEMP}/c0-debug-probe.log"
+      - name: Build and verify stopped image contents
+        run: >-
+          python -B scripts/prepare-crawl-jobs-v2-observer-images.py
+          --architecture '${{ matrix.architecture }}' --engine podman
+          --output "${RUNNER_TEMP}/c0-images"
+      - name: Retain image evidence and portable images
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: c0-runtime-images-${{ matrix.architecture }}
+          if-no-files-found: error
+          compression-level: 6
+          path: |
+            ${{ runner.temp }}/c0-offline-tests.json
+            ${{ runner.temp }}/c0-debug-probe.log
+            ${{ runner.temp }}/c0-images/image-set.json
+            ${{ runner.temp }}/c0-images/*-content.json
+            ${{ runner.temp }}/c0-images/*-inspect.json
+            ${{ runner.temp }}/c0-images/*-image.tar
+            ${{ runner.temp }}/c0-images/command-*.log
+            ${{ runner.temp }}/c0-images/native/*
+            ${{ runner.temp }}/c0-images/oracle/*

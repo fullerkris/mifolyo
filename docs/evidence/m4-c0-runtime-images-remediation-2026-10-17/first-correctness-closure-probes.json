@@ -1,0 +1,1122 @@
+{
+  "status": "COMPLETED",
+  "root_metadata_for_headerless_fixtures": {
+    "mode": 493,
+    "uid": 0,
+    "gid": 0
+  },
+  "results": [
+    {
+      "accepted": false,
+      "exception": "Invalid",
+      "reason": "BUILD_OUTPUT_SCOPE",
+      "id": "001-docker-prepare-refused",
+      "finding": "C0ARCH04-COR-001",
+      "category": "closure",
+      "expected_accept": false,
+      "matches_expectation": true
+    },
+    {
+      "accepted": false,
+      "exception": "Invalid",
+      "reason": "BUILD_ENGINE",
+      "id": "001-docker-builder-refused",
+      "finding": "C0ARCH04-COR-001",
+      "category": "closure",
+      "expected_accept": false,
+      "matches_expectation": true
+    },
+    {
+      "accepted": false,
+      "exception": "Invalid",
+      "reason": "BUILD_ROOTLESS_REQUIRED",
+      "id": "001-rootful-preflight-refused",
+      "finding": "C0ARCH04-COR-001",
+      "category": "closure",
+      "expected_accept": false,
+      "matches_expectation": true
+    },
+    {
+      "id": "001-podman-flags-aarch64-target",
+      "finding": "C0ARCH04-COR-001",
+      "category": "positive",
+      "matches_expectation": true,
+      "fake_command": [
+        "build",
+        "--no-cache",
+        "--platform",
+        "linux/arm64",
+        "--build-arg",
+        "C0_ARCHITECTURE=aarch64",
+        "--network",
+        "none",
+        "--pull=never",
+        "--http-proxy=false",
+        "--layers=false",
+        "--force-rm",
+        "--identity-label=false",
+        "--ignorefile",
+        "/tmp/opencode/c0-runtime-images-remediation-2026-10-17/snapshot/tests/crawl-jobs-v2-observer/.dockerignore",
+        "--unsetenv",
+        "PATH",
+        "--target",
+        "target",
+        "--file",
+        "/tmp/opencode/c0-runtime-images-remediation-2026-10-17/snapshot/tests/crawl-jobs-v2-observer/Dockerfile",
+        "--iidfile",
+        "/tmp/opencode/c0-runtime-images-remediation-2026-10-17/correctness/tmp/tmpe74as8em/aarch64target.iid",
+        "/tmp/opencode/c0-runtime-images-remediation-2026-10-17/snapshot/tests/crawl-jobs-v2-observer"
+      ]
+    },
+    {
+      "id": "001-podman-flags-aarch64-observer",
+      "finding": "C0ARCH04-COR-001",
+      "category": "positive",
+      "matches_expectation": true,
+      "fake_command": [
+        "build",
+        "--no-cache",
+        "--platform",
+        "linux/arm64",
+        "--build-arg",
+        "C0_ARCHITECTURE=aarch64",
+        "--network",
+        "none",
+        "--pull=never",
+        "--http-proxy=false",
+        "--layers=false",
+        "--force-rm",
+        "--identity-label=false",
+        "--ignorefile",
+        "/tmp/opencode/c0-runtime-images-remediation-2026-10-17/snapshot/tests/crawl-jobs-v2-observer/.dockerignore",
+        "--unsetenv",
+        "PATH",
+        "--target",
+        "observer",
+        "--file",
+        "/tmp/opencode/c0-runtime-images-remediation-2026-10-17/snapshot/tests/crawl-jobs-v2-observer/Dockerfile",
+        "--iidfile",
+        "/tmp/opencode/c0-runtime-images-remediation-2026-10-17/correctness/tmp/tmpe74as8em/aarch64observer.iid",
+        "/tmp/opencode/c0-runtime-images-remediation-2026-10-17/snapshot/tests/crawl-jobs-v2-observer"
+      ]
+    },
+    {
+      "id": "001-podman-flags-aarch64-oracle",
+      "finding": "C0ARCH04-COR-001",
+      "category": "positive",
+      "matches_expectation": true,
+      "fake_command": [
+        "build",
+        "--no-cache",
+        "--platform",
+        "linux/arm64",
+        "--build-arg",
+        "C0_ARCHITECTURE=aarch64",
+        "--network",
+        "none",
+        "--pull=never",
+        "--http-proxy=false",
+        "--layers=false",
+        "--force-rm",
+        "--identity-label=false",
+        "--ignorefile",
+        "/tmp/opencode/c0-runtime-images-remediation-2026-10-17/snapshot/tests/crawl-jobs-v2-observer/Dockerfile.oracle.dockerignore",
+        "--target",
+        "oracle",
+        "--file",
+        "/tmp/opencode/c0-runtime-images-remediation-2026-10-17/snapshot/tests/crawl-jobs-v2-observer/Dockerfile.oracle",
+        "--iidfile",
+        "/tmp/opencode/c0-runtime-images-remediation-2026-10-17/correctness/tmp/tmpe74as8em/aarch64oracle.iid",
+        "/tmp/opencode/c0-runtime-images-remediation-2026-10-17/snapshot/tests/crawl-jobs-v2-observer"
+      ]
+    },
+    {
+      "id": "001-podman-flags-x86_64-target",
+      "finding": "C0ARCH04-COR-001",
+      "category": "positive",
+      "matches_expectation": true,
+      "fake_command": [
+        "build",
+        "--no-cache",
+        "--platform",
+        "linux/amd64",
+        "--build-arg",
+        "C0_ARCHITECTURE=x86_64",
+        "--network",
+        "none",
+        "--pull=never",
+        "--http-proxy=false",
+        "--layers=false",
+        "--force-rm",
+        "--identity-label=false",
+        "--ignorefile",
+        "/tmp/opencode/c0-runtime-images-remediation-2026-10-17/snapshot/tests/crawl-jobs-v2-observer/.dockerignore",
+        "--unsetenv",
+        "PATH",
+        "--target",
+        "target",
+        "--file",
+        "/tmp/opencode/c0-runtime-images-remediation-2026-10-17/snapshot/tests/crawl-jobs-v2-observer/Dockerfile",
+        "--iidfile",
+        "/tmp/opencode/c0-runtime-images-remediation-2026-10-17/correctness/tmp/tmpe74as8em/x86_64target.iid",
+        "/tmp/opencode/c0-runtime-images-remediation-2026-10-17/snapshot/tests/crawl-jobs-v2-observer"
+      ]
+    },
+    {
+      "id": "001-podman-flags-x86_64-observer",
+      "finding": "C0ARCH04-COR-001",
+      "category": "positive",
+      "matches_expectation": true,
+      "fake_command": [
+        "build",
+        "--no-cache",
+        "--platform",
+        "linux/amd64",
+        "--build-arg",
+        "C0_ARCHITECTURE=x86_64",
+        "--network",
+        "none",
+        "--pull=never",
+        "--http-proxy=false",
+        "--layers=false",
+        "--force-rm",
+        "--identity-label=false",
+        "--ignorefile",
+        "/tmp/opencode/c0-runtime-images-remediation-2026-10-17/snapshot/tests/crawl-jobs-v2-observer/.dockerignore",
+        "--unsetenv",
+        "PATH",
+        "--target",
+        "observer",
+        "--file",
+        "/tmp/opencode/c0-runtime-images-remediation-2026-10-17/snapshot/tests/crawl-jobs-v2-observer/Dockerfile",
+        "--iidfile",
+        "/tmp/opencode/c0-runtime-images-remediation-2026-10-17/correctness/tmp/tmpe74as8em/x86_64observer.iid",
+        "/tmp/opencode/c0-runtime-images-remediation-2026-10-17/snapshot/tests/crawl-jobs-v2-observer"
+      ]
+    },
+    {
+      "id": "001-podman-flags-x86_64-oracle",
+      "finding": "C0ARCH04-COR-001",
+      "category": "positive",
+      "matches_expectation": true,
+      "fake_command": [
+        "build",
+        "--no-cache",
+        "--platform",
+        "linux/amd64",
+        "--build-arg",
+        "C0_ARCHITECTURE=x86_64",
+        "--network",
+        "none",
+        "--pull=never",
+        "--http-proxy=false",
+        "--layers=false",
+        "--force-rm",
+        "--identity-label=false",
+        "--ignorefile",
+        "/tmp/opencode/c0-runtime-images-remediation-2026-10-17/snapshot/tests/crawl-jobs-v2-observer/Dockerfile.oracle.dockerignore",
+        "--target",
+        "oracle",
+        "--file",
+        "/tmp/opencode/c0-runtime-images-remediation-2026-10-17/snapshot/tests/crawl-jobs-v2-observer/Dockerfile.oracle",
+        "--iidfile",
+        "/tmp/opencode/c0-runtime-images-remediation-2026-10-17/correctness/tmp/tmpe74as8em/x86_64oracle.iid",
+        "/tmp/opencode/c0-runtime-images-remediation-2026-10-17/snapshot/tests/crawl-jobs-v2-observer"
+      ]
+    },
+    {
+      "accepted": true,
+      "value": {
+        "id": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "architecture": "x86_64",
+        "role": "target",
+        "environment_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "config_sha256": "e09baafb92c98df7fbeb5126fd056dfc3fec0bc10bd7919e06d52e7888fee5be",
+        "execution_authorized": false
+      },
+      "id": "001-empty-env-positive",
+      "finding": "C0ARCH04-COR-001",
+      "category": "closure",
+      "expected_accept": true,
+      "matches_expectation": true
+    },
+    {
+      "accepted": false,
+      "exception": "Invalid",
+      "reason": "IMAGE_ENVIRONMENT",
+      "id": "001-buildkit-path-still-forbidden",
+      "finding": "C0ARCH04-COR-001",
+      "category": "closure",
+      "expected_accept": false,
+      "matches_expectation": true
+    },
+    {
+      "accepted": true,
+      "id": "002-original-x64-test-with-arm-module",
+      "finding": "C0ARCH04-COR-002",
+      "category": "closure",
+      "expected_accept": true,
+      "matches_expectation": true
+    },
+    {
+      "accepted": true,
+      "id": "002-manifest-aarch64-extension-aarch64",
+      "finding": "C0ARCH04-COR-002",
+      "category": "closure",
+      "expected_accept": true,
+      "matches_expectation": true
+    },
+    {
+      "accepted": false,
+      "exception": "Invalid",
+      "reason": "ORACLE_BUILD_ARCHITECTURE",
+      "id": "002-manifest-aarch64-extension-x86_64",
+      "finding": "C0ARCH04-COR-002",
+      "category": "closure",
+      "expected_accept": false,
+      "matches_expectation": true
+    },
+    {
+      "accepted": true,
+      "id": "002-manifest-x86_64-extension-x86_64",
+      "finding": "C0ARCH04-COR-002",
+      "category": "closure",
+      "expected_accept": true,
+      "matches_expectation": true
+    },
+    {
+      "accepted": false,
+      "exception": "Invalid",
+      "reason": "ORACLE_BUILD_ARCHITECTURE",
+      "id": "002-manifest-x86_64-extension-aarch64",
+      "finding": "C0ARCH04-COR-002",
+      "category": "closure",
+      "expected_accept": false,
+      "matches_expectation": true
+    },
+    {
+      "accepted": true,
+      "value": {
+        "format": "docker-archive",
+        "sha256": "68cfac91bdf944131340e8318d38cce0ae6f28856a72f99cbd5cf3c7ea7eec79",
+        "bytes": 20480,
+        "config_id": "sha256:37620d3dc2ba8687c8673db453b85928ee167878d2832dfe3a547b4831988ec6",
+        "layers": [
+          "sha256:8a71f177143b3a2d2fd8a4ae0e01a6fad7327377a9e09251eefffeba9e5bab4d"
+        ],
+        "architecture": "x86_64"
+      },
+      "id": "003-original-positive-archive",
+      "finding": "C0ARCH04-COR-003",
+      "category": "closure",
+      "expected_accept": true,
+      "matches_expectation": true
+    },
+    {
+      "accepted": false,
+      "exception": "Invalid",
+      "reason": "IMAGE_SAVE_DUPLICATE_PATH",
+      "id": "003-original-normalized-config-duplicate",
+      "finding": "C0ARCH04-COR-003",
+      "category": "closure",
+      "expected_accept": false,
+      "matches_expectation": true
+    },
+    {
+      "accepted": false,
+      "exception": "Invalid",
+      "reason": "IMAGE_SAVE_DUPLICATE_PATH",
+      "id": "003-original-normalized-layer-duplicate",
+      "finding": "C0ARCH04-COR-003",
+      "category": "closure",
+      "expected_accept": false,
+      "matches_expectation": true
+    },
+    {
+      "accepted": true,
+      "value": {
+        "version": 2,
+        "architecture": "x86_64",
+        "role": "target",
+        "declared_files": {
+          "/target": "1547333e8593321492c4d461a8aaeef1b3c90d5b8e90233cbf77d5b9247db34d"
+        },
+        "root_directory": {
+          "mode": 493,
+          "uid": 0,
+          "gid": 0
+        },
+        "payload_sha256": "eba00ddc18633d4d9ade01dddc59b807b1c29abb1496a30c72fd9f87d75117cf",
+        "archive_members": 1,
+        "regular_file_bytes": 4096,
+        "runtime_acceptance": false,
+        "execution_authorized": false
+      },
+      "id": "004-original-target-0o755",
+      "finding": "C0ARCH04-COR-004",
+      "category": "closure",
+      "expected_accept": true,
+      "matches_expectation": true
+    },
+    {
+      "accepted": false,
+      "exception": "Invalid",
+      "reason": "IMAGE_FILE_IDENTITY",
+      "id": "004-original-target-0o700",
+      "finding": "C0ARCH04-COR-004",
+      "category": "closure",
+      "expected_accept": false,
+      "matches_expectation": true
+    },
+    {
+      "accepted": false,
+      "exception": "Invalid",
+      "reason": "IMAGE_FILE_IDENTITY",
+      "id": "004-original-target-0o750",
+      "finding": "C0ARCH04-COR-004",
+      "category": "closure",
+      "expected_accept": false,
+      "matches_expectation": true
+    },
+    {
+      "accepted": false,
+      "exception": "Invalid",
+      "reason": "IMAGE_FILE_IDENTITY",
+      "id": "004-original-target-0o600",
+      "finding": "C0ARCH04-COR-004",
+      "category": "closure",
+      "expected_accept": false,
+      "matches_expectation": true
+    },
+    {
+      "accepted": false,
+      "exception": "Invalid",
+      "reason": "IMAGE_FILE_EXECUTABLE",
+      "id": "004-target-other-execute-required",
+      "finding": "C0ARCH04-COR-004",
+      "category": "closure",
+      "expected_accept": false,
+      "matches_expectation": true
+    },
+    {
+      "accepted": true,
+      "value": {
+        "version": 2,
+        "architecture": "x86_64",
+        "role": "observer",
+        "declared_files": {
+          "/observer": "1547333e8593321492c4d461a8aaeef1b3c90d5b8e90233cbf77d5b9247db34d"
+        },
+        "root_directory": {
+          "mode": 493,
+          "uid": 0,
+          "gid": 0
+        },
+        "payload_sha256": "53921bb3f046f2bee4627520b40e6014ed62f3fa17cae25ebba8d0463cca8f97",
+        "archive_members": 1,
+        "regular_file_bytes": 4096,
+        "runtime_acceptance": false,
+        "execution_authorized": false
+      },
+      "id": "004-original-observer-0o755",
+      "finding": "C0ARCH04-COR-004",
+      "category": "closure",
+      "expected_accept": true,
+      "matches_expectation": true
+    },
+    {
+      "accepted": false,
+      "exception": "Invalid",
+      "reason": "IMAGE_FILE_IDENTITY",
+      "id": "004-original-observer-0o700",
+      "finding": "C0ARCH04-COR-004",
+      "category": "closure",
+      "expected_accept": false,
+      "matches_expectation": true
+    },
+    {
+      "accepted": false,
+      "exception": "Invalid",
+      "reason": "IMAGE_FILE_IDENTITY",
+      "id": "004-original-observer-0o750",
+      "finding": "C0ARCH04-COR-004",
+      "category": "closure",
+      "expected_accept": false,
+      "matches_expectation": true
+    },
+    {
+      "accepted": false,
+      "exception": "Invalid",
+      "reason": "IMAGE_FILE_IDENTITY",
+      "id": "004-original-observer-0o600",
+      "finding": "C0ARCH04-COR-004",
+      "category": "closure",
+      "expected_accept": false,
+      "matches_expectation": true
+    },
+    {
+      "accepted": false,
+      "exception": "Invalid",
+      "reason": "IMAGE_FILE_EXECUTABLE",
+      "id": "004-observer-other-execute-required",
+      "finding": "C0ARCH04-COR-004",
+      "category": "closure",
+      "expected_accept": false,
+      "matches_expectation": true
+    },
+    {
+      "accepted": true,
+      "value": {
+        "version": 2,
+        "architecture": "x86_64",
+        "role": "oracle",
+        "declared_files": {
+          "/oracle/build_oracle.py": "7f45e9fc8006224745c4bc7587dd0e7aba01e2cbb80c94b76c12477d940260c4",
+          "/oracle/contracts.py": "cc346694d955371a6e2860eb26ea2e16ce3520143b7fcf27a3c041cf83f43d89",
+          "/oracle/linux_observation.py": "130d7d9037c83d045a1983293f6b69d854390ee3df88c733b54b8df7e1cfc85b",
+          "/oracle/oracle.py": "31bc88ffc61a03832bac35254e86481c84547551134ea588d3507efa8645f33d",
+          "/oracle/oracle_protocol.py": "749be30766659a5a1ccbdf3377d3c3e8645c5de3d3f018cf017eeb26f42200c6",
+          "/oracle/oracle_worker.py": "2c7232d92b8ba198f145a6e08390924c1bb8255e5e83b049ba5d9b53a7ecffc1",
+          "/oracle/runtime_admission.py": "d4b8f08c928775eb05e303c1fbb51b6aee35b9104fe37edea5940d6481183025",
+          "/oracle/worker.py": "8e52d76ee5091c34214f125450a2d34db2e90c9440e6b4bc9dc50d69dfe96567",
+          "/usr/local/bin/python3": "1547333e8593321492c4d461a8aaeef1b3c90d5b8e90233cbf77d5b9247db34d",
+          "/usr/local/lib/fixture.so": "1547333e8593321492c4d461a8aaeef1b3c90d5b8e90233cbf77d5b9247db34d"
+        },
+        "root_directory": {
+          "mode": 493,
+          "uid": 0,
+          "gid": 0
+        },
+        "payload_sha256": "bdb1f49177145dc2e88bed7c2a5f8e86ef14928a0f94d45d098f28af5dcac37d",
+        "archive_members": 15,
+        "regular_file_bytes": 8415,
+        "runtime_acceptance": false,
+        "execution_authorized": false
+      },
+      "id": "004-oracle-positive-with-observed-root",
+      "finding": "C0ARCH04-COR-004",
+      "category": "closure",
+      "expected_accept": true,
+      "matches_expectation": true
+    },
+    {
+      "accepted": false,
+      "exception": "Invalid",
+      "reason": "IMAGE_FILE_IDENTITY",
+      "id": "004-original-oracle/worker.py",
+      "finding": "C0ARCH04-COR-004",
+      "category": "closure",
+      "expected_accept": false,
+      "matches_expectation": true
+    },
+    {
+      "accepted": false,
+      "exception": "Invalid",
+      "reason": "IMAGE_DIRECTORY_ACCESS",
+      "id": "004-original-oracle",
+      "finding": "C0ARCH04-COR-004",
+      "category": "closure",
+      "expected_accept": false,
+      "matches_expectation": true
+    },
+    {
+      "accepted": false,
+      "exception": "Invalid",
+      "reason": "IMAGE_FILE_IDENTITY",
+      "id": "004-original-usr/local/lib/fixture.so",
+      "finding": "C0ARCH04-COR-004",
+      "category": "closure",
+      "expected_accept": false,
+      "matches_expectation": true
+    },
+    {
+      "accepted": true,
+      "value": {
+        "version": 2,
+        "architecture": "x86_64",
+        "role": "target",
+        "declared_files": {
+          "/target": "1547333e8593321492c4d461a8aaeef1b3c90d5b8e90233cbf77d5b9247db34d"
+        },
+        "root_directory": {
+          "mode": 365,
+          "uid": 0,
+          "gid": 0
+        },
+        "payload_sha256": "eba00ddc18633d4d9ade01dddc59b807b1c29abb1496a30c72fd9f87d75117cf",
+        "archive_members": 1,
+        "regular_file_bytes": 4096,
+        "runtime_acceptance": false,
+        "execution_authorized": false
+      },
+      "id": "004-observed-root-0o555",
+      "finding": "C0ARCH04-COR-004",
+      "category": "closure",
+      "expected_accept": true,
+      "matches_expectation": true
+    },
+    {
+      "accepted": true,
+      "value": {
+        "version": 2,
+        "architecture": "x86_64",
+        "role": "target",
+        "declared_files": {
+          "/target": "1547333e8593321492c4d461a8aaeef1b3c90d5b8e90233cbf77d5b9247db34d"
+        },
+        "root_directory": {
+          "mode": 493,
+          "uid": 0,
+          "gid": 0
+        },
+        "payload_sha256": "eba00ddc18633d4d9ade01dddc59b807b1c29abb1496a30c72fd9f87d75117cf",
+        "archive_members": 1,
+        "regular_file_bytes": 4096,
+        "runtime_acceptance": false,
+        "execution_authorized": false
+      },
+      "id": "004-observed-root-0o755",
+      "finding": "C0ARCH04-COR-004",
+      "category": "closure",
+      "expected_accept": true,
+      "matches_expectation": true
+    },
+    {
+      "accepted": false,
+      "exception": "Invalid",
+      "reason": "IMAGE_DIRECTORY_ACCESS",
+      "id": "004-observed-root-0o700",
+      "finding": "C0ARCH04-COR-004",
+      "category": "closure",
+      "expected_accept": false,
+      "matches_expectation": true
+    },
+    {
+      "accepted": true,
+      "value": {
+        "version": 2,
+        "architecture": "x86_64",
+        "role": "oracle",
+        "declared_files": {
+          "/oracle/build_oracle.py": "7f45e9fc8006224745c4bc7587dd0e7aba01e2cbb80c94b76c12477d940260c4",
+          "/oracle/contracts.py": "cc346694d955371a6e2860eb26ea2e16ce3520143b7fcf27a3c041cf83f43d89",
+          "/oracle/linux_observation.py": "130d7d9037c83d045a1983293f6b69d854390ee3df88c733b54b8df7e1cfc85b",
+          "/oracle/oracle.py": "31bc88ffc61a03832bac35254e86481c84547551134ea588d3507efa8645f33d",
+          "/oracle/oracle_protocol.py": "749be30766659a5a1ccbdf3377d3c3e8645c5de3d3f018cf017eeb26f42200c6",
+          "/oracle/oracle_worker.py": "2c7232d92b8ba198f145a6e08390924c1bb8255e5e83b049ba5d9b53a7ecffc1",
+          "/oracle/runtime_admission.py": "d4b8f08c928775eb05e303c1fbb51b6aee35b9104fe37edea5940d6481183025",
+          "/oracle/worker.py": "8e52d76ee5091c34214f125450a2d34db2e90c9440e6b4bc9dc50d69dfe96567",
+          "/usr/local/bin/python3": "bd3fa24382d433d78d47754f1b12a5e235ca9f6b0ec46f410886147da800037d",
+          "/usr/local/lib/fixture.so": "1547333e8593321492c4d461a8aaeef1b3c90d5b8e90233cbf77d5b9247db34d"
+        },
+        "root_directory": {
+          "mode": 493,
+          "uid": 0,
+          "gid": 0
+        },
+        "payload_sha256": "883aa8b9598fd9fbb68ffa3972fc75c5adff765850cc8c1e9a455c0303fceda4",
+        "archive_members": 16,
+        "regular_file_bytes": 12511,
+        "runtime_acceptance": false,
+        "execution_authorized": false
+      },
+      "id": "004-pt-interp-mode-0o755",
+      "finding": "C0ARCH04-COR-004",
+      "category": "adjacent-permission-control",
+      "expected_accept": true,
+      "matches_expectation": true,
+      "details": {
+        "loader_mode": "0o755",
+        "root_metadata": {
+          "mode": 493,
+          "uid": 0,
+          "gid": 0
+        }
+      }
+    },
+    {
+      "accepted": true,
+      "value": {
+        "version": 2,
+        "architecture": "x86_64",
+        "role": "oracle",
+        "declared_files": {
+          "/oracle/build_oracle.py": "7f45e9fc8006224745c4bc7587dd0e7aba01e2cbb80c94b76c12477d940260c4",
+          "/oracle/contracts.py": "cc346694d955371a6e2860eb26ea2e16ce3520143b7fcf27a3c041cf83f43d89",
+          "/oracle/linux_observation.py": "130d7d9037c83d045a1983293f6b69d854390ee3df88c733b54b8df7e1cfc85b",
+          "/oracle/oracle.py": "31bc88ffc61a03832bac35254e86481c84547551134ea588d3507efa8645f33d",
+          "/oracle/oracle_protocol.py": "749be30766659a5a1ccbdf3377d3c3e8645c5de3d3f018cf017eeb26f42200c6",
+          "/oracle/oracle_worker.py": "2c7232d92b8ba198f145a6e08390924c1bb8255e5e83b049ba5d9b53a7ecffc1",
+          "/oracle/runtime_admission.py": "d4b8f08c928775eb05e303c1fbb51b6aee35b9104fe37edea5940d6481183025",
+          "/oracle/worker.py": "8e52d76ee5091c34214f125450a2d34db2e90c9440e6b4bc9dc50d69dfe96567",
+          "/usr/local/bin/python3": "bd3fa24382d433d78d47754f1b12a5e235ca9f6b0ec46f410886147da800037d",
+          "/usr/local/lib/fixture.so": "1547333e8593321492c4d461a8aaeef1b3c90d5b8e90233cbf77d5b9247db34d"
+        },
+        "root_directory": {
+          "mode": 493,
+          "uid": 0,
+          "gid": 0
+        },
+        "payload_sha256": "883aa8b9598fd9fbb68ffa3972fc75c5adff765850cc8c1e9a455c0303fceda4",
+        "archive_members": 16,
+        "regular_file_bytes": 12511,
+        "runtime_acceptance": false,
+        "execution_authorized": false
+      },
+      "id": "004-pt-interp-mode-0o644",
+      "finding": "C0ARCH04-COR-004",
+      "category": "adjacent-permission-control",
+      "expected_accept": false,
+      "matches_expectation": false,
+      "details": {
+        "loader_mode": "0o644",
+        "root_metadata": {
+          "mode": 493,
+          "uid": 0,
+          "gid": 0
+        }
+      }
+    },
+    {
+      "accepted": true,
+      "value": {
+        "/app": {
+          "sha256": "b69478f476ee95b6d541a273dbbb31a3ee6bf864d3303a593bd5ab65969149f5",
+          "bytes": 4096,
+          "machine": 62,
+          "type": 3,
+          "interpreter": null,
+          "needed": [
+            "libc0fixtureonly.so"
+          ],
+          "search_paths": [
+            "/alias"
+          ],
+          "rpath": [],
+          "runpath": [
+            "/alias"
+          ],
+          "dependencies": {
+            "libc0fixtureonly.so": "/real/libc0fixtureonly.so"
+          },
+          "dependency_paths": {
+            "libc0fixtureonly.so": "/alias/libc0fixtureonly.so"
+          },
+          "unresolved_dependencies": [],
+          "required_dependency_closure": true
+        },
+        "/real/libc0fixtureonly.so": {
+          "sha256": "1547333e8593321492c4d461a8aaeef1b3c90d5b8e90233cbf77d5b9247db34d",
+          "bytes": 4096,
+          "machine": 62,
+          "type": 3,
+          "interpreter": null,
+          "needed": [],
+          "search_paths": [],
+          "rpath": [],
+          "runpath": [],
+          "dependencies": {},
+          "dependency_paths": {},
+          "unresolved_dependencies": [],
+          "required_dependency_closure": true
+        }
+      },
+      "id": "005-original-symlink-search-positive",
+      "finding": "C0ARCH04-COR-005",
+      "category": "closure",
+      "expected_accept": true,
+      "matches_expectation": true
+    },
+    {
+      "accepted": false,
+      "exception": "Invalid",
+      "reason": "IMAGE_LIBRARY_MISSING",
+      "id": "005-original-rpath-ignored-negative",
+      "finding": "C0ARCH04-COR-005",
+      "category": "closure",
+      "expected_accept": false,
+      "matches_expectation": true
+    },
+    {
+      "accepted": true,
+      "value": {
+        "/app": {
+          "sha256": "efc1d2b2ad87ee06c969635d2031c27f31dc35e93f95a2a9c03b199f86bdc743",
+          "bytes": 4096,
+          "machine": 62,
+          "type": 3,
+          "interpreter": null,
+          "needed": [
+            "libc0fixtureonly.so"
+          ],
+          "search_paths": [
+            "/new"
+          ],
+          "rpath": [
+            "/old"
+          ],
+          "runpath": [
+            "/new"
+          ],
+          "dependencies": {
+            "libc0fixtureonly.so": "/new/libc0fixtureonly.so"
+          },
+          "dependency_paths": {
+            "libc0fixtureonly.so": "/new/libc0fixtureonly.so"
+          },
+          "unresolved_dependencies": [],
+          "required_dependency_closure": true
+        },
+        "/new/libc0fixtureonly.so": {
+          "sha256": "1547333e8593321492c4d461a8aaeef1b3c90d5b8e90233cbf77d5b9247db34d",
+          "bytes": 4096,
+          "machine": 62,
+          "type": 3,
+          "interpreter": null,
+          "needed": [],
+          "search_paths": [],
+          "rpath": [],
+          "runpath": [],
+          "dependencies": {},
+          "dependency_paths": {},
+          "unresolved_dependencies": [],
+          "required_dependency_closure": true
+        },
+        "/old/libc0fixtureonly.so": {
+          "sha256": "1547333e8593321492c4d461a8aaeef1b3c90d5b8e90233cbf77d5b9247db34d",
+          "bytes": 4096,
+          "machine": 62,
+          "type": 3,
+          "interpreter": null,
+          "needed": [],
+          "search_paths": [],
+          "rpath": [],
+          "runpath": [],
+          "dependencies": {},
+          "dependency_paths": {},
+          "unresolved_dependencies": [],
+          "required_dependency_closure": false
+        }
+      },
+      "id": "005-runpath-overrides-positive",
+      "finding": "C0ARCH04-COR-005",
+      "category": "closure",
+      "expected_accept": true,
+      "matches_expectation": true
+    },
+    {
+      "accepted": false,
+      "exception": "Invalid",
+      "reason": "IMAGE_UNSUPPORTED_RPATH",
+      "id": "005-active-rpath-explicit-refusal",
+      "finding": "C0ARCH04-COR-005",
+      "category": "closure",
+      "expected_accept": false,
+      "matches_expectation": true
+    },
+    {
+      "accepted": false,
+      "exception": "Invalid",
+      "reason": "IMAGE_DANGLING_LINK",
+      "id": "005-search-link-missing",
+      "finding": "C0ARCH04-COR-005",
+      "category": "closure",
+      "expected_accept": false,
+      "matches_expectation": true
+    },
+    {
+      "accepted": false,
+      "exception": "Invalid",
+      "reason": "IMAGE_LINK_DEPTH",
+      "id": "005-search-link-alias",
+      "finding": "C0ARCH04-COR-005",
+      "category": "closure",
+      "expected_accept": false,
+      "matches_expectation": true
+    },
+    {
+      "accepted": false,
+      "exception": "Invalid",
+      "reason": "IMAGE_LIBRARY_AMBIGUOUS",
+      "id": "005-distinct-library-candidates-refused",
+      "finding": "C0ARCH04-COR-005",
+      "category": "closure",
+      "expected_accept": false,
+      "matches_expectation": true
+    },
+    {
+      "accepted": true,
+      "value": {
+        "version": 2,
+        "architecture": "x86_64",
+        "role": "target",
+        "declared_files": {
+          "/target": "1547333e8593321492c4d461a8aaeef1b3c90d5b8e90233cbf77d5b9247db34d"
+        },
+        "root_directory": {
+          "mode": 493,
+          "uid": 0,
+          "gid": 0
+        },
+        "payload_sha256": "eba00ddc18633d4d9ade01dddc59b807b1c29abb1496a30c72fd9f87d75117cf",
+        "archive_members": 2,
+        "regular_file_bytes": 4096,
+        "runtime_acceptance": false,
+        "execution_authorized": false
+      },
+      "id": "root-single-header-positive",
+      "finding": null,
+      "category": "root-header-control",
+      "expected_accept": true,
+      "matches_expectation": true
+    },
+    {
+      "accepted": false,
+      "exception": "Invalid",
+      "reason": "IMAGE_ROOT_DUPLICATE",
+      "id": "root-exact-duplicate-negative",
+      "finding": null,
+      "category": "root-header-control",
+      "expected_accept": false,
+      "matches_expectation": true
+    },
+    {
+      "accepted": true,
+      "value": {
+        "version": 2,
+        "architecture": "x86_64",
+        "role": "target",
+        "declared_files": {
+          "/target": "1547333e8593321492c4d461a8aaeef1b3c90d5b8e90233cbf77d5b9247db34d"
+        },
+        "root_directory": {
+          "mode": 493,
+          "uid": 0,
+          "gid": 0
+        },
+        "payload_sha256": "eba00ddc18633d4d9ade01dddc59b807b1c29abb1496a30c72fd9f87d75117cf",
+        "archive_members": 3,
+        "regular_file_bytes": 4096,
+        "runtime_acceptance": false,
+        "execution_authorized": false
+      },
+      "id": "root-normalized-duplicate-./.",
+      "finding": null,
+      "category": "adjacent-root-header-control",
+      "expected_accept": false,
+      "matches_expectation": false,
+      "details": {
+        "canonical_root_mode": "0o755",
+        "alias": "./.",
+        "alias_mode": "0o700"
+      }
+    },
+    {
+      "accepted": true,
+      "value": {
+        "version": 2,
+        "architecture": "x86_64",
+        "role": "target",
+        "declared_files": {
+          "/target": "1547333e8593321492c4d461a8aaeef1b3c90d5b8e90233cbf77d5b9247db34d"
+        },
+        "root_directory": {
+          "mode": 493,
+          "uid": 0,
+          "gid": 0
+        },
+        "payload_sha256": "eba00ddc18633d4d9ade01dddc59b807b1c29abb1496a30c72fd9f87d75117cf",
+        "archive_members": 3,
+        "regular_file_bytes": 4096,
+        "runtime_acceptance": false,
+        "execution_authorized": false
+      },
+      "id": "root-normalized-duplicate-.//.",
+      "finding": null,
+      "category": "adjacent-root-header-control",
+      "expected_accept": false,
+      "matches_expectation": false,
+      "details": {
+        "canonical_root_mode": "0o755",
+        "alias": ".//.",
+        "alias_mode": "0o700"
+      }
+    },
+    {
+      "accepted": true,
+      "value": {
+        "version": 2,
+        "architecture": "x86_64",
+        "role": "target",
+        "declared_files": {
+          "/target": "1547333e8593321492c4d461a8aaeef1b3c90d5b8e90233cbf77d5b9247db34d"
+        },
+        "root_directory": {
+          "mode": 493,
+          "uid": 0,
+          "gid": 0
+        },
+        "payload_sha256": "eba00ddc18633d4d9ade01dddc59b807b1c29abb1496a30c72fd9f87d75117cf",
+        "archive_members": 3,
+        "regular_file_bytes": 4096,
+        "runtime_acceptance": false,
+        "execution_authorized": false
+      },
+      "id": "root-normalized-duplicate-././",
+      "finding": null,
+      "category": "adjacent-root-header-control",
+      "expected_accept": false,
+      "matches_expectation": false,
+      "details": {
+        "canonical_root_mode": "0o755",
+        "alias": "././",
+        "alias_mode": "0o700"
+      }
+    },
+    {
+      "accepted": true,
+      "value": {
+        "version": 2,
+        "architecture": "x86_64",
+        "role": "target",
+        "declared_files": {
+          "/target": "1547333e8593321492c4d461a8aaeef1b3c90d5b8e90233cbf77d5b9247db34d"
+        },
+        "root_directory": {
+          "mode": 493,
+          "uid": 0,
+          "gid": 0
+        },
+        "payload_sha256": "eba00ddc18633d4d9ade01dddc59b807b1c29abb1496a30c72fd9f87d75117cf",
+        "archive_members": 2,
+        "regular_file_bytes": 4096,
+        "runtime_acceptance": false,
+        "execution_authorized": false
+      },
+      "id": "root-alias-conflicts-observed-root",
+      "finding": null,
+      "category": "adjacent-root-header-control",
+      "expected_accept": false,
+      "matches_expectation": false,
+      "details": {
+        "observed_root": {
+          "mode": 493,
+          "uid": 0,
+          "gid": 0
+        },
+        "alias_header_mode": "0o700"
+      }
+    },
+    {
+      "accepted": false,
+      "exception": "Invalid",
+      "reason": "IMAGE_DIRECTORY_ACCESS",
+      "id": "symlink-parent-traversed-access",
+      "finding": null,
+      "category": "path-control",
+      "expected_accept": false,
+      "matches_expectation": true
+    },
+    {
+      "accepted": true,
+      "id": "root-helper-finally-none",
+      "finding": null,
+      "category": "fake-helper-control",
+      "expected_accept": true,
+      "matches_expectation": true,
+      "fake_commands": [
+        [
+          "/fake/podman",
+          "--remote=false",
+          "mount",
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        ],
+        [
+          "/fake/podman",
+          "--remote=false",
+          "unmount",
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        ]
+      ]
+    },
+    {
+      "accepted": false,
+      "exception": "OSError",
+      "reason": "inert mount failure",
+      "id": "root-helper-finally-mount",
+      "finding": null,
+      "category": "fake-helper-control",
+      "expected_accept": false,
+      "matches_expectation": true,
+      "fake_commands": [
+        [
+          "/fake/podman",
+          "--remote=false",
+          "mount",
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        ],
+        [
+          "/fake/podman",
+          "--remote=false",
+          "unmount",
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        ]
+      ]
+    },
+    {
+      "accepted": false,
+      "exception": "OSError",
+      "reason": "inert stat failure",
+      "id": "root-helper-finally-stat",
+      "finding": null,
+      "category": "fake-helper-control",
+      "expected_accept": false,
+      "matches_expectation": true,
+      "fake_commands": [
+        [
+          "/fake/podman",
+          "--remote=false",
+          "mount",
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        ],
+        [
+          "/fake/podman",
+          "--remote=false",
+          "unmount",
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        ]
+      ]
+    },
+    {
+      "accepted": false,
+      "exception": "OSError",
+      "reason": "inert unmount failure",
+      "id": "root-helper-finally-unmount",
+      "finding": null,
+      "category": "fake-helper-control",
+      "expected_accept": false,
+      "matches_expectation": true,
+      "fake_commands": [
+        [
+          "/fake/podman",
+          "--remote=false",
+          "mount",
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        ],
+        [
+          "/fake/podman",
+          "--remote=false",
+          "unmount",
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        ]
+      ]
+    }
+  ],
+  "unexpected_results": [
+    "004-pt-interp-mode-0o644",
+    "root-normalized-duplicate-./.",
+    "root-normalized-duplicate-.//.",
+    "root-normalized-duplicate-././",
+    "root-alias-conflicts-observed-root"
+  ]
+}

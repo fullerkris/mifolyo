@@ -1,0 +1,816 @@
+{
+  "adjacent_permission_probes": [
+    {
+      "architecture": "aarch64",
+      "archive_unmodified": true,
+      "in_memory_mutation": "mode=0644",
+      "observation": {
+        "accepted": true,
+        "same_payload_sha256": true
+      },
+      "original_mode": "0o755",
+      "path": "/usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1"
+    },
+    {
+      "architecture": "x86_64",
+      "archive_unmodified": true,
+      "in_memory_mutation": "mode=0644",
+      "observation": {
+        "accepted": true,
+        "same_payload_sha256": true
+      },
+      "original_mode": "0o755",
+      "path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2"
+    }
+  ],
+  "evidence_hashes": {
+    "/tmp/opencode/c0-images-aarch64-remediation-2026-10-17": {
+      "command-000.log": "a17fcf0a2f50e2d495e4f90ce263410edc183add6c62699a2facbccf60410f74",
+      "command-001.log": "f5a65890f7f271e345cc38d4470881807b465a05749f44061ff01599b5bf58c8",
+      "command-002.log": "e85b7d3a819ead0468b2e73da4aa9003efc17b2374df6e839e7238d8d6246a44",
+      "command-003.log": "e4a567c1dec1d20f1d8adb0794a281e37d47bbcce5e5cb4d93429321f6f29ba1",
+      "command-004.log": "a207246563a1572727db983ceb9fd4f9371fd76d3f21eab1d20ce6421469e189",
+      "command-005.log": "66f2fdfd45d34582c4ae28d78830f36498331a7fea357b8838abdd512fd99430",
+      "command-006.log": "3af5e09faa7367e7a7de7298747003402bbc5e847180544a2d978ef02270fdf6",
+      "command-007.log": "fff1bd2f1e7d8314b72bc03641ccf64c956b7926c3b9cc45b702d16957c7a00f",
+      "command-008.log": "8acf97b87f0fbf68064040c9ab51eab263968e60e75e17172116bb41ab98a507",
+      "command-009.log": "a86ae8a06be2329e78286d5b116eabcfb91d31441a6a81ac097034dacf1d2d52",
+      "command-010.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command-011.log": "a86ae8a06be2329e78286d5b116eabcfb91d31441a6a81ac097034dacf1d2d52",
+      "command-012.log": "a86ae8a06be2329e78286d5b116eabcfb91d31441a6a81ac097034dacf1d2d52",
+      "command-013.log": "8acf97b87f0fbf68064040c9ab51eab263968e60e75e17172116bb41ab98a507",
+      "command-014.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command-015.log": "ce44f9183a17feb3aeb0d7bbfb24753020b5390f32f2f7fa4028d42b786183ab",
+      "command-016.log": "196823cde7f8b58cb7e34070ca99a7de9a17bfd4c6ad19ff77c37cd79cb7c0e8",
+      "command-017.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command-018.log": "196823cde7f8b58cb7e34070ca99a7de9a17bfd4c6ad19ff77c37cd79cb7c0e8",
+      "command-019.log": "196823cde7f8b58cb7e34070ca99a7de9a17bfd4c6ad19ff77c37cd79cb7c0e8",
+      "command-020.log": "ce44f9183a17feb3aeb0d7bbfb24753020b5390f32f2f7fa4028d42b786183ab",
+      "command-021.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command-022.log": "e58be782e43e6612b02798b350254dd5e3c3f6ee908fda17cadd391bb16adade",
+      "command-023.log": "7683b3cf933075061499ae54b6ca199f2a815a14c7652dc40a31f5f1ce575e03",
+      "command-024.log": "4ade1e865872cd20d93f12ac11d0ec4e604e14e73c755290dd829711beb8a212",
+      "command-025.log": "393a921689c3b4c6b1da66bd97ad94563e7e6c5712bfa9275a83ff8bc0dc44fe",
+      "command-026.log": "c5f0bef5a674cf6af053544a84302430db580543a3421db4656e0ac72ceadc37",
+      "command-027.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command-028.log": "393a921689c3b4c6b1da66bd97ad94563e7e6c5712bfa9275a83ff8bc0dc44fe",
+      "command-029.log": "c5f0bef5a674cf6af053544a84302430db580543a3421db4656e0ac72ceadc37",
+      "command-030.log": "393a921689c3b4c6b1da66bd97ad94563e7e6c5712bfa9275a83ff8bc0dc44fe",
+      "command-031.log": "4ade1e865872cd20d93f12ac11d0ec4e604e14e73c755290dd829711beb8a212",
+      "command-032.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command-033.log": "7683b3cf933075061499ae54b6ca199f2a815a14c7652dc40a31f5f1ce575e03",
+      "command-034.log": "57e74509ca5438cbe143ee6a2e3f21ec9d9c73d48b4929e44f11edf0d999445c",
+      "command-035.log": "6f254107729128a3bc21e4973e8aab1f0b06528a9803186458677a25cb5edbdd",
+      "command-036.log": "324854efafaec65afeba745d65fec1aa367baaee310272299fce3959f2472de5",
+      "command-037.log": "436beaa010f8e1548bb2f8301406e1cb54eef3b7051f86d46f78490a8e1ff16c",
+      "command-038.log": "229f77118a7244dba05c3228f08e61bacc39a612183f7a8ae1cc22804218ffa7",
+      "command-039.log": "c5f0bef5a674cf6af053544a84302430db580543a3421db4656e0ac72ceadc37",
+      "command-040.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command-041.log": "229f77118a7244dba05c3228f08e61bacc39a612183f7a8ae1cc22804218ffa7",
+      "command-042.log": "c5f0bef5a674cf6af053544a84302430db580543a3421db4656e0ac72ceadc37",
+      "command-043.log": "229f77118a7244dba05c3228f08e61bacc39a612183f7a8ae1cc22804218ffa7",
+      "command-044.log": "436beaa010f8e1548bb2f8301406e1cb54eef3b7051f86d46f78490a8e1ff16c",
+      "command-045.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command-046.log": "324854efafaec65afeba745d65fec1aa367baaee310272299fce3959f2472de5",
+      "command-047.log": "0ae617b6d3cd6e651ff5b1a01772d4d1d7d7dbdab28712c6197007e2422a71ae",
+      "command-048.log": "86102b18541cea6f76203d95b78b2fe4f62c56550151d09a7a39e8529b476175",
+      "command-049.log": "3e5321976f4d17b4aca69fdb5e32de638c365fd9ccab5e43ccf6cf7bc0f77f1c",
+      "command-050.log": "187715ea1d6396b92ef8d950bd7c6156610f2afdac4fdcafeff9debf86659d90",
+      "command-051.log": "8170aeb3306df8e2b68882ad5f6a8a923ea7757475014a12efd4aeb8a7d485c5",
+      "command-052.log": "f41e06054689c5d21abf5292003412c345a45434710b56aa50b3a9b12ef25ba5",
+      "command-053.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command-054.log": "8170aeb3306df8e2b68882ad5f6a8a923ea7757475014a12efd4aeb8a7d485c5",
+      "command-055.log": "f41e06054689c5d21abf5292003412c345a45434710b56aa50b3a9b12ef25ba5",
+      "command-056.log": "8170aeb3306df8e2b68882ad5f6a8a923ea7757475014a12efd4aeb8a7d485c5",
+      "command-057.log": "187715ea1d6396b92ef8d950bd7c6156610f2afdac4fdcafeff9debf86659d90",
+      "command-058.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command-059.log": "3e5321976f4d17b4aca69fdb5e32de638c365fd9ccab5e43ccf6cf7bc0f77f1c",
+      "command-060.log": "fb9bd0abe82bd4746bb668ace99683f1620868b035882fdceda136a74a29e900",
+      "image-set.json": "ac29a71a14c21cf5b2e498b716f01fac2a888443df7e3f87fbf5c014007bd1c8",
+      "native-builder.iid": "a60e0fdfa9d07d29f16d9af98cd482fbf18208a7afd49d06aa159ecdf51ee481",
+      "native/cases.h": "64591020572e8af5afae67856ba79e053afacaf41d08ba10a98f489558e383f4",
+      "native/observer": "a995ae45fff124d4949325700e8bbf04fd0bdc4fe2ed76e782ad236784f937a6",
+      "native/observer-seccomp.json": "abf581851c19631ba5125ac03443f4ad72c6e8fd7b92fa086218060e07b56bf2",
+      "native/oracle-seccomp.json": "f82e0ae5335e1393c402265c4a14a4e56ad8df27ab48eee70907745fef3b6835",
+      "native/target": "74f88a9a5af266f5a414abfca241a6162284c8c6da749c5cafed771e87049644",
+      "native/target-filter.bpf": "701824ff5f8ccafa359f711d2714b23c8a303789cd1987a3a85aba19a3667b93",
+      "native/target-manifest.json": "da627a29851deb9fa5196db1b10c3319d93fdb2d6ba95afd1ef9b7c2aa8baa65",
+      "native/target-seccomp.json": "6a1ffdf7326ae1370bd55cc2edb2bcfb49b2d65ce7090205576d3b6e9496ab3e",
+      "native/target_filter.h": "8a1c8f5941860b7acd92f3dc53952aa746fa9d1c57098b214a691fa8a6380b1d",
+      "native/target_manifest.h": "1aaf4cc1da879f924c69cbeef4523cf0da8e62c664bd1b1b93abacb09088e6bb",
+      "native/toolchain.json": "6f50da1a0f09718036aa11c5c191e42657ef97228fa07f9a3d09951b84ad2de5",
+      "observer-content.json": "d93a59cbc80ba05045cffd7fb14d1594ac956da1d0531700b88552435af50b7c",
+      "observer-image.tar": "cd59a9f9bffb5e9078f5f9da8173e7fd230bd7753a6519f7400539deddfecb0d",
+      "observer-inspect.json": "7b625f2badd6dbd50ff826e9d0d4f25e5bb2c633dbd82a9e3254419557f089bb",
+      "observer.iid": "55a5f9cd890332302fec814fbab2f6f6fdb9ffc9797633d026d27943ba4e7a13",
+      "observer.tar": "6f48e6fd9894e6fd8a3c8b6ec0b157c4f5da3433aa39d3406847558a77e55305",
+      "oracle-builder.iid": "81c238b71215abdfc614dfe48017fd189bc81c30225be033c28b11e11e05380e",
+      "oracle-content.json": "b54c5b92251392f21db152efce4aa33c1e6ff17285c58066ab859a2a49fd6cd7",
+      "oracle-image.tar": "a40ab4026d8e7f711e681e9538e2d091a47ae427fefe8acb83814dd6f90e9bcc",
+      "oracle-inspect.json": "4295eb7084db92a571364ab876f111ff219c5870238ac8fc06f775e0adbc88c2",
+      "oracle.iid": "21fe2bb797c19461d6cd815d74c11b976cbaa366ed85af5d020ba75dc8379263",
+      "oracle.tar": "f736164c9a28495ba125a38661dbddd0a4bb2982cc5988add4ec1cac0ad2b9fb",
+      "oracle/oracle-artifacts.json": "32bd11630633589acf8ec14328eea4368fc7edce18810e608f7501c8640e6cbd",
+      "source/.dockerignore": "25170fdb33082a47a01bdc344bfabe8ef4460eed2da175e6dd1159557fcaa13d",
+      "source/Dockerfile": "6925c36fe1cd42800333b4c72c54143b0c706e26e0aa37a09fd8679a684fa06c",
+      "source/Dockerfile.oracle": "61c196ddc98e522516fd1e36ce239f36f27f04e844be66752227c90de5897429",
+      "source/Dockerfile.oracle.dockerignore": "679f3cd226874aa189596199b105352137171eed114a1393e478eafc43f330d3",
+      "source/README.md": "bd2a7769032332fc79300c281ea9be01354e16906e23fe4c1ca27a44c8e3fd14",
+      "source/build_oracle.py": "cb702f624c986320e6f4c690dfc4eac1187104c711a52eb9e2bab28ec12e7ed6",
+      "source/build_tools.py": "a402d791a3cd1dc35ed709a985cbcd9b06a9af9b2f370616f44f2bcfe6519acb",
+      "source/context_files.py": "956ce03c56e6df84006e9bf16775f1d3d83d2acbda5bec8d9d41b1de2e72d396",
+      "source/context_provision.py": "d0869ab36372a1af94ce0ffd04f1e364b318519a7e1f3c4bb7fefa95e2df340e",
+      "source/context_ssh.py": "94ededb449423cbc822282ab05cc725316caef186cdba227613631618b9f2a03",
+      "source/context_transport.py": "43193118350d4d52d0f3901e4a93561fa7cd94dd4e81c2ce99337b5364404af0",
+      "source/context_worker.py": "f01980f5b3322eabafd5b99c97b76f4313aa9a28ce90a5f3ce66c5175843e03f",
+      "source/contracts.py": "6a3c4dfe7b6fb4524771b26fdcbcba39be2c5893d52e2e4caeebf762df27a7f4",
+      "source/controller.py": "23b28206e550efbe408a970161ebed7ddbd3430c771baece6765a165fc2e2ec5",
+      "source/d02.py": "d7df595daeefcc3f5a785a89c191c93b5b6724e42655222befa1b07c88be29f2",
+      "source/docker_backend.py": "51cf4ad679a961d5b7631af1769216dc0300e740228ce8d7cf2423ed7373ebcf",
+      "source/image_artifacts.py": "61df24f28e9e4ef2c92e21503637e22863c1da4d9d47b112a2d97be6fb8c9683",
+      "source/image_build.py": "6926bdb5bf01c25b3c29ac5607e4602bf831772fe34e06c85bee7700baee0d85",
+      "source/linux_observation.py": "58934a305a1c7bf5877c4e5f7ae5969181c61fed267b150d0ed1ed91c195282d",
+      "source/native/admission.h": "b64f55c4f5184506bc442bf13405f282b92d4bc600d8958b5febda5108fe0a96",
+      "source/native/architecture.h": "c0b078cd257852bc3cb57e1405e18c943bf2d0a48520523195846c8f58cfea2b",
+      "source/native/common.h": "4b221886a774007a74ed68a44a6e5088bc7f2e4ccf4980ddb8815f85cfc27042",
+      "source/native/observer.c": "a45816e40320c8560f439dfdd0b1ebef636dc74a0a101c19f0a726ae38098a5c",
+      "source/native/target.c": "aedd6549923876d28b7d39748c6506dbad539459200b276a9f409500daf3f82d",
+      "source/native/test_x86_debug.c": "ca8c49152d575c6b42e37914ea7dc5d805975e49fee4fa799137799ceaaa6f6f",
+      "source/native/x86_debug.h": "42844fba32b39dfe752fe84f84b1748a872b93aed6c5810a9a30aeab2fbd1777",
+      "source/oracle.py": "fa14b08caee86b65d9a01c16bb3e6ea236264275a48a3f32ad6694c57df23bc8",
+      "source/oracle_bridge.py": "9d1efdbac6ea8b74585344884fb8264bed82f7413d32259146718872e4247f86",
+      "source/oracle_protocol.py": "f867fdc33eb271385176ab25c09a573e9662f77b7f6a73e559dbf07fcb115f45",
+      "source/oracle_worker.py": "91e84a5d3f47b043d6c12f9564604dba11f2ad9cc49e58a905ee714d2ece07d0",
+      "source/owned_resources.py": "5e235811e610d51009c03ee8e70fe2c8fc0927708ddd2dba5a1173b3bcca5108",
+      "source/profiles.py": "b149039b977bd78daf53a6ddb7635419b36338925c25d125a3d49fac8f60a539",
+      "source/runtime_admission.py": "307e4486f4c23c426d543ddc3cee65d99dcee77c7c01087f4c8840cc81d3b076",
+      "source/runtime_context.py": "85caefcf88973b0f78143d629dd8f3e46b16a0d987b680f48e875b9ed97739cd",
+      "source/streams.py": "85f8d1b16a84462f1defe641cb2c75879fe356928c7497b06628f86d2f599cbd",
+      "source/test_admission_dispatch.py": "f565e9c7672a6b2185ded0731c8481fc7cd3186e408ffad270e5a91a2792d5fa",
+      "source/test_architecture_contracts.py": "3a68f407df26a17eccc3c3397a91b65ff604247bf43b3c0418f2dd2ede21b57d",
+      "source/test_architecture_review.py": "89197d92221c854e92064965c1a6d73aa8cb52b8e22cda68773e095c44f4548a",
+      "source/test_context_oracle_review.py": "2b7a342bd1ac25c912aebe7813d4f056ba1ebc29a96d0a2bdb0b38b02ce7c660",
+      "source/test_context_provisioning.py": "47af7da18e75e311d280927b83cb64bf1b12b01562217f75bfd21b10255e83de",
+      "source/test_contracts.py": "f95b6879e06055cb26b1ac80214a9708deda71561511862d7833e981ebdd0716",
+      "source/test_d02.py": "f158944c10aa24dc397efdb1d03471a7a02f4b46cec46d2442e8bbe4eb772b72",
+      "source/test_filter.py": "b434138a353c257b18f3262373a5fa226223d8f44b0414e3b6b2aaf40f7a7614",
+      "source/test_image_artifacts.py": "81ea1082f3f4c7d38b37f4aeef0a84f215f546331d9c46d24f828d357a4835fa",
+      "source/test_image_review.py": "f74202962d08bf0509fba42bf3dc7af3ea0dae3dc987d378ac6a025cc816fe77",
+      "source/test_oracle_bridge.py": "e7ec3950202388b09014bd175e7668aa3375f93c4029e04910296975cdec52f1",
+      "source/test_oracle_worker.py": "3c899ec2036f74167aa213cda6c42b8e71547f1e32f9c58df4e6f9cd1eca9d0a",
+      "source/test_owned_resources.py": "e8b7d53c1c6081a095a116beca16680c85b35dca66249ef830f0146304cc41ab",
+      "source/test_runtime_admission.py": "1e53248dbeacb1dae04f184ad844ae2d17dd7a338311ea5403e491cc373ac430",
+      "source/test_runtime_context.py": "040f04d8bd9a120758e2d03c2052c666d6f88c32fc38f3ecb8f1c5614f487b7c",
+      "source/test_streams.py": "0f5a4e23592bd7e849c7c90a49815704c7322f04c3804728f5ab1a3990fdd695",
+      "source/test_watchdog.py": "271b8f611ec10b2d7ad523368aa6e98e3a66ebc0351beef32c94c75b3331b7da",
+      "source/test_x64_runtime.py": "871dbc791fe792326b9f25516230c4e1fa2379be87cab000fd8896f950d21250",
+      "source/watchdog.py": "cc2e7e1212caa6be74e2266ce3a4ab156064a3ae96f01281cfa3ba5660ba5813",
+      "source/worker.py": "08c319e7ec3790f619e4bf4ba3160e0db3bdc34f8dd86256bf998639aa2ea273",
+      "target-content.json": "ab5fe73bbade66f04f7ed4aa6ff7311c967023fa702b5c2184d0631005ad873e",
+      "target-image.tar": "4da1438f3b8d79588679490212f53ce18508c017abfbaf83b67b2b1776b3fee8",
+      "target-inspect.json": "72e6cf67c07b7147bf077a648b22f2d29cc1b3fef7128a2438697844f4db2adf",
+      "target.iid": "4b55132569a8cb5f346173a2fa28e2e0a22977abbb572397d6fd44a2d04bddd1",
+      "target.tar": "6146b2f026ee894e27ae5a5a7957d7df52fe00c4397bab191db710796106a184"
+    },
+    "/tmp/opencode/c0-images-x86_64-remediation-2026-10-17": {
+      "command-000.log": "a17fcf0a2f50e2d495e4f90ce263410edc183add6c62699a2facbccf60410f74",
+      "command-001.log": "f5a65890f7f271e345cc38d4470881807b465a05749f44061ff01599b5bf58c8",
+      "command-002.log": "298d7d9b343fd9a8119a1e8d945efef410ee79346af4eb2b8cb713445e1a2ac7",
+      "command-003.log": "f326838a0ce43a58fa478df342164b819e55dc7be6c4d650a82ebda73799dc82",
+      "command-004.log": "40094f663c327fd926965b3f45d0f54514ef5c7e7c4ec62345609d627df36284",
+      "command-005.log": "ddd8b70876aa0127cc5e381a2c6ba2115184ed6b5d4eb5c54d4414f26ca6f25f",
+      "command-006.log": "256f14a6ade6e270673d1b1c93e41458f7e39dc6c5c232a00bce1b73411aec2c",
+      "command-007.log": "65a530cb4ff8e00e146390891a00d3996c7e9ee7f713407ee36f05e925ab1489",
+      "command-008.log": "3ac22689705887b3b9c436c85f3076da654bcee9d703db12c3c517592d6f267d",
+      "command-009.log": "dc3956660d962a65a7135dac9b2e9d3e0160ea27db9e472dedc13f7c2af7d43c",
+      "command-010.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command-011.log": "dc3956660d962a65a7135dac9b2e9d3e0160ea27db9e472dedc13f7c2af7d43c",
+      "command-012.log": "dc3956660d962a65a7135dac9b2e9d3e0160ea27db9e472dedc13f7c2af7d43c",
+      "command-013.log": "3ac22689705887b3b9c436c85f3076da654bcee9d703db12c3c517592d6f267d",
+      "command-014.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command-015.log": "bde64bf09042d2823188c5906174d46918aeab4c04f6ef0c45e48b15a93c94fa",
+      "command-016.log": "35fc8c04b741989de4655c17eb4aea4065151e3b9f4c4165472ac492fed066ad",
+      "command-017.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command-018.log": "35fc8c04b741989de4655c17eb4aea4065151e3b9f4c4165472ac492fed066ad",
+      "command-019.log": "35fc8c04b741989de4655c17eb4aea4065151e3b9f4c4165472ac492fed066ad",
+      "command-020.log": "bde64bf09042d2823188c5906174d46918aeab4c04f6ef0c45e48b15a93c94fa",
+      "command-021.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command-022.log": "67cecc112dea6775127f074dc5954d1adb9c46ff3c9fe5327cb2ce769cd761b0",
+      "command-023.log": "3028ec59c91584d1136d097aaa200d82e93a9c5c93299136a6a32f9a08c0a1bf",
+      "command-024.log": "9a03dae87e019e085df1f4a11fc341b8ad149f9db07772f5d3ec244dd02742f2",
+      "command-025.log": "972b1d98ff75d6563f09d5cdda0fc0baced45cb9f3fc450a8d566ade66b4e58f",
+      "command-026.log": "c5f0bef5a674cf6af053544a84302430db580543a3421db4656e0ac72ceadc37",
+      "command-027.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command-028.log": "972b1d98ff75d6563f09d5cdda0fc0baced45cb9f3fc450a8d566ade66b4e58f",
+      "command-029.log": "c5f0bef5a674cf6af053544a84302430db580543a3421db4656e0ac72ceadc37",
+      "command-030.log": "972b1d98ff75d6563f09d5cdda0fc0baced45cb9f3fc450a8d566ade66b4e58f",
+      "command-031.log": "9a03dae87e019e085df1f4a11fc341b8ad149f9db07772f5d3ec244dd02742f2",
+      "command-032.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command-033.log": "3028ec59c91584d1136d097aaa200d82e93a9c5c93299136a6a32f9a08c0a1bf",
+      "command-034.log": "2306523bb4471dfcf6c29c1738e6620312ad09f56d7a26cb2dc0f4b8f802b814",
+      "command-035.log": "4ef637618f8352dad58a3ba3c821d191e5eed3cde2c93ba6f36e81a1ca46c4b3",
+      "command-036.log": "8b4a6a2696eeb957426cabd583c21c20c25f683a9d35ac5d18a5a8c4188c430d",
+      "command-037.log": "3ea11d007d9ba9453da9f2c16fb2ba6417073c7f611fec0e1785994021a24c20",
+      "command-038.log": "86443dbfedca449b768ca7d57c6b309696cb7fed6f20e6b8bcbc8dfb156988c3",
+      "command-039.log": "c5f0bef5a674cf6af053544a84302430db580543a3421db4656e0ac72ceadc37",
+      "command-040.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command-041.log": "86443dbfedca449b768ca7d57c6b309696cb7fed6f20e6b8bcbc8dfb156988c3",
+      "command-042.log": "c5f0bef5a674cf6af053544a84302430db580543a3421db4656e0ac72ceadc37",
+      "command-043.log": "86443dbfedca449b768ca7d57c6b309696cb7fed6f20e6b8bcbc8dfb156988c3",
+      "command-044.log": "3ea11d007d9ba9453da9f2c16fb2ba6417073c7f611fec0e1785994021a24c20",
+      "command-045.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command-046.log": "8b4a6a2696eeb957426cabd583c21c20c25f683a9d35ac5d18a5a8c4188c430d",
+      "command-047.log": "750e18db3cc42c00c3b1331983175f88b1bc68ff462b8919534e689acdd7ec14",
+      "command-048.log": "bd6bba3e31f9c0df54387f355823af4cd20983ba1fe6b287507bdd62f36c056c",
+      "command-049.log": "11f18b81f6a09b79c0c2a1e01ddc7a5fd45e95083e9a530f1058c29f3cea6809",
+      "command-050.log": "037badaa6b3bf41f6a8f80ebf37c13f8ed0a316bf382c5acee26f8d5e0c2b613",
+      "command-051.log": "147f6547f93da94ae38bfaf59a70dff775c0585b0f63f99755478158d01d7d8b",
+      "command-052.log": "f41e06054689c5d21abf5292003412c345a45434710b56aa50b3a9b12ef25ba5",
+      "command-053.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command-054.log": "147f6547f93da94ae38bfaf59a70dff775c0585b0f63f99755478158d01d7d8b",
+      "command-055.log": "f41e06054689c5d21abf5292003412c345a45434710b56aa50b3a9b12ef25ba5",
+      "command-056.log": "147f6547f93da94ae38bfaf59a70dff775c0585b0f63f99755478158d01d7d8b",
+      "command-057.log": "037badaa6b3bf41f6a8f80ebf37c13f8ed0a316bf382c5acee26f8d5e0c2b613",
+      "command-058.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command-059.log": "11f18b81f6a09b79c0c2a1e01ddc7a5fd45e95083e9a530f1058c29f3cea6809",
+      "command-060.log": "b02be91a4883ccfd899fe2294fa2718d5b195e4071906ce9b11f0add1c142f77",
+      "image-set.json": "76b30e6cdd7ab4cb8b49e2a50964f5acd5eee1a9a3cd2b2b88d7eea263b84489",
+      "native-builder.iid": "7671a0f5bd005967443d38aced31033337173ab61697658bf5d029c1da17c032",
+      "native/cases.h": "64591020572e8af5afae67856ba79e053afacaf41d08ba10a98f489558e383f4",
+      "native/observer": "a82b61b0d1000195087543dec812c42489c807013739555f32e2f8728874f77d",
+      "native/observer-seccomp.json": "68111f7b57683bfcf4e8e0dd99a93c4c040b6d3afa37ae4f7ee4180fda58a013",
+      "native/oracle-seccomp.json": "8397f4c4f904a40e43d17bc8552ccff4f53f3fc7da72922aa45cae46b1ad5f5b",
+      "native/target": "28e15e20192695839ae5ffe9491fd392fbaa77472edf6df6f5ce75dd3f0f6fa7",
+      "native/target-filter.bpf": "b080f5d5047014d30d7f9e40280b6dd89f71abc029fb75081a7a8b40e1f2b88b",
+      "native/target-manifest.json": "d3e44a6cd06249e5fa10a2fe0d3b1150906f57fe56477580bc152a8e13dfbf00",
+      "native/target-seccomp.json": "c05b23afcec906e98cfa7dada5b095c4a553cb7d7fc0745608cf0f69aa70ead9",
+      "native/target_filter.h": "bd83fc8f1018dfe0fb4129a87835e0b10a2cd827f61b1c6e619d990792a675b8",
+      "native/target_manifest.h": "1e04c2cd8569eb85f3ead22a6747c505dedd52f0162f97d3afc95a9d1489de77",
+      "native/toolchain.json": "96336154f765a6d8c89748b0b130f60723e6f9585258b848b64a021d6b4c14ad",
+      "observer-content.json": "8e680fab8a46406c6e4cff7dd9a7214444db2abf00a14eb76bf7030fb76e8e46",
+      "observer-image.tar": "2b45067cf47565ad9ea4222d451425ba5342505cf1d8b4fbad9800f4aae8b16c",
+      "observer-inspect.json": "ea24c9ef7fe65d6d067ba7d41e67477ce38915c888ef89e2b113a4bca4b90ae8",
+      "observer.iid": "c6ce20a25694eb87f57276e12e5291d28bcf64f6eaa234542b8afb2c7f79c6f5",
+      "observer.tar": "737a5227dfc35f7e47346fefdaa68cb50bf28eaa4a526edd8c14323951c215ea",
+      "oracle-builder.iid": "59f8774bfb796ec6bc216a13b6d38376bf7321e0a45013b287ae14952d728abb",
+      "oracle-content.json": "d85d8565a9cbdfcd97476238b66f646291535acf342bfbacd2401c296af4eb55",
+      "oracle-image.tar": "d15ca6b653e4c8f7d32895b7ac6f8f523ee45538065e09d9b74fa541018ba98a",
+      "oracle-inspect.json": "b77dd828e788fcf574553091a4d9927813028d0ed10d3fe6344f0344d45e24c9",
+      "oracle.iid": "6b42141aabdde02660cc1a37c0478c4c7b634992bace6bf3c42e0cdf7fb454c2",
+      "oracle.tar": "849b9801911b1e8c3e87f0eb7bb1fa8d9bf87b145342ef0196e632c29a2df668",
+      "oracle/oracle-artifacts.json": "a5ea73ecc11e834549e8bf0e747d9268c2be0d704751304fa7f50e6361daa96b",
+      "source/.dockerignore": "25170fdb33082a47a01bdc344bfabe8ef4460eed2da175e6dd1159557fcaa13d",
+      "source/Dockerfile": "6925c36fe1cd42800333b4c72c54143b0c706e26e0aa37a09fd8679a684fa06c",
+      "source/Dockerfile.oracle": "61c196ddc98e522516fd1e36ce239f36f27f04e844be66752227c90de5897429",
+      "source/Dockerfile.oracle.dockerignore": "679f3cd226874aa189596199b105352137171eed114a1393e478eafc43f330d3",
+      "source/README.md": "bd2a7769032332fc79300c281ea9be01354e16906e23fe4c1ca27a44c8e3fd14",
+      "source/build_oracle.py": "cb702f624c986320e6f4c690dfc4eac1187104c711a52eb9e2bab28ec12e7ed6",
+      "source/build_tools.py": "a402d791a3cd1dc35ed709a985cbcd9b06a9af9b2f370616f44f2bcfe6519acb",
+      "source/context_files.py": "956ce03c56e6df84006e9bf16775f1d3d83d2acbda5bec8d9d41b1de2e72d396",
+      "source/context_provision.py": "d0869ab36372a1af94ce0ffd04f1e364b318519a7e1f3c4bb7fefa95e2df340e",
+      "source/context_ssh.py": "94ededb449423cbc822282ab05cc725316caef186cdba227613631618b9f2a03",
+      "source/context_transport.py": "43193118350d4d52d0f3901e4a93561fa7cd94dd4e81c2ce99337b5364404af0",
+      "source/context_worker.py": "f01980f5b3322eabafd5b99c97b76f4313aa9a28ce90a5f3ce66c5175843e03f",
+      "source/contracts.py": "6a3c4dfe7b6fb4524771b26fdcbcba39be2c5893d52e2e4caeebf762df27a7f4",
+      "source/controller.py": "23b28206e550efbe408a970161ebed7ddbd3430c771baece6765a165fc2e2ec5",
+      "source/d02.py": "d7df595daeefcc3f5a785a89c191c93b5b6724e42655222befa1b07c88be29f2",
+      "source/docker_backend.py": "51cf4ad679a961d5b7631af1769216dc0300e740228ce8d7cf2423ed7373ebcf",
+      "source/image_artifacts.py": "61df24f28e9e4ef2c92e21503637e22863c1da4d9d47b112a2d97be6fb8c9683",
+      "source/image_build.py": "6926bdb5bf01c25b3c29ac5607e4602bf831772fe34e06c85bee7700baee0d85",
+      "source/linux_observation.py": "58934a305a1c7bf5877c4e5f7ae5969181c61fed267b150d0ed1ed91c195282d",
+      "source/native/admission.h": "b64f55c4f5184506bc442bf13405f282b92d4bc600d8958b5febda5108fe0a96",
+      "source/native/architecture.h": "c0b078cd257852bc3cb57e1405e18c943bf2d0a48520523195846c8f58cfea2b",
+      "source/native/common.h": "4b221886a774007a74ed68a44a6e5088bc7f2e4ccf4980ddb8815f85cfc27042",
+      "source/native/observer.c": "a45816e40320c8560f439dfdd0b1ebef636dc74a0a101c19f0a726ae38098a5c",
+      "source/native/target.c": "aedd6549923876d28b7d39748c6506dbad539459200b276a9f409500daf3f82d",
+      "source/native/test_x86_debug.c": "ca8c49152d575c6b42e37914ea7dc5d805975e49fee4fa799137799ceaaa6f6f",
+      "source/native/x86_debug.h": "42844fba32b39dfe752fe84f84b1748a872b93aed6c5810a9a30aeab2fbd1777",
+      "source/oracle.py": "fa14b08caee86b65d9a01c16bb3e6ea236264275a48a3f32ad6694c57df23bc8",
+      "source/oracle_bridge.py": "9d1efdbac6ea8b74585344884fb8264bed82f7413d32259146718872e4247f86",
+      "source/oracle_protocol.py": "f867fdc33eb271385176ab25c09a573e9662f77b7f6a73e559dbf07fcb115f45",
+      "source/oracle_worker.py": "91e84a5d3f47b043d6c12f9564604dba11f2ad9cc49e58a905ee714d2ece07d0",
+      "source/owned_resources.py": "5e235811e610d51009c03ee8e70fe2c8fc0927708ddd2dba5a1173b3bcca5108",
+      "source/profiles.py": "b149039b977bd78daf53a6ddb7635419b36338925c25d125a3d49fac8f60a539",
+      "source/runtime_admission.py": "307e4486f4c23c426d543ddc3cee65d99dcee77c7c01087f4c8840cc81d3b076",
+      "source/runtime_context.py": "85caefcf88973b0f78143d629dd8f3e46b16a0d987b680f48e875b9ed97739cd",
+      "source/streams.py": "85f8d1b16a84462f1defe641cb2c75879fe356928c7497b06628f86d2f599cbd",
+      "source/test_admission_dispatch.py": "f565e9c7672a6b2185ded0731c8481fc7cd3186e408ffad270e5a91a2792d5fa",
+      "source/test_architecture_contracts.py": "3a68f407df26a17eccc3c3397a91b65ff604247bf43b3c0418f2dd2ede21b57d",
+      "source/test_architecture_review.py": "89197d92221c854e92064965c1a6d73aa8cb52b8e22cda68773e095c44f4548a",
+      "source/test_context_oracle_review.py": "2b7a342bd1ac25c912aebe7813d4f056ba1ebc29a96d0a2bdb0b38b02ce7c660",
+      "source/test_context_provisioning.py": "47af7da18e75e311d280927b83cb64bf1b12b01562217f75bfd21b10255e83de",
+      "source/test_contracts.py": "f95b6879e06055cb26b1ac80214a9708deda71561511862d7833e981ebdd0716",
+      "source/test_d02.py": "f158944c10aa24dc397efdb1d03471a7a02f4b46cec46d2442e8bbe4eb772b72",
+      "source/test_filter.py": "b434138a353c257b18f3262373a5fa226223d8f44b0414e3b6b2aaf40f7a7614",
+      "source/test_image_artifacts.py": "81ea1082f3f4c7d38b37f4aeef0a84f215f546331d9c46d24f828d357a4835fa",
+      "source/test_image_review.py": "f74202962d08bf0509fba42bf3dc7af3ea0dae3dc987d378ac6a025cc816fe77",
+      "source/test_oracle_bridge.py": "e7ec3950202388b09014bd175e7668aa3375f93c4029e04910296975cdec52f1",
+      "source/test_oracle_worker.py": "3c899ec2036f74167aa213cda6c42b8e71547f1e32f9c58df4e6f9cd1eca9d0a",
+      "source/test_owned_resources.py": "e8b7d53c1c6081a095a116beca16680c85b35dca66249ef830f0146304cc41ab",
+      "source/test_runtime_admission.py": "1e53248dbeacb1dae04f184ad844ae2d17dd7a338311ea5403e491cc373ac430",
+      "source/test_runtime_context.py": "040f04d8bd9a120758e2d03c2052c666d6f88c32fc38f3ecb8f1c5614f487b7c",
+      "source/test_streams.py": "0f5a4e23592bd7e849c7c90a49815704c7322f04c3804728f5ab1a3990fdd695",
+      "source/test_watchdog.py": "271b8f611ec10b2d7ad523368aa6e98e3a66ebc0351beef32c94c75b3331b7da",
+      "source/test_x64_runtime.py": "871dbc791fe792326b9f25516230c4e1fa2379be87cab000fd8896f950d21250",
+      "source/watchdog.py": "cc2e7e1212caa6be74e2266ce3a4ab156064a3ae96f01281cfa3ba5660ba5813",
+      "source/worker.py": "08c319e7ec3790f619e4bf4ba3160e0db3bdc34f8dd86256bf998639aa2ea273",
+      "target-content.json": "0b591e3700cc349573d30c0c9d6025371d5da919a21863d7a077368801322b95",
+      "target-image.tar": "dc57e5f47fac799d22ae2ac2c072e937c08d79e647296660ab46dced8fcb7b92",
+      "target-inspect.json": "1476212b2c1ca284a07d4aaa135dfaaf65510d51dce5a9cd87af9cd1b6aebbf1",
+      "target.iid": "865ae8351adeabd2163df342269a5df5c85de36002cf6cea9b03aadaecde0fe4",
+      "target.tar": "81b0644b1b42a1f33c8ff0f9ba24bde6df5ddeb81eb6e1ee10beff44e5fbb8ca"
+    },
+    "/tmp/opencode/c0-runtime-images-2026-10-17/tests-022.json": "24f928dc487865f5ef61040ffc9be2deb6c8e01a3f078bd017b3a113015ecdfc",
+    "/tmp/opencode/c0-runtime-images-remediation-2026-10-17/tests-022.json": "24c3f23963ce72bae90a0b0960c5c0e1dd80adc8f936cc567f093e1699f1b260",
+    "/tmp/opencode/c0-runtime-images-remediation-2026-10-17/tests-022.log": "fe136a29a5e2bf5e91766e82a32ff922dee0cbd518c9ee66618644c821674f82",
+    "/tmp/opencode/c0-runtime-images-remediation-2026-10-17/tests-077.json": "24c3f23963ce72bae90a0b0960c5c0e1dd80adc8f936cc567f093e1699f1b260",
+    "/tmp/opencode/c0-runtime-images-remediation-2026-10-17/tests-077.log": "9216dce950f0ccea90938dbc8ee21235d57b8a7bd8012d6d710c307b0216cf85",
+    "/var/home/kfuller/Documents/Git_Projects/mifolyo/docs/evidence/m4-c0-x64-runtime-2026-10-12/aarch64-build.json": "d7149a6cef748604d2745a24ff8d532ba650d35e95d647ed77225c4d1622e308",
+    "/var/home/kfuller/Documents/Git_Projects/mifolyo/docs/evidence/m4-c0-x64-runtime-2026-10-12/x86_64-build.json": "e24ed9a382cc4fcbf41bc4b425e229aaf62027886c6590c1d1d078e438aa4a3d"
+  },
+  "images": {
+    "aarch64": {
+      "builder_version": "Client:        Podman Engine\nVersion:       5.8.7\nAPI Version:   5.8.7\nGo Version:    go1.26.8-X:nodwarf5\nGit Commit:    c593b672bf3db1173aebea565ebf1a724ea196dc\nBuilt:         Tue Sep 15 20:00:00 2026\nBuild Origin:  Fedora Project\nOS/Arch:       linux/amd64\n",
+      "command_counts": {
+        "build": 5,
+        "container": 15,
+        "cp": 2,
+        "create": 5,
+        "export": 3,
+        "image": 8,
+        "info": 1,
+        "ps": 5,
+        "pull": 2,
+        "rm": 5,
+        "save": 3,
+        "unshare": 6,
+        "version": 1
+      },
+      "image_set_sha256": "ac29a71a14c21cf5b2e498b716f01fac2a888443df7e3f87fbf5c014007bd1c8",
+      "native_prior_matches": 11,
+      "roles": {
+        "observer": {
+          "archive": {
+            "architecture": "aarch64",
+            "bytes": 5460992,
+            "config_id": "sha256:f36e584c1808d192263ec9da1071ff16122afff0e67ee3e5ccda4881ec44ab12",
+            "format": "docker-archive",
+            "layers": [
+              "sha256:6f48e6fd9894e6fd8a3c8b6ec0b157c4f5da3433aa39d3406847558a77e55305"
+            ],
+            "sha256": "cd59a9f9bffb5e9078f5f9da8173e7fd230bd7753a6519f7400539deddfecb0d"
+          },
+          "content_sha256": "d93a59cbc80ba05045cffd7fb14d1594ac956da1d0531700b88552435af50b7c",
+          "elf_count": 1,
+          "id": "sha256:f36e584c1808d192263ec9da1071ff16122afff0e67ee3e5ccda4881ec44ab12",
+          "inspect_sha256": "7b625f2badd6dbd50ff826e9d0d4f25e5bb2c633dbd82a9e3254419557f089bb",
+          "layers": [
+            {
+              "layer": "6f48e6fd9894e6fd8a3c8b6ec0b157c4f5da3433aa39d3406847558a77e55305.tar",
+              "members": 1,
+              "root_headers": [],
+              "whiteouts": []
+            }
+          ],
+          "optional_unresolved": {},
+          "overlay_difference_count": 0,
+          "payload_sha256": "948e94e91f84930729e7c2ad73c51a6cf105ee84e7333c261bf654f8526f2c63",
+          "permissions": {
+            "pt_interp_execute_checked": [],
+            "required_modes": {
+              "/observer": "0o755"
+            },
+            "root_mode": "0o555"
+          },
+          "required_count": 1,
+          "root": {
+            "gid": 0,
+            "mode": 365,
+            "uid": 0
+          },
+          "root_command_indices": [
+            39,
+            42
+          ]
+        },
+        "oracle": {
+          "archive": {
+            "architecture": "aarch64",
+            "bytes": 151378944,
+            "config_id": "sha256:24268df2086d9348743fbc309113a46a9afc4a9f607fbc75a0987718ff2db2ed",
+            "format": "docker-archive",
+            "layers": [
+              "sha256:055ab12bd547e17a0630037f06a186cf405e3f61bb03a614562ca8f5ab52a8be",
+              "sha256:095145779909c26a66c70376d4b6cde5c2958236c609348586252e0064186c9d",
+              "sha256:3ca71efe23192eaff23483924b9ec0bd7f396e2aaef46640128c3477379fcaa9",
+              "sha256:ff6b919c53481cfc2497fad042e7c6cf042d45097f19fd908d13fcb73b85adcf",
+              "sha256:747b99c95ca9cb909f9c87d19a1421c84eb5342a1ad500a7a19cc6852539b9b2"
+            ],
+            "sha256": "a40ab4026d8e7f711e681e9538e2d091a47ae427fefe8acb83814dd6f90e9bcc"
+          },
+          "content_sha256": "b54c5b92251392f21db152efce4aa33c1e6ff17285c58066ab859a2a49fd6cd7",
+          "elf_count": 790,
+          "id": "sha256:24268df2086d9348743fbc309113a46a9afc4a9f607fbc75a0987718ff2db2ed",
+          "inspect_sha256": "4295eb7084db92a571364ab876f111ff219c5870238ac8fc06f775e0adbc88c2",
+          "layers": [
+            {
+              "layer": "055ab12bd547e17a0630037f06a186cf405e3f61bb03a614562ca8f5ab52a8be.tar",
+              "members": 4220,
+              "root_headers": [
+                {
+                  "gid": 0,
+                  "mode": 493,
+                  "uid": 0
+                }
+              ],
+              "whiteouts": []
+            },
+            {
+              "layer": "095145779909c26a66c70376d4b6cde5c2958236c609348586252e0064186c9d.tar",
+              "members": 565,
+              "root_headers": [],
+              "whiteouts": []
+            },
+            {
+              "layer": "3ca71efe23192eaff23483924b9ec0bd7f396e2aaef46640128c3477379fcaa9.tar",
+              "members": 1856,
+              "root_headers": [],
+              "whiteouts": []
+            },
+            {
+              "layer": "ff6b919c53481cfc2497fad042e7c6cf042d45097f19fd908d13fcb73b85adcf.tar",
+              "members": 8,
+              "root_headers": [],
+              "whiteouts": []
+            },
+            {
+              "layer": "747b99c95ca9cb909f9c87d19a1421c84eb5342a1ad500a7a19cc6852539b9b2.tar",
+              "members": 9,
+              "root_headers": [],
+              "whiteouts": []
+            }
+          ],
+          "optional_unresolved": {
+            "/usr/local/lib/python3.13/lib-dynload/_tkinter.cpython-313-aarch64-linux-gnu.so": [
+              "libtk8.6.so",
+              "libtcl8.6.so"
+            ]
+          },
+          "overlay_difference_count": 0,
+          "payload_sha256": "64d004592dc8299702d448f04436b6b7bd393d79963196e5c4ebcdce254e9354",
+          "permissions": {
+            "pt_interp_execute_checked": [
+              "/lib/ld-linux-aarch64.so.1"
+            ],
+            "required_modes": {
+              "/oracle/build_oracle.py": "0o644",
+              "/oracle/contracts.py": "0o644",
+              "/oracle/linux_observation.py": "0o644",
+              "/oracle/oracle.py": "0o644",
+              "/oracle/oracle_protocol.py": "0o644",
+              "/oracle/oracle_worker.py": "0o644",
+              "/oracle/runtime_admission.py": "0o644",
+              "/oracle/worker.py": "0o644",
+              "/usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1": "0o755",
+              "/usr/lib/aarch64-linux-gnu/libc.so.6": "0o755",
+              "/usr/lib/aarch64-linux-gnu/libcrypto.so.3": "0o644",
+              "/usr/lib/aarch64-linux-gnu/libffi.so.8.1.2": "0o644",
+              "/usr/lib/aarch64-linux-gnu/libm.so.6": "0o644",
+              "/usr/local/bin/python3.13": "0o755",
+              "/usr/local/lib/libpython3.13.so.1.0": "0o755",
+              "/usr/local/lib/python3.13/lib-dynload/_blake2.cpython-313-aarch64-linux-gnu.so": "0o755",
+              "/usr/local/lib/python3.13/lib-dynload/_ctypes.cpython-313-aarch64-linux-gnu.so": "0o755",
+              "/usr/local/lib/python3.13/lib-dynload/_hashlib.cpython-313-aarch64-linux-gnu.so": "0o755",
+              "/usr/local/lib/python3.13/lib-dynload/_json.cpython-313-aarch64-linux-gnu.so": "0o755",
+              "/usr/local/lib/python3.13/lib-dynload/_socket.cpython-313-aarch64-linux-gnu.so": "0o755",
+              "/usr/local/lib/python3.13/lib-dynload/_struct.cpython-313-aarch64-linux-gnu.so": "0o755",
+              "/usr/local/lib/python3.13/lib-dynload/array.cpython-313-aarch64-linux-gnu.so": "0o755",
+              "/usr/local/lib/python3.13/lib-dynload/grp.cpython-313-aarch64-linux-gnu.so": "0o755",
+              "/usr/local/lib/python3.13/lib-dynload/math.cpython-313-aarch64-linux-gnu.so": "0o755",
+              "/usr/local/lib/python3.13/lib-dynload/resource.cpython-313-aarch64-linux-gnu.so": "0o755",
+              "/usr/local/lib/python3.13/lib-dynload/select.cpython-313-aarch64-linux-gnu.so": "0o755"
+            },
+            "root_mode": "0o755"
+          },
+          "required_count": 18,
+          "root": {
+            "gid": 0,
+            "mode": 493,
+            "uid": 0
+          },
+          "root_command_indices": [
+            52,
+            55
+          ]
+        },
+        "target": {
+          "archive": {
+            "architecture": "aarch64",
+            "bytes": 5457920,
+            "config_id": "sha256:50de9aac35fac6d4cada173cf06884c43b506e123cb923e851afae93bcb50273",
+            "format": "docker-archive",
+            "layers": [
+              "sha256:6146b2f026ee894e27ae5a5a7957d7df52fe00c4397bab191db710796106a184"
+            ],
+            "sha256": "4da1438f3b8d79588679490212f53ce18508c017abfbaf83b67b2b1776b3fee8"
+          },
+          "content_sha256": "ab5fe73bbade66f04f7ed4aa6ff7311c967023fa702b5c2184d0631005ad873e",
+          "elf_count": 1,
+          "id": "sha256:50de9aac35fac6d4cada173cf06884c43b506e123cb923e851afae93bcb50273",
+          "inspect_sha256": "72e6cf67c07b7147bf077a648b22f2d29cc1b3fef7128a2438697844f4db2adf",
+          "layers": [
+            {
+              "layer": "6146b2f026ee894e27ae5a5a7957d7df52fe00c4397bab191db710796106a184.tar",
+              "members": 1,
+              "root_headers": [],
+              "whiteouts": []
+            }
+          ],
+          "optional_unresolved": {},
+          "overlay_difference_count": 0,
+          "payload_sha256": "7f9346b3a01d65dde54026b91b7e7cc7333442ea5d500fa9404bebfc7e2366e7",
+          "permissions": {
+            "pt_interp_execute_checked": [],
+            "required_modes": {
+              "/target": "0o755"
+            },
+            "root_mode": "0o555"
+          },
+          "required_count": 1,
+          "root": {
+            "gid": 0,
+            "mode": 365,
+            "uid": 0
+          },
+          "root_command_indices": [
+            26,
+            29
+          ]
+        }
+      },
+      "source_files": 55,
+      "source_snapshot_sha256": "2f4a4e5e51b4dc3e490b50266e9fcad279583307b9cd03eb7e0b5ea6dab8437a"
+    },
+    "x86_64": {
+      "builder_version": "Client:        Podman Engine\nVersion:       5.8.7\nAPI Version:   5.8.7\nGo Version:    go1.26.8-X:nodwarf5\nGit Commit:    c593b672bf3db1173aebea565ebf1a724ea196dc\nBuilt:         Tue Sep 15 20:00:00 2026\nBuild Origin:  Fedora Project\nOS/Arch:       linux/amd64\n",
+      "command_counts": {
+        "build": 5,
+        "container": 15,
+        "cp": 2,
+        "create": 5,
+        "export": 3,
+        "image": 8,
+        "info": 1,
+        "ps": 5,
+        "pull": 2,
+        "rm": 5,
+        "save": 3,
+        "unshare": 6,
+        "version": 1
+      },
+      "image_set_sha256": "76b30e6cdd7ab4cb8b49e2a50964f5acd5eee1a9a3cd2b2b88d7eea263b84489",
+      "native_prior_matches": 11,
+      "roles": {
+        "observer": {
+          "archive": {
+            "architecture": "x86_64",
+            "bytes": 5888512,
+            "config_id": "sha256:2046ca5b52ec7adf8ba4ad644401f49e22955b225377b0024e52b386168cd4cf",
+            "format": "docker-archive",
+            "layers": [
+              "sha256:737a5227dfc35f7e47346fefdaa68cb50bf28eaa4a526edd8c14323951c215ea"
+            ],
+            "sha256": "2b45067cf47565ad9ea4222d451425ba5342505cf1d8b4fbad9800f4aae8b16c"
+          },
+          "content_sha256": "8e680fab8a46406c6e4cff7dd9a7214444db2abf00a14eb76bf7030fb76e8e46",
+          "elf_count": 1,
+          "id": "sha256:2046ca5b52ec7adf8ba4ad644401f49e22955b225377b0024e52b386168cd4cf",
+          "inspect_sha256": "ea24c9ef7fe65d6d067ba7d41e67477ce38915c888ef89e2b113a4bca4b90ae8",
+          "layers": [
+            {
+              "layer": "737a5227dfc35f7e47346fefdaa68cb50bf28eaa4a526edd8c14323951c215ea.tar",
+              "members": 1,
+              "root_headers": [],
+              "whiteouts": []
+            }
+          ],
+          "optional_unresolved": {},
+          "overlay_difference_count": 0,
+          "payload_sha256": "117ca4c7220f2646ea6e3934581c52affd7b091d9513255b540295083db70901",
+          "permissions": {
+            "pt_interp_execute_checked": [],
+            "required_modes": {
+              "/observer": "0o755"
+            },
+            "root_mode": "0o555"
+          },
+          "required_count": 1,
+          "root": {
+            "gid": 0,
+            "mode": 365,
+            "uid": 0
+          },
+          "root_command_indices": [
+            39,
+            42
+          ]
+        },
+        "oracle": {
+          "archive": {
+            "architecture": "x86_64",
+            "bytes": 125835264,
+            "config_id": "sha256:26201a7d895b496c26746271a8ff1fa60687d495739f2cfe0456d129f180c940",
+            "format": "docker-archive",
+            "layers": [
+              "sha256:34467cc93912af891dfee8a3902adf9b4f355a9bca4eaa46f658d1181a21de0d",
+              "sha256:0229d3e3d668de7c1d42c1e23d30f4bc5c5e93d68c8fe897e94a6fe9b0262491",
+              "sha256:d119e31e71d7a4e8b81f78a0e11901e1a2b3252619eac69266aa157d943b4763",
+              "sha256:1095031acd1c984ad93c83dadab1d79a3b2fd93d5086537b16593c47a3e3ee06",
+              "sha256:a1860a11aed5e57a56e3847b0129604b32043bc349bd85118312ec8db2bc61fc"
+            ],
+            "sha256": "d15ca6b653e4c8f7d32895b7ac6f8f523ee45538065e09d9b74fa541018ba98a"
+          },
+          "content_sha256": "d85d8565a9cbdfcd97476238b66f646291535acf342bfbacd2401c296af4eb55",
+          "elf_count": 791,
+          "id": "sha256:26201a7d895b496c26746271a8ff1fa60687d495739f2cfe0456d129f180c940",
+          "inspect_sha256": "b77dd828e788fcf574553091a4d9927813028d0ed10d3fe6344f0344d45e24c9",
+          "layers": [
+            {
+              "layer": "34467cc93912af891dfee8a3902adf9b4f355a9bca4eaa46f658d1181a21de0d.tar",
+              "members": 4225,
+              "root_headers": [
+                {
+                  "gid": 0,
+                  "mode": 493,
+                  "uid": 0
+                }
+              ],
+              "whiteouts": []
+            },
+            {
+              "layer": "0229d3e3d668de7c1d42c1e23d30f4bc5c5e93d68c8fe897e94a6fe9b0262491.tar",
+              "members": 565,
+              "root_headers": [],
+              "whiteouts": []
+            },
+            {
+              "layer": "d119e31e71d7a4e8b81f78a0e11901e1a2b3252619eac69266aa157d943b4763.tar",
+              "members": 1856,
+              "root_headers": [],
+              "whiteouts": []
+            },
+            {
+              "layer": "1095031acd1c984ad93c83dadab1d79a3b2fd93d5086537b16593c47a3e3ee06.tar",
+              "members": 8,
+              "root_headers": [],
+              "whiteouts": []
+            },
+            {
+              "layer": "a1860a11aed5e57a56e3847b0129604b32043bc349bd85118312ec8db2bc61fc.tar",
+              "members": 9,
+              "root_headers": [],
+              "whiteouts": []
+            }
+          ],
+          "optional_unresolved": {
+            "/usr/local/lib/python3.13/lib-dynload/_tkinter.cpython-313-x86_64-linux-gnu.so": [
+              "libtk8.6.so",
+              "libtcl8.6.so"
+            ]
+          },
+          "overlay_difference_count": 0,
+          "payload_sha256": "f6a268986ce2e718f48c85a4dcd65d4ec01b6aff47af7aa57abf7aca7c8f07a4",
+          "permissions": {
+            "pt_interp_execute_checked": [
+              "/lib64/ld-linux-x86-64.so.2"
+            ],
+            "required_modes": {
+              "/oracle/build_oracle.py": "0o644",
+              "/oracle/contracts.py": "0o644",
+              "/oracle/linux_observation.py": "0o644",
+              "/oracle/oracle.py": "0o644",
+              "/oracle/oracle_protocol.py": "0o644",
+              "/oracle/oracle_worker.py": "0o644",
+              "/oracle/runtime_admission.py": "0o644",
+              "/oracle/worker.py": "0o644",
+              "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2": "0o755",
+              "/usr/lib/x86_64-linux-gnu/libc.so.6": "0o755",
+              "/usr/lib/x86_64-linux-gnu/libcrypto.so.3": "0o644",
+              "/usr/lib/x86_64-linux-gnu/libffi.so.8.1.2": "0o644",
+              "/usr/lib/x86_64-linux-gnu/libm.so.6": "0o644",
+              "/usr/local/bin/python3.13": "0o755",
+              "/usr/local/lib/libpython3.13.so.1.0": "0o755",
+              "/usr/local/lib/python3.13/lib-dynload/_blake2.cpython-313-x86_64-linux-gnu.so": "0o755",
+              "/usr/local/lib/python3.13/lib-dynload/_ctypes.cpython-313-x86_64-linux-gnu.so": "0o755",
+              "/usr/local/lib/python3.13/lib-dynload/_hashlib.cpython-313-x86_64-linux-gnu.so": "0o755",
+              "/usr/local/lib/python3.13/lib-dynload/_json.cpython-313-x86_64-linux-gnu.so": "0o755",
+              "/usr/local/lib/python3.13/lib-dynload/_socket.cpython-313-x86_64-linux-gnu.so": "0o755",
+              "/usr/local/lib/python3.13/lib-dynload/_struct.cpython-313-x86_64-linux-gnu.so": "0o755",
+              "/usr/local/lib/python3.13/lib-dynload/array.cpython-313-x86_64-linux-gnu.so": "0o755",
+              "/usr/local/lib/python3.13/lib-dynload/grp.cpython-313-x86_64-linux-gnu.so": "0o755",
+              "/usr/local/lib/python3.13/lib-dynload/math.cpython-313-x86_64-linux-gnu.so": "0o755",
+              "/usr/local/lib/python3.13/lib-dynload/resource.cpython-313-x86_64-linux-gnu.so": "0o755",
+              "/usr/local/lib/python3.13/lib-dynload/select.cpython-313-x86_64-linux-gnu.so": "0o755"
+            },
+            "root_mode": "0o755"
+          },
+          "required_count": 18,
+          "root": {
+            "gid": 0,
+            "mode": 493,
+            "uid": 0
+          },
+          "root_command_indices": [
+            52,
+            55
+          ]
+        },
+        "target": {
+          "archive": {
+            "architecture": "x86_64",
+            "bytes": 5890048,
+            "config_id": "sha256:1062239ded1acb7b4ac0a8c2f85920fc336e49182dc4e42e8175745e2f813a9f",
+            "format": "docker-archive",
+            "layers": [
+              "sha256:81b0644b1b42a1f33c8ff0f9ba24bde6df5ddeb81eb6e1ee10beff44e5fbb8ca"
+            ],
+            "sha256": "dc57e5f47fac799d22ae2ac2c072e937c08d79e647296660ab46dced8fcb7b92"
+          },
+          "content_sha256": "0b591e3700cc349573d30c0c9d6025371d5da919a21863d7a077368801322b95",
+          "elf_count": 1,
+          "id": "sha256:1062239ded1acb7b4ac0a8c2f85920fc336e49182dc4e42e8175745e2f813a9f",
+          "inspect_sha256": "1476212b2c1ca284a07d4aaa135dfaaf65510d51dce5a9cd87af9cd1b6aebbf1",
+          "layers": [
+            {
+              "layer": "81b0644b1b42a1f33c8ff0f9ba24bde6df5ddeb81eb6e1ee10beff44e5fbb8ca.tar",
+              "members": 1,
+              "root_headers": [],
+              "whiteouts": []
+            }
+          ],
+          "optional_unresolved": {},
+          "overlay_difference_count": 0,
+          "payload_sha256": "c9f5f201adfaa4d419f2154c2baeef5f64011a130b9443d3cf70c46e2a28eb52",
+          "permissions": {
+            "pt_interp_execute_checked": [],
+            "required_modes": {
+              "/target": "0o755"
+            },
+            "root_mode": "0o555"
+          },
+          "required_count": 1,
+          "root": {
+            "gid": 0,
+            "mode": 365,
+            "uid": 0
+          },
+          "root_command_indices": [
+            26,
+            29
+          ]
+        }
+      },
+      "source_files": 55,
+      "source_snapshot_sha256": "2f4a4e5e51b4dc3e490b50266e9fcad279583307b9cd03eb7e0b5ea6dab8437a"
+    }
+  },
+  "status": "PASS_ACTUAL_ARTIFACT_JOINS",
+  "test_continuity": [
+    {
+      "new_ids": [
+        "test_image_review.ImageReviewTests.test_configured_user_requires_read_and_execute_bits_on_native_files",
+        "test_image_review.ImageReviewTests.test_link_parent_components_follow_filesystem_order",
+        "test_image_review.ImageReviewTests.test_oracle_extension_abi_isolated_from_host_and_refused_before_output",
+        "test_image_review.ImageReviewTests.test_portable_config_and_layer_alias_collisions_are_refused",
+        "test_image_review.ImageReviewTests.test_root_and_alias_directory_access_and_source_read_permissions",
+        "test_image_review.ImageReviewTests.test_root_markers_are_counted_and_cannot_repeat",
+        "test_image_review.ImageReviewTests.test_root_observation_drift_and_bad_started_fields_refuse",
+        "test_image_review.ImageReviewTests.test_root_observation_must_agree_with_archive_root_marker",
+        "test_image_review.ImageReviewTests.test_runpath_directory_links_resolve_and_malformed_links_do_not_fall_through",
+        "test_image_review.ImageReviewTests.test_runpath_overrides_rpath_and_legacy_inheritance_refuses",
+        "test_image_review.ImageReviewTests.test_unsupported_docker_builder_refuses_before_mutating_outputs"
+      ],
+      "prior_retained": 272,
+      "tests": 283,
+      "umask": "022"
+    },
+    {
+      "new_ids": [
+        "test_image_review.ImageReviewTests.test_configured_user_requires_read_and_execute_bits_on_native_files",
+        "test_image_review.ImageReviewTests.test_link_parent_components_follow_filesystem_order",
+        "test_image_review.ImageReviewTests.test_oracle_extension_abi_isolated_from_host_and_refused_before_output",
+        "test_image_review.ImageReviewTests.test_portable_config_and_layer_alias_collisions_are_refused",
+        "test_image_review.ImageReviewTests.test_root_and_alias_directory_access_and_source_read_permissions",
+        "test_image_review.ImageReviewTests.test_root_markers_are_counted_and_cannot_repeat",
+        "test_image_review.ImageReviewTests.test_root_observation_drift_and_bad_started_fields_refuse",
+        "test_image_review.ImageReviewTests.test_root_observation_must_agree_with_archive_root_marker",
+        "test_image_review.ImageReviewTests.test_runpath_directory_links_resolve_and_malformed_links_do_not_fall_through",
+        "test_image_review.ImageReviewTests.test_runpath_overrides_rpath_and_legacy_inheritance_refuses",
+        "test_image_review.ImageReviewTests.test_unsupported_docker_builder_refuses_before_mutating_outputs"
+      ],
+      "prior_retained": 272,
+      "tests": 283,
+      "umask": "077"
+    }
+  ]
+}

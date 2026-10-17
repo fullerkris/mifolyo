@@ -1,0 +1,122 @@
+{
+  "archive_extraction": false,
+  "engine_or_helper_executions": 0,
+  "errors": [],
+  "failures": [
+    {
+      "id": "__main__.MaterialChangeTests.test_required_unreferenced_hardlink_metadata_cannot_modify_checked_inode",
+      "traceback": "Traceback (most recent call last):\n  File \"/tmp/opencode/c0-runtime-images-final-2026-10-17/security/test_final.py\", line 219, in test_required_unreferenced_hardlink_metadata_cannot_modify_checked_inode\n    with self.assertRaisesRegex(c.Invalid, 'IMAGE_HARDLINK_METADATA'):\n         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: Invalid not raised\n"
+    }
+  ],
+  "native_or_worker_executions": 0,
+  "network_calls": 0,
+  "observations": {
+    "C0-IMG-SEC-06": {
+      "benign_shared_inode_mode_after_alias_chmod": 448,
+      "declared_target_sha256": "1547333e8593321492c4d461a8aaeef1b3c90d5b8e90233cbf77d5b9247db34d",
+      "direct_alias_refusal": "IMAGE_HARDLINK_METADATA",
+      "execution_authorized": false,
+      "fixture": "fixtures/unused-hardlink-conflict.tar",
+      "hardlink_header_mode": 448,
+      "positive_fixture": "fixtures/unused-hardlink-positive.tar",
+      "root_observation": {
+        "gid": 0,
+        "mode": 493,
+        "uid": 0
+      },
+      "runtime_acceptance": false,
+      "sha256": "a8926a206e90cb0618f18632db0671600eaebb98ef6df42fcdefc6883ccce070",
+      "target_header_mode": 493,
+      "whole_content_admission_succeeded": true
+    },
+    "COR004": {
+      "executable_interpreter_passed": true,
+      "non_executable_interpreter_refused_in_both_visit_orders": true,
+      "read_only_DT_NEEDED_library_passed": true
+    },
+    "COR004_visit_trace": [
+      {
+        "executable": false,
+        "path": "/usr/local/lib/loader.so"
+      },
+      {
+        "executable": false,
+        "path": "/app"
+      },
+      {
+        "executable": true,
+        "path": "/usr/local/lib/loader.so"
+      }
+    ],
+    "SEC01": {
+      "positive_config_id": "sha256:c042848616c4d95ef39ed85d1fd9a9aabb0398dfa920ef335bce90db0a4ef8df",
+      "refusal": "IMAGE_SAVE_DUPLICATE_PATH"
+    },
+    "SEC02": {
+      "matching_source_sha256": "67e533f08cb5cb33a5186578b153063464246023f5d03ba452f20237f2f3660a",
+      "refusal": "IMAGE_ORACLE_SOURCE",
+      "root_observation": {
+        "gid": 0,
+        "mode": 493,
+        "uid": 0
+      }
+    },
+    "SEC03": {
+      "duplicate_refusal": "IMAGE_ROOT_DUPLICATE",
+      "excess_refusal": "IMAGE_DUPLICATE_OR_COUNT",
+      "positive_count": 20000
+    },
+    "SEC04": {
+      "positive_sources": {
+        "ordinary-hardlink.tar": "12ded7d07c41abaa6b8ee908a0c83e56ed386393ed6bdcad406628eb8d66b152",
+        "ordinary-link.tar": "12ded7d07c41abaa6b8ee908a0c83e56ed386393ed6bdcad406628eb8d66b152"
+      },
+      "refusal": "IMAGE_HARDLINK_LINK_TARGET",
+      "root_observation": {
+        "gid": 0,
+        "mode": 493,
+        "uid": 0
+      }
+    },
+    "SEC05": {
+      "conflict_refusal": "IMAGE_ROOT_CHANGED",
+      "duplicate_refusal": "IMAGE_ROOT_DUPLICATE",
+      "positive_with_and_without_observation": true
+    },
+    "hardlink_target_model": {
+      "direct": "IMAGE_HARDLINK_LINK_TARGET",
+      "missing": "IMAGE_DANGLING_LINK",
+      "prefix/data": "IMAGE_HARDLINK_LINK_TARGET",
+      "src": "IMAGE_HARDLINK_TARGET"
+    },
+    "referenced_hardlink_metadata": {
+      "matching_modes_passed": [
+        420,
+        493
+      ],
+      "refusals": {
+        "gid=999": "IMAGE_HARDLINK_METADATA",
+        "mode=2541": "IMAGE_HARDLINK_METADATA",
+        "mode=448": "IMAGE_HARDLINK_METADATA",
+        "mode=511": "IMAGE_HARDLINK_METADATA",
+        "uid=999": "IMAGE_HARDLINK_METADATA"
+      }
+    },
+    "reserved_dependency_key": {
+      "exact_name_refused": true,
+      "non_reserved_similar_name_passed": true
+    },
+    "root_variants": {
+      "non_directory_refused": true,
+      "positive_aliases": [
+        "./.",
+        ".//.",
+        "././",
+        ".///./."
+      ]
+    }
+  },
+  "python": "3.14.8 (main, Oct  1 2026, 00:00:00) [GCC 16.2.1 20260819 (Red Hat 16.2.1-2)]",
+  "skipped": [],
+  "tests_run": 11
+}

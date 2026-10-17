@@ -1,0 +1,274 @@
+{
+  "branch": "feature/crawl-jobs-v2-c0-runtime-images",
+  "constraints": {
+    "archive_extraction": false,
+    "benign_text_symlink_inode_test_inside_private_output_only": true,
+    "container_or_image_mutations": false,
+    "deployment": false,
+    "engine_commands_executed": 0,
+    "native_C_review_or_execution": false,
+    "network_calls": 0,
+    "repository_or_frozen_source_edits": false,
+    "root_metadata_helper_executions": 0,
+    "system_policy_changes": false,
+    "worker_main_or_collector_execution": false
+  },
+  "corrected_retained_trees_preserved": {
+    "aarch64": 150,
+    "x86_64": 150
+  },
+  "date": "2026-10-17",
+  "evidence_sha256": {
+    "candidate-fix-results.json": "725732bd2b042503480231ecbd52581d60cf74c5877af5e4b90e8a2ca34dd7fc",
+    "candidate-fix-results.log": "431820ea0febfda6168308710e3672922e02978ab0fff6d30b97051ce2f4a6c2",
+    "candidate-fixes.patch": "468e91ef0650799035be3b596943af6e5000d5db0dc804bfb2cdc0a6d760f780",
+    "check_candidate_fixes.py": "3e4dc3dc6b746029dada0f973f75dffac098fb846196b6e8d237ab29e3a9b536",
+    "check_corrected_sets.py": "1c542bb08e9085a638fe1aefb61827f5f046c4da39634ad3252415a6fc1ee647",
+    "corrected-set-checks-pass.log": "0b3d062c67b12d6de0cf05dde94ece542ef2c4528a00e05dc5cd6de0f2cb4fa1",
+    "corrected-set-checks.json": "7cd2c8c52c1e89c2e14d6e5117cf127f3b6e86af549f6ca02a75a5739d919957",
+    "corrected-set-checks.log": "b128e2a006f891f0abbf36de7e12b2b5d7731a6ad288939898c54a73b9fe7d13",
+    "existing-image-tests.json": "7a6dd3a0e973ed4924db488149d997cbbb49689f629f19bef5089b0d40be4585",
+    "existing-image-tests.log": "5ebcf69a2f6a2ceda2c1741668f395462b54700eb14858e43f0ec8fd3daef191",
+    "independent-tests-repeat.log": "7076694c27ded9f0c314ffbcdcdf4564e5ffdd8781cd16d3676e582dd05dcc5c",
+    "independent-tests.json": "e5c27cf0a92d00073395355d0cde996c26997c0f27d62ed8d18a03e639209ada",
+    "independent-tests.log": "4670913405fdd833612773edb4fdfa20593dcfb9a66b6f9ec1703504dce96636",
+    "inputs-after.json": "d73f63d43143606ccb2b9cf4941b7e57f0c731000b52d343b09c9750c0a2199e",
+    "inputs-before.json": "0fb08a791fc121e2c0d1b351256dd66f4e836713392a9f9faa8f7500144ba298",
+    "repeat-02/fixtures/hardlink-to-symlink.tar": "1179c922fdc234effc5748bf02741fb79df9acb92f12d0b6a867478f339ce974",
+    "repeat-02/fixtures/member-limit-negative.tar": "970b2a24694a60c861db520b9c627f8b72aa6b5d363645b6bd4ebee9b5ca1c4e",
+    "repeat-02/fixtures/member-limit-positive.tar": "1cef0345881ad2076ef185521629f08776cf6930a9941cdc92d2132c3d6b4ae1",
+    "repeat-02/fixtures/ordinary-hardlink.tar": "355a90e37c10dc50490924f3e04125558b43fd6f5df69da69275bce29c0cfbdf",
+    "repeat-02/fixtures/ordinary-link.tar": "aec6973740694525d23c4d3f1d96dab76cc6de0c6badc7420103d26210356685",
+    "repeat-02/fixtures/root-alias-conflict.tar": "19fa6a282a2d10c31a4a537ba527c95dce35bf39cd2365f280fa5aece6e4dc10",
+    "repeat-02/fixtures/root-alias-duplicate.tar": "510c9c12f02f882315adf89433c15e7ac5d4055849fdb8b919620a2d0c8cac69",
+    "repeat-02/fixtures/root-alias-positive.tar": "ff8643a456eb46b089664d9f0b651c5dbc357aef42251eefe3db851b2e6a7529",
+    "repeat-02/independent-tests.json": "9b523c31b3c696fe6a28998b7cb126fce557c7283c5552c462a1859a9373e71e",
+    "review.md": "d0b8a56c8b489648927bfd5fba85e5906da676ba12e8107c061fb77639109783",
+    "run_existing_tests.py": "4b01e6338567cada2d87d7bc976b916c91147d0c4b31a2910bf1729f8dc10dc4",
+    "test_rereview.py": "fdcf3997681e8b21aed8ff634d1a19aaac6aedd37a42a421bb2c2278e566824f",
+    "verify_inputs.py": "8b06619853f6285d80b12b8ac36b40324ec6db2523199c6bda572dd38c3cb2b6",
+    "write_reports.py": "ff556c172c530b4e40e6b088c5fcd9581530d174eaa0cc6b9bbc99d88912ea54"
+  },
+  "execution_authorized": false,
+  "finding_counts": {
+    "Critical": 0,
+    "High": 0,
+    "Low": 0,
+    "Medium": 2
+  },
+  "findings": [
+    {
+      "classification_scope": "static admission integrity",
+      "cwe": "CWE-59",
+      "id": "C0-IMG-SEC-04",
+      "impact": "Content admission authenticates different image-internal source bytes than a real read of the aliased symlink inode.",
+      "location": "image_artifacts.py:108-113,136-149,294-297",
+      "positive_controls_passed": true,
+      "prerequisite": "Malformed or substituted candidate archive reaches the parser; no remote input path or private-output compromise established.",
+      "proof": {
+        "actual_relative_path": "worker.py",
+        "actual_sha256": "9923e75e179e2dcf23a9966d58e0794e428e64eb98fe9d93ad85b44a39e660e1",
+        "admitted_path": "/src/worker.py",
+        "admitted_sha256": "12ded7d07c41abaa6b8ee908a0c83e56ed386393ed6bdcad406628eb8d66b152",
+        "execution_authorized": false,
+        "fixture": "repeat-02/fixtures/hardlink-to-symlink.tar",
+        "root_observation": {
+          "gid": 0,
+          "mode": 493,
+          "uid": 0
+        },
+        "runtime_acceptance": false,
+        "same_symlink_inode_confirmed": true,
+        "sha256": "1179c922fdc234effc5748bf02741fb79df9acb92f12d0b6a867478f339ce974"
+      },
+      "remediation": {
+        "all_six_retained_content_records_unchanged_with_guards": true,
+        "applied_to_repository": false,
+        "code": "candidate-fixes.patch",
+        "explanation": "review.md section C0-IMG-SEC-04",
+        "tested_in_memory_only": true
+      },
+      "severity": "Medium",
+      "title": "Hardlink to relative symlink binds source bytes at the wrong parent"
+    },
+    {
+      "classification_scope": "static admission integrity",
+      "cwe": "CWE-180",
+      "id": "C0-IMG-SEC-05",
+      "impact": "Content admission succeeds despite conflicting root header metadata, and permits two canonical root representations.",
+      "location": "image_artifacts.py:89-97,155-158,305-306",
+      "positive_controls_passed": true,
+      "prerequisite": "Malformed or substituted candidate archive reaches the parser; no remote input path or private-output compromise established.",
+      "proof": {
+        "duplicate_archive_accepted": true,
+        "duplicate_fixture": "repeat-02/fixtures/root-alias-duplicate.tar",
+        "duplicate_sha256": "510c9c12f02f882315adf89433c15e7ac5d4055849fdb8b919620a2d0c8cac69",
+        "fixture": "repeat-02/fixtures/root-alias-conflict.tar",
+        "positive_fixture": "repeat-02/fixtures/root-alias-positive.tar",
+        "reported_root": {
+          "gid": 0,
+          "mode": 493,
+          "uid": 0
+        },
+        "sha256": "19fa6a282a2d10c31a4a537ba527c95dce35bf39cd2365f280fa5aece6e4dc10",
+        "unjoined_root_alias": {
+          "gid": 0,
+          "kind": "directory",
+          "mode": 448,
+          "uid": 0
+        }
+      },
+      "remediation": {
+        "all_six_retained_content_records_unchanged_with_guards": true,
+        "applied_to_repository": false,
+        "code": "candidate-fixes.patch",
+        "explanation": "review.md section C0-IMG-SEC-05",
+        "tested_in_memory_only": true
+      },
+      "severity": "Medium",
+      "title": "Normalized root aliases bypass root observation and duplicate checks"
+    }
+  ],
+  "head": "7ef2041e2844aa34bec54da61c2e8469c1382bac",
+  "inventory_files": {
+    "auxiliary": 3,
+    "package": 55
+  },
+  "inventory_sha256": "14ac223d10a72ff859d653c29bf721e35af320fc3dbfe823a4c8176180576670",
+  "limits": [
+    "No demonstrated host filesystem escape or external-file mutation.",
+    "No claim that supplied corrected image sets are malicious.",
+    "No live helper, engine loading, daemon interruption/race or hosted CI testing.",
+    "No exhaustive tar/POSIX/dynamic-loader semantics proof or resource-exhaustion exercise.",
+    "Native runtime/hardware/timing and registry publishing remain C0-ARCH-05/06.",
+    "Candidate fixes tested in memory only; frozen implementation still contains new defects."
+  ],
+  "no_new_blocker_established": false,
+  "original_findings": {
+    "C0-IMG-SEC-01": {
+      "evidence": {
+        "negative": "/tmp/opencode/c0-runtime-images-2026-10-17/security/unit-run-02/inert-fixtures/portable-config-alias.tar",
+        "positive": "/tmp/opencode/c0-runtime-images-2026-10-17/security/unit-run-02/inert-fixtures/portable-good.tar",
+        "positive_config_id": "sha256:c042848616c4d95ef39ed85d1fd9a9aabb0398dfa920ef335bce90db0a4ef8df",
+        "refusal": "IMAGE_SAVE_DUPLICATE_PATH"
+      },
+      "positive_control_passed": true,
+      "status": "CLOSED_FOR_ORIGINAL_REPRODUCED_DEFECT"
+    },
+    "C0-IMG-SEC-02": {
+      "evidence": {
+        "fixture": "/tmp/opencode/c0-runtime-images-2026-10-17/security/unit-run-02/inert-fixtures/oracle-link-dotdot.tar",
+        "matching_source_admitted_sha256": "67e533f08cb5cb33a5186578b153063464246023f5d03ba452f20237f2f3660a",
+        "refusal": "IMAGE_ORACLE_SOURCE",
+        "resolved": "/foreign/worker.py",
+        "root_observation": {
+          "gid": 0,
+          "mode": 493,
+          "uid": 0
+        }
+      },
+      "positive_control_passed": true,
+      "status": "CLOSED_FOR_ORIGINAL_REPRODUCED_DEFECT"
+    },
+    "C0-IMG-SEC-03": {
+      "evidence": {
+        "excess_refusal": "IMAGE_DUPLICATE_OR_COUNT",
+        "original_refusal": "IMAGE_ROOT_DUPLICATE",
+        "positive_members": 20000
+      },
+      "positive_control_passed": true,
+      "status": "CLOSED_FOR_ORIGINAL_REPRODUCED_DEFECT"
+    }
+  },
+  "original_review_outputs_preserved": {
+    "entries": 79,
+    "report_sha256": {
+      "review.json": "27e8242087612e0ada7eba888c1c3b27d5b5d00b5b5a985b11987e7b88090f5d",
+      "review.md": "7ad721556be8fb019fde0a74a00e306f8efbcf43ae53dafcf4b45753bd5c4ced"
+    }
+  },
+  "retained_verification": {
+    "all_existing_content_metadata_archive_source_checks_pass": true,
+    "cleanup_records": 10,
+    "commands": 122,
+    "helper_executed_by_reviewer": false,
+    "helper_sha256": "4b60558d5ddb0ce85ebccc4b7edd359ba95ddd6689787a4d6ce8140b8ada097c",
+    "images": 6,
+    "native_artifacts_compared_as_hashes_and_bytes_only": true,
+    "root_observations": 12
+  },
+  "reviewed_source_sha256": {
+    ".github/workflows/c0-runtime-images.yml": "47d0205d931100d096e8720d4bc6a21d3d542ab64db5eaefba4e46827e9c770c",
+    "scripts/prepare-crawl-jobs-v2-observer-images.py": "a97a270010e48dfee61c3c3317c4fcad7069bb70ba83ee0181d3c6d83b7e71cc",
+    "scripts/test-crawl-jobs-v2-observer.py": "9afb715125f734f5b905da63dde5c9787fc5997b2e5a73a0bf62d781b23aef84",
+    "tests/crawl-jobs-v2-observer/build_oracle.py": "cb702f624c986320e6f4c690dfc4eac1187104c711a52eb9e2bab28ec12e7ed6",
+    "tests/crawl-jobs-v2-observer/image_artifacts.py": "61df24f28e9e4ef2c92e21503637e22863c1da4d9d47b112a2d97be6fb8c9683",
+    "tests/crawl-jobs-v2-observer/image_build.py": "6926bdb5bf01c25b3c29ac5607e4602bf831772fe34e06c85bee7700baee0d85",
+    "tests/crawl-jobs-v2-observer/test_image_artifacts.py": "81ea1082f3f4c7d38b37f4aeef0a84f215f546331d9c46d24f828d357a4835fa",
+    "tests/crawl-jobs-v2-observer/test_image_review.py": "f74202962d08bf0509fba42bf3dc7af3ea0dae3dc987d378ac6a025cc816fe77"
+  },
+  "runtime_acceptance": false,
+  "schema_version": 1,
+  "scope": "Read-only re-review of corrected Python archive/configuration/file-handling/cleanup logic and CLI/CI wrappers.",
+  "sources_before_after_match": true,
+  "tests": {
+    "distinct_unit_tests": 37,
+    "existing_image_tests": {
+      "passed": 27,
+      "run": 27
+    },
+    "full_283_suite_independently_rerun": false,
+    "independent_suite_reproduced_twice": true,
+    "independent_tests": {
+      "errors": 0,
+      "exposed_defects": 2,
+      "passed": 8,
+      "run": 10,
+      "skipped": 0
+    },
+    "python": "3.14.8 (main, Oct  1 2026, 00:00:00) [GCC 16.2.1 20260819 (Red Hat 16.2.1-2)]",
+    "recorded_283_reports_verified": {
+      "tests-022.json": {
+        "added_ids": [
+          "test_image_review.ImageReviewTests.test_configured_user_requires_read_and_execute_bits_on_native_files",
+          "test_image_review.ImageReviewTests.test_link_parent_components_follow_filesystem_order",
+          "test_image_review.ImageReviewTests.test_oracle_extension_abi_isolated_from_host_and_refused_before_output",
+          "test_image_review.ImageReviewTests.test_portable_config_and_layer_alias_collisions_are_refused",
+          "test_image_review.ImageReviewTests.test_root_and_alias_directory_access_and_source_read_permissions",
+          "test_image_review.ImageReviewTests.test_root_markers_are_counted_and_cannot_repeat",
+          "test_image_review.ImageReviewTests.test_root_observation_drift_and_bad_started_fields_refuse",
+          "test_image_review.ImageReviewTests.test_root_observation_must_agree_with_archive_root_marker",
+          "test_image_review.ImageReviewTests.test_runpath_directory_links_resolve_and_malformed_links_do_not_fall_through",
+          "test_image_review.ImageReviewTests.test_runpath_overrides_rpath_and_legacy_inheritance_refuses",
+          "test_image_review.ImageReviewTests.test_unsupported_docker_builder_refuses_before_mutating_outputs"
+        ],
+        "all_272_prior_ids_retained": true,
+        "independently_rerun": false,
+        "sha256": "24c3f23963ce72bae90a0b0960c5c0e1dd80adc8f936cc567f093e1699f1b260",
+        "source_bound": true,
+        "tests_run": 283
+      },
+      "tests-077.json": {
+        "added_ids": [
+          "test_image_review.ImageReviewTests.test_configured_user_requires_read_and_execute_bits_on_native_files",
+          "test_image_review.ImageReviewTests.test_link_parent_components_follow_filesystem_order",
+          "test_image_review.ImageReviewTests.test_oracle_extension_abi_isolated_from_host_and_refused_before_output",
+          "test_image_review.ImageReviewTests.test_portable_config_and_layer_alias_collisions_are_refused",
+          "test_image_review.ImageReviewTests.test_root_and_alias_directory_access_and_source_read_permissions",
+          "test_image_review.ImageReviewTests.test_root_markers_are_counted_and_cannot_repeat",
+          "test_image_review.ImageReviewTests.test_root_observation_drift_and_bad_started_fields_refuse",
+          "test_image_review.ImageReviewTests.test_root_observation_must_agree_with_archive_root_marker",
+          "test_image_review.ImageReviewTests.test_runpath_directory_links_resolve_and_malformed_links_do_not_fall_through",
+          "test_image_review.ImageReviewTests.test_runpath_overrides_rpath_and_legacy_inheritance_refuses",
+          "test_image_review.ImageReviewTests.test_unsupported_docker_builder_refuses_before_mutating_outputs"
+        ],
+        "all_272_prior_ids_retained": true,
+        "independently_rerun": false,
+        "sha256": "24c3f23963ce72bae90a0b0960c5c0e1dd80adc8f936cc567f093e1699f1b260",
+        "source_bound": true,
+        "tests_run": 283
+      }
+    }
+  },
+  "verdict": "NEEDS_REMEDIATION"
+}

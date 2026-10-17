@@ -1,0 +1,55 @@
+{
+  "status": "PASS",
+  "image_sets": {
+    "aarch64": {
+      "native_identical": 11,
+      "roles": {
+        "observer": {
+          "elfs": 1,
+          "closure": 1,
+          "overlay_differences": []
+        },
+        "oracle": {
+          "elfs": 790,
+          "closure": 18,
+          "overlay_differences": []
+        },
+        "target": {
+          "elfs": 1,
+          "closure": 1,
+          "overlay_differences": []
+        }
+      }
+    },
+    "x86_64": {
+      "native_identical": 11,
+      "roles": {
+        "observer": {
+          "elfs": 1,
+          "closure": 1,
+          "overlay_differences": []
+        },
+        "oracle": {
+          "elfs": 791,
+          "closure": 18,
+          "overlay_differences": []
+        },
+        "target": {
+          "elfs": 1,
+          "closure": 1,
+          "overlay_differences": []
+        }
+      }
+    }
+  },
+  "test_reports": [
+    {
+      "count": 272,
+      "retained": 256
+    },
+    {
+      "count": 272,
+      "retained": 256
+    }
+  ]
+}

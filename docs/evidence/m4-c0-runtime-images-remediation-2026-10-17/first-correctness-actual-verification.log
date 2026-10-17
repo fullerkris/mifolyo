@@ -1,0 +1,137 @@
+{
+  "status": "PASS_ACTUAL_ARTIFACT_JOINS",
+  "images": {
+    "aarch64": {
+      "native_prior_matches": 11,
+      "roles": {
+        "observer": {
+          "elf_count": 1,
+          "required_count": 1,
+          "overlay_differences": 0,
+          "root": {
+            "gid": 0,
+            "mode": 365,
+            "uid": 0
+          }
+        },
+        "oracle": {
+          "elf_count": 790,
+          "required_count": 18,
+          "overlay_differences": 0,
+          "root": {
+            "gid": 0,
+            "mode": 493,
+            "uid": 0
+          }
+        },
+        "target": {
+          "elf_count": 1,
+          "required_count": 1,
+          "overlay_differences": 0,
+          "root": {
+            "gid": 0,
+            "mode": 365,
+            "uid": 0
+          }
+        }
+      }
+    },
+    "x86_64": {
+      "native_prior_matches": 11,
+      "roles": {
+        "observer": {
+          "elf_count": 1,
+          "required_count": 1,
+          "overlay_differences": 0,
+          "root": {
+            "gid": 0,
+            "mode": 365,
+            "uid": 0
+          }
+        },
+        "oracle": {
+          "elf_count": 791,
+          "required_count": 18,
+          "overlay_differences": 0,
+          "root": {
+            "gid": 0,
+            "mode": 493,
+            "uid": 0
+          }
+        },
+        "target": {
+          "elf_count": 1,
+          "required_count": 1,
+          "overlay_differences": 0,
+          "root": {
+            "gid": 0,
+            "mode": 365,
+            "uid": 0
+          }
+        }
+      }
+    }
+  },
+  "adjacent_permission_probes": [
+    {
+      "architecture": "aarch64",
+      "path": "/usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1",
+      "original_mode": "0o755",
+      "in_memory_mutation": "mode=0644",
+      "observation": {
+        "accepted": true,
+        "same_payload_sha256": true
+      },
+      "archive_unmodified": true
+    },
+    {
+      "architecture": "x86_64",
+      "path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+      "original_mode": "0o755",
+      "in_memory_mutation": "mode=0644",
+      "observation": {
+        "accepted": true,
+        "same_payload_sha256": true
+      },
+      "archive_unmodified": true
+    }
+  ],
+  "test_continuity": [
+    {
+      "umask": "022",
+      "tests": 283,
+      "prior_retained": 272,
+      "new_ids": [
+        "test_image_review.ImageReviewTests.test_configured_user_requires_read_and_execute_bits_on_native_files",
+        "test_image_review.ImageReviewTests.test_link_parent_components_follow_filesystem_order",
+        "test_image_review.ImageReviewTests.test_oracle_extension_abi_isolated_from_host_and_refused_before_output",
+        "test_image_review.ImageReviewTests.test_portable_config_and_layer_alias_collisions_are_refused",
+        "test_image_review.ImageReviewTests.test_root_and_alias_directory_access_and_source_read_permissions",
+        "test_image_review.ImageReviewTests.test_root_markers_are_counted_and_cannot_repeat",
+        "test_image_review.ImageReviewTests.test_root_observation_drift_and_bad_started_fields_refuse",
+        "test_image_review.ImageReviewTests.test_root_observation_must_agree_with_archive_root_marker",
+        "test_image_review.ImageReviewTests.test_runpath_directory_links_resolve_and_malformed_links_do_not_fall_through",
+        "test_image_review.ImageReviewTests.test_runpath_overrides_rpath_and_legacy_inheritance_refuses",
+        "test_image_review.ImageReviewTests.test_unsupported_docker_builder_refuses_before_mutating_outputs"
+      ]
+    },
+    {
+      "umask": "077",
+      "tests": 283,
+      "prior_retained": 272,
+      "new_ids": [
+        "test_image_review.ImageReviewTests.test_configured_user_requires_read_and_execute_bits_on_native_files",
+        "test_image_review.ImageReviewTests.test_link_parent_components_follow_filesystem_order",
+        "test_image_review.ImageReviewTests.test_oracle_extension_abi_isolated_from_host_and_refused_before_output",
+        "test_image_review.ImageReviewTests.test_portable_config_and_layer_alias_collisions_are_refused",
+        "test_image_review.ImageReviewTests.test_root_and_alias_directory_access_and_source_read_permissions",
+        "test_image_review.ImageReviewTests.test_root_markers_are_counted_and_cannot_repeat",
+        "test_image_review.ImageReviewTests.test_root_observation_drift_and_bad_started_fields_refuse",
+        "test_image_review.ImageReviewTests.test_root_observation_must_agree_with_archive_root_marker",
+        "test_image_review.ImageReviewTests.test_runpath_directory_links_resolve_and_malformed_links_do_not_fall_through",
+        "test_image_review.ImageReviewTests.test_runpath_overrides_rpath_and_legacy_inheritance_refuses",
+        "test_image_review.ImageReviewTests.test_unsupported_docker_builder_refuses_before_mutating_outputs"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+[1/5] STEP 1/1: FROM docker.io/library/gcc@sha256:66035d353338cb93b64f621393dc6fecde85258651ca454f0cf36ff2639b1352 AS compiler-aarch64
+--> 35d421ebdf45
+[3/5] STEP 1/9: FROM 35d421ebdf452a6b15cf5d2cee97b56e94095f9b9ebd6b863dacb5bde8a7940a AS build
+[3/5] STEP 2/9: ARG C0_ARCHITECTURE
+[3/5] STEP 3/9: WORKDIR /src
+[3/5] STEP 4/9: COPY . .
+[3/5] STEP 5/9: RUN mkdir /out && python3 -B build_tools.py headers /out "$C0_ARCHITECTURE"
+[3/5] STEP 6/9: RUN cc -O2 -g -Wall -Wextra -Werror -Wformat=2 -fstack-protector-strong -D_FORTIFY_SOURCE=2 -fPIE -static-pie -pthread -Wl,-z,relro,-z,now,--build-id=sha1 -I/out native/target.c -lcrypto -ldl -o /out/target
+[3/5] STEP 7/9: RUN python3 -B build_tools.py manifest /out "$C0_ARCHITECTURE"
+[3/5] STEP 8/9: RUN cc -O2 -g -Wall -Wextra -Werror -Wformat=2 -fstack-protector-strong -D_FORTIFY_SOURCE=2 -fPIE -static-pie -pthread -Wl,-z,relro,-z,now,--build-id=sha1 -I/out native/observer.c -lcrypto -ldl -o /out/observer
+[3/5] STEP 9/9: RUN python3 -B build_tools.py record /out "$C0_ARCHITECTURE"
+[5/5] STEP 1/4: FROM scratch AS target
+[5/5] STEP 2/4: COPY --from=build /out/target /target
+[5/5] STEP 3/4: USER 999:999
+[5/5] STEP 4/4: ENTRYPOINT ["/target"]
+[5/5] COMMIT
+--> 55291d45474b
+55291d45474bd986511e0f80894a03d5c916951ef0680296b53bf2519b5240fc
+/usr/bin/ld: /lib/aarch64-linux-gnu/libcrypto.a(libcrypto-lib-dso_dlfcn.o): in function `dlfcn_globallookup':
+(.text+0x1c): warning: Using 'dlopen' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/usr/bin/ld: /lib/aarch64-linux-gnu/libcrypto.a(libcrypto-lib-bio_addr.o): in function `BIO_lookup_ex':
+(.text+0xd18): warning: Using 'getaddrinfo' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/usr/bin/ld: /lib/aarch64-linux-gnu/libcrypto.a(libcrypto-lib-bio_sock.o): in function `BIO_gethostbyname':
+(.text+0x90): warning: Using 'gethostbyname' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/usr/bin/ld: /lib/aarch64-linux-gnu/libcrypto.a(libcrypto-lib-dso_dlfcn.o): in function `dlfcn_globallookup':
+(.text+0x1c): warning: Using 'dlopen' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/usr/bin/ld: /lib/aarch64-linux-gnu/libcrypto.a(libcrypto-lib-bio_addr.o): in function `BIO_lookup_ex':
+(.text+0xd18): warning: Using 'getaddrinfo' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
+/usr/bin/ld: /lib/aarch64-linux-gnu/libcrypto.a(libcrypto-lib-bio_sock.o): in function `BIO_gethostbyname':
+(.text+0x90): warning: Using 'gethostbyname' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking

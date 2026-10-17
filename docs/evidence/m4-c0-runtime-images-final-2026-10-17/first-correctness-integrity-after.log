@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/tmp/opencode/c0-runtime-images-final-2026-10-17/correctness/integrity.py", line 31, in <module>
+    assert report == load(OUT / 'inventory-before.json')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

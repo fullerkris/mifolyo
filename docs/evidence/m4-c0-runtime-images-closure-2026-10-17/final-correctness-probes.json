@@ -1,0 +1,1103 @@
+{
+  "status": "PASS",
+  "groups": 80,
+  "failed": [],
+  "root_metadata": {
+    "uid": 0,
+    "gid": 0,
+    "mode": 493
+  },
+  "exact_prior_counterexamples": 8,
+  "results": [
+    {
+      "id": "aarch64-exact-COR007-mode",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_MEMBER_PARENT",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_MEMBER_PARENT"
+      }
+    },
+    {
+      "id": "aarch64-exact-COR007-uid",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_MEMBER_PARENT",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_MEMBER_PARENT"
+      }
+    },
+    {
+      "id": "aarch64-exact-COR007-gid",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_MEMBER_PARENT",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_MEMBER_PARENT"
+      }
+    },
+    {
+      "id": "aarch64-exact-COR007-missing-target",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_MEMBER_PARENT",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_MEMBER_PARENT"
+      }
+    },
+    {
+      "id": "aarch64-old-direct-False-valid",
+      "expected_accept": true,
+      "expected_reason": null,
+      "passed": true,
+      "observed": {
+        "accepted": true,
+        "value": {
+          "root": {
+            "mode": 493,
+            "uid": 0,
+            "gid": 0
+          },
+          "entries": 2,
+          "payload_sha256": "963a34cb139d2e81f0a385a99334f84b1ba0092551dc4f3c0bf6bfc60fc83abb"
+        }
+      }
+    },
+    {
+      "id": "aarch64-old-direct-False-mode",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_HARDLINK_METADATA",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_HARDLINK_METADATA"
+      }
+    },
+    {
+      "id": "aarch64-old-direct-False-uid",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_HARDLINK_METADATA",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_HARDLINK_METADATA"
+      }
+    },
+    {
+      "id": "aarch64-old-direct-False-gid",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_HARDLINK_METADATA",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_HARDLINK_METADATA"
+      }
+    },
+    {
+      "id": "aarch64-old-direct-True-valid",
+      "expected_accept": true,
+      "expected_reason": null,
+      "passed": true,
+      "observed": {
+        "accepted": true,
+        "value": {
+          "root": {
+            "mode": 493,
+            "uid": 0,
+            "gid": 0
+          },
+          "entries": 2,
+          "payload_sha256": "963a34cb139d2e81f0a385a99334f84b1ba0092551dc4f3c0bf6bfc60fc83abb"
+        }
+      }
+    },
+    {
+      "id": "aarch64-old-direct-True-mode",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_HARDLINK_METADATA",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_HARDLINK_METADATA"
+      }
+    },
+    {
+      "id": "aarch64-old-direct-True-uid",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_HARDLINK_METADATA",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_HARDLINK_METADATA"
+      }
+    },
+    {
+      "id": "aarch64-old-direct-True-gid",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_HARDLINK_METADATA",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_HARDLINK_METADATA"
+      }
+    },
+    {
+      "id": "aarch64-parent-link-child-hardlink",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_MEMBER_PARENT",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_MEMBER_PARENT"
+      }
+    },
+    {
+      "id": "aarch64-parent-file-child-hardlink",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_MEMBER_PARENT",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_MEMBER_PARENT"
+      }
+    },
+    {
+      "id": "aarch64-missing-parent-hardlink",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_MEMBER_PARENT",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_MEMBER_PARENT"
+      }
+    },
+    {
+      "id": "aarch64-parent-link-child-file",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_MEMBER_PARENT",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_MEMBER_PARENT"
+      }
+    },
+    {
+      "id": "aarch64-parent-file-child-file",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_MEMBER_PARENT",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_MEMBER_PARENT"
+      }
+    },
+    {
+      "id": "aarch64-missing-parent-file",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_MEMBER_PARENT",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_MEMBER_PARENT"
+      }
+    },
+    {
+      "id": "aarch64-parent-link-child-directory",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_MEMBER_PARENT",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_MEMBER_PARENT"
+      }
+    },
+    {
+      "id": "aarch64-parent-file-child-directory",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_MEMBER_PARENT",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_MEMBER_PARENT"
+      }
+    },
+    {
+      "id": "aarch64-missing-parent-directory",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_MEMBER_PARENT",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_MEMBER_PARENT"
+      }
+    },
+    {
+      "id": "aarch64-parent-link-child-link",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_MEMBER_PARENT",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_MEMBER_PARENT"
+      }
+    },
+    {
+      "id": "aarch64-parent-file-child-link",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_MEMBER_PARENT",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_MEMBER_PARENT"
+      }
+    },
+    {
+      "id": "aarch64-missing-parent-link",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_MEMBER_PARENT",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_MEMBER_PARENT"
+      }
+    },
+    {
+      "id": "aarch64-higher-ancestor-missing",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_MEMBER_PARENT",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_MEMBER_PARENT"
+      }
+    },
+    {
+      "id": "aarch64-higher-ancestor-link",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_MEMBER_PARENT",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_MEMBER_PARENT"
+      }
+    },
+    {
+      "id": "aarch64-higher-ancestor-file",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_MEMBER_PARENT",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_MEMBER_PARENT"
+      }
+    },
+    {
+      "id": "aarch64-forward-positive-False-False",
+      "expected_accept": true,
+      "expected_reason": null,
+      "passed": true,
+      "observed": {
+        "accepted": true,
+        "value": {
+          "root": {
+            "mode": 493,
+            "uid": 0,
+            "gid": 0
+          },
+          "entries": 4,
+          "payload_sha256": "963a34cb139d2e81f0a385a99334f84b1ba0092551dc4f3c0bf6bfc60fc83abb"
+        }
+      }
+    },
+    {
+      "id": "aarch64-forward-access-False-False",
+      "expected_accept": true,
+      "expected_reason": null,
+      "passed": true,
+      "observed": {
+        "accepted": true,
+        "value": {
+          "root": {
+            "mode": 493,
+            "uid": 0,
+            "gid": 0
+          },
+          "resolved": "/target",
+          "bytes_match": true
+        }
+      }
+    },
+    {
+      "id": "aarch64-forward-positive-False-True",
+      "expected_accept": true,
+      "expected_reason": null,
+      "passed": true,
+      "observed": {
+        "accepted": true,
+        "value": {
+          "root": {
+            "mode": 493,
+            "uid": 0,
+            "gid": 0
+          },
+          "entries": 4,
+          "payload_sha256": "963a34cb139d2e81f0a385a99334f84b1ba0092551dc4f3c0bf6bfc60fc83abb"
+        }
+      }
+    },
+    {
+      "id": "aarch64-forward-access-False-True",
+      "expected_accept": true,
+      "expected_reason": null,
+      "passed": true,
+      "observed": {
+        "accepted": true,
+        "value": {
+          "root": {
+            "mode": 493,
+            "uid": 0,
+            "gid": 0
+          },
+          "resolved": "/target",
+          "bytes_match": true
+        }
+      }
+    },
+    {
+      "id": "aarch64-forward-positive-True-False",
+      "expected_accept": true,
+      "expected_reason": null,
+      "passed": true,
+      "observed": {
+        "accepted": true,
+        "value": {
+          "root": {
+            "mode": 493,
+            "uid": 0,
+            "gid": 0
+          },
+          "entries": 4,
+          "payload_sha256": "963a34cb139d2e81f0a385a99334f84b1ba0092551dc4f3c0bf6bfc60fc83abb"
+        }
+      }
+    },
+    {
+      "id": "aarch64-forward-access-True-False",
+      "expected_accept": true,
+      "expected_reason": null,
+      "passed": true,
+      "observed": {
+        "accepted": true,
+        "value": {
+          "root": {
+            "mode": 493,
+            "uid": 0,
+            "gid": 0
+          },
+          "resolved": "/target",
+          "bytes_match": true
+        }
+      }
+    },
+    {
+      "id": "aarch64-forward-positive-True-True",
+      "expected_accept": true,
+      "expected_reason": null,
+      "passed": true,
+      "observed": {
+        "accepted": true,
+        "value": {
+          "root": {
+            "mode": 493,
+            "uid": 0,
+            "gid": 0
+          },
+          "entries": 4,
+          "payload_sha256": "963a34cb139d2e81f0a385a99334f84b1ba0092551dc4f3c0bf6bfc60fc83abb"
+        }
+      }
+    },
+    {
+      "id": "aarch64-forward-access-True-True",
+      "expected_accept": true,
+      "expected_reason": null,
+      "passed": true,
+      "observed": {
+        "accepted": true,
+        "value": {
+          "root": {
+            "mode": 493,
+            "uid": 0,
+            "gid": 0
+          },
+          "resolved": "/target",
+          "bytes_match": true
+        }
+      }
+    },
+    {
+      "id": "aarch64-literal-name-.hidden",
+      "expected_accept": true,
+      "expected_reason": null,
+      "passed": true,
+      "observed": {
+        "accepted": true,
+        "value": {
+          "root": {
+            "mode": 493,
+            "uid": 0,
+            "gid": 0
+          },
+          "entries": 3,
+          "payload_sha256": "963a34cb139d2e81f0a385a99334f84b1ba0092551dc4f3c0bf6bfc60fc83abb"
+        }
+      }
+    },
+    {
+      "id": "aarch64-literal-name-..literal",
+      "expected_accept": true,
+      "expected_reason": null,
+      "passed": true,
+      "observed": {
+        "accepted": true,
+        "value": {
+          "root": {
+            "mode": 493,
+            "uid": 0,
+            "gid": 0
+          },
+          "entries": 3,
+          "payload_sha256": "963a34cb139d2e81f0a385a99334f84b1ba0092551dc4f3c0bf6bfc60fc83abb"
+        }
+      }
+    },
+    {
+      "id": "aarch64-stored-symlinks-positive",
+      "expected_accept": true,
+      "expected_reason": null,
+      "passed": true,
+      "observed": {
+        "accepted": true,
+        "value": {
+          "root": {
+            "mode": 493,
+            "uid": 0,
+            "gid": 0
+          },
+          "entries": 5,
+          "payload_sha256": "963a34cb139d2e81f0a385a99334f84b1ba0092551dc4f3c0bf6bfc60fc83abb"
+        }
+      }
+    },
+    {
+      "id": "aarch64-symlink-query-to-hardlink",
+      "expected_accept": true,
+      "expected_reason": null,
+      "passed": true,
+      "observed": {
+        "accepted": true,
+        "value": {
+          "root": {
+            "mode": 493,
+            "uid": 0,
+            "gid": 0
+          },
+          "resolved": "/target",
+          "bytes_match": true
+        }
+      }
+    },
+    {
+      "id": "aarch64-symlink-query-to-symlink",
+      "expected_accept": true,
+      "expected_reason": null,
+      "passed": true,
+      "observed": {
+        "accepted": true,
+        "value": {
+          "root": {
+            "mode": 493,
+            "uid": 0,
+            "gid": 0
+          },
+          "resolved": "/target",
+          "bytes_match": true
+        }
+      }
+    },
+    {
+      "id": "x86_64-exact-COR007-mode",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_MEMBER_PARENT",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_MEMBER_PARENT"
+      }
+    },
+    {
+      "id": "x86_64-exact-COR007-uid",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_MEMBER_PARENT",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_MEMBER_PARENT"
+      }
+    },
+    {
+      "id": "x86_64-exact-COR007-gid",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_MEMBER_PARENT",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_MEMBER_PARENT"
+      }
+    },
+    {
+      "id": "x86_64-exact-COR007-missing-target",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_MEMBER_PARENT",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_MEMBER_PARENT"
+      }
+    },
+    {
+      "id": "x86_64-old-direct-False-valid",
+      "expected_accept": true,
+      "expected_reason": null,
+      "passed": true,
+      "observed": {
+        "accepted": true,
+        "value": {
+          "root": {
+            "mode": 493,
+            "uid": 0,
+            "gid": 0
+          },
+          "entries": 2,
+          "payload_sha256": "eba00ddc18633d4d9ade01dddc59b807b1c29abb1496a30c72fd9f87d75117cf"
+        }
+      }
+    },
+    {
+      "id": "x86_64-old-direct-False-mode",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_HARDLINK_METADATA",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_HARDLINK_METADATA"
+      }
+    },
+    {
+      "id": "x86_64-old-direct-False-uid",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_HARDLINK_METADATA",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_HARDLINK_METADATA"
+      }
+    },
+    {
+      "id": "x86_64-old-direct-False-gid",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_HARDLINK_METADATA",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_HARDLINK_METADATA"
+      }
+    },
+    {
+      "id": "x86_64-old-direct-True-valid",
+      "expected_accept": true,
+      "expected_reason": null,
+      "passed": true,
+      "observed": {
+        "accepted": true,
+        "value": {
+          "root": {
+            "mode": 493,
+            "uid": 0,
+            "gid": 0
+          },
+          "entries": 2,
+          "payload_sha256": "eba00ddc18633d4d9ade01dddc59b807b1c29abb1496a30c72fd9f87d75117cf"
+        }
+      }
+    },
+    {
+      "id": "x86_64-old-direct-True-mode",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_HARDLINK_METADATA",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_HARDLINK_METADATA"
+      }
+    },
+    {
+      "id": "x86_64-old-direct-True-uid",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_HARDLINK_METADATA",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_HARDLINK_METADATA"
+      }
+    },
+    {
+      "id": "x86_64-old-direct-True-gid",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_HARDLINK_METADATA",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_HARDLINK_METADATA"
+      }
+    },
+    {
+      "id": "x86_64-parent-link-child-hardlink",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_MEMBER_PARENT",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_MEMBER_PARENT"
+      }
+    },
+    {
+      "id": "x86_64-parent-file-child-hardlink",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_MEMBER_PARENT",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_MEMBER_PARENT"
+      }
+    },
+    {
+      "id": "x86_64-missing-parent-hardlink",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_MEMBER_PARENT",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_MEMBER_PARENT"
+      }
+    },
+    {
+      "id": "x86_64-parent-link-child-file",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_MEMBER_PARENT",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_MEMBER_PARENT"
+      }
+    },
+    {
+      "id": "x86_64-parent-file-child-file",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_MEMBER_PARENT",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_MEMBER_PARENT"
+      }
+    },
+    {
+      "id": "x86_64-missing-parent-file",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_MEMBER_PARENT",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_MEMBER_PARENT"
+      }
+    },
+    {
+      "id": "x86_64-parent-link-child-directory",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_MEMBER_PARENT",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_MEMBER_PARENT"
+      }
+    },
+    {
+      "id": "x86_64-parent-file-child-directory",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_MEMBER_PARENT",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_MEMBER_PARENT"
+      }
+    },
+    {
+      "id": "x86_64-missing-parent-directory",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_MEMBER_PARENT",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_MEMBER_PARENT"
+      }
+    },
+    {
+      "id": "x86_64-parent-link-child-link",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_MEMBER_PARENT",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_MEMBER_PARENT"
+      }
+    },
+    {
+      "id": "x86_64-parent-file-child-link",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_MEMBER_PARENT",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_MEMBER_PARENT"
+      }
+    },
+    {
+      "id": "x86_64-missing-parent-link",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_MEMBER_PARENT",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_MEMBER_PARENT"
+      }
+    },
+    {
+      "id": "x86_64-higher-ancestor-missing",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_MEMBER_PARENT",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_MEMBER_PARENT"
+      }
+    },
+    {
+      "id": "x86_64-higher-ancestor-link",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_MEMBER_PARENT",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_MEMBER_PARENT"
+      }
+    },
+    {
+      "id": "x86_64-higher-ancestor-file",
+      "expected_accept": false,
+      "expected_reason": "IMAGE_MEMBER_PARENT",
+      "passed": true,
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_MEMBER_PARENT"
+      }
+    },
+    {
+      "id": "x86_64-forward-positive-False-False",
+      "expected_accept": true,
+      "expected_reason": null,
+      "passed": true,
+      "observed": {
+        "accepted": true,
+        "value": {
+          "root": {
+            "mode": 493,
+            "uid": 0,
+            "gid": 0
+          },
+          "entries": 4,
+          "payload_sha256": "eba00ddc18633d4d9ade01dddc59b807b1c29abb1496a30c72fd9f87d75117cf"
+        }
+      }
+    },
+    {
+      "id": "x86_64-forward-access-False-False",
+      "expected_accept": true,
+      "expected_reason": null,
+      "passed": true,
+      "observed": {
+        "accepted": true,
+        "value": {
+          "root": {
+            "mode": 493,
+            "uid": 0,
+            "gid": 0
+          },
+          "resolved": "/target",
+          "bytes_match": true
+        }
+      }
+    },
+    {
+      "id": "x86_64-forward-positive-False-True",
+      "expected_accept": true,
+      "expected_reason": null,
+      "passed": true,
+      "observed": {
+        "accepted": true,
+        "value": {
+          "root": {
+            "mode": 493,
+            "uid": 0,
+            "gid": 0
+          },
+          "entries": 4,
+          "payload_sha256": "eba00ddc18633d4d9ade01dddc59b807b1c29abb1496a30c72fd9f87d75117cf"
+        }
+      }
+    },
+    {
+      "id": "x86_64-forward-access-False-True",
+      "expected_accept": true,
+      "expected_reason": null,
+      "passed": true,
+      "observed": {
+        "accepted": true,
+        "value": {
+          "root": {
+            "mode": 493,
+            "uid": 0,
+            "gid": 0
+          },
+          "resolved": "/target",
+          "bytes_match": true
+        }
+      }
+    },
+    {
+      "id": "x86_64-forward-positive-True-False",
+      "expected_accept": true,
+      "expected_reason": null,
+      "passed": true,
+      "observed": {
+        "accepted": true,
+        "value": {
+          "root": {
+            "mode": 493,
+            "uid": 0,
+            "gid": 0
+          },
+          "entries": 4,
+          "payload_sha256": "eba00ddc18633d4d9ade01dddc59b807b1c29abb1496a30c72fd9f87d75117cf"
+        }
+      }
+    },
+    {
+      "id": "x86_64-forward-access-True-False",
+      "expected_accept": true,
+      "expected_reason": null,
+      "passed": true,
+      "observed": {
+        "accepted": true,
+        "value": {
+          "root": {
+            "mode": 493,
+            "uid": 0,
+            "gid": 0
+          },
+          "resolved": "/target",
+          "bytes_match": true
+        }
+      }
+    },
+    {
+      "id": "x86_64-forward-positive-True-True",
+      "expected_accept": true,
+      "expected_reason": null,
+      "passed": true,
+      "observed": {
+        "accepted": true,
+        "value": {
+          "root": {
+            "mode": 493,
+            "uid": 0,
+            "gid": 0
+          },
+          "entries": 4,
+          "payload_sha256": "eba00ddc18633d4d9ade01dddc59b807b1c29abb1496a30c72fd9f87d75117cf"
+        }
+      }
+    },
+    {
+      "id": "x86_64-forward-access-True-True",
+      "expected_accept": true,
+      "expected_reason": null,
+      "passed": true,
+      "observed": {
+        "accepted": true,
+        "value": {
+          "root": {
+            "mode": 493,
+            "uid": 0,
+            "gid": 0
+          },
+          "resolved": "/target",
+          "bytes_match": true
+        }
+      }
+    },
+    {
+      "id": "x86_64-literal-name-.hidden",
+      "expected_accept": true,
+      "expected_reason": null,
+      "passed": true,
+      "observed": {
+        "accepted": true,
+        "value": {
+          "root": {
+            "mode": 493,
+            "uid": 0,
+            "gid": 0
+          },
+          "entries": 3,
+          "payload_sha256": "eba00ddc18633d4d9ade01dddc59b807b1c29abb1496a30c72fd9f87d75117cf"
+        }
+      }
+    },
+    {
+      "id": "x86_64-literal-name-..literal",
+      "expected_accept": true,
+      "expected_reason": null,
+      "passed": true,
+      "observed": {
+        "accepted": true,
+        "value": {
+          "root": {
+            "mode": 493,
+            "uid": 0,
+            "gid": 0
+          },
+          "entries": 3,
+          "payload_sha256": "eba00ddc18633d4d9ade01dddc59b807b1c29abb1496a30c72fd9f87d75117cf"
+        }
+      }
+    },
+    {
+      "id": "x86_64-stored-symlinks-positive",
+      "expected_accept": true,
+      "expected_reason": null,
+      "passed": true,
+      "observed": {
+        "accepted": true,
+        "value": {
+          "root": {
+            "mode": 493,
+            "uid": 0,
+            "gid": 0
+          },
+          "entries": 5,
+          "payload_sha256": "eba00ddc18633d4d9ade01dddc59b807b1c29abb1496a30c72fd9f87d75117cf"
+        }
+      }
+    },
+    {
+      "id": "x86_64-symlink-query-to-hardlink",
+      "expected_accept": true,
+      "expected_reason": null,
+      "passed": true,
+      "observed": {
+        "accepted": true,
+        "value": {
+          "root": {
+            "mode": 493,
+            "uid": 0,
+            "gid": 0
+          },
+          "resolved": "/target",
+          "bytes_match": true
+        }
+      }
+    },
+    {
+      "id": "x86_64-symlink-query-to-symlink",
+      "expected_accept": true,
+      "expected_reason": null,
+      "passed": true,
+      "observed": {
+        "accepted": true,
+        "value": {
+          "root": {
+            "mode": 493,
+            "uid": 0,
+            "gid": 0
+          },
+          "resolved": "/target",
+          "bytes_match": true
+        }
+      }
+    }
+  ]
+}

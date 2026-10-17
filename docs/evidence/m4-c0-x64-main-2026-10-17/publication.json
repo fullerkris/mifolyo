@@ -1,0 +1,13 @@
+{
+  "base": "e26e5c1ea81feed2ad173faf6a5940b705e80f39",
+  "branch": "main",
+  "commit": "82cd307899a1b3eab7f97fe660b1121be763f2c1",
+  "main_ci_verification": "pending",
+  "merged_at": "2026-10-17T13:44:52Z",
+  "merged_by": "fullerkris",
+  "pr": 30,
+  "pr_merge_candidate": "82cd307899a1b3eab7f97fe660b1121be763f2c1",
+  "reviewed_pr_head": "7ef2041e2844aa34bec54da61c2e8469c1382bac",
+  "source_inventory_sha256": "7ed3b955be1fe4d2621a43896d1a3e4d49cf9edcf6e86a0c2dd567d105f14720",
+  "tree": "e5b661ce7a5162fea0090382e42165f3c9c89f14"
+}

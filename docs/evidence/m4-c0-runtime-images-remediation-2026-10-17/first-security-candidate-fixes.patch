@@ -1,0 +1,14 @@
+--- image_artifacts.py (reviewed snapshot; NOT modified)
++++ image_artifacts.py (proposed)
+@@
+                     name = normalized(name)
++                    if name == "/":
++                        require(member.isdir() and member.size == 0 and not root_seen, "IMAGE_ROOT_DUPLICATE")
++                        require(self.root is None or self.root == row, "IMAGE_ROOT_CHANGED")
++                        self.root, root_seen = row, True
++                        continue
+                     require(name not in self.entries and len(self.entries) < 20000, "IMAGE_DUPLICATE_OR_COUNT")
+@@
+             if row["kind"] == "link":
++                require(not hard_target, "IMAGE_HARDLINK_LINK_TARGET")
+                 links += 1; require(links <= 40, "IMAGE_LINK_DEPTH")

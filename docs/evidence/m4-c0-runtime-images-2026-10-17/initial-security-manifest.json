@@ -1,0 +1,122 @@
+{
+  "files": {
+    "initial-security-check_remediation_prototype.py": {
+      "bytes": 3694,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/security/check_remediation_prototype.py",
+      "sha256": "0663a9672405366302f7fb3d2da6918b63ace10c92daeee31604721058bc5c69"
+    },
+    "initial-security-check_retained.py": {
+      "bytes": 5439,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/security/check_retained.py",
+      "sha256": "eb7d2640a60b76b070a62b242269b01a6aeaf6ac8ab0fedb2718ab4af1af59be"
+    },
+    "initial-security-check_retained_unchanged.py": {
+      "bytes": 1940,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/security/check_retained_unchanged.py",
+      "sha256": "766fae3ec8152e0094a8fd2454e376642c251390a47b51b47100e6195d8cb482"
+    },
+    "initial-security-existing-image-unit-tests.log": {
+      "bytes": 2995,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/security/existing-image-unit-tests.log",
+      "sha256": "7c240e1d694bc8d753500c91a7d9ee640c8165ca74f02f8b82caf465ffb0f94a"
+    },
+    "initial-security-inventory-after.json": {
+      "bytes": 23601,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/security/inventory-after.json",
+      "sha256": "ca2d6f85e951f7cf36ce6dd5db978d588d4863760a92c466d34eced92ab27d17"
+    },
+    "initial-security-inventory-before.json": {
+      "bytes": 23601,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/security/inventory-before.json",
+      "sha256": "ca2d6f85e951f7cf36ce6dd5db978d588d4863760a92c466d34eced92ab27d17"
+    },
+    "initial-security-inventory-resumed-before.json": {
+      "bytes": 23601,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/security/inventory-resumed-before.json",
+      "sha256": "ca2d6f85e951f7cf36ce6dd5db978d588d4863760a92c466d34eced92ab27d17"
+    },
+    "initial-security-remediation-prototype-results.json": {
+      "bytes": 1162,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/security/remediation-prototype-results.json",
+      "sha256": "e85075ccf46c31b6a3e7de4dfa7b0f1d493a27f3bfc5eda4d7d7fcc4c877c58b"
+    },
+    "initial-security-remediation-prototype.log": {
+      "bytes": 882,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/security/remediation-prototype.log",
+      "sha256": "82937d2c641203587bfe910bf01f4cc803be09fdae2bec7679a720a70b671e20"
+    },
+    "initial-security-remediation_prototype.py": {
+      "bytes": 2777,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/security/remediation_prototype.py",
+      "sha256": "1973dc0e0df07800280aa56f29dbc30f49177638b4fb24baa284ee63e8b92e05"
+    },
+    "initial-security-retained-unchanged-after.json": {
+      "bytes": 58370,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/security/retained-unchanged-after.json",
+      "sha256": "1cfbec4bba44c7540a4ea069d19001a1a14670262b1a98765f741b88cb56ea8e"
+    },
+    "initial-security-retained-unchanged-after.log": {
+      "bytes": 37,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/security/retained-unchanged-after.log",
+      "sha256": "956b736f9130036a568f798a0f1b1597cc6082738b0b3ce29a36044d034dcaa1"
+    },
+    "initial-security-retained-verification.json": {
+      "bytes": 10788,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/security/retained-verification.json",
+      "sha256": "e9e60217ba0c71bd30f992aeba43d7e584ce2c0f09e18d19da16875e9d23bcfb"
+    },
+    "initial-security-retained-verification.log": {
+      "bytes": 473,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/security/retained-verification.log",
+      "sha256": "8b0d35dcc1f20d8f6104a87610902ff8738bc2af5972b580d19edaed3a859b62"
+    },
+    "initial-security-review.json": {
+      "bytes": 9482,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/security/review.json",
+      "sha256": "27e8242087612e0ada7eba888c1c3b27d5b5d00b5b5a985b11987e7b88090f5d"
+    },
+    "initial-security-review.md": {
+      "bytes": 14176,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/security/review.md",
+      "sha256": "7ad721556be8fb019fde0a74a00e306f8efbcf43ae53dafcf4b45753bd5c4ced"
+    },
+    "initial-security-security-unit-results.json": {
+      "bytes": 6270,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/security/security-unit-results.json",
+      "sha256": "5d9f69affe34821141b3dce6eeafccbba006094fa56e84ebb38bb36c68b00c37"
+    },
+    "initial-security-security-unit-tests-rerun.log": {
+      "bytes": 3629,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/security/security-unit-tests-rerun.log",
+      "sha256": "9c5fbafa4c1a9db189c2fba18221877d836dd07dee6d2ec449878bfdd1bf33d7"
+    },
+    "initial-security-security-unit-tests.log": {
+      "bytes": 3629,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/security/security-unit-tests.log",
+      "sha256": "1680ff8d2046ced399e6e2b825aab7c31bfb084e81d061abc7d94f914fc25651"
+    },
+    "initial-security-test_security_review.py": {
+      "bytes": 17443,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/security/test_security_review.py",
+      "sha256": "7fa57023f09f8aee27da529f86f1c9a59c7e8d1ab7c87cff65211738aca36c77"
+    },
+    "initial-security-unit-run-02--security-unit-results.json": {
+      "bytes": 6270,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/security/unit-run-02/security-unit-results.json",
+      "sha256": "e55e34320a3d627faee950efe4b01aa69c914c7e46ec984d0998b9b5052a2b5e"
+    },
+    "initial-security-verify_inventory.py": {
+      "bytes": 1816,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/security/verify_inventory.py",
+      "sha256": "7fd211aca6478055364252741defb94ad194bd890beb75ba2d8f08f18f575092"
+    },
+    "initial-security-write_review_json.py": {
+      "bytes": 7255,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/security/write_review_json.py",
+      "sha256": "378a841a86efa50d6c2db43e23cfd39b7792e7135d90c54d09523717d594bd5d"
+    }
+  },
+  "kind": "c0_arch_04_initial_security_exports",
+  "source_inventory_sha256": "f789846f36fd23c21cad7b7ef461ec1dbb5521e0ad6d8948ae5cace2fde9dec4",
+  "version": 1
+}

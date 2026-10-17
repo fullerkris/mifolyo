@@ -1,0 +1,16 @@
+[2/4] STEP 1/1: FROM docker.io/library/python@sha256:3e2de9c40ca4e3d73240059f9d48baff27908f10293e985a2f382a0378e6df4a AS python-x86_64
+--> 915835de46a6
+[3/4] STEP 1/6: FROM 915835de46a63f9598442159437904042f1c69a9b41c4965fba1db9ceab66578 AS oracle
+[3/4] STEP 2/6: WORKDIR /
+[3/4] STEP 3/6: COPY contracts.py runtime_admission.py linux_observation.py oracle.py oracle_protocol.py oracle_worker.py worker.py build_oracle.py /oracle/
+[3/4] STEP 4/6: USER 999:999
+[3/4] STEP 5/6: ENTRYPOINT ["python3"]
+[3/4] STEP 6/6: CMD ["-I", "-B", "/oracle/worker.py"]
+--> 66b78baa07bb
+[4/4] STEP 1/4: FROM 66b78baa07bb92414bb2f427b984ddc4fdac17222611b28fdcacd0e46c36938b AS oracle-build
+[4/4] STEP 2/4: ARG C0_ARCHITECTURE
+[4/4] STEP 3/4: USER 0:0
+[4/4] STEP 4/4: RUN python3 -I -B /oracle/build_oracle.py /artifacts "$C0_ARCHITECTURE"
+[4/4] COMMIT
+--> 0cd7a1f0e904
+0cd7a1f0e904bfbb95efdb2a8bfdee9a91d063fa06a13eb51b240108606210a4

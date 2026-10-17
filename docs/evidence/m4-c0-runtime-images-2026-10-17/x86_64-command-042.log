@@ -1,0 +1,11 @@
+[2/3] STEP 1/1: FROM docker.io/library/python@sha256:3e2de9c40ca4e3d73240059f9d48baff27908f10293e985a2f382a0378e6df4a AS python-x86_64
+--> 915835de46a6
+[3/3] STEP 1/6: FROM 915835de46a63f9598442159437904042f1c69a9b41c4965fba1db9ceab66578 AS oracle
+[3/3] STEP 2/6: WORKDIR /
+[3/3] STEP 3/6: COPY contracts.py runtime_admission.py linux_observation.py oracle.py oracle_protocol.py oracle_worker.py worker.py build_oracle.py /oracle/
+[3/3] STEP 4/6: USER 999:999
+[3/3] STEP 5/6: ENTRYPOINT ["python3"]
+[3/3] STEP 6/6: CMD ["-I", "-B", "/oracle/worker.py"]
+[3/3] COMMIT
+--> 27db4a6429ec
+27db4a6429ecc2cd7fa013865542d55b4fbe1283d8c2dbb280e2a04fbd6cb56f

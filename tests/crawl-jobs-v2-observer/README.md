@@ -91,10 +91,10 @@ podman build --platform linux/amd64 --build-arg C0_ARCHITECTURE=x86_64 \
 ```
 
 The Dockerfile pins GCC 14.3.0/bookworm independently for each architecture.
-The build runs compilers and static inspectors only. `Dockerfile.oracle` still
-selects the pinned ARM64 Python base; the x64 Python/runtime image set is the
-C0-ARCH-04 deliverable. `build_oracle.py DEST x86_64` supports an independently
-selected x64 interpreter. `native/test_x86_debug.c` is an offline C probe with
+The build runs compilers and static inspectors only. `Dockerfile.oracle` now
+selects explicit Python platform children as described below.
+`build_oracle.py DEST x86_64` supports the selected x64 interpreter.
+`native/test_x86_debug.c` is an offline C probe with
 an in-memory request callback; it can be compiled on x64 without running actors
 or invoking ptrace. Python tests interpret both filter layers and exercise
 positive/mixed-architecture artifact, context and benign-process protocol paths.
@@ -102,6 +102,63 @@ positive/mixed-architecture artifact, context and benign-process protocol paths.
 ABI references: Linux [x86 ptrace implementation](https://github.com/torvalds/linux/blob/v6.18/arch/x86/kernel/ptrace.c),
 [debug-register UAPI](https://github.com/torvalds/linux/blob/v6.18/arch/x86/include/uapi/asm/debugreg.h),
 and [seccomp ABI/compat caveats](https://man7.org/linux/man-pages/man2/seccomp.2.html).
+
+### Both runtime image sets (C0-ARCH-04)
+
+`image_build.py` builds target, observer and oracle images for one explicit
+architecture and checks their actual contents. The Python 3.13.15/slim-bookworm
+children are pinned independently: `ad4c34ff…` for ARM64 and `3e2de9c4…` for x64.
+Both come from the previously pinned index `2325bb28…`; selecting the ARM64
+child preserves its base content. GCC platform pins remain unchanged.
+
+```sh
+python3 -B scripts/prepare-crawl-jobs-v2-observer-images.py \
+  --architecture aarch64 --engine podman --output /absolute/new-arm64-set
+python3 -B scripts/prepare-crawl-jobs-v2-observer-images.py \
+  --architecture x86_64 --engine podman --output /absolute/new-x64-set
+```
+
+Each new private output directory retains a source snapshot, native/oracle
+artifacts, image/config identities, ELF/library-dependency inventories, profiles,
+portable Docker archives, command logs and stopped-container cleanup records.
+The builder checks canonical profiles/BPF/target manifests, compiled BPF and
+target-hash bindings, compiler/source records, oracle source/interpreter bytes,
+actual image OS/architecture/configuration, library and loader presence, archive
+config IDs and uncompressed layer hashes. Archive reads are bounded and never
+extract filesystem paths onto the host.
+
+Oracle artifact manifests are version 3. The builder imports the worker's module
+definitions to identify its required extension ELFs, without calling worker main
+or constructing readers/clients. Their hashes and the interpreter's complete
+static dependency closure must match the exported image. The full ELF inventory
+also records non-loadable objects and unresolved dependencies of unused optional
+extensions (such as slim Python's Tk module); those cannot satisfy a required
+library edge. This remains static/import preparation, not live worker admission.
+
+Inspection containers use a non-existent inspection-only entrypoint, network
+isolation, read-only rootfs, UID/GID 999, dropped capabilities and no-new-privileges.
+They are never started. Identity and never-started state are checked before and
+after copying/export; only those owned stopped objects are removed, followed by
+an independent absence check. Image tags are not used as acceptance identities.
+Podman's implicit scratch-image PATH and builder label are removed during image
+construction to preserve the existing empty-native-environment and label rules.
+
+The builder uses rootless Podman in local mode, including in CI. The
+`C0 Runtime Images` workflow uses separate native ARM64/x64 runners, retains the
+portable images and source-bound artifacts, and never starts a C0 entrypoint.
+Stable file/payload hashes are separate from builder-dependent image metadata.
+Live loader behavior, kernel confinement, hardware breakpoints and timing remain
+per-platform C0-ARCH-05 acceptance work.
+
+Required files are checked for read access (and native/interpreter execute access)
+by UID/GID 999; their directories must be root-owned and searchable/readable.
+Root-directory mode/ownership is observed before and after export with a scoped
+Podman storage-namespace stat helper, then the temporary mount is released.
+Link components are resolved in filesystem order; every archive header, including
+root markers, is charged to the member limit. Portable archives reject normalized
+name collisions. The dependency model uses RUNPATH precedence, resolves directory
+links and refuses active legacy RPATH or ambiguous library candidates; dynamic
+loader execution and broader loader search behavior remain native acceptance work.
 
 ## Implemented artifact components
 

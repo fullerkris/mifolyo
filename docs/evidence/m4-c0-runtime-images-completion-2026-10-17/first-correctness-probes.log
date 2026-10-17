@@ -1,0 +1,37 @@
+{
+  "status": "COMPLETED_WITH_FINDING",
+  "groups": 36,
+  "unexpected": [
+    "aarch64-shadowed-mode",
+    "aarch64-shadowed-uid",
+    "aarch64-shadowed-gid",
+    "aarch64-shadowed-missing-target",
+    "x86_64-shadowed-mode",
+    "x86_64-shadowed-uid",
+    "x86_64-shadowed-gid",
+    "x86_64-shadowed-missing-target"
+  ],
+  "example": {
+    "id": "aarch64-shadowed-mode",
+    "fixture": "/tmp/opencode/c0-runtime-images-completion-2026-10-17/correctness/inert-fixtures/aarch64-shadowed-mode.tar",
+    "expected_accept": false,
+    "expected_reason": null,
+    "passed": false,
+    "observed": {
+      "constructor_accepted": true,
+      "role_accepted": true,
+      "payload_sha256": "963a34cb139d2e81f0a385a99334f84b1ba0092551dc4f3c0bf6bfc60fc83abb",
+      "hardlink_entries": {
+        "/dir/target": {
+          "metadata": {
+            "mode": 448,
+            "uid": 0,
+            "gid": 0
+          },
+          "target": "/target",
+          "resolved_own_name": "/target"
+        }
+      }
+    }
+  }
+}

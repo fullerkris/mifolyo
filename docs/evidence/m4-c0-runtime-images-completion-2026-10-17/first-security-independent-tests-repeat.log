@@ -1,0 +1,25 @@
+test_SEC06_original_negative_and_matching_positive (__main__.ConstructorChecks.test_SEC06_original_negative_and_matching_positive) ... ok
+test_forward_directory_and_target_and_no_map_mutation (__main__.ConstructorChecks.test_forward_directory_and_target_and_no_map_mutation) ... ok
+test_required_constructor_checks_the_actual_hardlink_record_not_a_redirect (__main__.ConstructorChecks.test_required_constructor_checks_the_actual_hardlink_record_not_a_redirect) ... FAIL
+test_unused_dangling_chain_and_directory_targets_refuse_at_construction (__main__.ConstructorChecks.test_unused_dangling_chain_and_directory_targets_refuse_at_construction) ... ok
+test_unused_mode_uid_gid_mismatch_in_both_member_orders (__main__.ConstructorChecks.test_unused_mode_uid_gid_mismatch_in_both_member_orders) ... ok
+test_SEC01_normalized_collision_and_matching_config (__main__.ExistingClosureChecks.test_SEC01_normalized_collision_and_matching_config) ... ok
+test_SEC02_path_order_and_matching_source (__main__.ExistingClosureChecks.test_SEC02_path_order_and_matching_source) ... ok
+test_SEC03_duplicate_and_exact_member_budget (__main__.ExistingClosureChecks.test_SEC03_duplicate_and_exact_member_budget) ... ok
+test_SEC04_hardlink_inode_and_symbolic_source_positives (__main__.ExistingClosureChecks.test_SEC04_hardlink_inode_and_symbolic_source_positives) ... ok
+test_SEC05_root_metadata_alias_and_both_positives (__main__.ExistingClosureChecks.test_SEC05_root_metadata_alias_and_both_positives) ... ok
+test_loader_execute_and_reserved_dependency_closures (__main__.ExistingClosureChecks.test_loader_execute_and_reserved_dependency_closures) ... ok
+
+======================================================================
+FAIL: test_required_constructor_checks_the_actual_hardlink_record_not_a_redirect (__main__.ConstructorChecks.test_required_constructor_checks_the_actual_hardlink_record_not_a_redirect)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/opencode/c0-runtime-images-completion-2026-10-17/security/test_completion.py", line 176, in test_required_constructor_checks_the_actual_hardlink_record_not_a_redirect
+    with self.assertRaises(c.Invalid): ImageTree(bad, GOOD_ROOT)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+AssertionError: Invalid not raised
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.488s
+
+FAILED (failures=1)

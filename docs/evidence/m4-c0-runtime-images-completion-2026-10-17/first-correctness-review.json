@@ -1,0 +1,583 @@
+{
+  "artifact_revalidation": {
+    "independently_verified_for_retained_images": true,
+    "path": "/tmp/opencode/c0-runtime-images-completion-2026-10-17/artifact-revalidation.json",
+    "rebuild_required_for_reviewed_delta": false,
+    "sha256": "55a7c9f9738d942a745ab47626afe9ef157998039a2d2e8779bee24f992aa3fd"
+  },
+  "checks": {
+    "all_six_content_records_byte_identical": true,
+    "construction_inputs_unchanged": {
+      ".dockerignore": "25170fdb33082a47a01bdc344bfabe8ef4460eed2da175e6dd1159557fcaa13d",
+      "Dockerfile": "6925c36fe1cd42800333b4c72c54143b0c706e26e0aa37a09fd8679a684fa06c",
+      "Dockerfile.oracle": "61c196ddc98e522516fd1e36ce239f36f27f04e844be66752227c90de5897429",
+      "Dockerfile.oracle.dockerignore": "679f3cd226874aa189596199b105352137171eed114a1393e478eafc43f330d3",
+      "build_oracle.py": "cb702f624c986320e6f4c690dfc4eac1187104c711a52eb9e2bab28ec12e7ed6",
+      "build_tools.py": "a402d791a3cd1dc35ed709a985cbcd9b06a9af9b2f370616f44f2bcfe6519acb",
+      "contracts.py": "6a3c4dfe7b6fb4524771b26fdcbcba39be2c5893d52e2e4caeebf762df27a7f4",
+      "linux_observation.py": "58934a305a1c7bf5877c4e5f7ae5969181c61fed267b150d0ed1ed91c195282d",
+      "native/admission.h": "b64f55c4f5184506bc442bf13405f282b92d4bc600d8958b5febda5108fe0a96",
+      "native/architecture.h": "c0b078cd257852bc3cb57e1405e18c943bf2d0a48520523195846c8f58cfea2b",
+      "native/common.h": "4b221886a774007a74ed68a44a6e5088bc7f2e4ccf4980ddb8815f85cfc27042",
+      "native/observer.c": "a45816e40320c8560f439dfdd0b1ebef636dc74a0a101c19f0a726ae38098a5c",
+      "native/target.c": "aedd6549923876d28b7d39748c6506dbad539459200b276a9f409500daf3f82d",
+      "native/test_x86_debug.c": "ca8c49152d575c6b42e37914ea7dc5d805975e49fee4fa799137799ceaaa6f6f",
+      "native/x86_debug.h": "42844fba32b39dfe752fe84f84b1748a872b93aed6c5810a9a30aeab2fbd1777",
+      "oracle.py": "fa14b08caee86b65d9a01c16bb3e6ea236264275a48a3f32ad6694c57df23bc8",
+      "oracle_protocol.py": "f867fdc33eb271385176ab25c09a573e9662f77b7f6a73e559dbf07fcb115f45",
+      "oracle_worker.py": "91e84a5d3f47b043d6c12f9564604dba11f2ad9cc49e58a905ee714d2ece07d0",
+      "profiles.py": "b149039b977bd78daf53a6ddb7635419b36338925c25d125a3d49fac8f60a539",
+      "runtime_admission.py": "307e4486f4c23c426d543ddc3cee65d99dcee77c7c01087f4c8840cc81d3b076",
+      "worker.py": "08c319e7ec3790f619e4bf4ba3160e0db3bdc34f8dd86256bf998639aa2ea273"
+    },
+    "constructor_probe_groups": 36,
+    "driver_and_auxiliary_unchanged": {
+      ".github/workflows/c0-runtime-images.yml": "47d0205d931100d096e8720d4bc6a21d3d542ab64db5eaefba4e46827e9c770c",
+      "scripts/prepare-crawl-jobs-v2-observer-images.py": "a97a270010e48dfee61c3c3317c4fcad7069bb70ba83ee0181d3c6d83b7e71cc",
+      "scripts/test-crawl-jobs-v2-observer.py": "9afb715125f734f5b905da63dde5c9787fc5997b2e5a73a0bf62d781b23aef84",
+      "tests/crawl-jobs-v2-observer/image_build.py": "6926bdb5bf01c25b3c29ac5607e4602bf831772fe34e06c85bee7700baee0d85"
+    },
+    "engine_commands_executed": 0,
+    "expected_outcomes": 28,
+    "full_287_suite_rerun": false,
+    "full_local_reports": [
+      {
+        "count": 287,
+        "log_sha256": "3b49516cbdd6304ebdc286d57d197c2285e27f5f54a0fef9899ce2fbcee5f056",
+        "new_ids": [
+          "test_image_review.ImageReviewTests.test_unused_hardlinks_are_checked_after_the_complete_archive_map"
+        ],
+        "report_sha256": "b9eebe803a46be33e0ea89e6d9c332fca5e7a6abede9eb5a9512ce9834023c8f",
+        "retained_ids": 286,
+        "umask": "022"
+      },
+      {
+        "count": 287,
+        "log_sha256": "4328611a033bda4a7dc49918e564ec22cf0e518c750868ad34f22310b5e87f6d",
+        "new_ids": [
+          "test_image_review.ImageReviewTests.test_unused_hardlinks_are_checked_after_the_complete_archive_map"
+        ],
+        "report_sha256": "b9eebe803a46be33e0ea89e6d9c332fca5e7a6abede9eb5a9512ce9834023c8f",
+        "retained_ids": 286,
+        "umask": "077"
+      }
+    ],
+    "hosted_image_ci_executed": false,
+    "image_tests": {
+      "count": 31,
+      "log": "image-tests.log",
+      "resource_warnings": "error",
+      "status": "PASS"
+    },
+    "images": {
+      "aarch64": {
+        "cleanup_records": 5,
+        "image_set_sha256": "ac29a71a14c21cf5b2e498b716f01fac2a888443df7e3f87fbf5c014007bd1c8",
+        "roles": {
+          "observer": {
+            "content_bytes_unchanged": true,
+            "content_sha256": "d93a59cbc80ba05045cffd7fb14d1594ac956da1d0531700b88552435af50b7c",
+            "elf_count": 1,
+            "hardlinks_scanned": 0,
+            "id": "sha256:f36e584c1808d192263ec9da1071ff16122afff0e67ee3e5ccda4881ec44ab12",
+            "independent_hardlink_parent_checks": [],
+            "payload_sha256": "948e94e91f84930729e7c2ad73c51a6cf105ee84e7333c261bf654f8526f2c63",
+            "portable_archive": {
+              "architecture": "aarch64",
+              "bytes": 5460992,
+              "config_id": "sha256:f36e584c1808d192263ec9da1071ff16122afff0e67ee3e5ccda4881ec44ab12",
+              "format": "docker-archive",
+              "layers": [
+                "sha256:6f48e6fd9894e6fd8a3c8b6ec0b157c4f5da3433aa39d3406847558a77e55305"
+              ],
+              "sha256": "cd59a9f9bffb5e9078f5f9da8173e7fd230bd7753a6519f7400539deddfecb0d"
+            },
+            "required_elf_count": 1,
+            "root_directory": {
+              "gid": 0,
+              "mode": 365,
+              "uid": 0
+            }
+          },
+          "oracle": {
+            "content_bytes_unchanged": true,
+            "content_sha256": "b54c5b92251392f21db152efce4aa33c1e6ff17285c58066ab859a2a49fd6cd7",
+            "elf_count": 790,
+            "hardlinks_scanned": 2,
+            "id": "sha256:24268df2086d9348743fbc309113a46a9afc4a9f607fbc75a0987718ff2db2ed",
+            "independent_hardlink_parent_checks": [
+              {
+                "ancestor_directories": [
+                  "/usr",
+                  "/usr/bin"
+                ],
+                "name": "/usr/bin/perl5.36.0",
+                "resolved": "/usr/bin/perl",
+                "target": "/usr/bin/perl"
+              },
+              {
+                "ancestor_directories": [
+                  "/usr",
+                  "/usr/bin"
+                ],
+                "name": "/usr/bin/uncompress",
+                "resolved": "/usr/bin/gunzip",
+                "target": "/usr/bin/gunzip"
+              }
+            ],
+            "payload_sha256": "64d004592dc8299702d448f04436b6b7bd393d79963196e5c4ebcdce254e9354",
+            "portable_archive": {
+              "architecture": "aarch64",
+              "bytes": 151378944,
+              "config_id": "sha256:24268df2086d9348743fbc309113a46a9afc4a9f607fbc75a0987718ff2db2ed",
+              "format": "docker-archive",
+              "layers": [
+                "sha256:055ab12bd547e17a0630037f06a186cf405e3f61bb03a614562ca8f5ab52a8be",
+                "sha256:095145779909c26a66c70376d4b6cde5c2958236c609348586252e0064186c9d",
+                "sha256:3ca71efe23192eaff23483924b9ec0bd7f396e2aaef46640128c3477379fcaa9",
+                "sha256:ff6b919c53481cfc2497fad042e7c6cf042d45097f19fd908d13fcb73b85adcf",
+                "sha256:747b99c95ca9cb909f9c87d19a1421c84eb5342a1ad500a7a19cc6852539b9b2"
+              ],
+              "sha256": "a40ab4026d8e7f711e681e9538e2d091a47ae427fefe8acb83814dd6f90e9bcc"
+            },
+            "required_elf_count": 18,
+            "root_directory": {
+              "gid": 0,
+              "mode": 493,
+              "uid": 0
+            }
+          },
+          "target": {
+            "content_bytes_unchanged": true,
+            "content_sha256": "ab5fe73bbade66f04f7ed4aa6ff7311c967023fa702b5c2184d0631005ad873e",
+            "elf_count": 1,
+            "hardlinks_scanned": 0,
+            "id": "sha256:50de9aac35fac6d4cada173cf06884c43b506e123cb923e851afae93bcb50273",
+            "independent_hardlink_parent_checks": [],
+            "payload_sha256": "7f9346b3a01d65dde54026b91b7e7cc7333442ea5d500fa9404bebfc7e2366e7",
+            "portable_archive": {
+              "architecture": "aarch64",
+              "bytes": 5457920,
+              "config_id": "sha256:50de9aac35fac6d4cada173cf06884c43b506e123cb923e851afae93bcb50273",
+              "format": "docker-archive",
+              "layers": [
+                "sha256:6146b2f026ee894e27ae5a5a7957d7df52fe00c4397bab191db710796106a184"
+              ],
+              "sha256": "4da1438f3b8d79588679490212f53ce18508c017abfbaf83b67b2b1776b3fee8"
+            },
+            "required_elf_count": 1,
+            "root_directory": {
+              "gid": 0,
+              "mode": 365,
+              "uid": 0
+            }
+          }
+        },
+        "verified_command_logs": 61
+      },
+      "x86_64": {
+        "cleanup_records": 5,
+        "image_set_sha256": "76b30e6cdd7ab4cb8b49e2a50964f5acd5eee1a9a3cd2b2b88d7eea263b84489",
+        "roles": {
+          "observer": {
+            "content_bytes_unchanged": true,
+            "content_sha256": "8e680fab8a46406c6e4cff7dd9a7214444db2abf00a14eb76bf7030fb76e8e46",
+            "elf_count": 1,
+            "hardlinks_scanned": 0,
+            "id": "sha256:2046ca5b52ec7adf8ba4ad644401f49e22955b225377b0024e52b386168cd4cf",
+            "independent_hardlink_parent_checks": [],
+            "payload_sha256": "117ca4c7220f2646ea6e3934581c52affd7b091d9513255b540295083db70901",
+            "portable_archive": {
+              "architecture": "x86_64",
+              "bytes": 5888512,
+              "config_id": "sha256:2046ca5b52ec7adf8ba4ad644401f49e22955b225377b0024e52b386168cd4cf",
+              "format": "docker-archive",
+              "layers": [
+                "sha256:737a5227dfc35f7e47346fefdaa68cb50bf28eaa4a526edd8c14323951c215ea"
+              ],
+              "sha256": "2b45067cf47565ad9ea4222d451425ba5342505cf1d8b4fbad9800f4aae8b16c"
+            },
+            "required_elf_count": 1,
+            "root_directory": {
+              "gid": 0,
+              "mode": 365,
+              "uid": 0
+            }
+          },
+          "oracle": {
+            "content_bytes_unchanged": true,
+            "content_sha256": "d85d8565a9cbdfcd97476238b66f646291535acf342bfbacd2401c296af4eb55",
+            "elf_count": 791,
+            "hardlinks_scanned": 2,
+            "id": "sha256:26201a7d895b496c26746271a8ff1fa60687d495739f2cfe0456d129f180c940",
+            "independent_hardlink_parent_checks": [
+              {
+                "ancestor_directories": [
+                  "/usr",
+                  "/usr/bin"
+                ],
+                "name": "/usr/bin/perl5.36.0",
+                "resolved": "/usr/bin/perl",
+                "target": "/usr/bin/perl"
+              },
+              {
+                "ancestor_directories": [
+                  "/usr",
+                  "/usr/bin"
+                ],
+                "name": "/usr/bin/uncompress",
+                "resolved": "/usr/bin/gunzip",
+                "target": "/usr/bin/gunzip"
+              }
+            ],
+            "payload_sha256": "f6a268986ce2e718f48c85a4dcd65d4ec01b6aff47af7aa57abf7aca7c8f07a4",
+            "portable_archive": {
+              "architecture": "x86_64",
+              "bytes": 125835264,
+              "config_id": "sha256:26201a7d895b496c26746271a8ff1fa60687d495739f2cfe0456d129f180c940",
+              "format": "docker-archive",
+              "layers": [
+                "sha256:34467cc93912af891dfee8a3902adf9b4f355a9bca4eaa46f658d1181a21de0d",
+                "sha256:0229d3e3d668de7c1d42c1e23d30f4bc5c5e93d68c8fe897e94a6fe9b0262491",
+                "sha256:d119e31e71d7a4e8b81f78a0e11901e1a2b3252619eac69266aa157d943b4763",
+                "sha256:1095031acd1c984ad93c83dadab1d79a3b2fd93d5086537b16593c47a3e3ee06",
+                "sha256:a1860a11aed5e57a56e3847b0129604b32043bc349bd85118312ec8db2bc61fc"
+              ],
+              "sha256": "d15ca6b653e4c8f7d32895b7ac6f8f523ee45538065e09d9b74fa541018ba98a"
+            },
+            "required_elf_count": 18,
+            "root_directory": {
+              "gid": 0,
+              "mode": 493,
+              "uid": 0
+            }
+          },
+          "target": {
+            "content_bytes_unchanged": true,
+            "content_sha256": "0b591e3700cc349573d30c0c9d6025371d5da919a21863d7a077368801322b95",
+            "elf_count": 1,
+            "hardlinks_scanned": 0,
+            "id": "sha256:1062239ded1acb7b4ac0a8c2f85920fc336e49182dc4e42e8175745e2f813a9f",
+            "independent_hardlink_parent_checks": [],
+            "payload_sha256": "c9f5f201adfaa4d419f2154c2baeef5f64011a130b9443d3cf70c46e2a28eb52",
+            "portable_archive": {
+              "architecture": "x86_64",
+              "bytes": 5890048,
+              "config_id": "sha256:1062239ded1acb7b4ac0a8c2f85920fc336e49182dc4e42e8175745e2f813a9f",
+              "format": "docker-archive",
+              "layers": [
+                "sha256:81b0644b1b42a1f33c8ff0f9ba24bde6df5ddeb81eb6e1ee10beff44e5fbb8ca"
+              ],
+              "sha256": "dc57e5f47fac799d22ae2ac2c072e937c08d79e647296660ab46dced8fcb7b92"
+            },
+            "required_elf_count": 1,
+            "root_directory": {
+              "gid": 0,
+              "mode": 365,
+              "uid": 0
+            }
+          }
+        },
+        "verified_command_logs": 61
+      }
+    },
+    "independent_overlay_recomputed_this_round": false,
+    "mounted_root_helper_executed": false,
+    "prior_overlay_result_retained_by_identical_archive_hashes": true,
+    "probe_results": "probes.json",
+    "retained_artifact_replay": "PASS_RETAINED_ARTIFACTS",
+    "unexpected_accepts": 8
+  },
+  "date": "2026-10-17",
+  "execution_authorized": false,
+  "findings": [
+    {
+      "actual_image_check": "All four actual oracle hardlinks have real directory parents and matching metadata; both native roles contain no hardlinks. All six content/config/archive records revalidate unchanged.",
+      "actual_images_affected": false,
+      "architectures": [
+        "aarch64",
+        "x86_64"
+      ],
+      "blocks_requested_constructor_confirmation": true,
+      "cause": "self.resolve(name) follows the alias pathname parent symlink and reaches another regular entry. The iterated hardlink row is never visited; neither its inode metadata nor its declared target is checked.",
+      "id": "C0ARCH04-COR-007",
+      "limit": "Pure parser/in-memory checks only; no filesystem extraction or external loader behavior is claimed.",
+      "locations": [
+        "tests/crawl-jobs-v2-observer/image_artifacts.py:127-129",
+        "tests/crawl-jobs-v2-observer/image_artifacts.py:140-155"
+      ],
+      "marker": "suggestion",
+      "minimal_fixture": [
+        {
+          "gid": 0,
+          "kind": "directory",
+          "mode": "0755",
+          "path": ".",
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "inert regular ELF",
+          "mode": "0755",
+          "path": "target",
+          "uid": 0
+        },
+        {
+          "kind": "symlink",
+          "path": "dir",
+          "target": "."
+        },
+        {
+          "gid": 0,
+          "kind": "hardlink",
+          "mode": "0700",
+          "path": "dir/target",
+          "target": "target",
+          "uid": 0
+        }
+      ],
+      "observed": "Constructor and full native content validation accept mode/UID/GID mismatch variants, and even a hardlink declaring a missing target. resolve(/dir/target) reaches /target instead. Payload digests equal positive controls.",
+      "priority": "P2",
+      "probe_ids": [
+        "aarch64-shadowed-mode",
+        "aarch64-shadowed-uid",
+        "aarch64-shadowed-gid",
+        "aarch64-shadowed-missing-target",
+        "x86_64-shadowed-mode",
+        "x86_64-shadowed-uid",
+        "x86_64-shadowed-gid",
+        "x86_64-shadowed-missing-target"
+      ],
+      "reproducer_results": "probes.json",
+      "reproducer_script": "/tmp/opencode/c0-runtime-images-completion-2026-10-17/correctness/probes.py",
+      "source_sha256": "d13b720e62727d27a3d37c7cf2f2bc6726baf14d5d01025c6f0dd0437da5e64b",
+      "status": "OPEN",
+      "suggestion": "Reject ambiguous hardlink member ancestry (for example require real directory rows for its archive-member parents), or validate the iterated row and declared target explicitly while retaining hardlink-target restrictions and post-map forward-reference support.",
+      "title": "Parent symlink can redirect constructor resolution away from the hardlink row being audited"
+    }
+  ],
+  "kind": "c0_arch_04_completion_constructor_correctness_review",
+  "limits": [
+    "Writes only to the new completion correctness directory. No previous output or script modified/executed.",
+    "No engine/helper operation, image build/pull/load/start, mounts/unmounts, C0 actor/collector/worker-main execution, tracing, installed filters, deployment or runtime calibration.",
+    "Archive data read as streams; no filesystem extraction. Reproducers use inert ELF bytes and legitimate root metadata.",
+    "Existing image/root/cleanup observations are historical evidence, not new live-engine/native-host observations.",
+    "The 31 image tests and 36 independent constructor groups ran; source-bound full 287-test reports were verified rather than rerun.",
+    "Actual archives are byte-identical to prior GO evidence; their previous independent overlay relation is carried forward, not recomputed in this small-delta confirmation.",
+    "Native hosted image CI and native/runtime acceptance remain unclaimed. C0-ARCH-05 admission/calibration and C0-ARCH-06 publication remain separately gated."
+  ],
+  "new_fixture_hashes": {
+    "aarch64-direct-False-gid.tar": "6e07a8a2f90a24b85ac8f397008fccc64fa6b746f37c512079c3e25f3d703749",
+    "aarch64-direct-False-mode.tar": "a471d0fdddd191703e064a708d29436981001145dccf6d57196bb49d6bbf4d49",
+    "aarch64-direct-False-uid.tar": "0cb64b007b3bacc2d3e09ed6e13ef834242efe11f366e472504bdb5a738bc955",
+    "aarch64-direct-False-valid.tar": "3520ee47a06ff2b8c92d913f5aa9621b3d214a64b99347be49cfa279bd74d1c1",
+    "aarch64-direct-True-gid.tar": "d7026f6f8cd60e698804176c5fd305ed3c2fea806c98e9ce79f520a1836decd6",
+    "aarch64-direct-True-mode.tar": "f2a2c7cc6550dd9c4c412a1dbce65fd829bbabad9e72efb94d6c273ba2b02d05",
+    "aarch64-direct-True-uid.tar": "77675d04c463ac8143894c397d7e2b54bf323380efcc630d3a6c89c5e7807b4c",
+    "aarch64-direct-True-valid.tar": "1fa0163f676db6bf3c57952175686c6979a7d1530671704da9fbedf60a14e475",
+    "aarch64-directory-parent-0o700.tar": "5bc2e9403ed4c29bfc341c561d4a52e69201459b71fce75fcdc51d4cac99a27b",
+    "aarch64-directory-parent-0o755.tar": "3256ffb6aac24b450c09a206d390edd7051e037b5a3d5e8bacad2686104eebff",
+    "aarch64-shadowed-gid.tar": "4f8cf0390bd572445f1429252687fffc0324f8faf68196c6c9582801c874850e",
+    "aarch64-shadowed-missing-target.tar": "c34f90a7f3ecb416d9e4f3996e205132950e3252559e7bc9150019c2a81c8d4b",
+    "aarch64-shadowed-mode.tar": "0a88acb39f87e0d6e0823161709242e1f43ddd16525169683013f59ea5ccfd51",
+    "aarch64-shadowed-uid.tar": "f438ec804a6c947500991d345ad47e41eac9d95fa615aa5bcf083d6c20339781",
+    "aarch64-unused-directory.tar": "1bb1c8add6520fecfb14db5da05c8a33f0e8cc7236477f5e81fa81ca341384c5",
+    "aarch64-unused-hardlink-chain.tar": "6f396570b7d25ede4e20f82eff82b1151a69f1305b6ce4cd3ba44b46ca4eea19",
+    "aarch64-unused-missing.tar": "550c3559f939327e81237bf51367a4e9e3e97ed5c8f6b12f5ccf0ae42b5621b0",
+    "aarch64-unused-symlink.tar": "9224d0632ec7b99dd97115d8f63486e564e767ea9b90b6d54674280a9287fc90",
+    "x86_64-direct-False-gid.tar": "35c674428fb3350f166c28188eb92276e7bbea4a4f0713b754d4b0e8488d58f0",
+    "x86_64-direct-False-mode.tar": "0f44efe0c6af7d1260e64f01b2400861ac6451656dcd8820dbea1969862290db",
+    "x86_64-direct-False-uid.tar": "fa6ad570563dbbe76f2507fed4d0e4852d90c29dfe30b32bcb3af3c969702e9e",
+    "x86_64-direct-False-valid.tar": "b29b5311acece168ade5244a5d4732c71a61b0989df6125d8cf000e1c3191a66",
+    "x86_64-direct-True-gid.tar": "e9e264e78cb2eaa37101a9819aaffa13de164e4eb0e4967da3a6f5c1df6e7025",
+    "x86_64-direct-True-mode.tar": "f5583efcb8e9caf7e2f518f81d9b16403130e197dd3141dc90d3ee9e64218fc6",
+    "x86_64-direct-True-uid.tar": "00a01a50939cd7f12b8d111ba31579f3e24a104424e8f2b06ecb7bb03cfdd52c",
+    "x86_64-direct-True-valid.tar": "3336b72223b8663134ec74938cc8802dcaf6ffb514a2f36d68f2effb28ef02fb",
+    "x86_64-directory-parent-0o700.tar": "e678ac5e6eb7785fcf1c607f0517ff8867113c76d6cac82914aaa0e0bf318ad1",
+    "x86_64-directory-parent-0o755.tar": "21227103d5892b91f82e8a19a3683d3c1853e89bf5abfc8c65c86597558ed488",
+    "x86_64-shadowed-gid.tar": "ec7d616656b56fae0df350ed97f1fb4d48d3d99efad0957e333e8fc878aa8c40",
+    "x86_64-shadowed-missing-target.tar": "3d09d2a02241f991b60fc501fd651978cbf3a7a4f44dc3f58e3ebd461216dc42",
+    "x86_64-shadowed-mode.tar": "f6a3ec6fdbc77fb7ee6663285e93ae00bb0c861f6001319efbc9e51a13c7a4c1",
+    "x86_64-shadowed-uid.tar": "a99e02e48627d65ef5348d6108d628a03b1568e0377a78b75b7c42c7d09c4d93",
+    "x86_64-unused-directory.tar": "6e9b801211ae844a4b3369c9aebcf77622d83b3dcab2225813f742e2c88eb0d8",
+    "x86_64-unused-hardlink-chain.tar": "286e5cc718ab0fcbdb31e2623130132b4f74e26cfa81552157e50d0469a01fca",
+    "x86_64-unused-missing.tar": "8ff626b809597a5975345ace6ec5bf590bea55730a7e7ab347bf33ff36b02dc6",
+    "x86_64-unused-symlink.tar": "e8095413803042eebb6186c774c266da4f64972c5f17f78be9a011a322e21e5a"
+  },
+  "next_steps": "Bind the constructor check to each actual stored hardlink row, add parent-symlink shadowing/missing-target regressions, and repeat the bounded confirmation. No image rebuild or runtime operation is requested.",
+  "preservation": {
+    "after_manifest_sha256": "f2e9a797f4babe93fe18531adfff16f43d1d6a40aa39b6361712776528b09cfa",
+    "all_original_inputs_unchanged": true,
+    "before_manifest_sha256": "1da79c09f3815a7df7ddccb939e81bc2c147f233c48678cfe30daa996d771b54",
+    "protected_file_count": 1253,
+    "protected_roots": {
+      "/tmp/opencode/c0-images-aarch64-pass5-2026-10-17": 137,
+      "/tmp/opencode/c0-images-aarch64-remediation-2026-10-17": 146,
+      "/tmp/opencode/c0-images-x86_64-pass5-2026-10-17": 137,
+      "/tmp/opencode/c0-images-x86_64-remediation-2026-10-17": 146,
+      "/tmp/opencode/c0-runtime-images-2026-10-17": 184,
+      "/tmp/opencode/c0-runtime-images-final-2026-10-17": 226,
+      "/tmp/opencode/c0-runtime-images-remediation-2026-10-17": 173,
+      "/var/home/kfuller/Documents/Git_Projects/mifolyo/out/c0-runtime-images-2026-10-17/14ac223d10a72": 104
+    },
+    "unreviewed_parent_additions": {
+      "export-review.py": "501ef65e84d1101bda2d1d18df2c7d3e2b7b6520d729e9afeb1e3ae1ac2ad505"
+    },
+    "whole_git_status_compared": false
+  },
+  "prior_go": {
+    "closures_retained": true,
+    "finding_closure": [
+      {
+        "id": "C0ARCH04-COR-001",
+        "prior_status": "CLOSED_RETAINED",
+        "reason": "Prior correction remains present; only the post-parse hardlink scan and its new test differ from the GO snapshot. Current image regression tests pass.",
+        "status": "CLOSED_RETAINED"
+      },
+      {
+        "id": "C0ARCH04-COR-002",
+        "prior_status": "CLOSED_RETAINED",
+        "reason": "Prior correction remains present; only the post-parse hardlink scan and its new test differ from the GO snapshot. Current image regression tests pass.",
+        "status": "CLOSED_RETAINED"
+      },
+      {
+        "id": "C0ARCH04-COR-003",
+        "prior_status": "CLOSED_RETAINED",
+        "reason": "Prior correction remains present; only the post-parse hardlink scan and its new test differ from the GO snapshot. Current image regression tests pass.",
+        "status": "CLOSED_RETAINED"
+      },
+      {
+        "id": "C0ARCH04-COR-004",
+        "prior_status": "CLOSED",
+        "reason": "Prior correction remains present; only the post-parse hardlink scan and its new test differ from the GO snapshot. Current image regression tests pass.",
+        "status": "CLOSED_RETAINED"
+      },
+      {
+        "id": "C0ARCH04-COR-005",
+        "prior_status": "CLOSED_WITH_DOCUMENTED_MODEL_LIMITS",
+        "reason": "Prior correction remains present; only the post-parse hardlink scan and its new test differ from the GO snapshot. Current image regression tests pass.",
+        "status": "CLOSED_RETAINED"
+      },
+      {
+        "id": "C0ARCH04-COR-006",
+        "prior_status": "CLOSED",
+        "reason": "Prior correction remains present; only the post-parse hardlink scan and its new test differ from the GO snapshot. Current image regression tests pass.",
+        "status": "CLOSED_RETAINED"
+      }
+    ],
+    "path": "/tmp/opencode/c0-runtime-images-final-2026-10-17/correctness/review.json",
+    "sha256": "c245393c64a69cdc782b6a1a810c8d575b3aaf37c6f66a7b5bfe657fc5aef0fc"
+  },
+  "review_markdown_sha256": "dfe5244d0f31175f64be9e68e9dc5682853204b754e735827dcd93fa6cb60ebf",
+  "runtime_acceptance": false,
+  "source": {
+    "auxiliary_files": 3,
+    "branch": "feature/crawl-jobs-v2-c0-runtime-images",
+    "delta_from_construction": {
+      "tests/crawl-jobs-v2-observer/image_artifacts.py": {
+        "after": "d13b720e62727d27a3d37c7cf2f2bc6726baf14d5d01025c6f0dd0437da5e64b",
+        "before": "61df24f28e9e4ef2c92e21503637e22863c1da4d9d47b112a2d97be6fb8c9683"
+      },
+      "tests/crawl-jobs-v2-observer/test_image_review.py": {
+        "after": "18b01b5f504e1359469e8d239564aa21ddb5e692d00c0c7b51acbaee807fec2b",
+        "before": "f74202962d08bf0509fba42bf3dc7af3ea0dae3dc987d378ac6a025cc816fe77"
+      }
+    },
+    "delta_from_go": {
+      "tests/crawl-jobs-v2-observer/image_artifacts.py": {
+        "after": "d13b720e62727d27a3d37c7cf2f2bc6726baf14d5d01025c6f0dd0437da5e64b",
+        "before": "106a355ce8e9da11c0baad5ff2d37c0281ecf8b2bd49c90bf2ef5fc521132695"
+      },
+      "tests/crawl-jobs-v2-observer/test_image_review.py": {
+        "after": "18b01b5f504e1359469e8d239564aa21ddb5e692d00c0c7b51acbaee807fec2b",
+        "before": "1a7f078566072bd3347ed74a5ee7caec05a0a46ca5351e8341c844f2e66bf66a"
+      }
+    },
+    "files": {
+      ".github/workflows/c0-runtime-images.yml": "47d0205d931100d096e8720d4bc6a21d3d542ab64db5eaefba4e46827e9c770c",
+      "scripts/prepare-crawl-jobs-v2-observer-images.py": "a97a270010e48dfee61c3c3317c4fcad7069bb70ba83ee0181d3c6d83b7e71cc",
+      "scripts/test-crawl-jobs-v2-observer.py": "9afb715125f734f5b905da63dde5c9787fc5997b2e5a73a0bf62d781b23aef84",
+      "tests/crawl-jobs-v2-observer/.dockerignore": "25170fdb33082a47a01bdc344bfabe8ef4460eed2da175e6dd1159557fcaa13d",
+      "tests/crawl-jobs-v2-observer/Dockerfile": "6925c36fe1cd42800333b4c72c54143b0c706e26e0aa37a09fd8679a684fa06c",
+      "tests/crawl-jobs-v2-observer/Dockerfile.oracle": "61c196ddc98e522516fd1e36ce239f36f27f04e844be66752227c90de5897429",
+      "tests/crawl-jobs-v2-observer/Dockerfile.oracle.dockerignore": "679f3cd226874aa189596199b105352137171eed114a1393e478eafc43f330d3",
+      "tests/crawl-jobs-v2-observer/README.md": "bd2a7769032332fc79300c281ea9be01354e16906e23fe4c1ca27a44c8e3fd14",
+      "tests/crawl-jobs-v2-observer/build_oracle.py": "cb702f624c986320e6f4c690dfc4eac1187104c711a52eb9e2bab28ec12e7ed6",
+      "tests/crawl-jobs-v2-observer/build_tools.py": "a402d791a3cd1dc35ed709a985cbcd9b06a9af9b2f370616f44f2bcfe6519acb",
+      "tests/crawl-jobs-v2-observer/context_files.py": "956ce03c56e6df84006e9bf16775f1d3d83d2acbda5bec8d9d41b1de2e72d396",
+      "tests/crawl-jobs-v2-observer/context_provision.py": "d0869ab36372a1af94ce0ffd04f1e364b318519a7e1f3c4bb7fefa95e2df340e",
+      "tests/crawl-jobs-v2-observer/context_ssh.py": "94ededb449423cbc822282ab05cc725316caef186cdba227613631618b9f2a03",
+      "tests/crawl-jobs-v2-observer/context_transport.py": "43193118350d4d52d0f3901e4a93561fa7cd94dd4e81c2ce99337b5364404af0",
+      "tests/crawl-jobs-v2-observer/context_worker.py": "f01980f5b3322eabafd5b99c97b76f4313aa9a28ce90a5f3ce66c5175843e03f",
+      "tests/crawl-jobs-v2-observer/contracts.py": "6a3c4dfe7b6fb4524771b26fdcbcba39be2c5893d52e2e4caeebf762df27a7f4",
+      "tests/crawl-jobs-v2-observer/controller.py": "23b28206e550efbe408a970161ebed7ddbd3430c771baece6765a165fc2e2ec5",
+      "tests/crawl-jobs-v2-observer/d02.py": "d7df595daeefcc3f5a785a89c191c93b5b6724e42655222befa1b07c88be29f2",
+      "tests/crawl-jobs-v2-observer/docker_backend.py": "51cf4ad679a961d5b7631af1769216dc0300e740228ce8d7cf2423ed7373ebcf",
+      "tests/crawl-jobs-v2-observer/image_artifacts.py": "d13b720e62727d27a3d37c7cf2f2bc6726baf14d5d01025c6f0dd0437da5e64b",
+      "tests/crawl-jobs-v2-observer/image_build.py": "6926bdb5bf01c25b3c29ac5607e4602bf831772fe34e06c85bee7700baee0d85",
+      "tests/crawl-jobs-v2-observer/linux_observation.py": "58934a305a1c7bf5877c4e5f7ae5969181c61fed267b150d0ed1ed91c195282d",
+      "tests/crawl-jobs-v2-observer/native/admission.h": "b64f55c4f5184506bc442bf13405f282b92d4bc600d8958b5febda5108fe0a96",
+      "tests/crawl-jobs-v2-observer/native/architecture.h": "c0b078cd257852bc3cb57e1405e18c943bf2d0a48520523195846c8f58cfea2b",
+      "tests/crawl-jobs-v2-observer/native/common.h": "4b221886a774007a74ed68a44a6e5088bc7f2e4ccf4980ddb8815f85cfc27042",
+      "tests/crawl-jobs-v2-observer/native/observer.c": "a45816e40320c8560f439dfdd0b1ebef636dc74a0a101c19f0a726ae38098a5c",
+      "tests/crawl-jobs-v2-observer/native/target.c": "aedd6549923876d28b7d39748c6506dbad539459200b276a9f409500daf3f82d",
+      "tests/crawl-jobs-v2-observer/native/test_x86_debug.c": "ca8c49152d575c6b42e37914ea7dc5d805975e49fee4fa799137799ceaaa6f6f",
+      "tests/crawl-jobs-v2-observer/native/x86_debug.h": "42844fba32b39dfe752fe84f84b1748a872b93aed6c5810a9a30aeab2fbd1777",
+      "tests/crawl-jobs-v2-observer/oracle.py": "fa14b08caee86b65d9a01c16bb3e6ea236264275a48a3f32ad6694c57df23bc8",
+      "tests/crawl-jobs-v2-observer/oracle_bridge.py": "9d1efdbac6ea8b74585344884fb8264bed82f7413d32259146718872e4247f86",
+      "tests/crawl-jobs-v2-observer/oracle_protocol.py": "f867fdc33eb271385176ab25c09a573e9662f77b7f6a73e559dbf07fcb115f45",
+      "tests/crawl-jobs-v2-observer/oracle_worker.py": "91e84a5d3f47b043d6c12f9564604dba11f2ad9cc49e58a905ee714d2ece07d0",
+      "tests/crawl-jobs-v2-observer/owned_resources.py": "5e235811e610d51009c03ee8e70fe2c8fc0927708ddd2dba5a1173b3bcca5108",
+      "tests/crawl-jobs-v2-observer/profiles.py": "b149039b977bd78daf53a6ddb7635419b36338925c25d125a3d49fac8f60a539",
+      "tests/crawl-jobs-v2-observer/runtime_admission.py": "307e4486f4c23c426d543ddc3cee65d99dcee77c7c01087f4c8840cc81d3b076",
+      "tests/crawl-jobs-v2-observer/runtime_context.py": "85caefcf88973b0f78143d629dd8f3e46b16a0d987b680f48e875b9ed97739cd",
+      "tests/crawl-jobs-v2-observer/streams.py": "85f8d1b16a84462f1defe641cb2c75879fe356928c7497b06628f86d2f599cbd",
+      "tests/crawl-jobs-v2-observer/test_admission_dispatch.py": "f565e9c7672a6b2185ded0731c8481fc7cd3186e408ffad270e5a91a2792d5fa",
+      "tests/crawl-jobs-v2-observer/test_architecture_contracts.py": "3a68f407df26a17eccc3c3397a91b65ff604247bf43b3c0418f2dd2ede21b57d",
+      "tests/crawl-jobs-v2-observer/test_architecture_review.py": "89197d92221c854e92064965c1a6d73aa8cb52b8e22cda68773e095c44f4548a",
+      "tests/crawl-jobs-v2-observer/test_context_oracle_review.py": "2b7a342bd1ac25c912aebe7813d4f056ba1ebc29a96d0a2bdb0b38b02ce7c660",
+      "tests/crawl-jobs-v2-observer/test_context_provisioning.py": "47af7da18e75e311d280927b83cb64bf1b12b01562217f75bfd21b10255e83de",
+      "tests/crawl-jobs-v2-observer/test_contracts.py": "f95b6879e06055cb26b1ac80214a9708deda71561511862d7833e981ebdd0716",
+      "tests/crawl-jobs-v2-observer/test_d02.py": "f158944c10aa24dc397efdb1d03471a7a02f4b46cec46d2442e8bbe4eb772b72",
+      "tests/crawl-jobs-v2-observer/test_filter.py": "b434138a353c257b18f3262373a5fa226223d8f44b0414e3b6b2aaf40f7a7614",
+      "tests/crawl-jobs-v2-observer/test_image_artifacts.py": "81ea1082f3f4c7d38b37f4aeef0a84f215f546331d9c46d24f828d357a4835fa",
+      "tests/crawl-jobs-v2-observer/test_image_review.py": "18b01b5f504e1359469e8d239564aa21ddb5e692d00c0c7b51acbaee807fec2b",
+      "tests/crawl-jobs-v2-observer/test_oracle_bridge.py": "e7ec3950202388b09014bd175e7668aa3375f93c4029e04910296975cdec52f1",
+      "tests/crawl-jobs-v2-observer/test_oracle_worker.py": "3c899ec2036f74167aa213cda6c42b8e71547f1e32f9c58df4e6f9cd1eca9d0a",
+      "tests/crawl-jobs-v2-observer/test_owned_resources.py": "e8b7d53c1c6081a095a116beca16680c85b35dca66249ef830f0146304cc41ab",
+      "tests/crawl-jobs-v2-observer/test_runtime_admission.py": "1e53248dbeacb1dae04f184ad844ae2d17dd7a338311ea5403e491cc373ac430",
+      "tests/crawl-jobs-v2-observer/test_runtime_context.py": "040f04d8bd9a120758e2d03c2052c666d6f88c32fc38f3ecb8f1c5614f487b7c",
+      "tests/crawl-jobs-v2-observer/test_streams.py": "0f5a4e23592bd7e849c7c90a49815704c7322f04c3804728f5ab1a3990fdd695",
+      "tests/crawl-jobs-v2-observer/test_watchdog.py": "271b8f611ec10b2d7ad523368aa6e98e3a66ebc0351beef32c94c75b3331b7da",
+      "tests/crawl-jobs-v2-observer/test_x64_runtime.py": "871dbc791fe792326b9f25516230c4e1fa2379be87cab000fd8896f950d21250",
+      "tests/crawl-jobs-v2-observer/watchdog.py": "cc2e7e1212caa6be74e2266ce3a4ab156064a3ae96f01281cfa3ba5660ba5813",
+      "tests/crawl-jobs-v2-observer/worker.py": "08c319e7ec3790f619e4bf4ba3160e0db3bdc34f8dd86256bf998639aa2ea273"
+    },
+    "head": "7ef2041e2844aa34bec54da61c2e8469c1382bac",
+    "inventory_sha256": "2afe7326f090a3b8ba3ef882a8b3fa89d3e4dd73a9c8c074288d541364487043",
+    "package_files": 55,
+    "source_before_after_match": true
+  },
+  "summary": "COR-001 through COR-006 closures remain valid and all retained images revalidate. The new all-hardlink constructor guarantee is incomplete for shadowed member paths; COR-007 is open.",
+  "support_hashes": {
+    "common.py": "a6be3a8c2d81794aaeb674d4f274511009850d139e171fb65f37e388d5cc2bd5",
+    "image-tests.log": "759aedcd181f45c70c5422497d325925661a04e32504163fde23b2f7fc6d2f01",
+    "integrity-after.log": "a71a3dcf87ba1ab69386837b5ea44d56afece769cff3553559ec6abb1c93df59",
+    "integrity-before.log": "aee7083599ed132c2618ded2cd2a3410bfff7160a5baae5b507ba04e3dac31bc",
+    "integrity.py": "924f7e66551de36e59af3a01096baed5ad5010e924213c67f785bbecc334202b",
+    "inventory-after.json": "f2e9a797f4babe93fe18531adfff16f43d1d6a40aa39b6361712776528b09cfa",
+    "inventory-before.json": "1da79c09f3815a7df7ddccb939e81bc2c147f233c48678cfe30daa996d771b54",
+    "probes-final.log": "dbe9181e7c0737c497f33811ab28b1d7946d6dc217247fb13d4c93bd67fb42ba",
+    "probes.json": "d2b23c893c9bd8689523a6fb4794bd70bc611ab22efd5337dc65b52ea5463962",
+    "probes.log": "926dbe4b58f9368192e3d0fa21212a21eeb131c3db845433764bca1c65d8c98e",
+    "probes.py": "37843874eb7da355e499bd59c5817d85a36e83d9109c3e0d668c5dd784b04ac8",
+    "replay-final.log": "216c4abb29865a9ee4405b363899c9ef062095655e5af11956ad7c867042fc09",
+    "replay.json": "6f9cae15450691980c13b544ed4d4691658c8042cdc4d7cd7ec0a8f05dd7dae6",
+    "replay.log": "216c4abb29865a9ee4405b363899c9ef062095655e5af11956ad7c867042fc09",
+    "replay.py": "73bb08f645785ed59dc790f5e11c5fc40eb0f0dfec58533d8ef977c0202117d3",
+    "review.md": "dfe5244d0f31175f64be9e68e9dc5682853204b754e735827dcd93fa6cb60ebf",
+    "write_review.py": "de735eec1a229eac18d4f313af58577f7541ac99270b0ddd498b08dcb1b76c1a"
+  },
+  "verdict": "NEEDS_REMEDIATION",
+  "version": 1
+}

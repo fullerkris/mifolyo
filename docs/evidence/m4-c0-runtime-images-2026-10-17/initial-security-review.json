@@ -1,0 +1,165 @@
+{
+  "branch": "feature/crawl-jobs-v2-c0-runtime-images",
+  "constraints": {
+    "archive_extraction_performed": false,
+    "benign_text_link_resolution_check_within_private_directory": true,
+    "earlier_preliminary_external_documentation_lookup": true,
+    "engine_commands_executed": 0,
+    "execution_authorized": false,
+    "external_documentation_required_for_scoped_verdict": false,
+    "native_C_review_in_narrowed_scope": false,
+    "native_programs_executed": false,
+    "network_calls_after_scope_narrowing": 0,
+    "repository_or_frozen_edits": false,
+    "retained_artifact_edits": false,
+    "runtime_acceptance": false,
+    "worker_main_or_collector_executed": false
+  },
+  "date": "2026-10-17",
+  "decision": "NEEDS_REMEDIATION",
+  "evidence_sha256": {
+    "check_remediation_prototype.py": "0663a9672405366302f7fb3d2da6918b63ace10c92daeee31604721058bc5c69",
+    "check_retained.py": "eb7d2640a60b76b070a62b242269b01a6aeaf6ac8ab0fedb2718ab4af1af59be",
+    "check_retained_unchanged.py": "766fae3ec8152e0094a8fd2454e376642c251390a47b51b47100e6195d8cb482",
+    "existing-image-unit-tests.log": "7c240e1d694bc8d753500c91a7d9ee640c8165ca74f02f8b82caf465ffb0f94a",
+    "inventory-after.json": "ca2d6f85e951f7cf36ce6dd5db978d588d4863760a92c466d34eced92ab27d17",
+    "inventory-before.json": "ca2d6f85e951f7cf36ce6dd5db978d588d4863760a92c466d34eced92ab27d17",
+    "inventory-resumed-before.json": "ca2d6f85e951f7cf36ce6dd5db978d588d4863760a92c466d34eced92ab27d17",
+    "remediation-prototype-results.json": "e85075ccf46c31b6a3e7de4dfa7b0f1d493a27f3bfc5eda4d7d7fcc4c877c58b",
+    "remediation-prototype.log": "82937d2c641203587bfe910bf01f4cc803be09fdae2bec7679a720a70b671e20",
+    "remediation_prototype.py": "1973dc0e0df07800280aa56f29dbc30f49177638b4fb24baa284ee63e8b92e05",
+    "retained-unchanged-after.json": "1cfbec4bba44c7540a4ea069d19001a1a14670262b1a98765f741b88cb56ea8e",
+    "retained-unchanged-after.log": "956b736f9130036a568f798a0f1b1597cc6082738b0b3ce29a36044d034dcaa1",
+    "retained-verification.json": "e9e60217ba0c71bd30f992aeba43d7e584ce2c0f09e18d19da16875e9d23bcfb",
+    "retained-verification.log": "8b0d35dcc1f20d8f6104a87610902ff8738bc2af5972b580d19edaed3a859b62",
+    "review.md": "7ad721556be8fb019fde0a74a00e306f8efbcf43ae53dafcf4b45753bd5c4ced",
+    "security-unit-tests-rerun.log": "9c5fbafa4c1a9db189c2fba18221877d836dd07dee6d2ec449878bfdd1bf33d7",
+    "test_security_review.py": "7fa57023f09f8aee27da529f86f1c9a59c7e8d1ab7c87cff65211738aca36c77",
+    "unit-run-02/inert-fixtures/oracle-link-dotdot.tar": "e23ae4760703348e2be46e99bb50064d818b30ef2d57f48b103e8f79d73f3577",
+    "unit-run-02/inert-fixtures/portable-config-alias.tar": "e3782df2e3d0ea994c355aad6e9b69b876873d29c69093ba7e1b1e710fb0a39c",
+    "unit-run-02/inert-fixtures/repeated-root-headers.tar": "fa8488f36d040a8bb78e68904d2f1f337455c8c2767eac44e201dd0489c84dcb",
+    "unit-run-02/security-unit-results.json": "e55e34320a3d627faee950efe4b01aa69c914c7e46ec984d0998b9b5052a2b5e",
+    "verify_inventory.py": "7fd211aca6478055364252741defb94ad194bd890beb75ba2d8f08f18f575092",
+    "write_review_json.py": "378a841a86efa50d6c2db43e23cfd39b7792e7135d90c54d09523717d594bd5d"
+  },
+  "finding_counts": {
+    "Critical": 0,
+    "High": 0,
+    "Low": 1,
+    "Medium": 2
+  },
+  "findings": [
+    {
+      "cwe": "CWE-180",
+      "id": "C0-IMG-SEC-01",
+      "impact": "Accepted archive contains distinct configurations for one canonical pathname; reported config identity authenticates only one spelling.",
+      "limits": "No extraction or engine loading was performed; normalized-name consumer behavior was modeled in memory.",
+      "location": "image_artifacts.py:270-287",
+      "prerequisite": "Malformed/substituted portable archive is supplied to archive_record with an expected config identity.",
+      "proof": {
+        "admitted_config_id": "sha256:c042848616c4d95ef39ed85d1fd9a9aabb0398dfa920ef335bce90db0a4ef8df",
+        "engine_load_performed": false,
+        "extraction_performed": false,
+        "fixture": "unit-run-02/inert-fixtures/portable-config-alias.tar",
+        "fixture_sha256": "e3782df2e3d0ea994c355aad6e9b69b876873d29c69093ba7e1b1e710fb0a39c",
+        "normalized_path_config_id": "sha256:ede681586c7adba8a5f4d291e814de12a2a5eae25835a01212977b9ba383305b",
+        "normalized_path_entrypoint": [
+          "/inert-substitution-marker"
+        ]
+      },
+      "remediation_applied_to_repository": false,
+      "remediation_code": "review.md C0-IMG-SEC-01; remediation_prototype.py:check_unique_portable_members",
+      "severity": "Medium",
+      "title": "Portable config identity is ambiguous under normalized archive names"
+    },
+    {
+      "cwe": "CWE-59",
+      "id": "C0-IMG-SEC-02",
+      "impact": "verify_content accepts expected source hashes while the same source pathname resolves to different image-internal bytes.",
+      "limits": "Benign text reads only; no worker execution, host escape, or runtime-authorization bypass demonstrated.",
+      "location": "image_artifacts.py:51-61,90-116,243-245",
+      "prerequisite": "Malformed/substituted candidate rootfs supplies a symlink chain containing parent components.",
+      "proof": {
+        "admitted_resolved_path": "/worker.py",
+        "admitted_source_sha256": "12ded7d07c41abaa6b8ee908a0c83e56ed386393ed6bdcad406628eb8d66b152",
+        "code_execution_performed": false,
+        "execution_authorized": false,
+        "extraction_performed": false,
+        "fixture": "unit-run-02/inert-fixtures/oracle-link-dotdot.tar",
+        "fixture_sha256": "e23ae4760703348e2be46e99bb50064d818b30ef2d57f48b103e8f79d73f3577",
+        "posix_read_source_sha256": "67e533f08cb5cb33a5186578b153063464246023f5d03ba452f20237f2f3660a",
+        "posix_resolved_relative_path": "foreign/worker.py",
+        "runtime_acceptance": false
+      },
+      "remediation_applied_to_repository": false,
+      "remediation_code": "review.md C0-IMG-SEC-02; remediation_prototype.py:absolute_link_target,resolve_components",
+      "severity": "Medium",
+      "title": "Early dot-dot collapse certifies different bytes than pathname resolution reads"
+    },
+    {
+      "cwe": "CWE-400",
+      "id": "C0-IMG-SEC-03",
+      "impact": "20,002 members accepted with one reported tree entry; parser work is not covered by the stated member budget.",
+      "limits": "Raw-file size ceiling remains. No memory exhaustion or hidden PAX/GNU metadata exhaustion was attempted.",
+      "location": "image_artifacts.py:72-79",
+      "prerequisite": "Ordinary tar data with repeated root-directory headers reaches ImageTree.",
+      "proof": {
+        "exhaustion_attempted": false,
+        "fixture": "unit-run-02/inert-fixtures/repeated-root-headers.tar",
+        "fixture_bytes": 10250240,
+        "fixture_sha256": "fa8488f36d040a8bb78e68904d2f1f337455c8c2767eac44e201dd0489c84dcb",
+        "physical_member_count": 20002,
+        "reported_archive_members": 1
+      },
+      "remediation_applied_to_repository": false,
+      "remediation_code": "review.md C0-IMG-SEC-03; remediation_prototype.py:check_root_member_budget",
+      "severity": "Low",
+      "title": "Repeated root directory headers bypass archive member-count checks"
+    }
+  ],
+  "head": "7ef2041e2844aa34bec54da61c2e8469c1382bac",
+  "inventory": {
+    "auxiliary_file_count": 3,
+    "package_file_count": 54,
+    "path": "/tmp/opencode/c0-runtime-images-2026-10-17/source-inventory.json",
+    "repository_and_frozen_before_after_match": true,
+    "sha256": "f789846f36fd23c21cad7b7ef461ec1dbb5521e0ad6d8948ae5cace2fde9dec4"
+  },
+  "limits": [
+    "No engine loading/execution or live daemon interruption test.",
+    "No claim that successful retained image sets are malicious.",
+    "No demonstrated host filesystem escape or external-file mutation.",
+    "No exhaustive parser fuzzing, OOM exercise, hardlink-semantics proof, or live loader verification.",
+    "No native C, runtime/hardware/timing, registry publishing or deployment acceptance.",
+    "Only detached prototype remediation was tested; frozen implementation remains unchanged."
+  ],
+  "retained_files_unchanged": 264,
+  "reviewed_source_sha256": {
+    ".github/workflows/c0-runtime-images.yml": "c00a7caad2592045a4162bb7fafa96afaeb456d0c2588311b276fe204313c81a",
+    "scripts/prepare-crawl-jobs-v2-observer-images.py": "a97a270010e48dfee61c3c3317c4fcad7069bb70ba83ee0181d3c6d83b7e71cc",
+    "scripts/test-crawl-jobs-v2-observer.py": "9afb715125f734f5b905da63dde5c9787fc5997b2e5a73a0bf62d781b23aef84",
+    "tests/crawl-jobs-v2-observer/build_oracle.py": "c2e4fe3b1e82363348e344e95fd86275513e40879a756875ddfe3fed872a12da",
+    "tests/crawl-jobs-v2-observer/image_artifacts.py": "132b7d1c95cb6257e78dff9f2dc15f0d4ad339d7e6cfd25c45d9b577260eb487",
+    "tests/crawl-jobs-v2-observer/image_build.py": "c2dea3f44ebee5b00782dd7dbbc79e1c290417be83859078b8c1a41fc98df1a0"
+  },
+  "schema_version": 1,
+  "scope": "Changed Python archive parsing, checksum/configuration validation, file handling and cleanup; CLI/CI static review.",
+  "tests": {
+    "detached_remediation_checks_pass": true,
+    "distinct_unit_tests": 27,
+    "existing_image_unit_tests": {
+      "passed": 16,
+      "run": 16
+    },
+    "full_272_suite_rerun": false,
+    "new_suite_reproduced_twice": true,
+    "new_tests": {
+      "errors": 0,
+      "failed_regressions": 3,
+      "passed": 8,
+      "run": 11,
+      "skipped": 0
+    },
+    "python": "3.14.8 (main, Oct  1 2026, 00:00:00) [GCC 16.2.1 20260819 (Red Hat 16.2.1-2)]"
+  }
+}

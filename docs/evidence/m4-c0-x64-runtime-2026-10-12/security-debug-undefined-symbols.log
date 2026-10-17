@@ -1,0 +1,6 @@
+                 U __assert_fail@GLIBC_2.2.5
+                 w __gmon_start__
+                 U __libc_start_main@GLIBC_2.34
+                 U longjmp@GLIBC_2.2.5
+                 U printf@GLIBC_2.2.5
+                 U _setjmp@GLIBC_2.2.5

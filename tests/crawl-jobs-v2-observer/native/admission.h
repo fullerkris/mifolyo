@@ -1,9 +1,6 @@
 #ifndef OBS1_ADMISSION_H
 #define OBS1_ADMISSION_H
-#if !defined(__aarch64__) || __BYTE_ORDER__ != __ORDER_LITTLE_ENDIAN__
-#error "C0 native admission currently requires little-endian AArch64"
-#endif
-_Static_assert(sizeof(void *) == 8, "C0 native admission requires a 64-bit ABI");
+#include "architecture.h"
 /* Fixed-path, read-only native observations. No caller PID/path or policy setters. */
 #include <dirent.h>
 #include <openssl/evp.h>
@@ -196,7 +193,7 @@ static void admission_emit(const char *format, ...) {
 
 static void admission_collect(unsigned selected, const char *role) {
     struct utsname kernel;
-    if (uname(&kernel) || strcmp(kernel.sysname, "Linux") || strcmp(kernel.machine, "aarch64")) invalid("admission");
+    if (uname(&kernel) || strcmp(kernel.sysname, "Linux") || strcmp(kernel.machine, OBS_ARCHITECTURE)) invalid("admission");
     caps_zero();
     uint64_t pid = (uint64_t)getpid(), tid = (uint64_t)syscall(SYS_gettid), start = admission_ticks(), ns[7], device;
     if (pid != tid) invalid("admission");
@@ -241,7 +238,7 @@ static void admission_collect(unsigned selected, const char *role) {
     if (strcmp(again, gid)) invalid("identity");
     caps_zero();
     const char *case_id = OBS_CASES[selected];
-    admission_emit("{\"architecture\":\"aarch64\",\"boot_sha256\":\"%s\",\"case_id\":\"%s\",\"cgroup_ns\":%" PRIu64 ",\"executable_sha256\":\"%s\",\"gid_map_sha256\":\"%s\",\"invocation_sha256\":\"%s\",\"ipc_ns\":%" PRIu64 ",\"mnt_ns\":%" PRIu64 ",\"net_ns\":%" PRIu64 ",\"ns_device\":%" PRIu64 ",\"phase\":\"IDENTITY\",\"pid\":%" PRIu64 ",\"pid_ns\":%" PRIu64 ",\"role\":\"%s\",\"start_ticks\":%" PRIu64 ",\"tid\":%" PRIu64 ",\"time_ns\":%" PRIu64 ",\"uid_map_sha256\":\"%s\",\"user_ns\":%" PRIu64 ",\"version\":2}\n",
+    admission_emit("{\"architecture\":\"" OBS_ARCHITECTURE "\",\"boot_sha256\":\"%s\",\"case_id\":\"%s\",\"cgroup_ns\":%" PRIu64 ",\"executable_sha256\":\"%s\",\"gid_map_sha256\":\"%s\",\"invocation_sha256\":\"%s\",\"ipc_ns\":%" PRIu64 ",\"mnt_ns\":%" PRIu64 ",\"net_ns\":%" PRIu64 ",\"ns_device\":%" PRIu64 ",\"phase\":\"IDENTITY\",\"pid\":%" PRIu64 ",\"pid_ns\":%" PRIu64 ",\"role\":\"%s\",\"start_ticks\":%" PRIu64 ",\"tid\":%" PRIu64 ",\"time_ns\":%" PRIu64 ",\"uid_map_sha256\":\"%s\",\"user_ns\":%" PRIu64 ",\"version\":2}\n",
         boot, case_id, ns[3], exe, gid, admission_invocation, ns[6], ns[4], ns[5], device, pid, ns[0], role, start, tid, ns[2], uid, ns[1]);
     admission_emit("{\"caps\":[0,0,0,0,0],\"case_id\":\"%s\",\"core_hard\":0,\"core_soft\":0,\"dumpable\":1,\"gids\":[999,999,999,999],\"groups\":[%s],\"invocation_sha256\":\"%s\",\"nnp\":1,\"phase\":\"CONFINEMENT\",\"role\":\"%s\",\"seccomp\":2,\"seccomp_filters\":%u,\"tasks\":[%" PRIu64 "],\"threads\":1,\"tracer_pid\":0,\"uids\":[999,999,999,999],\"version\":2}\n", case_id, groups ? "999" : "", admission_invocation, role, filters, pid);
     admission_emit("{\"case_id\":\"%s\",\"cgroup_sha256\":\"%s\",\"cpu_period\":%llu,\"cpu_quota\":%llu,\"invocation_sha256\":\"%s\",\"memory_current\":%" PRIu64 ",\"memory_max\":%" PRIu64 ",\"memory_peak\":%" PRIu64 ",\"phase\":\"RESOURCES\",\"pids_current\":%" PRIu64 ",\"pids_max\":%" PRIu64 ",\"processes\":[%" PRIu64 "],\"role\":\"%s\",\"swap_max\":%" PRIu64 ",\"version\":2}\n", case_id, cgroup, period, quota, admission_invocation, current, memory, peak, pids_current, pids, process, role, swap);

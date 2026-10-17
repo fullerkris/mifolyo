@@ -16,16 +16,16 @@ from test_owned_resources import DAEMON, prepared
 D = c.sha(b"synthetic-admission")
 
 
-def preparation():
+def preparation(architecture="aarch64"):
     artifacts = {key: D for key in c.ARTIFACTS}
     for role in ("target", "observer", "oracle"):
-        artifacts[role + "_profile"] = c.sha(c.canonical(profile(role)))
+        artifacts[role + "_profile"] = c.sha(c.canonical(profile(role, architecture)))
     artifacts.update(target_elf=c.sha(b"target-elf"), observer_elf=c.sha(b"observer-elf"))
-    return c.preparation(artifacts)
+    return c.preparation(artifacts, architecture)
 
 
-def context():
-    return {"architecture": "aarch64", **{name: c.sha(name.encode()) for name in admission.CONTEXT_HASHES}, **{name: 100 + i for i, name in enumerate(admission.HOST_NAMESPACES)},
+def context(architecture="aarch64"):
+    return {"architecture": architecture, **{name: c.sha(name.encode()) for name in admission.CONTEXT_HASHES}, **{name: 100 + i for i, name in enumerate(admission.HOST_NAMESPACES)},
         "user_ns": 20, "time_ns": 30, "ns_device": 4, "resolution_ns": 1, "yama_scope": 0,
         "seccomp_filters": {"target": 1, "observer": 2}, "not_before_ns": 1000000, "not_after_ns": 9000000000}
 

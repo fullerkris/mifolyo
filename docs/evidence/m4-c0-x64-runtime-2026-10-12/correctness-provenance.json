@@ -1,0 +1,60 @@
+{
+  "offline_tooling": {
+    "compiler": "cc (GCC) 16.2.1 20260819 (Red Hat 16.2.1-2)\nCopyright (C) 2026 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n",
+    "libseccomp_version": "2.6.1",
+    "seccomp_use": "init/rule_add_array/export_bpf/release only; never load"
+  },
+  "primary_references": {
+    "linux-v6.18-debugreg.h.txt": {
+      "bytes": 4039,
+      "executed": false,
+      "sha256": "0a24618ea3c5d8ccd80fca8ebfa41ed9453741843d7db9c48c708952ce0a988e",
+      "url": "https://raw.githubusercontent.com/torvalds/linux/v6.18/arch/x86/include/uapi/asm/debugreg.h"
+    },
+    "linux-v6.18-ptrace.c.txt": {
+      "bytes": 35873,
+      "executed": false,
+      "sha256": "bc52f48380e5ecbe5580af8d64c9464cfa145cb6514f061ae581964fdc2bec32",
+      "url": "https://raw.githubusercontent.com/torvalds/linux/v6.18/arch/x86/kernel/ptrace.c"
+    },
+    "linux-v6.18-traps.c.txt": {
+      "bytes": 43071,
+      "executed": false,
+      "sha256": "7ab78c8a751a8e2443706266100189d13636ff79f3316eb522311a18e8498e9a",
+      "url": "https://raw.githubusercontent.com/torvalds/linux/v6.18/arch/x86/kernel/traps.c"
+    },
+    "linux-v6.18-user_64.h.txt": {
+      "bytes": 5192,
+      "executed": false,
+      "sha256": "adbcd49103f151d32046e17222b8eafc30777ad34bfa1699063f3f12d175b025",
+      "url": "https://raw.githubusercontent.com/torvalds/linux/v6.18/arch/x86/include/asm/user_64.h"
+    },
+    "seccomp.2.html.txt": {
+      "bytes": 53415,
+      "executed": false,
+      "sha256": "95eca2f89204259e96055c099662dc27c4cf68818f082c35f3dc4d715bb150fa",
+      "url": "https://man7.org/linux/man-pages/man2/seccomp.2.html"
+    }
+  },
+  "source_inventory_sha256": "7ed3b955be1fe4d2621a43896d1a3e4d49cf9edcf6e86a0c2dd567d105f14720",
+  "test_reports": {
+    "correctness/offline-tests.json": {
+      "all_started_and_passed": true,
+      "sha256": "b88d7f34a8fbbd4de29b93e6614921f619ce667bd3539c5d126ff79d1c00dd2f",
+      "source_bound": true,
+      "tests": 256
+    },
+    "tests-022.json": {
+      "all_started_and_passed": true,
+      "sha256": "b88d7f34a8fbbd4de29b93e6614921f619ce667bd3539c5d126ff79d1c00dd2f",
+      "source_bound": true,
+      "tests": 256
+    },
+    "tests-077.json": {
+      "all_started_and_passed": true,
+      "sha256": "b88d7f34a8fbbd4de29b93e6614921f619ce667bd3539c5d126ff79d1c00dd2f",
+      "source_bound": true,
+      "tests": 256
+    }
+  }
+}

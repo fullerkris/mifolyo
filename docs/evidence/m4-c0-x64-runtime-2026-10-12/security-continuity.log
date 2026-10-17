@@ -1,0 +1,45 @@
+{
+  "status": "PASS",
+  "prior_test_count": 238,
+  "current_test_count": 256,
+  "retained_prior_test_ids": 233,
+  "removed_ids": [
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_admission_summary_cannot_promote_an_unsupported_architecture",
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_direct_ssh_transport_refuses_x64_before_client_or_process_io",
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_known_x64_deployment_is_metadata_only_until_the_port",
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_x64_process_stream_refuses_before_spawning",
+    "test_architecture_contracts.ArchitectureContractTests.test_build_entrypoints_refuse_x64_before_writing_outputs"
+  ],
+  "new_ids": [
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_admission_summary_refuses_mixed_architectures",
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_direct_x64_ssh_transport_still_requires_pinned_client",
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_unknown_abi_process_stream_refuses_before_spawning",
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_x64_deployment_generates_a_bound_private_bundle",
+    "test_architecture_contracts.ArchitectureContractTests.test_build_entrypoints_refuse_unknown_abi_before_writing_outputs",
+    "test_x64_runtime.DualArchitectureRuntimeTests.test_all_native_roles_admit_both_architectures_and_refuse_opposite_peer",
+    "test_x64_runtime.DualArchitectureRuntimeTests.test_oracle_selects_observed_native_abi_and_rejects_unknown_or_ilp32",
+    "test_x64_runtime.DualArchitectureRuntimeTests.test_signed_x64_context_binds_request_receipt_and_lease",
+    "test_x64_runtime.DualArchitectureRuntimeTests.test_x64_backend_and_benign_oracle_join_real_stream_protocol",
+    "test_x64_runtime.DualArchitectureRuntimeTests.test_x64_benign_stream_keeps_three_line_handshake_and_binding",
+    "test_x64_runtime.DualArchitectureRuntimeTests.test_x64_reader_requires_matching_elf_even_when_uname_matches",
+    "test_x64_runtime.DualArchitectureRuntimeTests.test_x64_resource_profiles_cannot_reuse_arm64_digests",
+    "test_x64_runtime.DualArchitectureRuntimeTests.test_x64_start_refuses_actual_arm64_image_before_transport",
+    "test_x64_runtime.X64BuildTests.test_every_effect_and_marker_byte_mutation_is_rejected",
+    "test_x64_runtime.X64BuildTests.test_oracle_manifest_binds_x64_interpreter_without_running_worker",
+    "test_x64_runtime.X64BuildTests.test_record_rejects_foreign_compiled_filter_before_toolchain_queries",
+    "test_x64_runtime.X64BuildTests.test_shifted_truncated_nonexec_and_aliased_markers_are_rejected",
+    "test_x64_runtime.X64BuildTests.test_variable_instruction_lengths_and_complete_effect_boundary",
+    "test_x64_runtime.X64BuildTests.test_x64_headers_and_manifest_bind_the_compiler_abi",
+    "test_x64_runtime.X64FilterTests.test_only_dr0_address_dr6_reset_and_dr7_local_execute_are_writable",
+    "test_x64_runtime.X64FilterTests.test_ptrace_requests_tid_high_bits_and_gp_write_denials_in_both_filters",
+    "test_x64_runtime.X64FilterTests.test_x32_compat_negative_and_foreign_syscalls_cannot_bypass_self_filter",
+    "test_x64_runtime.X64FilterTests.test_x64_loader_tls_and_chmod_are_narrow_and_roles_remain_confined"
+  ],
+  "changed_retained_test_method_asts": [
+    "test_architecture_contracts.ArchitectureBoundaryTests.test_linux_reader_rejects_foreign_kernel_before_observations",
+    "test_architecture_contracts.ArchitectureContractTests.test_both_preparation_contracts_are_explicit_and_non_authorizing",
+    "test_architecture_contracts.ArchitectureContractTests.test_elf_headers_are_classified_from_bytes_not_requested_labels",
+    "test_architecture_contracts.ArchitectureContractTests.test_existing_arm64_profiles_and_compiled_filter_bytes_are_preserved"
+  ],
+  "unchanged_retained_method_asts": 229
+}

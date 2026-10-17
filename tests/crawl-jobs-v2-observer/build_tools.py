@@ -51,6 +51,34 @@ def instruction(raw, loads, address):
     return offset, struct.unpack_from("<I", raw, offset)[0]
 
 
+def x64_code(raw, loads, address, size):
+    segments = [row for row in loads if row[1] & 1 and row[3] <= address and address + size <= row[3] + row[5]]
+    require(len(segments) == 1, "INSTRUCTION")
+    offset = segments[0][2] + address - segments[0][3]
+    return offset, raw[offset:offset + size]
+
+
+def x64_markers(raw, loads, symbols):
+    """Decode only the closed SysV effect/marker sequences, never arbitrary x86 code."""
+    effect = bytes.fromhex("48c7012a000000488916488917c3")
+    require("obs_effect" in symbols, "TARGET_SYMBOLS")
+    start = symbols["obs_effect"]["vaddr"]
+    require(start % 8 == 0 and symbols["obs_effect"]["type"] == 2 and symbols["obs_effect"]["size"] == len(effect) and
+        symbols["obs_pre_effect"]["vaddr"] == start and symbols["obs_post_effect"]["vaddr"] == start + 13, "EFFECT_BOUNDARY")
+    require(x64_code(raw, loads, start, len(effect))[1] == effect, "EFFECT_INSTRUCTIONS")
+    mapping = {}
+    for name, size in (("obs_pre_effect", 7), ("obs_post_effect", 1), ("obs_vm_marker", 1), ("obs_send_marker", 1)):
+        symbol = symbols[name]
+        if name in ("obs_vm_marker", "obs_send_marker"):
+            require(symbol["vaddr"] % 8 == 0 and symbol["type"] == 2 and symbol["size"] == 2 and
+                x64_code(raw, loads, symbol["vaddr"], 2)[1] == b"\x90\xc3", "MARKER")
+        offset, code = x64_code(raw, loads, symbol["vaddr"], size)
+        mapping[name] = symbol | {"file_offset": offset, "instruction": int.from_bytes(code, "little"), "instruction_bytes": size}
+    require(len({row["vaddr"] for row in mapping.values()}) == 4, "MARKER_ALIAS")
+    mapping["obs_witness_address"] = symbols["obs_witness_address"]
+    return dict(sorted(mapping.items()))
+
+
 def target_manifest(raw, architecture="aarch64"):
     loads, symbols = parse_elf(raw, architecture)
     wanted = {"obs_pre_effect", "obs_post_effect", "obs_vm_marker", "obs_send_marker", "obs_witness_address"}
@@ -58,10 +86,16 @@ def target_manifest(raw, architecture="aarch64"):
     executable = [row for row in loads if row[1] & 1]
     require(len(executable) == 1, "EXECUTABLE_SEGMENT")
     segment = executable[0]
-    mapping = {name: symbols[name] | ({"file_offset": instruction(raw, loads, symbols[name]["vaddr"])[0],
-        "instruction": instruction(raw, loads, symbols[name]["vaddr"])[1]} if name != "obs_witness_address" else {}) for name in sorted(wanted)}
-    require(mapping["obs_post_effect"]["instruction"] == 0xd65f03c0, "POST_RETURN")
-    require(mapping["obs_vm_marker"]["instruction"] == mapping["obs_send_marker"]["instruction"] == 0xd503201f, "MARKER")
+    if architecture == "aarch64":
+        mapping = {name: symbols[name] | ({"file_offset": instruction(raw, loads, symbols[name]["vaddr"])[0],
+            "instruction": instruction(raw, loads, symbols[name]["vaddr"])[1]} if name != "obs_witness_address" else {}) for name in sorted(wanted)}
+        require(mapping["obs_post_effect"]["instruction"] == 0xd65f03c0, "POST_RETURN")
+        require(mapping["obs_vm_marker"]["instruction"] == mapping["obs_send_marker"]["instruction"] == 0xd503201f, "MARKER")
+    else:
+        mapping = x64_markers(raw, loads, symbols)
+        witness = symbols["obs_witness_address"]
+        require(witness["type"] == 1 and witness["size"] == 8 and witness["vaddr"] % 8 == 0 and
+            any(row[1] & 2 and row[3] <= witness["vaddr"] and witness["vaddr"] + 8 <= row[3] + row[6] for row in loads), "WITNESS_SYMBOL")
     require(any(row[1] & 2 and row[3] <= symbols["obs_witness_address"]["vaddr"] < row[3] + row[6] for row in loads), "WITNESS_SYMBOL")
     return {"version": 2, "kind": "synthetic_static_instruction_manifest", "architecture": architecture,
         "platform_sha256": platform_digest(architecture),
@@ -101,7 +135,11 @@ def main():
             "OBS_WITNESS_SYMBOL": mapping["obs_witness_address"]["vaddr"], "OBS_PRE_EFFECT": mapping["obs_pre_effect"]["vaddr"],
             "OBS_POST_EFFECT": mapping["obs_post_effect"]["vaddr"], "OBS_VM_MARKER": mapping["obs_vm_marker"]["vaddr"],
             "OBS_SEND_MARKER": mapping["obs_send_marker"]["vaddr"], "OBS_PRE_INSTRUCTION": mapping["obs_pre_effect"]["instruction"],
-            "OBS_POST_INSTRUCTION": mapping["obs_post_effect"]["instruction"], "OBS_NOP_INSTRUCTION": 0xd503201f}
+            "OBS_POST_INSTRUCTION": mapping["obs_post_effect"]["instruction"], "OBS_NOP_INSTRUCTION": mapping["obs_vm_marker"]["instruction"],
+            "OBS_PRE_BYTES": mapping["obs_pre_effect"].get("instruction_bytes", 4),
+            "OBS_POST_BYTES": mapping["obs_post_effect"].get("instruction_bytes", 4),
+            "OBS_NOP_BYTES": mapping["obs_vm_marker"].get("instruction_bytes", 4),
+            "OBS_TARGET_MACHINE": runtime_architecture(architecture)["elf_machine"]}
         header = '#define OBS_TARGET_SHA256 "' + sha(raw) + '"\n' + "".join(f"#define {name} UINT64_C({value})\n" for name, value in values.items())
         write(out / "target_manifest.h", header.encode())
     elif mode == "record":
@@ -115,6 +153,8 @@ def main():
         require(len(segments) == 1, "COMPILED_FILTER")
         offset = segments[0][2] + filter_symbol["vaddr"] - segments[0][3]
         require(observer[offset:offset + filter_symbol["size"]] == (out / "target-filter.bpf").read_bytes(), "COMPILED_FILTER")
+        require((out / "target-filter.bpf").read_bytes() == b"".join(struct.pack("<HBBI", *row)
+            for row in target_filter_program(architecture)), "BUILD_FILTER_ARCHITECTURE")
         commands = {}
         for command in (("cc", "--version"), ("ld", "--version"), ("cc", "-dumpmachine")):
             process = subprocess.run(command, capture_output=True, check=True, timeout=10)

@@ -39,6 +39,17 @@ class LinuxReader:
         runtime_architecture(architecture)
         self.architecture = architecture
 
+    @classmethod
+    def native_process(cls):
+        """Select only an observed supported Linux ABI, never an environment override.
+
+        actor_frames subsequently verifies the actual interpreter ELF against it.
+        Host collectors instead use their independently provisioned architecture.
+        """
+        uname = os.uname()
+        require(uname.sysname == "Linux" and ctypes.sizeof(ctypes.c_void_p) == 8, "LINUX_PLATFORM")
+        return cls(uname.machine)
+
     def read(self, path, limit=4095):
         fd = os.open(path, os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW | os.O_NONBLOCK)
         try:

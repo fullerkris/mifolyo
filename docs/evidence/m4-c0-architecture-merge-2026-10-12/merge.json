@@ -1,0 +1,17 @@
+{
+  "approved_tree": "f5d215c7b0e0656649364d315bcecf87e213b92a",
+  "kind": "c0_architecture_owner_merge",
+  "main_ci_verification": "pending",
+  "merge_commit": "d8016469a5ffcceeb04329deec4e3dea2c72dd97",
+  "merged_at": "2026-10-13T00:52:22Z",
+  "merged_by": "fullerkris",
+  "parent": "ced6e1cff36101f76fb54904b6b0fa2cf33cb48f",
+  "pr": "https://github.com/fullerkris/mifolyo/pull/26",
+  "reviewed_package_files_verified": 47,
+  "reviewed_pr_head": "d6b5bdd1a55d18a9c86e97d193bed27ade571ee2",
+  "reviewed_tree_preserved": true,
+  "runtime_deployment": false,
+  "version": 1,
+  "worktree_branch": "main",
+  "worktree_clean": true
+}

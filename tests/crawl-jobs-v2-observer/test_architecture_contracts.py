@@ -62,8 +62,7 @@ class ArchitectureContractTests(unittest.TestCase):
             self.assertEqual(value["version"], 2)
             self.assertEqual(value["platform_sha256"], c.platform_digest(name))
             self.assertFalse(value["execution_authorized"] or value["m4_accepted"])
-        with self.assertRaisesRegex(c.Invalid, "ARCHITECTURE_NOT_IMPLEMENTED"):
-            c.runtime_architecture("x86_64")
+            self.assertEqual(c.runtime_architecture(name), c.platform(name))
 
     def test_preparation_relabeling_and_legacy_packets_refuse(self):
         value = native.preparation()
@@ -80,7 +79,7 @@ class ArchitectureContractTests(unittest.TestCase):
         with self.assertRaisesRegex(c.Invalid, "ELF_ARCHITECTURE"):
             build_tools.parse_elf(header("x86_64"), "aarch64")
         with self.assertRaises(c.Invalid): build_tools.parse_elf(header("aarch64"))  # Header alone is not an ELF artifact.
-        with self.assertRaisesRegex(c.Invalid, "ARCHITECTURE_NOT_IMPLEMENTED"):
+        with self.assertRaisesRegex(c.Invalid, "ELF_TABLE"):
             build_tools.parse_elf(header("x86_64"), "x86_64")
 
     def test_elf_class_endianness_machine_version_and_short_headers_refuse(self):
@@ -97,18 +96,18 @@ class ArchitectureContractTests(unittest.TestCase):
             "oracle": "f82e0ae5335e1393c402265c4a14a4e56ad8df27ab48eee70907745fef3b6835"}
         for role, digest in expected.items():
             self.assertEqual(c.sha(c.canonical(profiles.profile(role, "aarch64"))), digest)
-            with self.assertRaisesRegex(c.Invalid, "ARCHITECTURE_NOT_IMPLEMENTED"): profiles.profile(role, "x86_64")
+            self.assertEqual(profiles.profile(role, "x86_64")["architectures"], ["SCMP_ARCH_X86_64"])
         raw = b"".join(struct.pack("<HBBI", *row) for row in profiles.target_filter_program("aarch64"))
         self.assertEqual(c.sha(raw), "701824ff5f8ccafa359f711d2714b23c8a303789cd1987a3a85aba19a3667b93")
-        with self.assertRaisesRegex(c.Invalid, "ARCHITECTURE_NOT_IMPLEMENTED"): profiles.target_filter_program("x86_64")
+        self.assertNotEqual(profiles.target_filter_program("x86_64"), profiles.target_filter_program("aarch64"))
 
-    def test_build_entrypoints_refuse_x64_before_writing_outputs(self):
+    def test_build_entrypoints_refuse_unknown_abi_before_writing_outputs(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
-            with patch.object(sys, "argv", ["build_tools.py", "headers", str(root), "x86_64"]), self.assertRaises(c.Invalid):
+            with patch.object(sys, "argv", ["build_tools.py", "headers", str(root), "x32"]), self.assertRaises(c.Invalid):
                 build_tools.main()
             self.assertEqual(list(root.iterdir()), [])
-            with patch.object(sys, "argv", ["build_oracle.py", str(root / "oracle"), "x86_64"]), \
+            with patch.object(sys, "argv", ["build_oracle.py", str(root / "oracle"), "x32"]), \
                     patch.object(build_oracle.os, "uname") as uname, self.assertRaises(c.Invalid):
                 build_oracle.main()
             uname.assert_not_called()
@@ -148,18 +147,19 @@ class ArchitectureBoundaryTests(unittest.TestCase):
         legacy = copy.deepcopy(value["anchor"]); legacy.pop("architecture")
         with self.assertRaises(c.Invalid): context.validate_anchor(legacy)
 
-    def test_known_x64_deployment_is_metadata_only_until_the_port(self):
+    def test_x64_deployment_generates_a_bound_private_bundle(self):
         value = provisioning.deployment()
         value["architecture"] = value["anchor"]["architecture"] = "x86_64"
         self.assertEqual(provision.validate_deployment(value), value)
         with tempfile.TemporaryDirectory() as folder:
             output = Path(folder) / "bundle"
-            with self.assertRaisesRegex(c.Invalid, "ARCHITECTURE_NOT_IMPLEMENTED"):
-                provision.create_bundle(output, value, provisioning.identity_bytes(), key=KEY)
-            self.assertFalse(output.exists())
-        with self.assertRaises(c.Invalid): context.LinuxContextEndpoint(value["anchor"], KEY, fixture()[0])
+            record = provision.create_bundle(output, value, provisioning.identity_bytes(), key=KEY)
+            self.assertEqual(record["architecture"], "x86_64")
+            self.assertEqual(provision.verify_bundle(output)["status"], "PASS_PRIVATE_BUNDLE")
+        endpoint = context.LinuxContextEndpoint(value["anchor"], KEY)
+        self.assertEqual(endpoint.reader.architecture, "x86_64")
 
-    def test_direct_ssh_transport_refuses_x64_before_client_or_process_io(self):
+    def test_direct_x64_ssh_transport_still_requires_pinned_client(self):
         value = provisioning.deployment()
         value["architecture"] = value["anchor"]["architecture"] = "x86_64"
         with tempfile.TemporaryDirectory() as folder:
@@ -168,10 +168,10 @@ class ArchitectureBoundaryTests(unittest.TestCase):
                     ("id_ed25519", provisioning.identity_bytes())):
                 provision.write_new(root / name, raw)
             channel = transport.SSHContextTransport(root)
-            with patch.object(transport, "verify_client") as client, \
+            with patch.object(transport, "verify_client", side_effect=c.Invalid("PIN")) as client, \
                     patch.object(transport, "exchange_process", return_value=b"reply\n") as exchange:
                 with self.assertRaises(c.Invalid): channel(b"probe\n", Deadline(2))
-                client.assert_not_called(); exchange.assert_not_called()
+                client.assert_called_once(); exchange.assert_not_called()
 
     def test_bundle_manifest_and_host_configuration_bind_the_architecture(self):
         with tempfile.TemporaryDirectory() as folder:
@@ -215,7 +215,7 @@ class ArchitectureBoundaryTests(unittest.TestCase):
         with self.assertRaises(c.Invalid): acquire(parts)
 
     def test_linux_reader_rejects_foreign_kernel_before_observations(self):
-        with self.assertRaises(c.Invalid): LinuxReader("x86_64")
+        self.assertEqual(LinuxReader("x86_64").architecture, "x86_64")
         reader = LinuxReader()
         for system, machine in (("Linux", "x86_64"), ("Darwin", "aarch64"), ("Linux", "arm64")):
             with patch("linux_observation.os.uname", return_value=SimpleNamespace(sysname=system, machine=machine)), \
@@ -266,18 +266,16 @@ class ArchitectureBoundaryTests(unittest.TestCase):
         ctx = native.context(); ctx.pop("architecture")
         with self.assertRaises(c.Invalid): admission.validate_context(ctx)
 
-    def test_admission_summary_cannot_promote_an_unsupported_architecture(self):
+    def test_admission_summary_refuses_mixed_architectures(self):
         value = admission.validate(native.frames(), native.binding(), native.preparation(), native.context())
         summary = admission.summary(value)
         self.assertEqual((summary["version"], summary["architecture"]), (2, "aarch64"))
         value["binding"]["architecture"] = "x86_64"
-        value["frames"] = native.changed(value["frames"], 0, architecture="x86_64")
-        value["identity_sha256"] = c.sha(value["frames"][0]); value["observation_sha256"] = c.sha(b"".join(value["frames"]))
         with self.assertRaises(c.Invalid): admission.summary(value)
 
-    def test_x64_process_stream_refuses_before_spawning(self):
-        bound = stream_binding() | {"architecture": "x86_64"}
-        with patch("streams.subprocess.Popen") as spawn, self.assertRaisesRegex(c.Invalid, "ARCHITECTURE_NOT_IMPLEMENTED"):
+    def test_unknown_abi_process_stream_refuses_before_spawning(self):
+        bound = stream_binding() | {"architecture": "x32"}
+        with patch("streams.subprocess.Popen") as spawn, self.assertRaisesRegex(c.Invalid, "ARCHITECTURE"):
             ProcessStream([sys.executable, "-c", "pass"], bound, WireBudget(), Deadline(1))
         spawn.assert_not_called()
 

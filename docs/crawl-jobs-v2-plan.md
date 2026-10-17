@@ -2,11 +2,11 @@
 
 **Finding:** F3 - durable crawl-job leases and recovery
 
-**Last updated:** 2026-10-12 (PR #25 merged as `ced6e1c` with exact main CI verified; C0-ARCH-02 complete for source/static artifacts at 47 files / 238 tests under both umasks; all three findings independently closed with two scoped GO verdicts; publication is next)
+**Last updated:** 2026-10-12 (PR #26 owner merge `d801646`, reviewed tree and exact main CI verified. C0-ARCH-03 complete for source/static artifacts: 51 files / 256 offline tests under both umasks, both native builds, two independent GO verdicts and no blockers; scoped publication is next)
 
-**Code baseline:** merged `main` at `ced6e1c`; PR #25 preserves reviewed tree `f0cbc978…` and has its own verified main CI: 14 contexts / 23 jobs, 202 C0 / 31 script / 183 harness tests
+**Code baseline:** merged `main` at `d801646`; PR #26 preserves reviewed tree `f5d215c7…`. Exact PR and actual main CI passed 14 contexts / 23 jobs, 238 C0 / 31 script / 183 harness tests; main gate `e11f449a…`
 
-**Working branch:** `feature/crawl-jobs-v2-c0-architecture-contracts`, based at `ced6e1c`; the architecture-contract increment and successor evidence are local/uncommitted
+**Working branch:** `feature/crawl-jobs-v2-c0-x64-runtime`, based at `d801646`; the x64 port and successor evidence are local/uncommitted
 
 **Initial checkpoint:** `e4372a66201b8767bcca4d7476c30c5b7999922c`
 
@@ -17,16 +17,21 @@ All 43 canonical operations and the sealed, zero-argument
 bounded real-Redis `ledger-smoke-v1` and `ledger-claim-release-v1` cases pass;
 full M4 acceptance is open.
 
-**Current next gate:** separate scoped publication/CI decision for the independently
-reviewed [C0-ARCH-02 remediation](crawl-jobs-v2-m4-c0-architecture-remediation-2026-10-12.md).
-PR #25 publication, owner merge and actual main verification are complete. Its
-main gate is `d0803f350b07ecf037100c8033915b92433659b638574958931f007a08f23666`.
-The corrected version-2 architecture bindings pass 238 C0 tests under both umasks,
-retaining all 229 previous IDs (including all 202 merged IDs). Startup image,
-anchor lifecycle and record-mode target/manifest gaps are independently closed
-by both reviewers on inventory `a02661da…`. Fresh
-native build and oracle input/artifact continuity pass. X64 metadata
-is defined; runtime entrypoints remain ARM64-only until C0-ARCH-03.
+**Current next gate:** scoped publication/CI for the independently reviewed
+[C0-ARCH-03 x64 port](crawl-jobs-v2-m4-c0-x64-runtime-2026-10-12.md),
+final gate `25711d4fc2c428bd3f1cc77ee658b308c258015b4f233a3fea15987d0d6f7de5`.
+Both reviewers return GO_FOR_CONTINUED_IMPLEMENTATION on 51 unchanged source files,
+with no blockers. Both native artifact builds and 256 offline tests under both
+umasks pass; ARM64 OCI/filter bytes remain identical. The x64 implementation
+adds variable-length instruction validation, restricted DR0/DR6/DR7 writes,
+x32/compat syscall refusal and observed native oracle architecture selection.
+The [C0-ARCH-02 remediation](crawl-jobs-v2-m4-c0-architecture-remediation-2026-10-12.md)
+is now published as PR #26, owner-merged at `d801646`, with reviewed-tree continuity
+and exact PR CI gate `c26ff1681a6715b0aeb2a459e961f5f9721a019c2f554caadd73a1ec033fc17e`.
+Its own [main CI is verified](evidence/m4-c0-architecture-merge-2026-10-12/README.md),
+gate `e11f449a2483677e3b7642e97df12a4b65cc615af9f263ccbd4e69b6e2aaa111`.
+PR #25's preceding main gate
+remains `d0803f350b07ecf037100c8033915b92433659b638574958931f007a08f23666`.
 **Merged pinned-SSH checkpoint:** the owner selected tooling for an operator-managed Linux/AArch64 Docker host;
 live installation awaits identification of that host. The Docker Desktop VM
 recorded at the original tooling checkpoint has no admitted collector endpoint,
@@ -120,19 +125,20 @@ The owner requested runtime builds for both **Linux/ARM64 (`linux/arm64`,
 `aarch64`)** and **Linux/x64 (`linux/amd64`, `x86_64`)**. This covers the C0
 target, observer and oracle runtime images and their trusted context-source
 support. ARM64 reconstruction/review is complete; architecture contracts are
-implemented and independently reviewed for source/static artifacts. The x64
-runtime is a planned port with its own implementation and native acceptance.
+implemented, independently reviewed and owner-merged. The x64 port is locally
+implemented and independently reviewed for source/static artifacts; native acceptance
+remains a separate per-platform deliverable.
 
-The current sources bind ARM64 instruction encodings, hardware-debug regsets,
-ELF machine type, seccomp architecture/syscall rules and admission/platform
-checks. Both runtime variants must preserve the same C0 behavioral contract
+The current sources bind each platform's instruction encodings, hardware-debug
+interface, ELF machine type, seccomp architecture/syscall rules and admission
+checks. Both runtime variants preserve the same C0 behavioral contract
 while binding architecture-specific code, profiles, images and evidence.
 
 | ID | Deliverable | Status / completion evidence |
 |---|---|---|
 | C0-ARCH-01 | Reconstruct and review the existing ARM64 artifacts using rootless Podman/QEMU on the x64 workstation | Complete: 11/11 native outputs and oracle manifest/interpreter match; both reviewers verify actual joins. Transport-source follow-ups are independently closed on the corrected 202-test snapshot |
-| C0-ARCH-02 | Define explicit architecture selection and artifact/admission identities | Complete for source/static contracts: all three findings independently closed, two GO verdicts, 47 files / 238 tests under both umasks, version-2 cross-layer joins and verified artifacts. Publication remains pending; x64 metadata is recognized and runtime paths remain explicitly unimplemented |
-| C0-ARCH-03 | Implement the x64 native runtime and context/oracle support | Planned: architecture-specific instruction markers/decoding, hardware-debug-register handling, seccomp syscall/architecture filters and platform observations; regression/negative controls for each architecture |
+| C0-ARCH-02 | Define explicit architecture selection and artifact/admission identities | Complete: owner-merged PR #26 at `d801646`; exact reviewed tree and 47-file / 238-test source inventory preserved. Exact PR and actual main CI: 14 contexts / 23 jobs on attempt 1; main gate `e11f449a…` |
+| C0-ARCH-03 | Implement the x64 native runtime and context/oracle support | Complete for source/static artifacts: 51 files / 256 offline tests under both umasks, both pinned native builds, two independent GO verdicts and no blockers. Actual ELF/filter joins, offline compiled OCI filters and expanded native-helper/context controls verified; final gate `25711d4f…`. Scoped publication pending |
 | C0-ARCH-04 | Build target/observer/oracle runtime images for both architectures | Planned: independently pinned compiler/Python bases for each platform, architecture-specific source/ELF/library/profile manifests and CI artifact checks; compare exported files separately from builder-dependent image metadata |
 | C0-ARCH-05 | Perform native runtime admission and calibration for each architecture | Planned: admitted ARM64 and x64 Linux environments with verified context-source placement, engine/backend compatibility, tracing/breakpoint, confinement, timing and cleanup evidence for each variant |
 | C0-ARCH-06 | Publish the accepted dual-architecture runtime set | Planned: retain separate immutable platform digests and acceptance records; publish a multi-architecture image index only after both referenced variants pass their required gates |

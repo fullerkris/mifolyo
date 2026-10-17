@@ -1,0 +1,23 @@
+{
+  "base": "ced6e1cff36101f76fb54904b6b0fa2cf33cb48f",
+  "branch": "feature/crawl-jobs-v2-c0-architecture-contracts",
+  "candidate_paths": 134,
+  "commit": "d6b5bdd1a55d18a9c86e97d193bed27ade571ee2",
+  "decision_sha256": "7b8ed9c7cf8e99f0cf9840f490baffe14d13cfbdcaf06fb0eb5113ce9db3c691",
+  "hosted_ci": "pending",
+  "kind": "c0_architecture_publication",
+  "merge_performed": false,
+  "pr_base": "ced6e1cff36101f76fb54904b6b0fa2cf33cb48f",
+  "pr_created": true,
+  "pr_head": "d6b5bdd1a55d18a9c86e97d193bed27ade571ee2",
+  "pr_merge_commit_sha": "47ee579b9d41350e4e0a36adc30e3921189ddf9f",
+  "pr_number": 26,
+  "pr_url": "https://github.com/fullerkris/mifolyo/pull/26",
+  "publication_authorized": true,
+  "pushed": true,
+  "remote_file_blobs_verified": 134,
+  "source_inventory_sha256": "a02661da8cb299ff60e4ad9752ea53329b65c384d7f8e15853641dcf6db426cc",
+  "tree": "f5d215c7b0e0656649364d315bcecf87e213b92a",
+  "version": 1,
+  "worktree_clean": true
+}

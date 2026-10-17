@@ -1,0 +1,261 @@
+{
+  "artifact_checks": {
+    "aarch64": {
+      "elfs": {
+        "observer": {
+          "bytes": 5451408,
+          "elf_machine": 183,
+          "sha256": "a995ae45fff124d4949325700e8bbf04fd0bdc4fe2ed76e782ad236784f937a6"
+        },
+        "target": {
+          "bytes": 5448400,
+          "elf_machine": 183,
+          "sha256": "74f88a9a5af266f5a414abfca241a6162284c8c6da749c5cafed771e87049644"
+        }
+      },
+      "filter_bytes": 272,
+      "filter_file_offset": 3498664,
+      "filter_sha256": "701824ff5f8ccafa359f711d2714b23c8a303789cd1987a3a85aba19a3667b93",
+      "filter_vaddr": 3498664,
+      "profiles": {
+        "observer": "abf581851c19631ba5125ac03443f4ad72c6e8fd7b92fa086218060e07b56bf2",
+        "oracle": "f82e0ae5335e1393c402265c4a14a4e56ad8df27ab48eee70907745fef3b6835",
+        "target": "6a1ffdf7326ae1370bd55cc2edb2bcfb49b2d65ce7090205576d3b6e9496ab3e"
+      }
+    },
+    "x86_64": {
+      "elfs": {
+        "observer": {
+          "bytes": 5878952,
+          "elf_machine": 62,
+          "sha256": "a82b61b0d1000195087543dec812c42489c807013739555f32e2f8728874f77d"
+        },
+        "target": {
+          "bytes": 5880480,
+          "elf_machine": 62,
+          "sha256": "28e15e20192695839ae5ffe9491fd392fbaa77472edf6df6f5ce75dd3f0f6fa7"
+        }
+      },
+      "filter_bytes": 440,
+      "filter_file_offset": 3991008,
+      "filter_sha256": "b080f5d5047014d30d7f9e40280b6dd89f71abc029fb75081a7a8b40e1f2b88b",
+      "filter_vaddr": 3991008,
+      "profiles": {
+        "observer": "68111f7b57683bfcf4e8e0dd99a93c4c040b6d3afa37ae4f7ee4180fda58a013",
+        "oracle": "8397f4c4f904a40e43d17bc8552ccff4f53f3fc7da72922aa45cae46b1ad5f5b",
+        "target": "c05b23afcec906e98cfa7dada5b095c4a553cb7d7fc0745608cf0f69aa70ead9"
+      }
+    }
+  },
+  "counters": {
+    "all_user_offsets_vectors": 11040,
+    "arch_prctl_fullwidth": 192,
+    "build_source_hashes": 102,
+    "build_success_and_platform": 2,
+    "canonical_generated_bpf": 2,
+    "canonical_oci_profile": 6,
+    "compiled_filter_readonly_mapped": 2,
+    "compiled_symbol_equals_filter_section": 2,
+    "compiler_source_inputs": 24,
+    "debug_fullwidth_vectors": 576,
+    "dr7_low_modes_vectors": 131072,
+    "forbidden_syscall_profiles": 29,
+    "foreign_audit_vectors": 42,
+    "invalid_record_refused_before_compiler": 29,
+    "native_static_pie_header": 4,
+    "no_writable_executable_loads": 4,
+    "nonexec_stack_and_relro": 4,
+    "oci_ptrace_vectors": 156701,
+    "random_debug_values": 5000,
+    "record_artifact_hashes": 22,
+    "request_tid_offset_vectors": 8820,
+    "selector_fullwidth_vectors": 192,
+    "syscall_alias_vectors": 2053,
+    "target_identity_embedded": 2,
+    "target_manifest_recomputed": 2,
+    "toolchain_elf_hash": 4,
+    "toolchain_platform": 2,
+    "unchanged_arm64_bpf": 1,
+    "unchanged_arm64_profiles": 3
+  },
+  "filter_installation": false,
+  "kind": "independent_static_security_probes",
+  "native_execution": false,
+  "record_probes": [
+    {
+      "compiler_queries": 0,
+      "name": "matching-embedded-sidecar-cmp-1",
+      "output_written": false,
+      "refusal": "BUILD_FILTER_ARCHITECTURE"
+    },
+    {
+      "compiler_queries": 0,
+      "name": "matching-embedded-sidecar-cmp-3",
+      "output_written": false,
+      "refusal": "BUILD_FILTER_ARCHITECTURE"
+    },
+    {
+      "compiler_queries": 0,
+      "name": "matching-embedded-sidecar-cmp-8",
+      "output_written": false,
+      "refusal": "BUILD_FILTER_ARCHITECTURE"
+    },
+    {
+      "compiler_queries": 0,
+      "name": "matching-embedded-sidecar-cmp-10",
+      "output_written": false,
+      "refusal": "BUILD_FILTER_ARCHITECTURE"
+    },
+    {
+      "compiler_queries": 0,
+      "name": "matching-embedded-sidecar-cmp-12",
+      "output_written": false,
+      "refusal": "BUILD_FILTER_ARCHITECTURE"
+    },
+    {
+      "compiler_queries": 0,
+      "name": "matching-embedded-sidecar-cmp-25",
+      "output_written": false,
+      "refusal": "BUILD_FILTER_ARCHITECTURE"
+    },
+    {
+      "compiler_queries": 0,
+      "name": "matching-embedded-sidecar-cmp-27",
+      "output_written": false,
+      "refusal": "BUILD_FILTER_ARCHITECTURE"
+    },
+    {
+      "compiler_queries": 0,
+      "name": "matching-embedded-sidecar-cmp-29",
+      "output_written": false,
+      "refusal": "BUILD_FILTER_ARCHITECTURE"
+    },
+    {
+      "compiler_queries": 0,
+      "name": "matching-embedded-sidecar-cmp-31",
+      "output_written": false,
+      "refusal": "BUILD_FILTER_ARCHITECTURE"
+    },
+    {
+      "compiler_queries": 0,
+      "name": "matching-embedded-sidecar-cmp-35",
+      "output_written": false,
+      "refusal": "BUILD_FILTER_ARCHITECTURE"
+    },
+    {
+      "compiler_queries": 0,
+      "name": "matching-embedded-sidecar-cmp-36",
+      "output_written": false,
+      "refusal": "BUILD_FILTER_ARCHITECTURE"
+    },
+    {
+      "compiler_queries": 0,
+      "name": "matching-embedded-sidecar-cmp-38",
+      "output_written": false,
+      "refusal": "BUILD_FILTER_ARCHITECTURE"
+    },
+    {
+      "compiler_queries": 0,
+      "name": "matching-embedded-sidecar-cmp-40",
+      "output_written": false,
+      "refusal": "BUILD_FILTER_ARCHITECTURE"
+    },
+    {
+      "compiler_queries": 0,
+      "name": "matching-embedded-sidecar-cmp-41",
+      "output_written": false,
+      "refusal": "BUILD_FILTER_ARCHITECTURE"
+    },
+    {
+      "compiler_queries": 0,
+      "name": "matching-embedded-sidecar-cmp-42",
+      "output_written": false,
+      "refusal": "BUILD_FILTER_ARCHITECTURE"
+    },
+    {
+      "compiler_queries": 0,
+      "name": "matching-embedded-sidecar-cmp-44",
+      "output_written": false,
+      "refusal": "BUILD_FILTER_ARCHITECTURE"
+    },
+    {
+      "compiler_queries": 0,
+      "name": "matching-embedded-sidecar-cmp-46",
+      "output_written": false,
+      "refusal": "BUILD_FILTER_ARCHITECTURE"
+    },
+    {
+      "compiler_queries": 0,
+      "name": "matching-embedded-sidecar-cmp-48",
+      "output_written": false,
+      "refusal": "BUILD_FILTER_ARCHITECTURE"
+    },
+    {
+      "compiler_queries": 0,
+      "name": "matching-embedded-sidecar-cmp-50",
+      "output_written": false,
+      "refusal": "BUILD_FILTER_ARCHITECTURE"
+    },
+    {
+      "compiler_queries": 0,
+      "name": "matching-embedded-sidecar-cmp-51",
+      "output_written": false,
+      "refusal": "BUILD_FILTER_ARCHITECTURE"
+    },
+    {
+      "compiler_queries": 0,
+      "name": "foreign-target",
+      "output_written": false,
+      "refusal": "ELF_ARCHITECTURE"
+    },
+    {
+      "compiler_queries": 0,
+      "name": "foreign-observer",
+      "output_written": false,
+      "refusal": "ELF_ARCHITECTURE"
+    },
+    {
+      "compiler_queries": 0,
+      "name": "elf32-target",
+      "output_written": false,
+      "refusal": "ELF_ARCHITECTURE"
+    },
+    {
+      "compiler_queries": 0,
+      "name": "big-endian-target",
+      "output_written": false,
+      "refusal": "ELF_ARCHITECTURE"
+    },
+    {
+      "compiler_queries": 0,
+      "name": "invalid-elf-version",
+      "output_written": false,
+      "refusal": "ELF_ARCHITECTURE"
+    },
+    {
+      "compiler_queries": 0,
+      "name": "manifest-architecture",
+      "output_written": false,
+      "refusal": "BUILD_TARGET_MANIFEST"
+    },
+    {
+      "compiler_queries": 0,
+      "name": "manifest-platform_sha256",
+      "output_written": false,
+      "refusal": "BUILD_TARGET_MANIFEST"
+    },
+    {
+      "compiler_queries": 0,
+      "name": "manifest-execution_authorized",
+      "output_written": false,
+      "refusal": "BUILD_TARGET_MANIFEST"
+    },
+    {
+      "compiler_queries": 0,
+      "name": "manifest-version",
+      "output_written": false,
+      "refusal": "BUILD_TARGET_MANIFEST"
+    }
+  ],
+  "status": "PASS"
+}

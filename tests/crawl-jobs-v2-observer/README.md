@@ -17,11 +17,10 @@ Aliases are not accepted in preparation/deployment/admission packets.
 | `aarch64` | `linux/arm64` | 183 (`EM_AARCH64`), ELF64 little-endian | `SCMP_ARCH_AARCH64` |
 | `x86_64` | `linux/amd64` | 62 (`EM_X86_64`), ELF64 little-endian | `SCMP_ARCH_X86_64` |
 
-Both names are available for preparation and deployment **metadata**. Runtime
-entrypoints, profile/filter generation, resource scopes and artifact builders
-currently require `aarch64`; `x86_64` refuses with `ARCHITECTURE_NOT_IMPLEMENTED`
-until the C0-ARCH-03 port supplies its native implementation. No ARM64 profile,
-filter, instruction sequence or kernel observation is relabelled for x64.
+Both names have native implementations, profile/filter generation, resource
+scopes and context/oracle support. Each platform has its own instruction/debug
+ABI and artifact identities. Native acceptance requires that platform's admitted
+host, images, confinement and calibration evidence (C0-ARCH-04/05).
 
 Preparation and resource scopes are **version 2**, with an explicit architecture
 and `platform_sha256`. Deployment objects and their anchors are **version 2**
@@ -46,8 +45,63 @@ The ELF-header classifier alone is not complete ELF, image or runtime admission.
 context exchanges, native ELFs/instruction manifests and oracle manifests for this
 version. Old version-1 admission frames and unbound packets are incompatible.
 ARM64 seccomp profile and compiled-filter bytes retain their existing constraints.
-The x64 implementation, dual-runtime image builds and native host/backend admission
-remain C0-ARCH-03–05 work; these contracts do not grant execution authority.
+Dual-runtime image admission and native host/backend calibration remain
+C0-ARCH-04/05 work; these contracts do not grant execution authority.
+
+### X64 native port (C0-ARCH-03)
+
+`native/architecture.h` accepts only Linux little-endian LP64 AArch64/x86-64.
+The x64 target uses the SysV calling convention: `movq $42,(%rcx)`, the ordinal
+transcript store, and the release-ordered completed-counter store. X86 TSO and
+aligned 64-bit stores preserve the witness contract. The post boundary is the
+one-byte `ret`; VM/send markers are `nop; ret`. The static decoder checks the
+complete 14-byte effect, exact boundaries and two-byte marker functions rather
+than treating x86 as fixed-width instructions. Runtime reads compare the full
+selected instruction, including variable-length/unaligned boundaries.
+
+`native/x86_debug.h` uses Linux's LP64 `struct user` offsets, compile-time checked
+against the filter constants. It admits inactive DR0..3/DR7 and reset DR6, arms
+only DR0 with local one-byte execution mode, and verifies register readback.
+DR6 must identify only DR0 at a hardware stop or only single-step at the step
+stop. Disabling restores the exact admitted state before stepping/detaching.
+The observer validates `TRAP_HWBKPT`, signal address, 216-byte native regset,
+64-bit code selector and RIP; non-return single-step advancement is checked.
+
+Both x64 filters restrict `PTRACE_PEEKUSER` to DR0..3/DR6/DR7 offsets and
+`PTRACE_POKEUSER` to DR0, reset-only DR6 and DR7 values 0/1. GP writes, ARM
+regsets, DR1..5 writes and data/watchpoint modes reject. The additional filter
+denies `execve`/`execveat`, kills foreign audit architectures and syscall numbers
+>=512 (including x32, historical compat aliases and unsigned negative numbers),
+and checks the high words of request/TID/offset/value arguments. OCI profiles
+remain default-deny, with x64 libc TLS (`ARCH_SET_FS` only), `readlink`, and the
+target's native `chmod` wrapper added. ARM64 profile/filter bytes are unchanged.
+
+The oracle selects a supported ABI from its observed Linux kernel, verifies
+LP64 and joins its actual interpreter ELF to that selection. Host collectors
+still use their independently provisioned architecture. All cross-architecture
+context/image/profile/peer refusals and the three-line handshake remain in force.
+
+Artifact-only build (choose `linux/arm64` + `aarch64` for ARM64):
+
+```sh
+podman build --platform linux/amd64 --build-arg C0_ARCHITECTURE=x86_64 \
+  --network none --http-proxy=false --target artifacts \
+  --output type=local,dest=/absolute/new-artifacts \
+  tests/crawl-jobs-v2-observer
+```
+
+The Dockerfile pins GCC 14.3.0/bookworm independently for each architecture.
+The build runs compilers and static inspectors only. `Dockerfile.oracle` still
+selects the pinned ARM64 Python base; the x64 Python/runtime image set is the
+C0-ARCH-04 deliverable. `build_oracle.py DEST x86_64` supports an independently
+selected x64 interpreter. `native/test_x86_debug.c` is an offline C probe with
+an in-memory request callback; it can be compiled on x64 without running actors
+or invoking ptrace. Python tests interpret both filter layers and exercise
+positive/mixed-architecture artifact, context and benign-process protocol paths.
+
+ABI references: Linux [x86 ptrace implementation](https://github.com/torvalds/linux/blob/v6.18/arch/x86/kernel/ptrace.c),
+[debug-register UAPI](https://github.com/torvalds/linux/blob/v6.18/arch/x86/include/uapi/asm/debugreg.h),
+and [seccomp ABI/compat caveats](https://man7.org/linux/man-pages/man2/seccomp.2.html).
 
 ## Implemented artifact components
 
@@ -58,7 +112,7 @@ remain C0-ARCH-03–05 work; these contracts do not grant execution authority.
    Preparation requires `admission_source`, `runtime_context_source`,
    `oracle_worker_source` and `oracle_elf` identities as well as the other frozen
    artifacts. Older preparation objects lacking these inputs reject.
-- `native/target.c`: AArch64 PIE synthetic target with explicit pre/post instruction
+- `native/target.c`: AArch64/x86-64 PIE synthetic target with explicit pre/post instruction
   labels, 1,050 same-value effects and separate ordinal transcript; nested fake-VM
   prototype/PC markers; helper heartbeat and fixed-frame Unix-stream cases.
 - `native/observer.c`: fixed owned inner TID 1, no caller address/PID, zero-capability
@@ -66,7 +120,7 @@ remain C0-ARCH-03–05 work; these contracts do not grant execution authority.
   hardware execute-breakpoint candidate and fixed single-step/re-arm. TRACEEXEC
   exists solely to reject exec, never follow it. Errors are closed/value-free;
   output is nonblocking. No software patch, GPR write, C1 fallback or Redis code.
-- `profiles.py`: default-deny AArch64 OCI profiles and an additional deterministic
+- `profiles.py`: per-architecture default-deny OCI profiles and an additional deterministic
   TID-1 filter. The latter rejects other TIDs, write regsets, high-bit request/regset
   aliases and post-admission exec; the OCI profile supplies the broader syscall
   boundary. TID 1 must be independently admitted as the owned namespace init.
@@ -117,7 +171,7 @@ earlier artifact identities remain historical records.
 
 ## Native-runtime admission exchange
 
-`native/admission.h` collects fixed-path Linux/AArch64 startup observations in the
+`native/admission.h` collects fixed-path Linux/AArch64 or Linux/x86-64 startup observations in the
 target and observer, after case selection and a nonzero 64-hex invocation/scope
 nonce. It emits four canonical frames, each still limited to 1,024 bytes:
 
@@ -212,7 +266,7 @@ anchor and expected OCI/filter counts. The 32-byte authentication key lives in
 mode-0600 `/etc/obs1/context-source.key`, owned by the context service's user.
 Provisioning must independently attest that anchor in the Docker daemon's actual
 Linux environment; actor receipts must never populate it. The endpoint refuses
-if its actual boot/namespaces differ, or if Linux/AArch64, zero time offsets,
+if its actual boot/namespaces differ, or if the selected Linux ABI, zero time offsets,
 LSM/Yama access or stable observations are unavailable. No privileged fallback,
 host-namespace Docker role or policy-setting helper is introduced.
 

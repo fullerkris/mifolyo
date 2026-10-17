@@ -67,12 +67,13 @@ while time.monotonic() < until:
 
 
 class PipePair:
-    def __init__(self, target_seconds=5, observer_seconds=5):
+    def __init__(self, target_seconds=5, observer_seconds=5, *, architecture="aarch64"):
+        self.architecture = architecture
         self.directory = tempfile.TemporaryDirectory(prefix="admission-dispatch-")
         self.root = Path(self.directory.name)
         self.script = self.root / "actor.py"
         self.script.write_text(ACTOR)
-        self.registry, self.fake, _, _ = prepared()
+        self.registry, self.fake, _, _ = prepared(architecture)
         self.streams, self.folders, self.events = {}, {}, []
         self.deadlines = {"target": Deadline(target_seconds), "observer": Deadline(observer_seconds)}
         self.auth_hook = self.meta_hook = None
@@ -88,7 +89,7 @@ class PipePair:
             if args[0] == "info":
                 return 0, DAEMON, b""
             if args[0] == "version":
-                return 0, b'{"Os":"linux","Arch":"arm64"}', b""
+                return 0, json.dumps({"Os": "linux", "Arch": c.platform(architecture)["image_architecture"]}).encode(), b""
             if args[1] == "ls":
                 volume = args[args.index("--filter") + 1].removeprefix("volume=")
                 return 0, "\n".join(self.fake.attachments(volume, deadline)).encode(), b""
@@ -116,13 +117,13 @@ class PipePair:
     def open(self, role):
         ref = self.registry.entries[role]["reference"]
         stream = self.backend.open_actor(ref, self.registry.spec(role), self.registry.snapshot(), self.budget, self.deadlines[role])
-        stream.bind_admission_window(context()["not_after_ns"])
+        stream.bind_admission_window(context(self.architecture)["not_after_ns"])
         stream.send_case()
         return stream
 
     def collect(self, role):
         return self.backend.collect_native_admission(self.streams[role], self.registry.entries[role]["reference"],
-            self.registry.snapshot(), preparation(), context(), self.deadlines[role])
+            self.registry.snapshot(), preparation(self.architecture), context(self.architecture), self.deadlines[role])
 
     def pair(self):
         for role in ("target", "observer"):

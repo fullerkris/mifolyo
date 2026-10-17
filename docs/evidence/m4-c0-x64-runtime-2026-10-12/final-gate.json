@@ -1,0 +1,55 @@
+{
+  "arm64_profile_filter_bytes_preserved": true,
+  "base": "d8016469a5ffcceeb04329deec4e3dea2c72dd97",
+  "baseline_merged_main_ci_gate_sha256": "e11f449a2483677e3b7642e97df12a4b65cc615af9f263ccbd4e69b6e2aaa111",
+  "branch": "feature/crawl-jobs-v2-c0-x64-runtime",
+  "committed": false,
+  "compiled_artifacts_verified_by_both_reviewers": true,
+  "correctness_actual_compiled_oci_filter_tested_offline": true,
+  "correctness_additional_native_helper_controls": 3703,
+  "findings": [],
+  "kind": "c0_arch_03_final_source_static_review_gate",
+  "local_verification_sha256": "942e0fda99fff4b3418af90a6aa929a802ffdee1f8908d5962ab32017c99bd49",
+  "m4_accepted": false,
+  "native_actor_execution": false,
+  "native_build_architectures": [
+    "aarch64",
+    "x86_64"
+  ],
+  "native_mock_controls": 29,
+  "next": "Scoped publication/PR CI, then C0-ARCH-04 complete pinned runtime image sets and C0-ARCH-05 per-platform native admission/calibration",
+  "package_files": 51,
+  "publication": "pending",
+  "pushed": false,
+  "real_collector_execution": false,
+  "real_index_empty": true,
+  "real_oracle_worker_execution": false,
+  "reviewers": {
+    "correctness": {
+      "json_sha256": "cc905968d584a9db2889e0e5cc7700804772b58d83ca17c1c92d182e5d6303ca",
+      "manifest_sha256": "fd1eef0875357538c325611baeb99820a69f201bf75836d61c365029d0a71362",
+      "markdown_sha256": "2b583d1f8c5c4fdd168eae86e13e115aff7aef41f7775c76f295e6567cc4a26f",
+      "verdict": "GO_FOR_CONTINUED_IMPLEMENTATION"
+    },
+    "security": {
+      "json_sha256": "0303b1fb74b96edcaf8c2a5aa2fcdf3751fc870ee8fa8b8afa6c93c0e140ba7d",
+      "manifest_sha256": "7f37e578d3c2b9236312892c37a15bde783c71bfdb002aed8a536fef57d3fa38",
+      "markdown_sha256": "143f727a2fdbad70ab8a89f266ee18ad7bb7fc351a17a02a936a8fcda240bab0",
+      "verdict": "GO_FOR_CONTINUED_IMPLEMENTATION"
+    }
+  },
+  "runtime_acceptance": false,
+  "security_compiled_self_filter_vectors": 158796,
+  "security_x64_guard_replay_tests": 31,
+  "source_integrity_after_reviews": true,
+  "source_inventory_sha256": "7ed3b955be1fe4d2621a43896d1a3e4d49cf9edcf6e86a0c2dd567d105f14720",
+  "status": "GO_FOR_CONTINUED_IMPLEMENTATION",
+  "test_count": 256,
+  "test_runs": {
+    "correctness-offline-tests.json": "b88d7f34a8fbbd4de29b93e6614921f619ce667bd3539c5d126ff79d1c00dd2f",
+    "security-tests.json": "b88d7f34a8fbbd4de29b93e6614921f619ce667bd3539c5d126ff79d1c00dd2f",
+    "tests-022.json": "b88d7f34a8fbbd4de29b93e6614921f619ce667bd3539c5d126ff79d1c00dd2f",
+    "tests-077.json": "b88d7f34a8fbbd4de29b93e6614921f619ce667bd3539c5d126ff79d1c00dd2f"
+  },
+  "version": 1
+}

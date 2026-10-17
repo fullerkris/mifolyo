@@ -1,6 +1,7 @@
 #ifndef OBS1_COMMON_H
 #define OBS1_COMMON_H
 #define _GNU_SOURCE
+#include "architecture.h"
 #include <errno.h>
 #include <fcntl.h>
 #include <inttypes.h>

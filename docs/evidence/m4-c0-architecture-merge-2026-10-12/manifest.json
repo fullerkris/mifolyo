@@ -1,0 +1,102 @@
+{
+  "files": {
+    "c0-offline-tests.json": {
+      "bytes": 81086,
+      "private_source": "/tmp/opencode/m4-c0-architecture-merge-2026-10-12/required/artifacts/c0-offline-tests/c0-offline-tests.json",
+      "sha256": "b948340f1f74562058270fc797a386fa0f86a960222fdb2422b26fc0bef9322c"
+    },
+    "ci-gate.json": {
+      "bytes": 8368,
+      "private_source": "/tmp/opencode/m4-c0-architecture-merge-2026-10-12/ci-gate.json",
+      "sha256": "e11f449a2483677e3b7642e97df12a4b65cc615af9f263ccbd4e69b6e2aaa111"
+    },
+    "image-validation.json": {
+      "bytes": 27745,
+      "private_source": "/tmp/opencode/m4-c0-architecture-merge-2026-10-12/required/artifacts/m4-image-validation-amd64/image-validation.json",
+      "sha256": "41d2006884ac6ddafd1cdee2d63abc976ddc1fd9aecc5c51d87d90b31a29f04a"
+    },
+    "merge.json": {
+      "bytes": 631,
+      "private_source": "/tmp/opencode/m4-c0-architecture-merge-2026-10-12/merge.json",
+      "sha256": "f91fb3c4c5cfed3f125c6f7404490b6a33b620c7e8669454b0f86a7219754f4c"
+    },
+    "pr-ci-gate.json": {
+      "bytes": 8108,
+      "private_source": "/tmp/opencode/m4-c0-architecture-publication-2026-10-12/ci-gate.json",
+      "sha256": "c26ff1681a6715b0aeb2a459e961f5f9721a019c2f554caadd73a1ec033fc17e"
+    },
+    "publication.json": {
+      "bytes": 953,
+      "private_source": "/tmp/opencode/m4-c0-architecture-publication-2026-10-12/publication.json",
+      "sha256": "23234ca03315c2497fe245e72e240391f61fee6456c213fb62bf77f62d58a9e6"
+    },
+    "required-artifacts.json": {
+      "bytes": 1400,
+      "private_source": "/tmp/opencode/m4-c0-architecture-merge-2026-10-12/required/artifacts.json",
+      "sha256": "fd994696ef0b336ae73a54b52a55583e3134364743492f3a71a5bee734fad574"
+    },
+    "required-run.json": {
+      "bytes": 7840,
+      "private_source": "/tmp/opencode/m4-c0-architecture-merge-2026-10-12/required/run.json",
+      "sha256": "7e42c392688384975df713c92d9d4f25b91db6bf731548ce16d8a693fae54a73"
+    },
+    "shard-0.json": {
+      "bytes": 34154,
+      "private_source": "/tmp/opencode/m4-c0-architecture-merge-2026-10-12/unit/artifacts/v2-race-shard-0/shard-0.json",
+      "sha256": "cb36584958180f057797040295c38157f886f90846cea495b435b212b33d1d8b"
+    },
+    "shard-1.json": {
+      "bytes": 32362,
+      "private_source": "/tmp/opencode/m4-c0-architecture-merge-2026-10-12/unit/artifacts/v2-race-shard-1/shard-1.json",
+      "sha256": "f9e266aca037276116ad3d07b79b10af5972ee32a8c037b9a65191377ba5ba4f"
+    },
+    "shard-2.json": {
+      "bytes": 32548,
+      "private_source": "/tmp/opencode/m4-c0-architecture-merge-2026-10-12/unit/artifacts/v2-race-shard-2/shard-2.json",
+      "sha256": "7d7d8ec50a6f112edb4e1ce8a9c3dc4888ecbb1f529fe72e87118678090578c5"
+    },
+    "shard-3.json": {
+      "bytes": 34474,
+      "private_source": "/tmp/opencode/m4-c0-architecture-merge-2026-10-12/unit/artifacts/v2-race-shard-3/shard-3.json",
+      "sha256": "4bb1735c8666234ac0bb0f66d790b66d45092e55156bec5b7acc237af58ac87f"
+    },
+    "shard-4.json": {
+      "bytes": 35560,
+      "private_source": "/tmp/opencode/m4-c0-architecture-merge-2026-10-12/unit/artifacts/v2-race-shard-4/shard-4.json",
+      "sha256": "cd590fa7cf397c644b7c08889fa6fd3c0af049cb3bc5e1fb6cec65e2000ce72e"
+    },
+    "shard-5.json": {
+      "bytes": 32470,
+      "private_source": "/tmp/opencode/m4-c0-architecture-merge-2026-10-12/unit/artifacts/v2-race-shard-5/shard-5.json",
+      "sha256": "dd4c74c1c2c241fe384884ee9d1ca6a008a3127b72cea6f89f344eafcadcc01a"
+    },
+    "shard-6.json": {
+      "bytes": 32014,
+      "private_source": "/tmp/opencode/m4-c0-architecture-merge-2026-10-12/unit/artifacts/v2-race-shard-6/shard-6.json",
+      "sha256": "3bfabe8a12a416afc80125084425c8016f3aa00225350e7e24cdfe1850d60e94"
+    },
+    "shard-7.json": {
+      "bytes": 32210,
+      "private_source": "/tmp/opencode/m4-c0-architecture-merge-2026-10-12/unit/artifacts/v2-race-shard-7/shard-7.json",
+      "sha256": "cae1f1adbd894757b50b0515ea8e968583173e74b5ccf7bd883fce5ef06c3150"
+    },
+    "unit-artifacts.json": {
+      "bytes": 5457,
+      "private_source": "/tmp/opencode/m4-c0-architecture-merge-2026-10-12/unit/artifacts.json",
+      "sha256": "f57c7b137c3afbd97b4f7a954650d00b8242c6bbbb3df9b027c0d5b94fd0b8e8"
+    },
+    "unit-run.json": {
+      "bytes": 39722,
+      "private_source": "/tmp/opencode/m4-c0-architecture-merge-2026-10-12/unit/run.json",
+      "sha256": "f9bf5d643c193610f8d2a7e9ab97fb32b0ac2dc0005de077012509305597b577"
+    },
+    "unit-verification.json": {
+      "bytes": 1741,
+      "private_source": "/tmp/opencode/m4-c0-architecture-merge-2026-10-12/unit-verification.json",
+      "sha256": "10cd02cca81cdcbb3f6a8027ee8f29e700e03ff05d960fcdd306287939b46a88"
+    }
+  },
+  "head": "d8016469a5ffcceeb04329deec4e3dea2c72dd97",
+  "kind": "c0_architecture_merged_main_exports",
+  "version": 1
+}

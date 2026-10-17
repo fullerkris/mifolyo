@@ -1,0 +1,57 @@
+
+/tmp/opencode/m4-c0-x64-runtime-2026-10-12/final-build/x86_64/artifacts/observer:     file format elf64-x86-64
+
+
+Disassembly of section .init:
+
+Disassembly of section .plt:
+
+Disassembly of section .plt.got:
+
+Disassembly of section .text:
+
+000000000006fb00 <debug_verify>:
+   6fb00:	41 54                	push   %r12
+   6fb02:	49 89 fc             	mov    %rdi,%r12
+   6fb05:	bf 03 00 00 00       	mov    $0x3,%edi
+   6fb0a:	55                   	push   %rbp
+   6fb0b:	48 89 f5             	mov    %rsi,%rbp
+   6fb0e:	be 50 03 00 00       	mov    $0x350,%esi
+   6fb13:	53                   	push   %rbx
+   6fb14:	48 89 d3             	mov    %rdx,%rbx
+   6fb17:	31 d2                	xor    %edx,%edx
+   6fb19:	e8 22 ff ff ff       	call   6fa40 <request>
+   6fb1e:	49 39 c4             	cmp    %rax,%r12
+   6fb21:	75 57                	jne    6fb7a <debug_verify+0x7a>
+   6fb23:	31 d2                	xor    %edx,%edx
+   6fb25:	be 80 03 00 00       	mov    $0x380,%esi
+   6fb2a:	bf 03 00 00 00       	mov    $0x3,%edi
+   6fb2f:	e8 0c ff ff ff       	call   6fa40 <request>
+   6fb34:	48 39 c5             	cmp    %rax,%rbp
+   6fb37:	75 41                	jne    6fb7a <debug_verify+0x7a>
+   6fb39:	31 d2                	xor    %edx,%edx
+   6fb3b:	be 88 03 00 00       	mov    $0x388,%esi
+   6fb40:	bf 03 00 00 00       	mov    $0x3,%edi
+   6fb45:	e8 f6 fe ff ff       	call   6fa40 <request>
+   6fb4a:	48 39 c3             	cmp    %rax,%rbx
+   6fb4d:	75 2b                	jne    6fb7a <debug_verify+0x7a>
+   6fb4f:	bb 58 03 00 00       	mov    $0x358,%ebx
+   6fb54:	31 d2                	xor    %edx,%edx
+   6fb56:	48 89 de             	mov    %rbx,%rsi
+   6fb59:	bf 03 00 00 00       	mov    $0x3,%edi
+   6fb5e:	e8 dd fe ff ff       	call   6fa40 <request>
+   6fb63:	48 85 c0             	test   %rax,%rax
+   6fb66:	75 12                	jne    6fb7a <debug_verify+0x7a>
+   6fb68:	48 83 c3 08          	add    $0x8,%rbx
+   6fb6c:	48 81 fb 70 03 00 00 	cmp    $0x370,%rbx
+   6fb73:	75 df                	jne    6fb54 <debug_verify+0x54>
+   6fb75:	5b                   	pop    %rbx
+   6fb76:	5d                   	pop    %rbp
+   6fb77:	41 5c                	pop    %r12
+   6fb79:	c3                   	ret
+   6fb7a:	48 8d 3d 63 ec 2e 00 	lea    0x2eec63(%rip),%rdi        # 35e7e4 <_IO_stdin_used+0x7e4>
+   6fb81:	e8 5a ec ff ff       	call   6e7e0 <invalid>
+
+Disassembly of section __libc_freeres_fn:
+
+Disassembly of section .fini:

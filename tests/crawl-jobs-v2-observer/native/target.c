@@ -11,6 +11,7 @@ extern void obs_effect(_Atomic uint64_t *, uint64_t *, uint64_t, _Atomic uint64_
 extern void obs_vm_marker(void);
 extern void obs_send_marker(void);
 
+#if defined(__aarch64__)
 __asm__(".text\n.balign 4\n.global obs_effect\n.type obs_effect,%function\n"
         "obs_effect:\n.global obs_pre_effect\nobs_pre_effect:\n"
         "mov x4,#42\nstr x4,[x3]\nstr x2,[x1]\nstlr x2,[x0]\n.global obs_post_effect\nobs_post_effect:\nret\n"
@@ -19,6 +20,20 @@ __asm__(".text\n.balign 4\n.global obs_effect\n.type obs_effect,%function\n"
         ".size obs_vm_marker,.-obs_vm_marker\n"
         ".global obs_send_marker\n.type obs_send_marker,%function\nobs_send_marker:\nnop\nret\n"
         ".size obs_send_marker,.-obs_send_marker\n");
+#elif defined(__x86_64__)
+/* SysV: completed=rdi, transcript=rsi, ordinal=rdx, last_value=rcx.
+   Aligned 64-bit stores are atomic; x86 TSO supplies the release ordering.
+   The pre marker precedes every effect, the post marker follows all three. */
+__asm__(".text\n.balign 8\n.global obs_effect\n.type obs_effect,@function\n"
+        "obs_effect:\n.global obs_pre_effect\nobs_pre_effect:\n"
+        "movq $42,(%rcx)\nmovq %rdx,(%rsi)\nmovq %rdx,(%rdi)\n"
+        ".global obs_post_effect\nobs_post_effect:\nret\n"
+        ".size obs_effect,.-obs_effect\n"
+        ".balign 8\n.global obs_vm_marker\n.type obs_vm_marker,@function\nobs_vm_marker:\nnop\nret\n"
+        ".size obs_vm_marker,.-obs_vm_marker\n"
+        ".balign 8\n.global obs_send_marker\n.type obs_send_marker,@function\nobs_send_marker:\nnop\nret\n"
+        ".size obs_send_marker,.-obs_send_marker\n");
+#endif
 
 static void *heartbeat(void *context) {
     struct witness *state = context;

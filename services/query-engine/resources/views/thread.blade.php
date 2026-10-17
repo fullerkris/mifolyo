@@ -12,7 +12,7 @@
         <article class="mf-thread mf-thread-detail">
             <p class="mf-eyebrow">{{ data_get($post, 'community.name', 'Community discussion') }}</p>
             <h1>{{ $post['title'] }}</h1>
-            <p class="mf-thread-meta">{{ data_get($post, 'author.username') ?: 'Community member' }} · {{ $post['comment_count'] ?? 0 }} {{ ($post['comment_count'] ?? 0) == 1 ? 'reply' : 'replies' }}</p>
+            <p class="mf-thread-meta"><x-forum-author :author="$post['author'] ?? null" /> · {{ $post['comment_count'] ?? 0 }} {{ ($post['comment_count'] ?? 0) == 1 ? 'reply' : 'replies' }}</p>
             @if ($sourceUrl)<p class="mf-thread-body"><a class="mf-source-link" href="{{ $sourceUrl }}" target="_blank" rel="noopener noreferrer">{{ $sourceUrl }} <x-search-icon name="external" /></a></p>@endif
             <p class="mf-thread-body">{{ $post['body'] ?? '' }}</p>
             <x-vote-controls :item="$post" :thread="$post" />

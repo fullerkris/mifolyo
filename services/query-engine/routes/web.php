@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\AccountSettingsController;
 use App\Http\Controllers\BrowserForumController;
 use App\Http\Controllers\ForumAccountController;
+use App\Http\Controllers\PasswordRecoveryController;
 use App\Http\Controllers\QuerySearchController;
 use App\Http\Controllers\ThreadPageController;
 use App\Http\Controllers\ThreadVoteController;
@@ -21,6 +23,12 @@ Route::post('/sign-in', [ForumAccountController::class, 'authenticate'])->middle
 Route::get('/register', [ForumAccountController::class, 'form'])->name('account.register');
 Route::post('/register', [ForumAccountController::class, 'authenticate'])->middleware('throttle:10,1,forum-auth')->name('account.register.submit');
 Route::post('/sign-out', [ForumAccountController::class, 'logout'])->name('account.sign-out');
+Route::get('/forgot-password', [PasswordRecoveryController::class, 'requestForm'])->name('account.password.request');
+Route::post('/forgot-password', [PasswordRecoveryController::class, 'send'])->middleware('throttle:5,1,account-recovery')->name('account.password.email');
+Route::get('/reset-password', [PasswordRecoveryController::class, 'form'])->name('account.password.reset');
+Route::post('/reset-password', [PasswordRecoveryController::class, 'reset'])->middleware('throttle:5,1,account-reset')->name('account.password.update');
+Route::get('/account', [AccountSettingsController::class, 'show'])->name('account.show');
+Route::delete('/account', [AccountSettingsController::class, 'destroy'])->middleware('throttle:5,1,account-delete')->name('account.destroy');
 Route::get('/threads/{thread}', [ThreadPageController::class, 'show'])->whereNumber('thread')->name('threads.show');
 Route::post('/threads/{thread}/comments', [ThreadPageController::class, 'comment'])->whereNumber('thread')->middleware('throttle:30,1,forum-write')->name('threads.comment');
 Route::post('/threads/{thread}/votes', [ThreadVoteController::class, 'store'])->whereNumber('thread')->middleware('throttle:60,1,forum-vote')->name('threads.vote');

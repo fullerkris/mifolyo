@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { test, expect } from '@playwright/test';
 import { assertStaging, forumURL, sourceURL, waitUntilReady } from './helpers.js';
 import { createVotingConversation, voteGroup } from './voting-helpers.js';
+import { accountSignIn, createAccount, resetMailLink, submitAccount } from './account-helpers.js';
 
 const root = fileURLToPath(new URL('../../../../', import.meta.url));
 const compose = (...args) => execFileSync('docker', [
@@ -12,10 +13,36 @@ const compose = (...args) => execFileSync('docker', [
 
 test.beforeEach(async ({ request }) => assertStaging(request));
 
+test('reset mail delivery recovers after a real SMTP outage', async ({ page, request }, testInfo) => {
+    const account = await createAccount(request);
+    let stopped = false;
+    try {
+        await page.goto('/forgot-password?return_to=%2Fimages%3Fq%3Dstaging%26page%3D2');
+        compose('stop', '--timeout', '5', 'mail');
+        stopped = true;
+        await submitAccount(page, 'Send reset link', () => page.getByLabel('Email', { exact: true }).fill(account.email));
+        await expect(page.getByRole('alert')).toContainText('temporarily unavailable');
+        await expect(page.getByLabel('Email', { exact: true })).toHaveValue(account.email);
+        await page.screenshot({ path: testInfo.outputPath('reset-mail-unavailable.png'), fullPage: true });
+        compose('start', 'mail');
+        await waitUntilReady(request, 'http://127.0.0.1:18085/readyz');
+        stopped = false;
+        await submitAccount(page, 'Send reset link', () => page.getByLabel('Email', { exact: true }).fill(account.email));
+        await expect(page.getByRole('status').filter({ hasText: 'If an account matches' })).toBeVisible();
+        expect(new URL(await resetMailLink(request, account.email)).searchParams.get('return_to')).toBe('/images?q=staging&page=2');
+    } finally {
+        if (stopped) {
+            compose('start', 'mail');
+            await waitUntilReady(request, 'http://127.0.0.1:18085/readyz');
+        }
+    }
+});
+
 test('a vote survives a real forum outage through an explicit idempotent retry', async ({ page, request }, testInfo) => {
     let stopped = false;
     try {
-        const { thread } = await createVotingConversation(page);
+        const account = await createAccount(request);
+        const { thread } = await createVotingConversation(page, false, page => accountSignIn(page, account.email));
         const votes = voteGroup(page, 'post', thread);
         compose('stop', '--timeout', '5', 'forum-engine');
         stopped = true;
@@ -100,18 +127,25 @@ test('index outage preserves the query and the retry link recovers', async ({ pa
         // Readiness can recover on one FPM worker before another worker's MongoDB
         // topology has cleared its failure cooldown. Exercise the real retry link
         // within a bounded recovery window, retaining its exact destination.
-        await expect(async () => {
-            const retry = page.getByRole('link', { name: 'Try again', exact: true });
-            await expect(retry).toHaveAttribute('href', linksRetry);
-            const [response] = await Promise.all([page.waitForNavigation(), retry.click()]);
-            expect(response.status()).toBe(200);
-        }).toPass({ timeout: 15000, intervals: [500, 1000] });
+        const followRetry = async url => {
+            await expect(async () => {
+                const retry = page.getByRole('link', { name: 'Try again', exact: true });
+                await expect(retry).toHaveAttribute('href', url);
+                const [response] = await Promise.all([page.waitForNavigation(), retry.click()]);
+                expect(response.status()).toBe(200);
+            }).toPass({ timeout: 15000, intervals: [500, 1000] });
+        };
+        await followRetry(linksRetry);
         await expect(page.locator('.mf-connection-list li')).toHaveCount(5);
         expect(new URL(page.url()).searchParams.get('direction')).toBe('incoming');
         expect(new URL(page.url()).searchParams.get('from')).toBe('/search/exact?q=staging');
-        await page.goto(imageRetry);
+        const imageResponse = await page.goto(imageRetry);
+        if (imageResponse.status() === 503) await followRetry(imageRetry);
+        else expect(imageResponse.status()).toBe(200);
         await expect(page.locator('.mf-image-card')).toHaveCount(5);
-        await page.goto(webRetry);
+        const webResponse = await page.goto(webRetry);
+        if (webResponse.status() === 503) await followRetry(webRetry);
+        else expect(webResponse.status()).toBe(200);
         await expect(page.locator('.mf-result-card')).toHaveCount(20);
     } finally {
         if (stopped) {

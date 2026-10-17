@@ -56,9 +56,9 @@ class ForumApi
             return self::returnTo($matches[1]) === $matches[1] ? $path : '/';
         }
 
-        // Only local reading journeys are valid authentication return targets.
+        // Only local reading journeys and the account screen are valid return targets.
         return is_string($path) && ! preg_match('/[\\\\\x00-\x20\x7f]/', $path)
-            && preg_match('~\A/(?:threads/[1-9][0-9]*|discussions|search(?:/exact)?|images|page-links)?(?:\?[^#]*)?\z~', $path)
+            && preg_match('~\A/(?:threads/[1-9][0-9]*|discussions|search(?:/exact)?|images|page-links|account)?(?:\?[^#]*)?\z~', $path)
             ? $path : '/';
     }
 }

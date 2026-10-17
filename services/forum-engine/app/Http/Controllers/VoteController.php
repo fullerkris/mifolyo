@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreVoteRequest;
 use App\Models\Comment;
 use App\Models\Post;
+use App\Models\User;
 use App\Models\Vote;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
@@ -31,6 +32,11 @@ class VoteController extends Controller
         $userId = (int) $request->user()->id;
 
         $result = DB::transaction(function () use ($request, $validated, $votable, $votableType, $votableId, $value, $userId): array {
+            // Account deletion/reset and voting serialize before locking any target.
+            $actor = User::query()->lockForUpdate()->find($userId);
+            abort_unless($actor && $actor->api_token && $request->bearerToken()
+                && hash_equals($actor->api_token, hash('sha256', $request->bearerToken()))
+                && ! $actor->api_token_expires_at?->isPast(), 401);
             // Lock the parent first for both post and comment votes, then recheck access/state.
             $post = Post::query()->with('community')->lockForUpdate()
                 ->findOrFail($votable instanceof Post ? $votableId : $votable->post_id);

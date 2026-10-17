@@ -11,7 +11,7 @@
     $replyTo = filter_var(request('reply_to'), FILTER_VALIDATE_INT, ['options' => ['min_range' => 0]]);
     $feedback = session('vote_feedback', []);
     $feedback = ($feedback['type'] ?? null) === $type && ($feedback['id'] ?? null) === $id ? $feedback : [];
-    $label = $type === 'post' ? 'thread' : 'comment by '.(data_get($item, 'author.username') ?: 'Community member');
+    $label = $type === 'post' ? 'thread' : ($removed ? 'removed comment' : 'comment by '.(\App\Support\SearchResultPresenter::text(data_get($item, 'author.username'), 255) ?: 'Community member'));
 @endphp
 <div @if ($type === 'post') id="thread-votes" @endif class="mf-vote" role="group" aria-label="Votes for {{ $label }}" data-vote data-vote-type="{{ $type }}" data-vote-id="{{ $id }}" data-current-vote="{{ $current }}">
     @if ($removed)

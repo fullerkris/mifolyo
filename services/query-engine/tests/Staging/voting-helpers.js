@@ -5,11 +5,11 @@ import { navigate, signIn } from './helpers.js';
 export const voteGroup = (page, type, id) => page.locator(`[data-vote-type="${type}"][data-vote-id="${id}"]`);
 export const votingOrigin = '/images?q=staging%20%26%20caf%C3%A9%20C%2B%2B&page=2';
 
-export async function createVotingConversation(page, noScript = false) {
+export async function createVotingConversation(page, noScript = false, authenticate = signIn) {
     const source = `https://example.test/voting/${randomUUID()}?b=2&a=1`;
     await navigate(page, () => page.goto(`/discussions?${new URLSearchParams({ url: source, from: votingOrigin })}`));
     await page.getByRole('link', { name: 'Sign in to start a thread' }).click();
-    await signIn(page);
+    await authenticate(page);
     await page.locator('.mf-create-thread summary').click();
     await page.getByLabel('Discussion title').fill('A local staging voting conversation');
     await page.getByLabel('Body optional').fill('A fresh conversation for persisted thread and comment voting checks.');

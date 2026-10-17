@@ -127,9 +127,15 @@ export class ThreadBrowser {
                 heading.replaceChildren(link);
             }
             article.append(heading);
-            const author = typeof thread.author?.username === 'string' ? thread.author.username : 'Community member';
+            const username = typeof thread.author?.username === 'string' ? thread.author.username.trim() : '';
             const replies = count(thread.comment_count);
-            article.append(textElement('p', 'mf-thread-meta', `${author} · ${replies} ${replies === 1 ? 'reply' : 'replies'} · ${count(thread.score)} score`));
+            const meta = textElement('p', 'mf-thread-meta', '');
+            meta.append(textElement('span', 'mf-author-name', username || 'Community member'));
+            if (username && Number.isSafeInteger(thread.author.level) && thread.author.level > 0) {
+                meta.append(' ', textElement('span', 'mf-author-level', `Level ${thread.author.level}`));
+            }
+            meta.append(` · ${replies} ${replies === 1 ? 'reply' : 'replies'} · ${count(thread.score)} score`);
+            article.append(meta);
             if (typeof thread.body === 'string' && thread.body.trim()) {
                 const body = textElement('p', 'mf-thread-body', thread.body);
                 if (thread.body.length > 350) {

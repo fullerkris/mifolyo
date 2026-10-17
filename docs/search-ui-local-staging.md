@@ -1,12 +1,13 @@
 # Search UI local staging
 
-This runs the real Query Engine, forum API, MongoDB, PostgreSQL, Redis and Caddy
+This runs the real Query Engine, forum API, MongoDB, PostgreSQL, Redis, Caddy and Mailpit
 in the dedicated `mifolyo-search-ui-staging` Compose project. The index and forum
 contain controlled, explicitly labelled seed data. Requests use the application
 controllers and databases; the browser-fixture router and HTTP mocks are absent.
 
 - Search UI: <http://127.0.0.1:18081>
 - Forum: <http://127.0.0.1:18082>
+- Local reset-email inbox: <http://127.0.0.1:18085> (Mailpit; no external delivery)
 - Search terms: **staging**, **search**, **documentation**; use exact search for
   **ux05 café C++** to review highlighting and metadata edge cases.
 - Image search: <http://127.0.0.1:18081/images?q=ux06> (also **staging** or
@@ -37,7 +38,7 @@ discussions created during manual or browser validation.
 MongoDB server selection rescans for up to two seconds so every PHP worker can
 recover after an index restart, even when its persistent topology recorded an outage.
 
-Only Caddy publishes ports, both on loopback. The data and application networks
+Only Caddy and the Mailpit inbox publish ports, all on loopback. The data and application networks
 are internal, and all database/asset volumes are project-owned. This definition
 contains only the Search UI and forum stack. Its known local-only application
 keys and database credentials are for this loopback environment.
@@ -68,9 +69,13 @@ and URLs in both themes. Image/link discovery checks cover pagination, broken
 previews, map rendering, no-JavaScript browsing and exact-search return navigation.
 Voting checks cover persisted thread/nested-comment scores, selected votes,
 change/removal, duplicate writes, token rotation, keyboard use, both themes,
-no-JavaScript forms and explicit retry after a real forum outage.
+no-JavaScript forms and explicit retry after a real forum outage. Account checks
+exercise real SMTP reset links, single-use token consumption, password-confirmed
+deletion, revoked credentials, retained discussions/other-reader votes, and
+concurrent PostgreSQL reset/deletion/voting. The account forms run with and without
+JavaScript on desktop and mobile.
 Recovery tests briefly stop/restart **this project's**
-forum and MongoDB services and verify error/retry behavior. They restore the services in
+forum, MongoDB and mail services and verify error/retry behavior. They restore the services in
 `finally` blocks. Run the suite when the local staging UI can be interrupted.
 
 Tests verify the staging response marker before operating and use fixed
@@ -93,7 +98,8 @@ after completing their account journeys.
   Locked threads and locked/removed comments cannot receive replies. Removed
   comments retain their visible children and show a removal placeholder.
 - `/sign-in` and `/register` return readers to their selected source, search, or
-  thread. Return destinations are restricted to local reading routes. `/sign-out`
+  thread or account settings. Return destinations are restricted to local reading
+  routes and `/account`. `/sign-out`
   is a CSRF-protected POST and clears the browser session and saved drafts.
 - The Query Engine holds the forum bearer token encrypted in its server session.
   Browser writes use the session cookie and CSRF token through `/community/threads`
@@ -108,6 +114,32 @@ after completing their account journeys.
   endpoints reject expired forum tokens.
 - Repository CI runs PHP/MongoDB tests and desktop/mobile browser-fixture checks.
   `npm run test:staging` separately validates the real local services.
+
+## Account recovery, deletion and visible levels
+
+- **Forgot your password?** on sign-in opens `/forgot-password`. The generic
+  result preserves the intended search/thread/reply destination. Open the email
+  in the local Mailpit inbox at port 18085; its link lands on the Search UI and
+  redirects to a clean `/reset-password` URL. Reset tokens stay encrypted in the
+  server session rather than appearing in form fields or subsequent links.
+- Reset requires matching passwords, consumes the email token once, revokes old
+  credentials and returns to sign-in. A stale reset tab cannot submit another
+  tab's flow. Invalid/expired links, throttling and service/mail outages have
+  recovery messages; passwords are never flashed back into inputs.
+- The signed-in username opens **Your account**, showing the current email and
+  existing forum level. Deletion requires the current password and an explicit
+  checkbox. It clears identity, sessions and votes while keeping posts/comments
+  under **Community member**; affected vote totals and membership counts are
+  corrected transactionally. Other readers' votes remain intact.
+- Thread cards, full threads and nested comments show **Level N** from the API.
+  Missing/removed authors have no fabricated level. This increment implements
+  presentation, not level calculation, eligibility or vote weighting.
+- All forms support ordinary HTML submission, both themes and narrow screens.
+  Account/recovery pages are private/non-cacheable and suppress referrers.
+- Deployments must set the forum's public `SEARCH_UI_URL` and a working mail
+  transport. Staging uses the pinned Mailpit image, `MAIL_MAILER=smtp` and
+  `SEARCH_UI_URL=http://127.0.0.1:18081`; `SEARCH_UI_STAGING_MAIL_PORT` can change
+  the inbox's loopback port. The forum API contract is in its README.
 
 ## Thread and comment voting
 
@@ -187,6 +219,8 @@ after completing their account journeys.
   links actions retain the indexed HTTP(S) destinations, including supported
   legacy scheme-less image records. Invalid URLs render without active links;
   broken previews leave source navigation available.
+- Web results' **Related images** sidebar uses the same unavailable-preview
+  fallback, with exact source links and single-column cards on narrow screens.
 - Image ordering has a deterministic association-ID tie-breaker; images shared
   by different source pages retain their separate source associations. Plain-text
   metadata is normalized/escaped and long image titles have native disclosure.
@@ -504,3 +538,62 @@ All 18 related recovery-review/parked-command tests pass on macOS and Linux,
 including Linux-native filesystem and Docker `--init` runs. The latter supplies
 a normal parent process for the existing worker-PID-greater-than-one invariant.
 Updated exact-head hosted results are tracked in PR #29 and the Obsidian notes.
+
+## Voting integration, presentation and account flows — 2026-10-17
+
+`feature/search-ui-account-completion` starts from owner-merged UX-06 main
+`e26e5c1`. Voting and the atomic CI marker correction are replayed as `631d830`
+and `e2e0621`. This integration also delivers the Related images fallback,
+API-provided author levels, reset-email forms and password-confirmed deletion.
+The captured-web report is published in
+[`search-ui-captured-review-2026-10-17.md`](search-ui-captured-review-2026-10-17.md),
+with the distinct merge destinations of PRs #28/#29 corrected.
+
+| Check | Verified result |
+| --- | --- |
+| Forum PHPUnit | 149 passed / 840 assertions |
+| Query Engine PHPUnit with isolated MongoDB databases | 106 passed / 861 assertions; final account return-link regression also passed 5 focused tests / 49 assertions |
+| Full desktop/mobile browser suite | 66 passed, two existing desktop-panel-only mobile skips; no failures |
+| Final presentation check | Six desktop/mobile checks passed after the last CSS adjustment |
+| Real-service staging | 39 passed, zero failures/skips/suite retries |
+| Final real-service sidebar/account-return probe | Six 320/768/1440px light/dark layouts passed, five unavailable previews per layout, exact source links and keyboard focus; nested account-reset return retained |
+| Build and dependencies | Production assets and both application images built; both Composer audits found no advisories; npm build install audit found zero vulnerabilities |
+| Formatting/configuration | Forum Pint, focused Query Engine Pint, Compose validation and whitespace checks passed |
+| Deployed source binding | 90 Query Engine and 127 forum application/resource/configuration/migration/lockfile paths matched the checkout; zero mismatches |
+
+The account checks use real Mailpit SMTP and PostgreSQL: one-time reset token
+consumption, invalid/expired/used links, current-password confirmation, stale
+credentials, concurrent deletion/voting, retained anonymous conversations and
+other-reader vote totals. Desktop/mobile journeys pass with and without
+JavaScript. SMTP outage recovery verifies that a failed send does not leave a
+token cooldown blocking immediate delivery retry. PHP tests cover CSRF,
+credential flashing, safe returns, private state, and stale token refresh/logout.
+
+The first expanded staging run passed all new account journeys but found two
+test-harness recovery assumptions: the shared-reader setup encountered the
+replies-unavailable state before the intended outage, and image search could
+reach a different FPM worker still reconnecting to MongoDB. The vote-outage
+fixture now uses a fresh account; all three index surfaces follow their real
+retry links within the existing bounded recovery window. The final full run
+passes all 39 checks. Original failure traces remain retained.
+
+Final deployed images:
+
+```text
+query: sha256:2f7155ce179e18e49e6b95e798892f28c1cd4376275b89b246703287a8f23489
+forum: sha256:82ba2dbe8ffc979cd7a268d95d4219c30cb18abbe0b45f7fe2a9dcd3ed2e1b12
+```
+
+Local ignored evidence under `services/query-engine/test-results/`:
+
+- `account-browser-final/` and `account-presentation-verified/`
+- `account-staging-verified/` (final); `account-staging-final/` (initial findings)
+- `account-sidebar-probe/` and its adjacent `.mjs` reproduction script
+- `account-source-binding.json`
+
+The separate captured-review stack still runs its reviewed `18ff77d` images;
+retained crawl/index inputs and unrelated stacks were preserved. All 23 UX-06
+merged-main jobs passed at `e26e5c1` (runs `39032004534` / `39032004529`). This
+follow-up's owner merge and actual merged-main CI remain separate delivery steps.
+Release-environment email delivery/beta acceptance and TRUST-02 level rules remain
+open.

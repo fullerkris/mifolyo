@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/tmp/opencode/c0-runtime-images-remediation-2026-10-17/security/check_corrected_sets.py", line 69, in <module>
+    assert value['Image'] == created[cid]['image']
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

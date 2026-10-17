@@ -1,0 +1,12 @@
+{
+  "inventory_sha256": "14ac223d10a72ff859d653c29bf721e35af320fc3dbfe823a4c8176180576670",
+  "head": "7ef2041e2844aa34bec54da61c2e8469c1382bac",
+  "branch": "feature/crawl-jobs-v2-c0-runtime-images",
+  "match": true,
+  "evidence_files_unchanged": 299,
+  "original_review_file_count": 49,
+  "original_review_unchanged": true,
+  "snapshot_inventory_exact": true,
+  "package_inventory_exact": true,
+  "unrelated_git_status_not_compared": true
+}

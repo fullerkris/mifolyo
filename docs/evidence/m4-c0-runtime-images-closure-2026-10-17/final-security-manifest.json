@@ -1,0 +1,92 @@
+{
+  "execution_authorized": false,
+  "files": {
+    "final-security-artifact-checks.json": {
+      "bytes": 10452,
+      "private_source": "/tmp/opencode/c0-runtime-images-closure-2026-10-17/security/artifact-checks.json",
+      "sha256": "c25db2f1d6f8b5e7278192dbe16f6d0ee45a3d8b1ae2da68eecbe5725b03628c"
+    },
+    "final-security-artifact-checks.log": {
+      "bytes": 183,
+      "private_source": "/tmp/opencode/c0-runtime-images-closure-2026-10-17/security/artifact-checks.log",
+      "sha256": "85fbe8c7ccc00210c70579944d216c0a838b9e99cf6b7a133b0d64f3b7a97f31"
+    },
+    "final-security-check_artifacts.py": {
+      "bytes": 11041,
+      "private_source": "/tmp/opencode/c0-runtime-images-closure-2026-10-17/security/check_artifacts.py",
+      "sha256": "f2ba987be23cbaca44cf7a433bf6867099d75f30662d893fc40672029ff6d4f0"
+    },
+    "final-security-existing-image-tests.json": {
+      "bytes": 3747,
+      "private_source": "/tmp/opencode/c0-runtime-images-closure-2026-10-17/security/existing-image-tests.json",
+      "sha256": "fc5381f1626c7e8949dba3d4635f55c83fb69f53d64cf0c06b8cea4d59ead205"
+    },
+    "final-security-existing-image-tests.log": {
+      "bytes": 5721,
+      "private_source": "/tmp/opencode/c0-runtime-images-closure-2026-10-17/security/existing-image-tests.log",
+      "sha256": "8a752eba695a7aec67fcbbe9034a4d3669426c873ee0008b23a7c7dfc3d62d12"
+    },
+    "final-security-independent-tests-repeat.log": {
+      "bytes": 1681,
+      "private_source": "/tmp/opencode/c0-runtime-images-closure-2026-10-17/security/independent-tests-repeat.log",
+      "sha256": "46f897f030141556066560f82aa9cf1a35a0e18d1f1b8f78bbc56b6fe856b595"
+    },
+    "final-security-independent-tests.json": {
+      "bytes": 3552,
+      "private_source": "/tmp/opencode/c0-runtime-images-closure-2026-10-17/security/independent-tests.json",
+      "sha256": "7899c21776e824e7d3dd5308ca08cd4c637d12f6217b42c2e473c4e4292b3ff1"
+    },
+    "final-security-independent-tests.log": {
+      "bytes": 1681,
+      "private_source": "/tmp/opencode/c0-runtime-images-closure-2026-10-17/security/independent-tests.log",
+      "sha256": "faf22893fce5ba0960e813b3c1fd0ce7a15342def058c2afbd7f86031bca11ad"
+    },
+    "final-security-inputs-after.json": {
+      "bytes": 122651,
+      "private_source": "/tmp/opencode/c0-runtime-images-closure-2026-10-17/security/inputs-after.json",
+      "sha256": "4632fa4b1d7d818aabb8caa9dd87ff19ea464874006b080dad4ab9d674cd2362"
+    },
+    "final-security-inputs-before.json": {
+      "bytes": 122617,
+      "private_source": "/tmp/opencode/c0-runtime-images-closure-2026-10-17/security/inputs-before.json",
+      "sha256": "8c5d04ebab886b86d035d46e315d62e2347c9750c94a6a5335d5230738bc1f9f"
+    },
+    "final-security-repeat-02--independent-tests.json": {
+      "bytes": 3552,
+      "private_source": "/tmp/opencode/c0-runtime-images-closure-2026-10-17/security/repeat-02/independent-tests.json",
+      "sha256": "7899c21776e824e7d3dd5308ca08cd4c637d12f6217b42c2e473c4e4292b3ff1"
+    },
+    "final-security-review.json": {
+      "bytes": 16076,
+      "private_source": "/tmp/opencode/c0-runtime-images-closure-2026-10-17/security/review.json",
+      "sha256": "c9334b9448bec74c243a390a268c61e100e0ed6d8fd25322119c34c70250a0cf"
+    },
+    "final-security-review.md": {
+      "bytes": 9696,
+      "private_source": "/tmp/opencode/c0-runtime-images-closure-2026-10-17/security/review.md",
+      "sha256": "9b9b669f9aa9a166f4f1dadbd761d851bc2020ddaf9dcb1a47e4004a6aec87fa"
+    },
+    "final-security-run_existing_tests.py": {
+      "bytes": 1552,
+      "private_source": "/tmp/opencode/c0-runtime-images-closure-2026-10-17/security/run_existing_tests.py",
+      "sha256": "6b9c7edfa3db618364ed9a31fea3f24eef437db7e52dbe9772a7fd9f94672e1d"
+    },
+    "final-security-test_closure.py": {
+      "bytes": 12651,
+      "private_source": "/tmp/opencode/c0-runtime-images-closure-2026-10-17/security/test_closure.py",
+      "sha256": "5774c5786a4c2df07f908c24909799637b971e86be896b206ea10b56e813df8f"
+    },
+    "final-security-verify_inputs.py": {
+      "bytes": 5477,
+      "private_source": "/tmp/opencode/c0-runtime-images-closure-2026-10-17/security/verify_inputs.py",
+      "sha256": "56b13aefbfb5eff90725009f50a1cfa57741c66a030e88ed3f436c25c6766d31"
+    },
+    "final-security-write_reports.py": {
+      "bytes": 7545,
+      "private_source": "/tmp/opencode/c0-runtime-images-closure-2026-10-17/security/write_reports.py",
+      "sha256": "f8f86b8556a7e3f863107b0720db21bd509d02843bb2a9671ff468062ed77735"
+    }
+  },
+  "kind": "c0_arch_04_final_security_exports",
+  "version": 1
+}

@@ -1,0 +1,9 @@
+--- image_artifacts.py (reviewed snapshot; NOT modified)
++++ image_artifacts.py (proposed)
+@@
+         self.total_bytes = total
++        # All inode aliases must agree, including aliases outside the required
++        # file/dependency closure. Resolve only after the full archive is read.
++        for name, row in self.entries.items():
++            if row.get("hardlink"):
++                self.resolve(name)

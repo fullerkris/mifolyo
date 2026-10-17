@@ -1,0 +1,1499 @@
+diff --git a/.github/workflows/c0-runtime-images.yml b/.github/workflows/c0-runtime-images.yml
+new file mode 100644
+index 0000000..6bd0bbc
+--- /dev/null
++++ b/.github/workflows/c0-runtime-images.yml
+@@ -0,0 +1,77 @@
++name: C0 Runtime Images
++
++on:
++  workflow_dispatch:
++  pull_request:
++    branches: ["main"]
++    paths:
++      - "tests/crawl-jobs-v2-observer/**"
++      - "scripts/prepare-crawl-jobs-v2-observer-images.py"
++      - "scripts/test-crawl-jobs-v2-observer.py"
++      - ".github/workflows/c0-runtime-images.yml"
++  push:
++    branches: ["main"]
++    paths:
++      - "tests/crawl-jobs-v2-observer/**"
++      - "scripts/prepare-crawl-jobs-v2-observer-images.py"
++      - "scripts/test-crawl-jobs-v2-observer.py"
++      - ".github/workflows/c0-runtime-images.yml"
++
++permissions:
++  contents: read
++
++concurrency:
++  group: c0-runtime-images-${{ github.ref }}
++  cancel-in-progress: true
++
++jobs:
++  images:
++    name: C0 runtime images (${{ matrix.architecture }})
++    runs-on: ${{ matrix.runner }}
++    timeout-minutes: 45
++    strategy:
++      fail-fast: false
++      matrix:
++        include:
++          - architecture: aarch64
++            runner: ubuntu-24.04-arm
++          - architecture: x86_64
++            runner: ubuntu-24.04
++    steps:
++      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
++      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
++        with:
++          python-version: "3.13"
++      - name: Run source-bound offline controls
++        run: python -B -W error::ResourceWarning scripts/test-crawl-jobs-v2-observer.py --report "${RUNNER_TEMP}/c0-offline-tests.json"
++      - name: Verify rootless image builder
++        run: |
++          podman --remote=false version
++          test "$(podman --remote=false info --format '{{.Host.Security.Rootless}}')" = true
++      - name: Run simulated x64 debug-register controls
++        if: matrix.architecture == 'x86_64'
++        run: |
++          cc -O2 -Wall -Wextra -Werror -std=c11 tests/crawl-jobs-v2-observer/native/test_x86_debug.c -o "${RUNNER_TEMP}/c0-debug-probe"
++          "${RUNNER_TEMP}/c0-debug-probe" > "${RUNNER_TEMP}/c0-debug-probe.log"
++      - name: Build and verify stopped image contents
++        run: >-
++          python -B scripts/prepare-crawl-jobs-v2-observer-images.py
++          --architecture '${{ matrix.architecture }}' --engine podman
++          --output "${RUNNER_TEMP}/c0-images"
++      - name: Retain image evidence and portable images
++        if: always()
++        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
++        with:
++          name: c0-runtime-images-${{ matrix.architecture }}
++          if-no-files-found: error
++          compression-level: 6
++          path: |
++            ${{ runner.temp }}/c0-offline-tests.json
++            ${{ runner.temp }}/c0-debug-probe.log
++            ${{ runner.temp }}/c0-images/image-set.json
++            ${{ runner.temp }}/c0-images/*-content.json
++            ${{ runner.temp }}/c0-images/*-inspect.json
++            ${{ runner.temp }}/c0-images/*-image.tar
++            ${{ runner.temp }}/c0-images/command-*.log
++            ${{ runner.temp }}/c0-images/native/*
++            ${{ runner.temp }}/c0-images/oracle/*
+diff --git a/scripts/prepare-crawl-jobs-v2-observer-images.py b/scripts/prepare-crawl-jobs-v2-observer-images.py
+new file mode 100644
+index 0000000..e0e00ea
+--- /dev/null
++++ b/scripts/prepare-crawl-jobs-v2-observer-images.py
+@@ -0,0 +1,10 @@
++#!/usr/bin/env python3
++"""Build and statically verify one pinned C0 runtime image set."""
++from pathlib import Path
++import sys
++
++sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tests/crawl-jobs-v2-observer"))
++from image_build import main
++
++if __name__ == "__main__":
++    raise SystemExit(main())
+diff --git a/tests/crawl-jobs-v2-observer/Dockerfile.oracle b/tests/crawl-jobs-v2-observer/Dockerfile.oracle
+index a4e2de1..e6b92b4 100644
+--- a/tests/crawl-jobs-v2-observer/Dockerfile.oracle
++++ b/tests/crawl-jobs-v2-observer/Dockerfile.oracle
+@@ -1,4 +1,8 @@
+-FROM docker.io/library/python@sha256:2325bb286ec344af3e5898cc224b5844e2707ac6e26b1632516fd3edc84a5e26 AS oracle
++# Python 3.13.15/slim-bookworm platform children of the previously pinned index.
++ARG C0_ARCHITECTURE=aarch64
++FROM docker.io/library/python@sha256:ad4c34ff79289506e235b40dce75d629e25f226b597a2455804220f037e07531 AS python-aarch64
++FROM docker.io/library/python@sha256:3e2de9c40ca4e3d73240059f9d48baff27908f10293e985a2f382a0378e6df4a AS python-x86_64
++FROM python-${C0_ARCHITECTURE} AS oracle
+ WORKDIR /
+ COPY contracts.py runtime_admission.py linux_observation.py oracle.py oracle_protocol.py oracle_worker.py worker.py build_oracle.py /oracle/
+ USER 999:999
+@@ -7,8 +11,9 @@ CMD ["-I", "-B", "/oracle/worker.py"]
+ 
+ # Artifact generation executes only the manifest builder, never the worker.
+ FROM oracle AS oracle-build
++ARG C0_ARCHITECTURE
+ USER 0:0
+-RUN ["python3", "-I", "-B", "/oracle/build_oracle.py", "/artifacts"]
++RUN python3 -I -B /oracle/build_oracle.py /artifacts "$C0_ARCHITECTURE"
+ 
+ FROM scratch AS artifacts
+ COPY --from=oracle-build /artifacts/ /
+diff --git a/tests/crawl-jobs-v2-observer/README.md b/tests/crawl-jobs-v2-observer/README.md
+index d7ee3bc..10ea37f 100644
+--- a/tests/crawl-jobs-v2-observer/README.md
++++ b/tests/crawl-jobs-v2-observer/README.md
+@@ -91,10 +91,10 @@ podman build --platform linux/amd64 --build-arg C0_ARCHITECTURE=x86_64 \
+ ```
+ 
+ The Dockerfile pins GCC 14.3.0/bookworm independently for each architecture.
+-The build runs compilers and static inspectors only. `Dockerfile.oracle` still
+-selects the pinned ARM64 Python base; the x64 Python/runtime image set is the
+-C0-ARCH-04 deliverable. `build_oracle.py DEST x86_64` supports an independently
+-selected x64 interpreter. `native/test_x86_debug.c` is an offline C probe with
++The build runs compilers and static inspectors only. `Dockerfile.oracle` now
++selects explicit Python platform children as described below.
++`build_oracle.py DEST x86_64` supports the selected x64 interpreter.
++`native/test_x86_debug.c` is an offline C probe with
+ an in-memory request callback; it can be compiled on x64 without running actors
+ or invoking ptrace. Python tests interpret both filter layers and exercise
+ positive/mixed-architecture artifact, context and benign-process protocol paths.
+@@ -103,6 +103,63 @@ ABI references: Linux [x86 ptrace implementation](https://github.com/torvalds/li
+ [debug-register UAPI](https://github.com/torvalds/linux/blob/v6.18/arch/x86/include/uapi/asm/debugreg.h),
+ and [seccomp ABI/compat caveats](https://man7.org/linux/man-pages/man2/seccomp.2.html).
+ 
++### Both runtime image sets (C0-ARCH-04)
++
++`image_build.py` builds target, observer and oracle images for one explicit
++architecture and checks their actual contents. The Python 3.13.15/slim-bookworm
++children are pinned independently: `ad4c34ff…` for ARM64 and `3e2de9c4…` for x64.
++Both come from the previously pinned index `2325bb28…`; selecting the ARM64
++child preserves its base content. GCC platform pins remain unchanged.
++
++```sh
++python3 -B scripts/prepare-crawl-jobs-v2-observer-images.py \
++  --architecture aarch64 --engine podman --output /absolute/new-arm64-set
++python3 -B scripts/prepare-crawl-jobs-v2-observer-images.py \
++  --architecture x86_64 --engine podman --output /absolute/new-x64-set
++```
++
++Each new private output directory retains a source snapshot, native/oracle
++artifacts, image/config identities, ELF/library-dependency inventories, profiles,
++portable Docker archives, command logs and stopped-container cleanup records.
++The builder checks canonical profiles/BPF/target manifests, compiled BPF and
++target-hash bindings, compiler/source records, oracle source/interpreter bytes,
++actual image OS/architecture/configuration, library and loader presence, archive
++config IDs and uncompressed layer hashes. Archive reads are bounded and never
++extract filesystem paths onto the host.
++
++Oracle artifact manifests are version 3. The builder imports the worker's module
++definitions to identify its required extension ELFs, without calling worker main
++or constructing readers/clients. Their hashes and the interpreter's complete
++static dependency closure must match the exported image. The full ELF inventory
++also records non-loadable objects and unresolved dependencies of unused optional
++extensions (such as slim Python's Tk module); those cannot satisfy a required
++library edge. This remains static/import preparation, not live worker admission.
++
++Inspection containers use a non-existent inspection-only entrypoint, network
++isolation, read-only rootfs, UID/GID 999, dropped capabilities and no-new-privileges.
++They are never started. Identity and never-started state are checked before and
++after copying/export; only those owned stopped objects are removed, followed by
++an independent absence check. Image tags are not used as acceptance identities.
++Podman's implicit scratch-image PATH and builder label are removed during image
++construction to preserve the existing empty-native-environment and label rules.
++
++The builder uses rootless Podman in local mode, including in CI. The
++`C0 Runtime Images` workflow uses separate native ARM64/x64 runners, retains the
++portable images and source-bound artifacts, and never starts a C0 entrypoint.
++Stable file/payload hashes are separate from builder-dependent image metadata.
++Live loader behavior, kernel confinement, hardware breakpoints and timing remain
++per-platform C0-ARCH-05 acceptance work.
++
++Required files are checked for read access (and native/interpreter execute access)
++by UID/GID 999; their directories must be root-owned and searchable/readable.
++Root-directory mode/ownership is observed before and after export with a scoped
++Podman storage-namespace stat helper, then the temporary mount is released.
++Link components are resolved in filesystem order; every archive header, including
++root markers, is charged to the member limit. Portable archives reject normalized
++name collisions. The dependency model uses RUNPATH precedence, resolves directory
++links and refuses active legacy RPATH or ambiguous library candidates; dynamic
++loader execution and broader loader search behavior remain native acceptance work.
++
+ ## Implemented artifact components
+ 
+ - `contracts.py`: fixed 276-trial C0 registry, immutable preparation identities,
+diff --git a/tests/crawl-jobs-v2-observer/build_oracle.py b/tests/crawl-jobs-v2-observer/build_oracle.py
+index 2124bb1..610debe 100644
+--- a/tests/crawl-jobs-v2-observer/build_oracle.py
++++ b/tests/crawl-jobs-v2-observer/build_oracle.py
+@@ -1,6 +1,8 @@
+ """Generate oracle image artifact identities without executing the oracle worker."""
+ import os
++import importlib.machinery
+ from pathlib import Path
++import stat
+ import sys
+ 
+ sys.path.insert(0, str(Path(__file__).resolve().parent))
+@@ -8,6 +10,30 @@ from contracts import canonical, elf_architecture, platform_digest, require, run
+ from oracle_protocol import SOURCE_FILES, source_digest
+ 
+ 
++def elf_bytes(path, architecture):
++    fd = os.open(path, os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW | os.O_NONBLOCK)
++    with os.fdopen(fd, "rb") as stream:
++        before = os.fstat(stream.fileno())
++        require(stat.S_ISREG(before.st_mode) and 0 < before.st_size <= 32 * 1024 * 1024, "ORACLE_ELF_BOUND")
++        raw = stream.read(before.st_size + 1)
++        after = os.fstat(stream.fileno())
++        require(len(raw) == before.st_size and (before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns) ==
++            (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns), "ORACLE_ELF_CHANGED")
++    require(elf_architecture(raw) == architecture, "ORACLE_BUILD_ARCHITECTURE")
++    return raw
++
++
++def extension_inventory(architecture, modules=None):
++    extensions = {}
++    for module in tuple(sys.modules.values()) if modules is None else modules:
++        spec = getattr(module, "__spec__", None)
++        if spec is not None and isinstance(spec.loader, importlib.machinery.ExtensionFileLoader):
++            path = Path(spec.origin).resolve()
++            extensions[str(path)] = sha(elf_bytes(path, architecture))
++    require(extensions and len(extensions) <= 128, "ORACLE_EXTENSIONS")
++    return extensions
++
++
+ def main():
+     require(len(sys.argv) in (2, 3), "ORACLE_BUILD_ARGUMENTS")
+     architecture = sys.argv[2] if len(sys.argv) == 3 else "aarch64"
+@@ -15,15 +41,20 @@ def main():
+     require(os.uname().sysname == "Linux" and os.uname().machine == architecture, "ORACLE_BUILD_PLATFORM")
+     destination = Path(sys.argv[1])
+     require(destination.is_absolute() and not destination.exists(), "ORACLE_BUILD_OUTPUT")
+-    destination.mkdir(mode=0o755)
+     root = Path(__file__).resolve().parent
+-    executable = Path(sys.executable).resolve().read_bytes()
+-    require(0 < len(executable) <= 32 * 1024 * 1024, "ORACLE_ELF_BOUND")
+-    require(elf_architecture(executable) == architecture, "ORACLE_BUILD_ARCHITECTURE")
+-    record = {"version": 2, "architecture": architecture, "platform_sha256": platform_digest(architecture), "python": sys.version,
++    executable = elf_bytes(Path(sys.executable).resolve(), architecture)
++    files = {name: sha((root / name).read_bytes()) for name in SOURCE_FILES}
++    # Import definitions only. No Engine/reader/client is instantiated and no
++    # worker main or Linux collector runs. Record the needed extension modules.
++    import oracle_worker
++    require(oracle_worker.__file__ == str(root / "oracle_worker.py"), "ORACLE_IMPORT_SOURCE")
++    extensions = extension_inventory(architecture)
++    require(files == {name: sha((root / name).read_bytes()) for name in SOURCE_FILES}, "ORACLE_SOURCE_CHANGED")
++    record = {"version": 3, "architecture": architecture, "platform_sha256": platform_digest(architecture), "python": sys.version,
+         "oracle_elf": sha(executable), "oracle_worker_source": source_digest(),
+-        "files": {name: sha((root / name).read_bytes()) for name in SOURCE_FILES},
++        "files": files, "extensions": extensions, "worker_import_checked": True,
+         "worker_executed": False, "runtime_feasibility_proven": False, "execution_authorized": False}
++    destination.mkdir(mode=0o755)
+     (destination / "oracle-artifacts.json").write_bytes(canonical(record))
+ 
+ 
+diff --git a/tests/crawl-jobs-v2-observer/image_artifacts.py b/tests/crawl-jobs-v2-observer/image_artifacts.py
+new file mode 100644
+index 0000000..736108b
+--- /dev/null
++++ b/tests/crawl-jobs-v2-observer/image_artifacts.py
+@@ -0,0 +1,391 @@
++"""Read-only, bounded checks of exported image contents; never extract or execute."""
++import os
++import hashlib
++import json
++from collections import deque
++from pathlib import PurePosixPath
++import re
++import stat
++import struct
++import tarfile
++
++from contracts import canonical, digest, elf_architecture, exact, integer, require, runtime_architecture, sha
++from oracle_protocol import SOURCE_FILES
++
++BASES = {
++    "aarch64": {"compiler": "docker.io/library/gcc@sha256:66035d353338cb93b64f621393dc6fecde85258651ca454f0cf36ff2639b1352",
++        "python": "docker.io/library/python@sha256:ad4c34ff79289506e235b40dce75d629e25f226b597a2455804220f037e07531"},
++    "x86_64": {"compiler": "docker.io/library/gcc@sha256:a689e29bc3adf4663ef9a141d23081252764d1319c63f591a027bd6fd676f4c1",
++        "python": "docker.io/library/python@sha256:3e2de9c40ca4e3d73240059f9d48baff27908f10293e985a2f382a0378e6df4a"}}
++MAX_FILE = 64 * 1024 * 1024
++MAX_TOTAL = 512 * 1024 * 1024
++
++
++def image_id(value):
++    require(type(value) is str, "IMAGE_ID")
++    value = value.removeprefix("sha256:")
++    digest(value)
++    return "sha256:" + value
++
++
++def image_metadata(value, architecture, role, environment):
++    selected = runtime_architecture(architecture)
++    require(role in ("target", "observer", "oracle"), "IMAGE_ROLE")
++    require(type(value) is dict and value.get("Os") == "linux" and value.get("Architecture") == selected["image_architecture"], "IMAGE_PLATFORM")
++    identity = image_id(value.get("Id"))
++    config = value.get("Config")
++    require(type(config) is dict, "IMAGE_CONFIG")
++    require(config.get("User") == "999:999" and config.get("WorkingDir") in (None, "", "/"), "IMAGE_USER")
++    require(config.get("Entrypoint") == (["python3"] if role == "oracle" else ["/" + role]), "IMAGE_ENTRYPOINT")
++    require(config.get("Cmd") == ["-I", "-B", "/oracle/worker.py"] if role == "oracle" else config.get("Cmd") in (None, []), "IMAGE_COMMAND")
++    for name, kind in (("OnBuild", list), ("Volumes", dict), ("Healthcheck", dict), ("ExposedPorts", dict), ("Labels", dict)):
++        value = config.get(name)
++        require(value is None or type(value) is kind and not value, "IMAGE_HOOK")
++    require(type(environment) is list and all(type(row) is str and "=" in row and "\0" not in row for row in environment), "IMAGE_ENVIRONMENT")
++    require(len({row.split("=", 1)[0] for row in environment}) == len(environment), "IMAGE_ENVIRONMENT")
++    actual_environment = [] if config.get("Env") is None else config["Env"]
++    require(type(actual_environment) is list and actual_environment == environment and (role == "oracle" or environment == []), "IMAGE_ENVIRONMENT")
++    return {"id": identity, "architecture": architecture, "role": role, "environment_sha256": sha(canonical(environment)),
++        "config_sha256": sha(canonical(config)), "execution_authorized": False}
++
++
++def path_parts(path):
++    require(type(path) is str and 0 < len(path) <= 4096 and not any(c in path for c in "\0\r\n"), "IMAGE_PATH")
++    return path.split("/")
++
++
++def normalized(path):
++    """Lexical archive-name normalization. Link traversal uses component order."""
++    parts = []
++    for part in path_parts(path):
++        if part in ("", "."): continue
++        if part == "..":
++            require(bool(parts), "IMAGE_PATH_ESCAPE")
++            parts.pop()
++        else: parts.append(part)
++    return "/" + "/".join(parts)
++
++
++class ImageTree:
++    def __init__(self, path, root_metadata=None):
++        self.entries, total = {}, 0
++        self.member_count, self.root = 0, None
++        if root_metadata is not None:
++            exact(root_metadata, ("mode", "uid", "gid"))
++            for name, limit in (("mode", 0o7777), ("uid", 2**32 - 1), ("gid", 2**32 - 1)):
++                integer(root_metadata[name], 0, limit)
++            self.root = dict(root_metadata)
++        fd = os.open(path, os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW | os.O_NONBLOCK)
++        with os.fdopen(fd, "rb") as stream:
++            before = os.fstat(stream.fileno())
++            require(stat.S_ISREG(before.st_mode) and before.st_nlink == 1 and 0 < before.st_size <= MAX_TOTAL + 32 * 1024 * 1024, "IMAGE_ARCHIVE")
++            with tarfile.open(fileobj=stream, mode="r:") as archive:
++                root_seen = False
++                for member_count, member in enumerate(archive, 1):
++                    require(member_count <= 20000, "IMAGE_DUPLICATE_OR_COUNT")
++                    self.member_count = member_count
++                    require(0 <= member.uid <= 2**32 - 1 and 0 <= member.gid <= 2**32 - 1 and member.mode & ~0o7777 == 0, "IMAGE_METADATA")
++                    row = {"mode": member.mode, "uid": member.uid, "gid": member.gid}
++                    name = member.name.rstrip("/")
++                    if name in ("", "."):
++                        require(member.isdir() and member.size == 0 and not root_seen, "IMAGE_ROOT_DUPLICATE")
++                        require(self.root is None or self.root == row, "IMAGE_ROOT_CHANGED")
++                        self.root, root_seen = row, True
++                        continue
++                    require(not name.startswith("/") and ".." not in name.split("/"), "IMAGE_MEMBER_PATH")
++                    name = normalized(name)
++                    if name == "/":
++                        require(member.isdir() and member.size == 0 and not root_seen, "IMAGE_ROOT_DUPLICATE")
++                        require(self.root is None or self.root == row, "IMAGE_ROOT_CHANGED")
++                        self.root, root_seen = row, True
++                        continue
++                    require(name not in self.entries and len(self.entries) < 20000, "IMAGE_DUPLICATE_OR_COUNT")
++                    require(not any(part.startswith(".wh.") for part in name.split("/")), "IMAGE_WHITEOUT")
++                    if member.isfile():
++                        require(not member.issparse() and 0 <= member.size <= MAX_FILE and total + member.size <= MAX_TOTAL, "IMAGE_FILE_BOUND")
++                        with archive.extractfile(member) as data:
++                            raw = data.read(member.size + 1)
++                        require(len(raw) == member.size, "IMAGE_FILE_SIZE")
++                        row.update(kind="file", raw=raw, sha256=sha(raw)); total += len(raw)
++                    elif member.isdir():
++                        require(member.size == 0, "IMAGE_DIRECTORY")
++                        row.update(kind="directory")
++                    elif member.issym() or member.islnk():
++                        target = member.linkname
++                        require(type(target) is str and target and member.size == 0, "IMAGE_LINK")
++                        base = str(PurePosixPath(name).parent) + "/" if member.issym() and not target.startswith("/") else "/"
++                        normalized(base + target)  # Validate lexical bounds without losing link/.. order.
++                        row.update(kind="link", target=base + target, hardlink=member.islnk())
++                    else: require(False, "IMAGE_SPECIAL_FILE")
++                    self.entries[name] = row
++            after = os.fstat(stream.fileno())
++            require((before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns) ==
++                (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns), "IMAGE_ARCHIVE_CHANGED")
++        self.total_bytes = total
++        # Flattened filesystem entries must have literal directory ancestors.
++        # Otherwise a name lookup could inspect a different, shadowing entry.
++        for name in self.entries:
++            parent = str(PurePosixPath(name).parent)
++            require(parent == "/" or self.entries.get(parent, {}).get("kind") == "directory", "IMAGE_MEMBER_PARENT")
++        # Every alias shares inode metadata, even if the selected role never
++        # traverses it. Wait for the complete map so forward targets are valid.
++        for name, row in self.entries.items():
++            if row.get("hardlink"):
++                self.resolve(name)
++
++    def _resolve(self, path, missing_ok=False):
++        pending = deque((part, False) for part in path_parts(path))
++        resolved, directories, links, hard_target, hard_metadata = [], ["/"], 0, False, []
++        while pending:
++            part, target_component = pending.popleft()
++            if part in ("", "."): continue
++            if part == "..":
++                require(bool(resolved), "IMAGE_PATH_ESCAPE")
++                resolved.pop(); continue
++            prefix = "/" + "/".join([*resolved, part])
++            row = self.entries.get(prefix)
++            if row is None:
++                require(not target_component, "IMAGE_DANGLING_LINK")
++                if missing_ok: return None, directories
++                require(False, "IMAGE_FILE_MISSING")
++            if row["kind"] == "link":
++                require(not hard_target, "IMAGE_HARDLINK_LINK_TARGET")
++                links += 1; require(links <= 40, "IMAGE_LINK_DEPTH")
++                require(not row.get("hardlink") or not pending, "IMAGE_PATH_PARENT")
++                hard_target |= row.get("hardlink", False)
++                if row.get("hardlink"):
++                    hard_metadata.append({key: row[key] for key in ("uid", "gid", "mode")})
++                target = path_parts(row["target"])
++                require(len(row["target"]) + sum(len(p) + 1 for p, _ in pending) <= 4096, "IMAGE_PATH")
++                pending = deque([(p, True) for p in target] + list(pending)); resolved = []
++            else:
++                require(not pending or row["kind"] == "directory", "IMAGE_PATH_PARENT")
++                resolved.append(part)
++                if row["kind"] == "directory": directories.append(prefix)
++        name = "/" + "/".join(resolved)
++        require(name == "/" or name in self.entries, "IMAGE_FILE_MISSING")
++        require(not hard_target or name != "/" and self.entries[name]["kind"] == "file", "IMAGE_HARDLINK_TARGET")
++        require(all(metadata == {key: self.entries[name][key] for key in ("uid", "gid", "mode")} for metadata in hard_metadata), "IMAGE_HARDLINK_METADATA")
++        return name, directories
++
++    def resolve(self, path, missing_ok=False):
++        return self._resolve(path, missing_ok)[0]
++
++    def directory_access(self, name):
++        row = self.root if name == "/" else self.entries.get(name)
++        require(row is not None and row["uid"] == row["gid"] == 0 and row["mode"] & 0o005 == 0o005 and
++            not row["mode"] & 0o6022, "IMAGE_DIRECTORY_ACCESS")
++
++    def file(self, path, executable=False):
++        name, directories = self._resolve(path)
++        for directory in directories: self.directory_access(directory)
++        row = self.entries.get(name)
++        require(row is not None and row["kind"] == "file" and row["uid"] == row["gid"] == 0 and
++            row["mode"] & 0o004 and not row["mode"] & 0o6022, "IMAGE_FILE_IDENTITY")
++        require(not executable or row["mode"] & 0o001, "IMAGE_FILE_EXECUTABLE")
++        return row["raw"]
++
++
++def elf_record(raw, architecture):
++    selected = runtime_architecture(architecture)
++    require(64 <= len(raw) <= MAX_FILE and raw[:7] == b"\x7fELF\x02\x01\x01", "IMAGE_ELF_ARCHITECTURE")
++    h = struct.unpack_from("<16sHHIQQQIHHHHHH", raw)
++    require(h[2] == selected["elf_machine"] and h[3] == 1, "IMAGE_ELF_ARCHITECTURE")
++    if h[1] == 1:  # Python's pinned base includes a non-loadable config/python.o.
++        require(h[10] == 0 and h[11] == 64 and 0 < h[12] <= 1024 and h[6] + 64 * h[12] <= len(raw), "IMAGE_ELF_RELOCATABLE")
++        for index in range(h[12]):
++            section = struct.unpack_from("<IIQQQQIIQQ", raw, h[6] + 64 * index)
++            require(section[1] == 8 or section[4] + section[5] <= len(raw), "IMAGE_ELF_RELOCATABLE")
++        return {"sha256": sha(raw), "bytes": len(raw), "machine": h[2], "type": 1, "interpreter": None, "needed": [], "search_paths": [], "rpath": [], "runpath": []}
++    require(elf_architecture(raw[:64]) == architecture, "IMAGE_ELF_ARCHITECTURE")
++    phoff, size, count = h[5], h[9], h[10]
++    require(size == 56 and 0 < count <= 128 and phoff + size * count <= len(raw), "IMAGE_ELF_TABLE")
++    rows = [struct.unpack_from("<IIQQQQQQ", raw, phoff + size * i) for i in range(count)]
++    require(all(p[2] + p[5] <= len(raw) for p in rows if p[0] in (1, 2, 3)), "IMAGE_ELF_BOUNDS")
++    loads = [p for p in rows if p[0] == 1]
++    require(loads and all(p[5] <= p[6] and p[1] & 3 != 3 for p in loads), "IMAGE_ELF_LOAD")
++    require(all(not p[1] & 1 for p in rows if p[0] == 0x6474e551), "IMAGE_ELF_STACK")
++    interpreters = [raw[p[2]:p[2] + p[5]] for p in rows if p[0] == 3]
++    require(len(interpreters) <= 1, "IMAGE_ELF_INTERPRETER")
++    interpreter = None
++    if interpreters:
++        value = interpreters[0]
++        require(value.endswith(b"\0") and b"\0" not in value[:-1], "IMAGE_ELF_INTERPRETER")
++        interpreter = value[:-1].decode("ascii"); require(interpreter.startswith("/"), "IMAGE_ELF_INTERPRETER")
++    dynamic = [p for p in rows if p[0] == 2]
++    require(len(dynamic) <= 1, "IMAGE_ELF_DYNAMIC")
++    tags = []
++    if dynamic:
++        p = dynamic[0]; require(p[5] % 16 == 0, "IMAGE_ELF_DYNAMIC")
++        for offset in range(p[2], p[2] + p[5], 16):
++            tag, value = struct.unpack_from("<QQ", raw, offset)
++            if tag == 0: break
++            tags.append((tag, value))
++        else: require(False, "IMAGE_ELF_DYNAMIC_END")
++    strings = b""
++    if tags:
++        pointers = [v for t, v in tags if t == 5]; lengths = [v for t, v in tags if t == 10]
++        require(len(pointers) == len(lengths) == 1 and 0 < lengths[0] <= MAX_FILE, "IMAGE_ELF_STRINGS")
++        match = [p for p in loads if p[3] <= pointers[0] and pointers[0] + lengths[0] <= p[3] + p[5]]
++        require(len(match) == 1, "IMAGE_ELF_STRINGS")
++        offset = match[0][2] + pointers[0] - match[0][3]
++        strings = raw[offset:offset + lengths[0]]
++    def text(offset):
++        require(offset < len(strings), "IMAGE_ELF_STRING")
++        end = strings.find(b"\0", offset); require(end >= offset, "IMAGE_ELF_STRING")
++        return strings[offset:end].decode("ascii")
++    needed = [text(v) for t, v in tags if t == 1]
++    require(all(re.fullmatch(r"[A-Za-z0-9_.+-]+", name) and name != "PT_INTERP" for name in needed) and
++        len(set(needed)) == len(needed), "IMAGE_ELF_NEEDED")
++    rpath = [text(v) for t, v in tags if t == 15]
++    runpath = [text(v) for t, v in tags if t == 29]
++    require(len(rpath) <= 1 and len(runpath) <= 1, "IMAGE_ELF_SEARCH_TAGS")
++    return {"sha256": sha(raw), "bytes": len(raw), "machine": h[2], "type": h[1], "interpreter": interpreter,
++        "needed": needed, "search_paths": runpath if runpath else rpath, "rpath": rpath, "runpath": runpath}
++
++
++def elf_inventory(tree, architecture, required=None):
++    runtime_architecture(architecture)
++    records = {name: elf_record(row["raw"], architecture) for name, row in tree.entries.items()
++        if row["kind"] == "file" and row["raw"].startswith(b"\x7fELF")}
++    require(records, "IMAGE_ELFS_MISSING")
++    triplet = "aarch64-linux-gnu" if architecture == "aarch64" else "x86_64-linux-gnu"
++    defaults = ["/usr/local/lib", "/lib/" + triplet, "/usr/lib/" + triplet, "/lib", "/usr/lib"]
++    for name, record in records.items():
++        search = []
++        for paths in record["search_paths"]:
++            for path in paths.split(":"):
++                path = path.replace("${ORIGIN}", str(PurePosixPath(name).parent)).replace("$ORIGIN", str(PurePosixPath(name).parent))
++                require(path.startswith("/") and "$" not in path, "IMAGE_ELF_SEARCH_PATH")
++                path_parts(path); search.append(path)
++        dependencies, dependency_paths, missing = {}, {}, []
++        for needed in record["needed"]:
++            candidates = []
++            for parent in search + defaults:
++                candidate = parent + "/" + needed
++                resolved = tree.resolve(candidate, missing_ok=True)
++                if resolved is not None: candidates.append((resolved, candidate))
++            require(len({name for name, _ in candidates}) <= 1, "IMAGE_LIBRARY_AMBIGUOUS")
++            if candidates and candidates[0][0] in records and records[candidates[0][0]]["type"] == 3:
++                dependencies[needed], dependency_paths[needed] = candidates[0]
++            else:
++                missing.append(needed)
++        if record["interpreter"]:
++            loader = tree.resolve(record["interpreter"])
++            require(loader in records and records[loader]["type"] in (2, 3), "IMAGE_LOADER_MISSING")
++            dependencies["PT_INTERP"] = loader
++            dependency_paths["PT_INTERP"] = record["interpreter"]
++        record["dependencies"] = dependencies
++        record["dependency_paths"] = dependency_paths
++        record["unresolved_dependencies"] = missing
++    pending = [(path, False) for path in (records if required is None else required)]
++    visited = set()
++    while pending:
++        path, executable = pending.pop()
++        tree.file(path, executable=executable)
++        name = tree.resolve(path)
++        if name in visited: continue
++        require(name in records and not records[name]["unresolved_dependencies"], "IMAGE_LIBRARY_MISSING")
++        # Legacy RPATH inheritance is deliberately outside this pinned-base model.
++        require(not records[name]["rpath"] or records[name]["runpath"], "IMAGE_UNSUPPORTED_RPATH")
++        visited.add(name)
++        pending.extend((path, edge == "PT_INTERP") for edge, path in records[name]["dependency_paths"].items())
++    for name in records: records[name]["required_dependency_closure"] = name in visited
++    return dict(sorted(records.items()))
++
++
++def verify_content(tree, architecture, role, artifacts, sources):
++    require(role in ("target", "observer", "oracle"), "IMAGE_ROLE")
++    if role == "oracle":
++        require(type(artifacts.get("extensions")) is dict and 0 < len(artifacts["extensions"]) <= 128, "IMAGE_ORACLE_EXTENSIONS")
++    required = ["/" + role] if role != "oracle" else ["/usr/local/bin/python3", *artifacts["extensions"]]
++    elfs = elf_inventory(tree, architecture, required)
++    if role != "oracle":
++        raw = tree.file("/" + role, executable=True)
++        generated = {"/etc/hosts", "/etc/hostname", "/etc/resolv.conf", "/.dockerenv", "/run/.containerenv"}
++        require({name for name, row in tree.entries.items() if row["kind"] == "file"} <= generated | {"/" + role}, "IMAGE_NATIVE_FILES")
++        require(raw == artifacts[role] and set(elfs) == {"/" + role} and elfs["/" + role]["type"] == 3 and not elfs["/" + role]["needed"] and
++            elfs["/" + role]["interpreter"] is None, "IMAGE_NATIVE_CONTENT")
++        declared = {"/" + role: sha(raw)}
++    else:
++        declared = {}
++        expected = set(SOURCE_FILES) | {"build_oracle.py"}
++        require({name.removeprefix("/oracle/") for name in tree.entries if name.startswith("/oracle/")} == expected, "IMAGE_ORACLE_INVENTORY")
++        for name in sorted(expected):
++            raw = tree.file("/oracle/" + name)
++            require(raw == sources[name], "IMAGE_ORACLE_SOURCE")
++            declared["/oracle/" + name] = sha(raw)
++        python = tree.resolve("/usr/local/bin/python3")
++        require(python in elfs and elfs[python]["type"] in (2, 3) and sha(tree.file(python, executable=True)) == artifacts["oracle_elf"], "IMAGE_ORACLE_ELF")
++        declared[python] = artifacts["oracle_elf"]
++        for name, expected in artifacts["extensions"].items():
++            resolved = tree.resolve(name)
++            require(resolved in elfs and elfs[resolved]["type"] == 3 and sha(tree.file(resolved)) == expected, "IMAGE_ORACLE_EXTENSION")
++            declared[resolved] = expected
++    return {"version": 2, "architecture": architecture, "role": role, "declared_files": declared, "elfs": elfs,
++        "root_directory": tree.root,
++        "payload_sha256": sha(canonical({"declared_files": declared, "elfs": elfs})),
++        "archive_members": tree.member_count, "regular_file_bytes": tree.total_bytes,
++        "runtime_acceptance": False, "execution_authorized": False}
++
++
++def archive_record(path, identity, architecture):
++    """Check a portable Docker archive's actual config and uncompressed layers."""
++    selected = runtime_architecture(architecture)
++    identity = image_id(identity)
++    fd = os.open(path, os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW | os.O_NONBLOCK)
++    with os.fdopen(fd, "rb") as stream:
++        before = os.fstat(stream.fileno())
++        require(stat.S_ISREG(before.st_mode) and before.st_nlink == 1 and 0 < before.st_size <= MAX_TOTAL, "IMAGE_ARCHIVE")
++        with tarfile.open(fileobj=stream, mode="r:") as archive:
++            members = {}
++            seen_paths = set()
++            for member in archive:
++                require(member.name not in members and len(members) < 1024 and (member.isfile() or member.isdir() or member.issym()), "IMAGE_SAVE_MEMBER")
++                require(not member.name.startswith("/") and ".." not in member.name.split("/"), "IMAGE_SAVE_PATH")
++                key = normalized(member.name)
++                require(key not in seen_paths, "IMAGE_SAVE_DUPLICATE_PATH")
++                seen_paths.add(key)
++                members[member.name] = member
++            def pairs(rows):
++                result = {}
++                for key, value in rows:
++                    require(key not in result, "IMAGE_SAVE_DUPLICATE_JSON")
++                    result[key] = value
++                return result
++            def data(name, limit):
++                member = members.get(name)
++                require(member is not None and member.isfile() and 0 < member.size <= limit, "IMAGE_SAVE_FILE")
++                with archive.extractfile(member) as file: return file.read(limit + 1)
++            manifest = json.loads(data("manifest.json", 1024 * 1024), object_pairs_hook=pairs)
++            require(type(manifest) is list and len(manifest) == 1 and type(manifest[0]) is dict, "IMAGE_SAVE_MANIFEST")
++            raw = data(manifest[0]["Config"], 1024 * 1024)
++            require("sha256:" + sha(raw) == identity, "IMAGE_SAVE_CONFIG")
++            config = json.loads(raw, object_pairs_hook=pairs)
++            require(config["architecture"] == selected["image_architecture"] and config["os"] == "linux", "IMAGE_SAVE_PLATFORM")
++            layers = manifest[0]["Layers"]
++            expected = config["rootfs"]["diff_ids"]
++            require(type(layers) is list and 0 < len(layers) == len(expected) <= 64, "IMAGE_SAVE_LAYERS")
++            for member in members.values():
++                if member.issym():
++                    # Podman emits legacy Docker layer.tar aliases. Never follow
++                    # them: permit only an in-archive alias to a listed regular layer.
++                    require(member.name.endswith("/layer.tar") and not member.linkname.startswith("/"), "IMAGE_SAVE_LINK")
++                    target = normalized(str(PurePosixPath(member.name).parent) + "/" + member.linkname).lstrip("/")
++                    require(target in layers and target in members and members[target].isfile(), "IMAGE_SAVE_LINK")
++            verified, total = [], 0
++            for name, wanted in zip(layers, expected):
++                member = members.get(name)
++                require(member is not None and member.isfile() and 0 < member.size <= MAX_TOTAL and total + member.size <= MAX_TOTAL, "IMAGE_SAVE_LAYER")
++                digest = hashlib.sha256()
++                with archive.extractfile(member) as file:
++                    for chunk in iter(lambda: file.read(65536), b""): digest.update(chunk)
++                require("sha256:" + digest.hexdigest() == wanted, "IMAGE_SAVE_LAYER_DIGEST")
++                verified.append(wanted); total += member.size
++        stream.seek(0); digest = hashlib.sha256()
++        for chunk in iter(lambda: stream.read(65536), b""): digest.update(chunk)
++        after = os.fstat(stream.fileno())
++        require((before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns) ==
++            (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns), "IMAGE_ARCHIVE_CHANGED")
++    return {"format": "docker-archive", "sha256": digest.hexdigest(), "bytes": before.st_size,
++        "config_id": identity, "layers": verified, "architecture": architecture}
+diff --git a/tests/crawl-jobs-v2-observer/image_build.py b/tests/crawl-jobs-v2-observer/image_build.py
+new file mode 100644
+index 0000000..a68781b
+--- /dev/null
++++ b/tests/crawl-jobs-v2-observer/image_build.py
+@@ -0,0 +1,243 @@
++"""Build and inspect one C0 platform image set; never start a C0 entrypoint."""
++import argparse
++import json
++import os
++from pathlib import Path
++import shutil
++import subprocess
++import sys
++import uuid
++
++from build_tools import parse_elf, target_manifest
++from contracts import canonical, decode, digest, exact, integer, platform_digest, require, runtime_architecture, sha
++from image_artifacts import BASES, ImageTree, archive_record, image_id, image_metadata, verify_content
++from oracle_protocol import SOURCE_FILES
++from profiles import profile, target_filter_program
++import struct
++
++ROOT_METADATA_SCRIPT = '''import json,os,stat,subprocess,sys
++command=[sys.argv[1],"--remote=false"]
++try:
++    path=subprocess.check_output(command+["mount",sys.argv[2]],text=True,timeout=30).strip()
++    assert path.startswith("/") and "\\n" not in path
++    value=os.stat(path,follow_symlinks=False)
++    assert stat.S_ISDIR(value.st_mode)
++    print(json.dumps({"uid":value.st_uid,"gid":value.st_gid,"mode":stat.S_IMODE(value.st_mode)}))
++finally:
++    subprocess.run(command+["unmount",sys.argv[2]],check=True,stdout=subprocess.DEVNULL,timeout=30)
++'''
++
++
++def source_files(root):
++    result = {}
++    for path in sorted(root.rglob("*")):
++        if "__pycache__" in path.parts or path.suffix == ".pyc": continue
++        require(not path.is_symlink(), "BUILD_SOURCE_LINK")
++        if path.is_file(): result[path.relative_to(root).as_posix()] = sha(path.read_bytes())
++    return result
++
++
++def verify_artifacts(native, oracle, sources, architecture):
++    expected = {"target", "observer", "cases.h", "target_filter.h", "target-filter.bpf", "target_manifest.h",
++        "target-manifest.json", "toolchain.json", *(role + "-seccomp.json" for role in ("target", "observer", "oracle"))}
++    require({p.name for p in native.iterdir()} == expected and {p.name for p in oracle.iterdir()} == {"oracle-artifacts.json"}, "BUILD_OUTPUT_INVENTORY")
++    for path in (*native.iterdir(), *oracle.iterdir()):
++        require(path.is_file() and not path.is_symlink() and path.stat().st_nlink == 1 and path.stat().st_size <= 32 * 1024 * 1024, "BUILD_OUTPUT_FILE")
++    target, observer = (native / "target").read_bytes(), (native / "observer").read_bytes()
++    require((native / "target-manifest.json").read_bytes() == canonical(target_manifest(target, architecture)), "BUILD_TARGET_MANIFEST")
++    bpf = b"".join(struct.pack("<HBBI", *row) for row in target_filter_program(architecture))
++    require((native / "target-filter.bpf").read_bytes() == bpf, "BUILD_FILTER")
++    loads, symbols = parse_elf(observer, architecture)
++    symbol = symbols["obs_filter"]
++    segments = [p for p in loads if p[3] <= symbol["vaddr"] and symbol["vaddr"] + symbol["size"] <= p[3] + p[5]]
++    require(len(segments) == 1 and symbol["size"] == len(bpf), "BUILD_COMPILED_FILTER")
++    offset = segments[0][2] + symbol["vaddr"] - segments[0][3]
++    require(observer[offset:offset + len(bpf)] == bpf and sha(target).encode() in observer, "BUILD_COMPILED_BINDING")
++    for role in ("target", "observer", "oracle"):
++        require((native / (role + "-seccomp.json")).read_bytes() == canonical(profile(role, architecture)), "BUILD_PROFILE")
++    toolchain = decode((native / "toolchain.json").read_bytes())
++    require(toolchain["version"] == 2 and toolchain["architecture"] == architecture and toolchain["platform_sha256"] == platform_digest(architecture), "BUILD_TOOLCHAIN_ARCHITECTURE")
++    require(toolchain["target_sha256"] == sha(target) and toolchain["observer_sha256"] == sha(observer), "BUILD_TOOLCHAIN_ELF")
++    require(toolchain["native_programs_executed"] is False and toolchain["tracing_performed"] is False and
++        set(toolchain["libraries"]) == {"libc.a", "libcrypto.a", "crtbeginS.o"}, "BUILD_TOOLCHAIN_RECORD")
++    for value in toolchain["libraries"].values(): digest(value)
++    require(toolchain["commands"]["cc -dumpmachine"].strip().startswith(architecture + "-"), "BUILD_TOOLCHAIN_COMPILER")
++    # Dockerignore is a closed build-input list; compare the recorded compiler inputs.
++    expected_sources = {"Dockerfile", ".dockerignore", "contracts.py", "profiles.py", "build_tools.py"} | {
++        name for name in sources if name.startswith("native/") and name.endswith((".c", ".h"))}
++    require(toolchain["sources"] == {name: sources[name] for name in expected_sources}, "BUILD_TOOLCHAIN_SOURCE")
++    manifest = decode((oracle / "oracle-artifacts.json").read_bytes())
++    require(manifest["version"] == 3 and manifest["architecture"] == architecture and manifest["platform_sha256"] == platform_digest(architecture), "BUILD_ORACLE_ARCHITECTURE")
++    require(manifest["files"] == {name: sources[name] for name in SOURCE_FILES} and
++        manifest["oracle_worker_source"] == sha(canonical(manifest["files"])), "BUILD_ORACLE_SOURCE")
++    require(all(manifest[key] is False for key in ("worker_executed", "runtime_feasibility_proven", "execution_authorized")), "BUILD_ORACLE_AUTHORITY")
++    require(manifest["worker_import_checked"] is True and type(manifest["extensions"]) is dict and 0 < len(manifest["extensions"]) <= 128, "BUILD_ORACLE_EXTENSIONS")
++    for name, value in manifest["extensions"].items():
++        require(type(name) is str and name.startswith("/") and len(name) <= 4096, "BUILD_ORACLE_EXTENSION_PATH")
++        digest(value)
++    return {"target": target, "observer": observer, "oracle_elf": manifest["oracle_elf"], "extensions": manifest["extensions"]}
++
++
++class Builder:
++    def __init__(self, engine, output):
++        require(engine == "podman", "BUILD_ENGINE")
++        executable = shutil.which(engine); require(executable is not None, "BUILD_ENGINE_MISSING")
++        self.engine, self.output = engine, output
++        self.prefix = [executable, "--remote=false"]
++        self.commands, self.cleanup = [], []
++
++    def run(self, args, *, allow_failure=False, timeout=900):
++        command = self.prefix + list(args)
++        index = len(self.commands)
++        self.commands.append({"argv": command})
++        result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=timeout,
++            env=os.environ | {"TMPDIR": str(self.output), "DOCKER_BUILDKIT": "1"})
++        require(len(result.stdout) + len(result.stderr) <= 16 * 1024 * 1024, "BUILD_LOG_BOUND")
++        log = self.output / ("command-%03d.log" % index)
++        log.write_bytes(result.stdout + result.stderr)
++        self.commands[-1].update(returncode=result.returncode, log=log.name, log_sha256=sha(log.read_bytes()))
++        require(allow_failure or result.returncode == 0, "BUILD_COMMAND_FAILED")
++        return result.returncode, result.stdout
++
++    def inspect(self, kind, reference):
++        _, raw = self.run([kind, "inspect", reference], timeout=30)
++        rows = json.loads(raw); require(type(rows) is list and len(rows) == 1, "BUILD_INSPECTION")
++        return rows[0]
++
++    def stopped(self, identifier, expected_image, name):
++        value = self.inspect("container", identifier)
++        require(image_id(value["Id"]) == image_id(identifier) and image_id(value["Image"]) == expected_image and
++            value["Name"].lstrip("/") == name, "BUILD_CONTAINER_IDENTITY")
++        state = value["State"]
++        require(state["Running"] is False and type(state["Pid"]) is int and state["Pid"] == 0 and state["Status"] in ("created", "configured") and
++            state.get("StartedAt") in ("0001-01-01T00:00:00Z", "0001-01-01T00:00:00+00:00"), "BUILD_CONTAINER_STARTED")
++        return {"id": image_id(identifier), "image": expected_image, "name": name, "running": False, "pid": 0, "status": state["Status"]}
++
++    def root_metadata(self, identifier):
++        # Read only the owned, stopped filesystem's root attributes in Podman's
++        # existing rootless storage namespace. No container process is started.
++        _, raw = self.run(["unshare", sys.executable, "-I", "-B", "-c", ROOT_METADATA_SCRIPT, self.prefix[0], identifier], timeout=90)
++        value = json.loads(raw)
++        exact(value, ("uid", "gid", "mode"))
++        for name, limit in (("uid", 2**32 - 1), ("gid", 2**32 - 1), ("mode", 0o7777)):
++            integer(value[name], 0, limit)
++        return value
++
++    def export(self, image, destination, *, directory=None):
++        name = "obs1-image-inspect-" + uuid.uuid4().hex
++        identifier = None
++        try:
++            _, raw = self.run(["create", "--name", name, "--network", "none", "--read-only", "--user", "999:999", "--cap-drop", "ALL",
++                "--security-opt", "no-new-privileges", "--no-healthcheck", "--entrypoint", "/__obs1_inspection_only__", image], timeout=60)
++            identifier = image_id(raw.decode().strip())[7:]
++            before = self.stopped(identifier, image, name)
++            root = self.root_metadata(identifier) if directory is None else None
++            if directory is None:
++                self.run(["export", "--output", str(destination), identifier], timeout=120)
++            else:
++                destination.mkdir(mode=0o700)
++                self.run(["cp", identifier + ":" + directory + "/.", str(destination)], timeout=120)
++            require(self.stopped(identifier, image, name) == before, "BUILD_CONTAINER_CHANGED")
++            if root is not None:
++                require(self.root_metadata(identifier) == root, "BUILD_ROOT_CHANGED")
++            return before | ({"root_directory": root} if root is not None else {})
++        finally:
++            # A failed create may have created an object even without returning its ID.
++            if identifier is None:
++                _, found = self.run(["ps", "--all", "--no-trunc", "--filter", "name=^" + name + "$", "--format", "{{.ID}}"], timeout=30)
++                if found.strip(): identifier = image_id(found.decode().strip())[7:]
++            if identifier is not None:
++                proof = self.stopped(identifier, image, name)
++                self.run(["rm", identifier], timeout=60)
++                _, remaining = self.run(["ps", "--all", "--no-trunc", "--filter", "id=" + identifier, "--format", "{{.ID}}"], timeout=30)
++                require(not remaining.strip(), "BUILD_CONTAINER_CLEANUP")
++                self.cleanup.append(proof | {"removed": True})
++
++    def build(self, source, architecture, recipe, target, label):
++        selected = runtime_architecture(architecture)
++        iid = self.output / (label + ".iid")
++        options = ["--pull=never", "--http-proxy=false", "--layers=false", "--force-rm", "--identity-label=false", "--ignorefile",
++            str(source / ("Dockerfile.oracle.dockerignore" if recipe == "Dockerfile.oracle" else ".dockerignore"))]
++        if target in ("target", "observer"):
++            options += ["--unsetenv", "PATH"]
++        self.run(["build", "--no-cache", "--platform", selected["oci_platform"], "--build-arg", "C0_ARCHITECTURE=" + architecture,
++            "--network", "none", *options, "--target", target, "--file", str(source / recipe), "--iidfile", str(iid), str(source)])
++        return image_id(iid.read_text().strip())
++
++
++def prepare(architecture, engine, output):
++    selected = runtime_architecture(architecture)
++    package = Path(__file__).resolve().parent
++    require(engine == "podman" and not output.resolve().is_relative_to(package), "BUILD_OUTPUT_SCOPE")
++    require(output.is_absolute() and not output.exists(), "BUILD_OUTPUT_DIRECTORY")
++    output.mkdir(mode=0o700)
++    builder = Builder(engine, output)
++    record = {"version": 1, "kind": "c0_runtime_image_set", "architecture": architecture, "platform_sha256": platform_digest(architecture),
++        "status": "FAIL", "engine": engine, "commit": os.environ.get("GITHUB_SHA", "local"),
++        "inspection_containers_started": 0, "c0_actors_started": 0, "build_tool_processes_executed": True,
++        "cleanup_complete": False, "runtime_acceptance": False, "execution_authorized": False}
++    try:
++        _, rootless = builder.run(["info", "--format", "{{.Host.Security.Rootless}}"], timeout=30)
++        require(rootless.strip() == b"true", "BUILD_ROOTLESS_REQUIRED")
++        _, version = builder.run(["version"], timeout=30)
++        record["builder_version"] = version.decode("utf-8")
++        before = source_files(package)
++        source = output / "source"
++        shutil.copytree(package, source, ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
++        require(source_files(source) == before == source_files(package), "BUILD_SOURCE_CHANGED")
++        record["source_files"] = before
++        for recipe, kind in (("Dockerfile", "compiler"), ("Dockerfile.oracle", "python")):
++            text = (source / recipe).read_text()
++            for arch, bases in BASES.items(): require(bases[kind] in text, "BUILD_RECIPE_PIN")
++        bases = {}
++        for kind, reference in BASES[architecture].items():
++            builder.run(["pull", "--platform", selected["oci_platform"], reference], timeout=600)
++            value = builder.inspect("image", reference)
++            require(value["Os"] == "linux" and value["Architecture"] == selected["image_architecture"] and reference in value["RepoDigests"], "BUILD_BASE_IDENTITY")
++            bases[kind] = {"reference": reference, "id": image_id(value["Id"]), "environment": value["Config"].get("Env") or []}
++        record["bases"] = bases
++        native_image = builder.build(source, architecture, "Dockerfile", "build", "native-builder")
++        oracle_image = builder.build(source, architecture, "Dockerfile.oracle", "oracle-build", "oracle-builder")
++        builder.export(native_image, output / "native", directory="/out")
++        builder.export(oracle_image, output / "oracle", directory="/artifacts")
++        artifacts = verify_artifacts(output / "native", output / "oracle", before, architecture)
++        record["artifacts"] = {str(p.relative_to(output)): sha(p.read_bytes()) for folder in (output / "native", output / "oracle") for p in sorted(folder.iterdir())}
++        images = {}
++        for role in ("target", "observer", "oracle"):
++            identity = builder.build(source, architecture, "Dockerfile.oracle" if role == "oracle" else "Dockerfile", role, role)
++            metadata = builder.inspect("image", identity)
++            env = bases["python"]["environment"] if role == "oracle" else []
++            admitted = image_metadata(metadata, architecture, role, env)
++            require(admitted["id"] == identity, "BUILD_IMAGE_IDENTITY")
++            archive = output / (role + ".tar")
++            stopped = builder.export(identity, archive)
++            content = verify_content(ImageTree(archive, stopped["root_directory"]), architecture, role, artifacts,
++                {name: (source / name).read_bytes() for name in (*SOURCE_FILES, "build_oracle.py")})
++            require(image_metadata(builder.inspect("image", identity), architecture, role, env) == admitted, "BUILD_IMAGE_CHANGED")
++            (output / (role + "-inspect.json")).write_bytes(canonical(metadata))
++            (output / (role + "-content.json")).write_bytes(canonical(content))
++            portable = output / (role + "-image.tar")
++            builder.run(["save", "--format", "docker-archive", "--output", str(portable), identity], timeout=120)
++            saved = archive_record(portable, identity, architecture)
++            images[role] = admitted | {"content_sha256": sha(canonical(content)), "payload_sha256": content["payload_sha256"],
++                "elf_files": len(content["elfs"]), "inspection_container": stopped, "portable_archive": saved,
++                "engine_manifest_digest": metadata.get("Digest"), "inspect_sha256": sha(canonical(metadata))}
++        require(source_files(source) == before == source_files(package), "BUILD_SOURCE_CHANGED")
++        require(len(builder.cleanup) == 5, "BUILD_CLEANUP_COUNT")
++        record.update(status="PASS_STATIC_IMAGE_SET", images=images, source_snapshot_sha256=sha(canonical(before)),
++            stable_artifacts_sha256=sha(canonical(record["artifacts"])), cleanup_complete=True)
++        return record
++    finally:
++        record.update(commands=builder.commands, cleanup=builder.cleanup)
++        (output / "image-set.json").write_bytes(canonical(record))
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--architecture", required=True, choices=("aarch64", "x86_64"))
++    parser.add_argument("--engine", choices=("podman",), default="podman")
++    parser.add_argument("--output", type=Path, required=True)
++    args = parser.parse_args()
++    result = prepare(args.architecture, args.engine, args.output)
++    print(canonical({key: result[key] for key in ("status", "architecture", "images", "cleanup_complete", "runtime_acceptance")}).decode(), end="")
++    return 0
+diff --git a/tests/crawl-jobs-v2-observer/test_image_artifacts.py b/tests/crawl-jobs-v2-observer/test_image_artifacts.py
+new file mode 100644
+index 0000000..523ad87
+--- /dev/null
++++ b/tests/crawl-jobs-v2-observer/test_image_artifacts.py
+@@ -0,0 +1,278 @@
++"""Inert rootfs/image archives and simulated stopped-image lifecycle controls."""
++import copy
++import io
++import json
++from pathlib import Path
++import struct
++import tarfile
++import tempfile
++import unittest
++
++import contracts as c
++from image_artifacts import ImageTree, archive_record, elf_inventory, elf_record, image_metadata, verify_content
++from image_build import Builder, prepare
++from oracle_protocol import SOURCE_FILES
++
++ID = "sha256:" + "a" * 64
++
++
++def elf(architecture="x86_64", needed=(), interpreter=None):
++    raw = bytearray(4096)
++    count = 1 + bool(needed) + bool(interpreter)
++    struct.pack_into("<16sHHIQQQIHHHHHH", raw, 0, b"\x7fELF\x02\x01\x01" + bytes(9), 3,
++        62 if architecture == "x86_64" else 183, 1, 0x100, 64, 0, 0, 64, 56, count, 0, 0, 0)
++    struct.pack_into("<IIQQQQQQ", raw, 64, 1, 5, 0, 0, 0, len(raw), len(raw), 4096)
++    cursor = 120
++    if interpreter:
++        data = interpreter.encode() + b"\0"; raw[0x200:0x200 + len(data)] = data
++        struct.pack_into("<IIQQQQQQ", raw, cursor, 3, 4, 0x200, 0x200, 0, len(data), len(data), 1); cursor += 56
++    if needed:
++        strings, offsets = bytearray(b"\0"), []
++        for name in needed:
++            offsets.append(len(strings)); strings.extend(name.encode() + b"\0")
++        raw[0x500:0x500 + len(strings)] = strings
++        tags = [(5, 0x500), (10, len(strings)), *((1, offset) for offset in offsets), (0, 0)]
++        struct.pack_into("<IIQQQQQQ", raw, cursor, 2, 4, 0x300, 0x300, 0, len(tags) * 16, len(tags) * 16, 8)
++        for index, (tag, value) in enumerate(tags): struct.pack_into("<QQ", raw, 0x300 + 16 * index, tag, value)
++    return bytes(raw)
++
++
++def tar(path, rows):
++    with tarfile.open(path, "w") as out:
++        root = tarfile.TarInfo("."); root.type = tarfile.DIRTYPE; root.mode = 0o755; out.addfile(root)
++        for name, kind, value in rows:
++            member = tarfile.TarInfo(name); member.mode = 0o755
++            if kind == "file":
++                member.size = len(value); out.addfile(member, io.BytesIO(value))
++            else:
++                member.type = {"directory": tarfile.DIRTYPE, "link": tarfile.SYMTYPE, "hardlink": tarfile.LNKTYPE,
++                    "fifo": tarfile.FIFOTYPE, "device": tarfile.CHRTYPE}[kind]
++                member.linkname = value; out.addfile(member)
++
++
++def metadata(role="target", architecture="x86_64"):
++    return {"Id": ID, "Os": "linux", "Architecture": c.platform(architecture)["image_architecture"], "Config": {
++        "User": "999:999", "WorkingDir": "/", "Env": ["PATH=/usr/local/bin"] if role == "oracle" else [],
++        "Entrypoint": ["python3"] if role == "oracle" else ["/" + role],
++        "Cmd": ["-I", "-B", "/oracle/worker.py"] if role == "oracle" else None}}
++
++
++class ImageMetadataTests(unittest.TestCase):
++    def test_all_platform_role_metadata_and_foreign_architecture_refusal(self):
++        for arch in ("aarch64", "x86_64"):
++            for role in ("target", "observer", "oracle"):
++                value = metadata(role, arch)
++                self.assertEqual(image_metadata(value, arch, role, value["Config"]["Env"])["id"], ID)
++                value["Architecture"] = "amd64" if arch == "aarch64" else "arm64"
++                with self.assertRaises(c.Invalid): image_metadata(value, arch, role, value["Config"]["Env"])
++
++    def test_metadata_mutations_including_builder_defaults_are_refused(self):
++        for key, value in (("User", "0"), ("Entrypoint", ["/bin/sh"]), ("Cmd", ["run"]), ("WorkingDir", "/tmp"),
++                ("Env", ["PATH=/usr/bin"]), ("Env", ""), ("Env", 0), ("Labels", []), ("OnBuild", {}),
++                ("Healthcheck", {"Test": ["CMD", "bad"]}), ("OnBuild", ["RUN bad"]),
++                ("Volumes", {"/witness": {}}), ("Labels", {"io.buildah.version": "test"}), ("ExposedPorts", {"80/tcp": {}})):
++            row = metadata(); row["Config"][key] = value
++            with self.subTest(key=key), self.assertRaises(c.Invalid): image_metadata(row, "x86_64", "target", [])
++        row = metadata("oracle"); row["Config"]["Env"].append("LD_PRELOAD=/bad.so")
++        with self.assertRaises(c.Invalid): image_metadata(row, "x86_64", "oracle", ["PATH=/usr/local/bin"])
++
++    def test_invalid_build_scope_and_alias_refuse_before_output_creation(self):
++        with tempfile.TemporaryDirectory() as folder:
++            output = Path(folder) / "out"
++            for arch, engine in (("amd64", "podman"), ("x32", "podman"), ("x86_64", "docker"), ("x86_64", "unknown")):
++                with self.assertRaises(c.Invalid): prepare(arch, engine, output)
++                self.assertFalse(output.exists())
++        with self.assertRaises(c.Invalid): prepare("x86_64", "podman", Path(__file__).resolve().parent / "nested-build")
++
++
++class ImageContentTests(unittest.TestCase):
++    def test_relocatable_base_objects_are_recorded_but_cannot_supply_libraries(self):
++        raw = bytearray(128)
++        struct.pack_into("<16sHHIQQQIHHHHHH", raw, 0, b"\x7fELF\x02\x01\x01" + bytes(9), 1, 62, 1, 0, 0, 64, 0, 64, 0, 0, 64, 1, 0)
++        self.assertEqual(elf_record(bytes(raw), "x86_64")["type"], 1)
++        with self.assertRaises(c.Invalid): elf_record(bytes(raw), "aarch64")
++        with tempfile.TemporaryDirectory() as folder:
++            path = Path(folder) / "root.tar"
++            tar(path, [("target", "file", bytes(raw))])
++            with self.assertRaises(c.Invalid): verify_content(ImageTree(path), "x86_64", "target", {"target": bytes(raw)}, {})
++            rows = [(name, "directory", "") for name in ("usr", "usr/local", "usr/local/lib")]
++            rows += [("app", "file", elf(needed=("libfake.so",))), ("usr/local/lib/libfake.so", "file", bytes(raw))]
++            tar(path, rows)
++            with self.assertRaises(c.Invalid): elf_inventory(ImageTree(path), "x86_64")
++
++    def test_native_payload_requires_exact_built_elf_for_both_architectures(self):
++        with tempfile.TemporaryDirectory() as folder:
++            path = Path(folder) / "root.tar"
++            for arch in ("aarch64", "x86_64"):
++                raw = elf(arch); tar(path, [("target", "file", raw)])
++                result = verify_content(ImageTree(path), arch, "target", {"target": raw}, {})
++                self.assertEqual(result["declared_files"], {"/target": c.sha(raw)})
++                self.assertFalse(result["runtime_acceptance"])
++                with self.assertRaises(c.Invalid): verify_content(ImageTree(path), arch, "target", {"target": raw + b"changed"}, {})
++                with self.assertRaises(c.Invalid): verify_content(ImageTree(path), "x86_64" if arch == "aarch64" else "aarch64", "target", {"target": raw}, {})
++                tar(path, [("target", "file", raw), ("unexpected-config", "file", b"unreviewed")])
++                with self.assertRaises(c.Invalid): verify_content(ImageTree(path), arch, "target", {"target": raw}, {})
++
++    def test_oracle_sources_interpreter_links_and_foreign_module_refuse(self):
++        sources = {name: (name + " inert source").encode() for name in (*SOURCE_FILES, "build_oracle.py")}
++        rows = [(name, "directory", "") for name in ("oracle", "usr", "usr/local", "usr/local/bin", "usr/local/lib")]
++        rows += [("oracle/" + name, "file", raw) for name, raw in sources.items()]
++        rows += [("usr/local/bin/python3.13", "file", elf()), ("usr/local/bin/python3", "link", "python3.13"),
++            ("usr/local/lib/fixture.so", "file", elf())]
++        artifacts = {"oracle_elf": c.sha(elf()), "extensions": {"/usr/local/lib/fixture.so": c.sha(elf())}}
++        with tempfile.TemporaryDirectory() as folder:
++            path = Path(folder) / "root.tar"; tar(path, rows)
++            result = verify_content(ImageTree(path), "x86_64", "oracle", artifacts, sources)
++            self.assertIn("/usr/local/bin/python3.13", result["declared_files"])
++            for extra in (("oracle/extra.py", "file", b"extra"), ("foreign.so", "file", elf("aarch64"))):
++                tar(path, rows + [extra])
++                with self.assertRaises(c.Invalid): verify_content(ImageTree(path), "x86_64", "oracle", artifacts, sources)
++            tar(path, rows)
++            wrong = sources | {"worker.py": b"changed"}
++            with self.assertRaises(c.Invalid): verify_content(ImageTree(path), "x86_64", "oracle", artifacts, wrong)
++            for extensions in ({}, {"/usr/local/lib/fixture.so": c.sha(b"wrong")}, {"/missing.so": c.sha(elf())}):
++                with self.assertRaises(c.Invalid): verify_content(ImageTree(path), "x86_64", "oracle", artifacts | {"extensions": extensions}, sources)
++
++    def test_optional_unresolved_extension_is_recorded_but_required_closure_refuses(self):
++        with tempfile.TemporaryDirectory() as folder:
++            path = Path(folder) / "root.tar"
++            tar(path, [("app", "file", elf()), ("optional.so", "file", elf(needed=("libmissing.so",)))])
++            rows = elf_inventory(ImageTree(path), "x86_64", ["/app"])
++            self.assertEqual(rows["/optional.so"]["unresolved_dependencies"], ["libmissing.so"])
++            self.assertFalse(rows["/optional.so"]["required_dependency_closure"])
++            with self.assertRaises(c.Invalid): elf_inventory(ImageTree(path), "x86_64", ["/app", "/optional.so"])
++
++    def test_dynamic_library_and_loader_closure_and_missing_edges(self):
++        rows = [(name, "directory", "") for name in ("usr", "usr/lib", "usr/lib/x86_64-linux-gnu")]
++        rows += [("lib", "link", "usr/lib"), ("lib64", "link", "usr/lib/x86_64-linux-gnu"),
++            ("app", "file", elf(needed=("libfixture.so.1",), interpreter="/lib64/loader.so")),
++            ("usr/lib/x86_64-linux-gnu/libfixture.so.1", "file", elf()), ("usr/lib/x86_64-linux-gnu/loader.so", "file", elf())]
++        with tempfile.TemporaryDirectory() as folder:
++            path = Path(folder) / "root.tar"; tar(path, rows)
++            found = elf_inventory(ImageTree(path), "x86_64")["/app"]["dependencies"]
++            self.assertEqual(found, {"libfixture.so.1": "/usr/lib/x86_64-linux-gnu/libfixture.so.1", "PT_INTERP": "/usr/lib/x86_64-linux-gnu/loader.so"})
++            for removed in (-1, -2):
++                changed = list(rows); changed.pop(removed); tar(path, changed)
++                with self.assertRaises(c.Invalid): elf_inventory(ImageTree(path), "x86_64")
++
++    def test_archive_traversal_duplicates_special_files_and_whiteouts_refuse(self):
++        with tempfile.TemporaryDirectory() as folder:
++            path = Path(folder) / "root.tar"
++            for rows in ([("../escape", "file", b"x")], [("/absolute", "file", b"x")],
++                    [("same", "file", b"x"), ("./same", "file", b"y")], [(".wh.hidden", "file", b"x")],
++                    [("fifo", "fifo", "")], [("device", "device", "")], [("escape", "link", "../../host")]):
++                tar(path, rows)
++                with self.subTest(rows=rows), self.assertRaises(c.Invalid): ImageTree(path)
++            self.assertFalse((Path(folder) / "escape").exists())
++
++    def test_link_cycles_parent_files_permissions_and_writable_witness_refuse(self):
++        with tempfile.TemporaryDirectory() as folder:
++            path = Path(folder) / "root.tar"
++            for rows, query in (([("a", "link", "b"), ("b", "link", "a")], "/a"),
++                    ([("a", "file", b"x"), ("a/b", "file", b"y")], "/a/b"),
++                    ([("a", "hardlink", "missing")], "/a")):
++                tar(path, rows)
++                with self.assertRaises(c.Invalid): ImageTree(path).file(query)
++            tar(path, [("target", "file", elf())]); tree = ImageTree(path)
++            for key, value in (("uid", 999), ("gid", 999), ("mode", 0o777), ("mode", 0o4755)):
++                changed = copy.deepcopy(tree); changed.entries["/target"][key] = value
++                with self.assertRaises(c.Invalid): changed.file("/target", executable=True)
++
++    def test_malformed_dynamic_tables_and_foreign_elf_headers_refuse(self):
++        raw = elf(needed=("libfixture.so",))
++        for offset, value in ((4, 1), (5, 2), (18, 183), (20, 0)):
++            changed = bytearray(raw); changed[offset] = value
++            with self.assertRaises(c.Invalid): elf_record(bytes(changed), "x86_64")
++        for offset, value in ((0x308, 0xffff), (0x318, 999999), (0x328, 0xffff)):
++            changed = bytearray(raw); struct.pack_into("<Q", changed, offset, value)
++            with self.assertRaises(c.Invalid): elf_record(bytes(changed), "x86_64")
++
++
++class PortableArchiveTests(unittest.TestCase):
++    def test_config_id_platform_and_layer_content_are_joined(self):
++        layer = b"inert layer bytes"
++        config = c.canonical({"architecture": "amd64", "os": "linux", "rootfs": {"diff_ids": ["sha256:" + c.sha(layer)]}})
++        manifest = json.dumps([{"Config": "config.json", "Layers": ["layer.tar"]}]).encode()
++        rows = [("manifest.json", "file", manifest), ("config.json", "file", config), ("layer.tar", "file", layer)]
++        with tempfile.TemporaryDirectory() as folder:
++            path = Path(folder) / "image.tar"; tar(path, rows)
++            result = archive_record(path, "sha256:" + c.sha(config), "x86_64")
++            self.assertEqual(result["layers"], ["sha256:" + c.sha(layer)])
++            tar(path, rows + [("legacy/layer.tar", "link", "../layer.tar")])
++            self.assertEqual(archive_record(path, "sha256:" + c.sha(config), "x86_64")["layers"], result["layers"])
++            for target in ("../../outside", "/layer.tar", "../config.json", "missing"):
++                tar(path, rows + [("legacy/layer.tar", "link", target)])
++                with self.assertRaises(c.Invalid): archive_record(path, "sha256:" + c.sha(config), "x86_64")
++            tar(path, rows)
++            for identity, arch in ((ID, "x86_64"), ("sha256:" + c.sha(config), "aarch64")):
++                with self.assertRaises(c.Invalid): archive_record(path, identity, arch)
++            tar(path, rows[:-1] + [("layer.tar", "file", b"tampered")])
++            with self.assertRaises(c.Invalid): archive_record(path, "sha256:" + c.sha(config), "x86_64")
++
++
++class StoppedImageLifecycleTests(unittest.TestCase):
++    def test_build_flags_preserve_empty_native_environment_without_cached_metadata(self):
++        with tempfile.TemporaryDirectory() as folder:
++            for engine in ("podman",):
++                for role in ("target", "observer", "oracle"):
++                    builder = object.__new__(Builder); builder.engine, builder.output = engine, Path(folder)
++                    calls = []
++                    def run(args, **kwargs):
++                        calls.append(args); Path(args[args.index("--iidfile") + 1]).write_text(ID)
++                        return 0, b""
++                    builder.run = run
++                    self.assertEqual(builder.build(Path(folder), "x86_64", "Dockerfile.oracle" if role == "oracle" else "Dockerfile", role, engine + role), ID)
++                    self.assertIn("--no-cache", calls[0])
++                    self.assertEqual("--unsetenv" in calls[0], engine == "podman" and role != "oracle")
++                    if engine == "podman": self.assertIn("--identity-label=false", calls[0])
++
++    def builder(self, folder, failure=None):
++        builder = object.__new__(Builder)
++        builder.engine, builder.output, builder.commands, builder.cleanup = "podman", Path(folder), [], []
++        builder.prefix = ["/fake/podman", "--remote=false"]
++        state = {"Id": "b" * 64, "Image": ID, "State": {"Running": False, "Pid": 0, "Status": "created", "StartedAt": "0001-01-01T00:00:00Z"}}
++        calls = []
++        def run(args, **kwargs):
++            calls.append(args)
++            if args[0] == "create":
++                state["Name"] = args[args.index("--name") + 1]
++                if failure == "ambiguous": raise c.Invalid("CREATE_FAILED")
++                return 0, ("b" * 64 + "\n").encode()
++            if args[0] == "export" and failure == "export": raise c.Invalid("EXPORT_FAILED")
++            if args[0] == "unshare": return 0, b'{"uid":0,"gid":0,"mode":365}'
++            if args[0] == "rm": state["removed"] = True
++            if args[0] == "ps": return 0, b"" if state.get("removed") else ("b" * 64 + "\n").encode()
++            return 0, b""
++        builder.run = run
++        builder.inspect = lambda *_: copy.deepcopy(state)
++        return builder, state, calls
++
++    def test_never_started_export_and_verified_cleanup(self):
++        with tempfile.TemporaryDirectory() as folder:
++            builder, state, calls = self.builder(folder)
++            result = builder.export(ID, Path(folder) / "root.tar")
++            self.assertFalse(result["running"])
++            self.assertTrue(state["removed"] and builder.cleanup[0]["removed"])
++            self.assertFalse(any(row[0] in ("run", "start", "exec", "kill") for row in calls))
++            self.assertIn("/__obs1_inspection_only__", calls[0])
++
++    def test_ambiguous_create_and_export_failures_still_cleanup_owned_stopped_object(self):
++        for fault in ("ambiguous", "export"):
++            with tempfile.TemporaryDirectory() as folder:
++                builder, state, _ = self.builder(folder, fault)
++                with self.assertRaises(c.Invalid): builder.export(ID, Path(folder) / "root.tar")
++                self.assertTrue(state["removed"] and builder.cleanup[0]["removed"])
++
++    def test_started_or_foreign_container_refuses_export_and_removal(self):
++        for fault in ("running", "foreign", "started"):
++            with tempfile.TemporaryDirectory() as folder:
++                builder, state, calls = self.builder(folder)
++                if fault == "running": state["State"].update(Running=True, Pid=42)
++                elif fault == "foreign": state["Image"] = "sha256:" + "c" * 64
++                else: state["State"]["StartedAt"] = "2026-10-17T00:00:00Z"
++                with self.assertRaises(c.Invalid): builder.export(ID, Path(folder) / "root.tar")
++                self.assertFalse(any(row[0] in ("export", "rm", "kill") for row in calls))
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/tests/crawl-jobs-v2-observer/test_image_review.py b/tests/crawl-jobs-v2-observer/test_image_review.py
+new file mode 100644
+index 0000000..9cf9725
+--- /dev/null
++++ b/tests/crawl-jobs-v2-observer/test_image_review.py
+@@ -0,0 +1,252 @@
++"""Regressions for the independent image-set reviews; inert data and fake engines."""
++import copy
++import io
++from importlib.machinery import ExtensionFileLoader
++import json
++from pathlib import Path
++import struct
++import sys
++import tarfile
++import tempfile
++from types import SimpleNamespace
++import unittest
++from unittest.mock import patch
++
++import build_oracle
++import contracts as c
++from image_artifacts import ImageTree, archive_record, elf_inventory, verify_content
++from image_build import Builder, prepare
++from test_architecture_contracts import header
++import test_image_artifacts as image_tests
++from test_image_artifacts import ID, elf, metadata, tar
++
++
++def searched_elf(*, rpath=None, runpath=None, needed="libc0fixtureonly.so"):
++    raw = bytearray(elf(needed=(needed,)))
++    strings = bytearray(b"\0" + needed.encode() + b"\0")
++    extra = []
++    for tag, value in ((15, rpath), (29, runpath)):
++        if value is not None:
++            extra.append((tag, len(strings))); strings.extend(value.encode() + b"\0")
++    raw[0x500:0x500 + len(strings)] = strings
++    tags = [(5, 0x500), (10, len(strings)), (1, 1), *extra, (0, 0)]
++    for index, row in enumerate(tags): struct.pack_into("<QQ", raw, 0x300 + 16 * index, *row)
++    struct.pack_into("<QQ", raw, 120 + 32, len(tags) * 16, len(tags) * 16)
++    return bytes(raw)
++
++
++class ImageReviewTests(unittest.TestCase):
++    def test_flat_archive_entries_require_literal_directory_ancestors(self):
++        rows = [("target", "file", elf()), ("etc", "directory", ""), ("etc/hosts", "file", b"inert generated file")]
++        with tempfile.TemporaryDirectory() as folder:
++            path = Path(folder) / "root.tar"
++            for kind, value in (("hardlink", "target"), ("file", b"shadowed"), ("directory", ""), ("link", "../target")):
++                tar(path, rows + [("alias-parent", "link", "etc"), ("alias-parent/hosts", kind, value)])
++                with self.subTest(kind=kind), self.assertRaisesRegex(c.Invalid, "IMAGE_MEMBER_PARENT"): ImageTree(path)
++            for parent_first in (False, True):
++                parent, alias = ("literal", "directory", ""), ("literal/alias", "hardlink", "target")
++                tar(path, rows + ([parent, alias] if parent_first else [alias, parent]))
++                verify_content(ImageTree(path), "x86_64", "target", {"target": elf()}, {})
++            tar(path, rows + [("missing/alias", "hardlink", "target")])
++            with self.assertRaisesRegex(c.Invalid, "IMAGE_MEMBER_PARENT"): ImageTree(path)
++
++    def test_unused_hardlinks_are_checked_after_the_complete_archive_map(self):
++        with tempfile.TemporaryDirectory() as folder:
++            path = Path(folder) / "root.tar"
++            for alias_first in (False, True):
++                for mode, uid, gid in ((0o755, 0, 0), (0o700, 0, 0), (0o755, 1, 0), (0o755, 0, 1)):
++                    with tarfile.open(path, "w") as archive:
++                        root = tarfile.TarInfo("."); root.type = tarfile.DIRTYPE; root.mode = 0o755; archive.addfile(root)
++                        target = tarfile.TarInfo("target"); target.mode = 0o755; target.size = len(elf())
++                        alias = tarfile.TarInfo("unused-alias"); alias.type = tarfile.LNKTYPE; alias.linkname = "target"
++                        alias.mode, alias.uid, alias.gid = mode, uid, gid
++                        for member in (alias, target) if alias_first else (target, alias):
++                            archive.addfile(member, io.BytesIO(elf()) if member is target else None)
++                    if (mode, uid, gid) == (0o755, 0, 0):
++                        tree = ImageTree(path)
++                        verify_content(tree, "x86_64", "target", {"target": elf()}, {})
++                    else:
++                        with self.subTest(alias_first=alias_first, mode=mode, uid=uid, gid=gid), self.assertRaisesRegex(c.Invalid, "IMAGE_HARDLINK_METADATA"):
++                            ImageTree(path)
++
++    def test_hardlink_targets_cannot_traverse_symlink_inodes_or_prefixes(self):
++        rows = [(name, "directory", "") for name in ("src", "src/deep", "oracle")]
++        rows += [("src/worker.py", "file", b"expected"), ("worker.py", "file", b"different"),
++            ("src/deep/link", "link", "../worker.py"), ("oracle/worker.py", "hardlink", "src/deep/link")]
++        with tempfile.TemporaryDirectory() as folder:
++            path = Path(folder) / "root.tar"; tar(path, rows)
++            with self.assertRaisesRegex(c.Invalid, "IMAGE_HARDLINK_LINK_TARGET"): ImageTree(path).file("/oracle/worker.py")
++            tar(path, rows[:-1] + [("oracle/worker.py", "hardlink", "src/worker.py")])
++            self.assertEqual(ImageTree(path).file("/oracle/worker.py"), b"expected")
++            tree = ImageTree(path); tree.entries["/oracle/worker.py"]["mode"] = 0o700
++            with self.assertRaisesRegex(c.Invalid, "IMAGE_HARDLINK_METADATA"): tree.file("/oracle/worker.py")
++            tar(path, rows[:-1] + [("oracle/worker.py", "link", "../src/deep/link")])
++            self.assertEqual(ImageTree(path).file("/oracle/worker.py"), b"expected")
++            tar(path, rows[:-1] + [("alias", "link", "src"), ("oracle/worker.py", "hardlink", "alias/worker.py")])
++            with self.assertRaisesRegex(c.Invalid, "IMAGE_HARDLINK_LINK_TARGET"): ImageTree(path).file("/oracle/worker.py")
++
++    def test_normalized_root_aliases_share_observation_and_duplicate_checks(self):
++        with tempfile.TemporaryDirectory() as folder:
++            path = Path(folder) / "root.tar"
++            for alias in ("./.", ".//.", "././"):
++                for mode, duplicate in ((0o755, False), (0o700, False), (0o700, True)):
++                    with tarfile.open(path, "w") as archive:
++                        if duplicate:
++                            root = tarfile.TarInfo("."); root.type = tarfile.DIRTYPE; root.mode = 0o755; archive.addfile(root)
++                        root = tarfile.TarInfo(alias); root.type = tarfile.DIRTYPE; root.mode = mode; archive.addfile(root)
++                        target = tarfile.TarInfo("target"); target.mode = 0o755; target.size = len(elf()); archive.addfile(target, io.BytesIO(elf()))
++                    observed = {"uid": 0, "gid": 0, "mode": 0o755}
++                    if mode == 0o755 and not duplicate:
++                        for root in (None, observed):
++                            tree = ImageTree(path, root)
++                            self.assertNotIn("/", tree.entries)
++                            verify_content(tree, "x86_64", "target", {"target": elf()}, {})
++                    else:
++                        with self.subTest(alias=alias, mode=mode, duplicate=duplicate), self.assertRaises(c.Invalid): ImageTree(path, observed)
++
++    def test_required_loader_execute_intent_survives_an_earlier_library_visit(self):
++        rows = [(name, "directory", "") for name in ("usr", "usr/local", "usr/local/lib")]
++        loader = "/usr/local/lib/loader.so"
++        rows += [("app", "file", elf(interpreter=loader)), (loader.lstrip("/"), "file", elf())]
++        with tempfile.TemporaryDirectory() as folder:
++            path = Path(folder) / "root.tar"; tar(path, rows); tree = ImageTree(path)
++            elf_inventory(tree, "x86_64", ["/app", loader])
++            tree.entries[loader]["mode"] = 0o644
++            with self.assertRaisesRegex(c.Invalid, "IMAGE_FILE_EXECUTABLE"): elf_inventory(tree, "x86_64", ["/app", loader])
++            # Read-only ordinary libraries remain valid; only PT_INTERP needs execute.
++            tar(path, rows[:-2] + [("app", "file", elf(needed=("loader.so",))), (loader.lstrip("/"), "file", elf())])
++            tree = ImageTree(path); tree.entries[loader]["mode"] = 0o644
++            elf_inventory(tree, "x86_64", ["/app"])
++            from image_artifacts import elf_record
++            with self.assertRaises(c.Invalid): elf_record(elf(needed=("PT_INTERP",)), "x86_64")
++
++    def test_unsupported_docker_builder_refuses_before_mutating_outputs(self):
++        with tempfile.TemporaryDirectory() as folder:
++            out = Path(folder) / "out"
++            with patch("image_build.subprocess.run") as run, self.assertRaises(c.Invalid): prepare("x86_64", "docker", out)
++            run.assert_not_called(); self.assertFalse(out.exists())
++            with self.assertRaises(c.Invalid): Builder("docker", out)
++        # A real BuildKit-style PATH remains forbidden by native image admission.
++        from image_artifacts import image_metadata
++        row = metadata(); row["Config"]["Env"] = ["PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"]
++        with self.assertRaises(c.Invalid): image_metadata(row, "x86_64", "target", [])
++
++    def test_oracle_extension_abi_isolated_from_host_and_refused_before_output(self):
++        with tempfile.TemporaryDirectory() as folder:
++            root = Path(folder)
++            executable, extension = root / "python", root / "fixture.so"
++            module = SimpleNamespace(__spec__=SimpleNamespace(loader=ExtensionFileLoader("fixture", str(extension)), origin=str(extension)))
++            collect = build_oracle.extension_inventory
++            for architecture, foreign in (("aarch64", "x86_64"), ("x86_64", "aarch64")):
++                executable.write_bytes(header(architecture)); extension.write_bytes(header(foreign))
++                destination = root / architecture
++                with patch.object(sys, "argv", ["build_oracle.py", str(destination), architecture]), \
++                        patch.object(sys, "executable", str(executable)), \
++                        patch.object(build_oracle.os, "uname", return_value=SimpleNamespace(sysname="Linux", machine=architecture)), \
++                        patch.object(build_oracle, "extension_inventory", side_effect=lambda arch: collect(arch, [module])), self.assertRaises(c.Invalid):
++                    build_oracle.main()
++                self.assertFalse(destination.exists())
++                extension.write_bytes(header(architecture))
++                self.assertEqual(collect(architecture, [module]), {str(extension): c.sha(header(architecture))})
++
++    def test_portable_config_and_layer_alias_collisions_are_refused(self):
++        layer = b"inert layer"
++        config = c.canonical({"os": "linux", "architecture": "amd64", "rootfs": {"diff_ids": ["sha256:" + c.sha(layer)]}})
++        manifest = json.dumps([{"Config": "config.json", "Layers": ["payload/layer.tar"]}]).encode()
++        rows = [("manifest.json", "file", manifest), ("config.json", "file", config), ("payload/layer.tar", "file", layer)]
++        with tempfile.TemporaryDirectory() as folder:
++            path = Path(folder) / "image.tar"
++            for alias in ("./config.json", "payload//layer.tar", "payload/./layer.tar"):
++                tar(path, rows + [(alias, "file", b"substituted")])
++                with self.subTest(alias=alias), self.assertRaises(c.Invalid): archive_record(path, "sha256:" + c.sha(config), "x86_64")
++            tar(path, rows + [("legacy/layer.tar", "link", "../payload/layer.tar")])
++            self.assertEqual(archive_record(path, "sha256:" + c.sha(config), "x86_64")["config_id"], "sha256:" + c.sha(config))
++
++    def test_link_parent_components_follow_filesystem_order(self):
++        rows = [(name, "directory", "") for name in ("oracle", "foreign", "foreign/subdir")]
++        rows += [("oracle/worker.py", "link", "../jump/../worker.py"), ("jump", "link", "foreign/subdir"),
++            ("worker.py", "file", b"expected inert source"), ("foreign/worker.py", "file", b"different inert source")]
++        with tempfile.TemporaryDirectory() as folder:
++            path = Path(folder) / "root.tar"; tar(path, rows); tree = ImageTree(path)
++            self.assertEqual(tree.resolve("/oracle/worker.py"), "/foreign/worker.py")
++            self.assertEqual(tree.file("/oracle/worker.py"), b"different inert source")
++            self.assertNotEqual(tree.file("/oracle/worker.py"), tree.file("/worker.py"))
++
++    def test_root_markers_are_counted_and_cannot_repeat(self):
++        with tempfile.TemporaryDirectory() as folder:
++            path = Path(folder) / "root.tar"
++            tar(path, [("target", "file", elf())]); self.assertEqual(ImageTree(path).member_count, 2)
++            tar(path, [(".", "directory", ""), ("target", "file", elf())])
++            with self.assertRaises(c.Invalid): ImageTree(path)
++            tar(path, [("d" + str(index), "directory", "") for index in range(20000)])
++            with self.assertRaises(c.Invalid): ImageTree(path)
++
++    def test_configured_user_requires_read_and_execute_bits_on_native_files(self):
++        with tempfile.TemporaryDirectory() as folder:
++            path = Path(folder) / "root.tar"
++            for role in ("target", "observer"):
++                tar(path, [(role, "file", elf())]); tree = ImageTree(path)
++                for mode in (0o700, 0o750, 0o111, 0o644):
++                    tree.entries["/" + role]["mode"] = mode
++                    with self.subTest(role=role, mode=mode), self.assertRaises(c.Invalid):
++                        verify_content(tree, "x86_64", role, {role: elf()}, {})
++                tree.entries["/" + role]["mode"] = 0o555
++                verify_content(tree, "x86_64", role, {role: elf()}, {})
++
++    def test_root_and_alias_directory_access_and_source_read_permissions(self):
++        rows = [("oracle", "directory", ""), ("real", "directory", ""), ("real/subdir", "directory", ""),
++            ("alias", "link", "real/subdir"), ("real/source.py", "file", b"inert"), ("oracle/source.py", "link", "../alias/../source.py")]
++        with tempfile.TemporaryDirectory() as folder:
++            path = Path(folder) / "root.tar"; tar(path, rows); tree = ImageTree(path)
++            self.assertEqual(tree.file("/oracle/source.py"), b"inert")
++            for location in ("/", "/oracle", "/real/subdir", "/real/source.py"):
++                changed = copy.deepcopy(tree)
++                (changed.root if location == "/" else changed.entries[location])["mode"] = 0o600
++                with self.subTest(location=location), self.assertRaises(c.Invalid): changed.file("/oracle/source.py")
++            changed = copy.deepcopy(tree); changed.root = None
++            with self.assertRaises(c.Invalid): changed.file("/oracle/source.py")
++
++    def test_root_observation_must_agree_with_archive_root_marker(self):
++        with tempfile.TemporaryDirectory() as folder:
++            path = Path(folder) / "root.tar"; tar(path, [("target", "file", elf())])
++            with self.assertRaises(c.Invalid): ImageTree(path, {"uid": 0, "gid": 0, "mode": 0o700})
++            with self.assertRaises(c.Invalid): ImageTree(path, {"uid": False, "gid": 0, "mode": 0o755})
++
++    def test_runpath_overrides_rpath_and_legacy_inheritance_refuses(self):
++        rows = [("old", "directory", ""), ("new", "directory", ""), ("old/libc0fixtureonly.so", "file", elf())]
++        with tempfile.TemporaryDirectory() as folder:
++            path = Path(folder) / "root.tar"
++            tar(path, rows + [("app", "file", searched_elf(rpath="/old", runpath="/new"))])
++            with self.assertRaises(c.Invalid): elf_inventory(ImageTree(path), "x86_64", ["/app"])
++            tar(path, rows + [("app", "file", searched_elf(rpath="/old"))])
++            with self.assertRaisesRegex(c.Invalid, "IMAGE_UNSUPPORTED_RPATH"): elf_inventory(ImageTree(path), "x86_64", ["/app"])
++            tar(path, rows + [("new/libc0fixtureonly.so", "file", elf()), ("app", "file", searched_elf(rpath="/old", runpath="/new"))])
++            result = elf_inventory(ImageTree(path), "x86_64", ["/app"])
++            self.assertEqual(result["/app"]["dependencies"]["libc0fixtureonly.so"], "/new/libc0fixtureonly.so")
++
++    def test_runpath_directory_links_resolve_and_malformed_links_do_not_fall_through(self):
++        rows = [("real", "directory", ""), ("real/libc0fixtureonly.so", "file", elf()), ("app", "file", searched_elf(runpath="/alias"))]
++        with tempfile.TemporaryDirectory() as folder:
++            path = Path(folder) / "root.tar"; tar(path, rows + [("alias", "link", "real")])
++            result = elf_inventory(ImageTree(path), "x86_64", ["/app"])
++            self.assertEqual(result["/app"]["dependencies"]["libc0fixtureonly.so"], "/real/libc0fixtureonly.so")
++            for target in ("missing", "alias"):
++                tar(path, rows + [("alias", "link", target)])
++                with self.assertRaises(c.Invalid): elf_inventory(ImageTree(path), "x86_64", ["/app"])
++
++    def test_root_observation_drift_and_bad_started_fields_refuse(self):
++        helper = image_tests.StoppedImageLifecycleTests()
++        with tempfile.TemporaryDirectory() as folder:
++            builder, state, _ = helper.builder(folder)
++            with patch.object(builder, "root_metadata", side_effect=[{"uid": 0, "gid": 0, "mode": 0o555}, {"uid": 0, "gid": 0, "mode": 0o700}]), self.assertRaises(c.Invalid):
++                builder.export(ID, Path(folder) / "root.tar")
++            self.assertTrue(state["removed"])
++        for key, value in (("Pid", False), ("StartedAt", None), ("StartedAt", "")):
++            with tempfile.TemporaryDirectory() as folder:
++                builder, state, calls = helper.builder(folder); state["State"][key] = value
++                with self.assertRaises(c.Invalid): builder.export(ID, Path(folder) / "root.tar")
++                self.assertFalse(any(row[0] == "rm" for row in calls))
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/tests/crawl-jobs-v2-observer/test_x64_runtime.py b/tests/crawl-jobs-v2-observer/test_x64_runtime.py
+index fb47b3e..907aa7b 100644
+--- a/tests/crawl-jobs-v2-observer/test_x64_runtime.py
++++ b/tests/crawl-jobs-v2-observer/test_x64_runtime.py
+@@ -179,16 +179,27 @@ class X64BuildTests(unittest.TestCase):
+             self.assertFalse((root / "toolchain.json").exists())
+ 
+     def test_oracle_manifest_binds_x64_interpreter_without_running_worker(self):
++        from importlib.machinery import ExtensionFileLoader
++        import oracle_worker
+         with tempfile.TemporaryDirectory() as folder:
+             root = Path(folder); executable = root / "python"; executable.write_bytes(header("x86_64"))
++            extension = root / "fixture.so"; extension.write_bytes(header("x86_64"))
++            module = SimpleNamespace(__spec__=SimpleNamespace(loader=ExtensionFileLoader("fixture", str(extension)), origin=str(extension)))
++            collect = build_oracle.extension_inventory
+             destination = root / "artifacts"
+             with patch.object(sys, "argv", ["build_oracle.py", str(destination), "x86_64"]), \
+                     patch.object(sys, "executable", str(executable)), \
+-                    patch.object(build_oracle.os, "uname", return_value=SimpleNamespace(sysname="Linux", machine="x86_64")):
++                    patch.object(build_oracle.os, "uname", return_value=SimpleNamespace(sysname="Linux", machine="x86_64")), \
++                    patch.object(build_oracle, "extension_inventory", side_effect=lambda arch: collect(arch, [module])), \
++                    patch.object(oracle_worker, "main") as worker_main, patch.object(oracle_worker, "Engine") as engine:
+                 build_oracle.main()
++                worker_main.assert_not_called(); engine.assert_not_called()
+             record = c.decode((destination / "oracle-artifacts.json").read_bytes())
+             self.assertEqual(record["architecture"], "x86_64")
+             self.assertEqual(record["oracle_elf"], c.sha(header("x86_64")))
++            self.assertEqual(record["version"], 3)
++            self.assertTrue(record["worker_import_checked"] and record["extensions"])
++            self.assertEqual(record["extensions"], {str(extension): c.sha(header("x86_64"))})
+             self.assertFalse(record["worker_executed"] or record["runtime_feasibility_proven"])
+ 
+ 

@@ -1,0 +1,352 @@
+{
+  "mode": "retained-data-only",
+  "pass": true,
+  "reported_suites": {
+    "tests-022.json": {
+      "added_ids": [
+        "test_image_review.ImageReviewTests.test_configured_user_requires_read_and_execute_bits_on_native_files",
+        "test_image_review.ImageReviewTests.test_link_parent_components_follow_filesystem_order",
+        "test_image_review.ImageReviewTests.test_oracle_extension_abi_isolated_from_host_and_refused_before_output",
+        "test_image_review.ImageReviewTests.test_portable_config_and_layer_alias_collisions_are_refused",
+        "test_image_review.ImageReviewTests.test_root_and_alias_directory_access_and_source_read_permissions",
+        "test_image_review.ImageReviewTests.test_root_markers_are_counted_and_cannot_repeat",
+        "test_image_review.ImageReviewTests.test_root_observation_drift_and_bad_started_fields_refuse",
+        "test_image_review.ImageReviewTests.test_root_observation_must_agree_with_archive_root_marker",
+        "test_image_review.ImageReviewTests.test_runpath_directory_links_resolve_and_malformed_links_do_not_fall_through",
+        "test_image_review.ImageReviewTests.test_runpath_overrides_rpath_and_legacy_inheritance_refuses",
+        "test_image_review.ImageReviewTests.test_unsupported_docker_builder_refuses_before_mutating_outputs"
+      ],
+      "all_272_prior_ids_retained": true,
+      "independently_rerun": false,
+      "sha256": "24c3f23963ce72bae90a0b0960c5c0e1dd80adc8f936cc567f093e1699f1b260",
+      "source_bound": true,
+      "tests_run": 283
+    },
+    "tests-077.json": {
+      "added_ids": [
+        "test_image_review.ImageReviewTests.test_configured_user_requires_read_and_execute_bits_on_native_files",
+        "test_image_review.ImageReviewTests.test_link_parent_components_follow_filesystem_order",
+        "test_image_review.ImageReviewTests.test_oracle_extension_abi_isolated_from_host_and_refused_before_output",
+        "test_image_review.ImageReviewTests.test_portable_config_and_layer_alias_collisions_are_refused",
+        "test_image_review.ImageReviewTests.test_root_and_alias_directory_access_and_source_read_permissions",
+        "test_image_review.ImageReviewTests.test_root_markers_are_counted_and_cannot_repeat",
+        "test_image_review.ImageReviewTests.test_root_observation_drift_and_bad_started_fields_refuse",
+        "test_image_review.ImageReviewTests.test_root_observation_must_agree_with_archive_root_marker",
+        "test_image_review.ImageReviewTests.test_runpath_directory_links_resolve_and_malformed_links_do_not_fall_through",
+        "test_image_review.ImageReviewTests.test_runpath_overrides_rpath_and_legacy_inheritance_refuses",
+        "test_image_review.ImageReviewTests.test_unsupported_docker_builder_refuses_before_mutating_outputs"
+      ],
+      "all_272_prior_ids_retained": true,
+      "independently_rerun": false,
+      "sha256": "24c3f23963ce72bae90a0b0960c5c0e1dd80adc8f936cc567f093e1699f1b260",
+      "source_bound": true,
+      "tests_run": 283
+    }
+  },
+  "root_metadata_helper_executed": false,
+  "root_metadata_helper_sha256": "4b60558d5ddb0ce85ebccc4b7edd359ba95ddd6689787a4d6ce8140b8ada097c",
+  "sets": {
+    "aarch64": {
+      "builder_version": "Client:        Podman Engine\nVersion:       5.8.7\nAPI Version:   5.8.7\nGo Version:    go1.26.8-X:nodwarf5\nGit Commit:    c593b672bf3db1173aebea565ebf1a724ea196dc\nBuilt:         Tue Sep 15 20:00:00 2026\nBuild Origin:  Fedora Project\nOS/Arch:       linux/amd64\n",
+      "cleanup_records_verified": 5,
+      "command_kinds": {
+        "build": 5,
+        "container": 15,
+        "cp": 2,
+        "create": 5,
+        "export": 3,
+        "image": 8,
+        "info": 1,
+        "ps": 5,
+        "pull": 2,
+        "rm": 5,
+        "save": 3,
+        "unshare": 6,
+        "version": 1
+      },
+      "commands_verified": 61,
+      "image_set_sha256": "ac29a71a14c21cf5b2e498b716f01fac2a888443df7e3f87fbf5c014007bd1c8",
+      "images": {
+        "observer": {
+          "content_sha256": "d93a59cbc80ba05045cffd7fb14d1594ac956da1d0531700b88552435af50b7c",
+          "elf_files": 1,
+          "hardlinks": 0,
+          "id": "sha256:f36e584c1808d192263ec9da1071ff16122afff0e67ee3e5ccda4881ec44ab12",
+          "members": 1,
+          "portable": {
+            "architecture": "aarch64",
+            "bytes": 5460992,
+            "config_id": "sha256:f36e584c1808d192263ec9da1071ff16122afff0e67ee3e5ccda4881ec44ab12",
+            "format": "docker-archive",
+            "layers": [
+              "sha256:6f48e6fd9894e6fd8a3c8b6ec0b157c4f5da3433aa39d3406847558a77e55305"
+            ],
+            "sha256": "cd59a9f9bffb5e9078f5f9da8173e7fd230bd7753a6519f7400539deddfecb0d"
+          },
+          "root_directory": {
+            "gid": 0,
+            "mode": 365,
+            "uid": 0
+          }
+        },
+        "oracle": {
+          "content_sha256": "b54c5b92251392f21db152efce4aa33c1e6ff17285c58066ab859a2a49fd6cd7",
+          "elf_files": 790,
+          "hardlinks": 2,
+          "id": "sha256:24268df2086d9348743fbc309113a46a9afc4a9f607fbc75a0987718ff2db2ed",
+          "members": 6581,
+          "portable": {
+            "architecture": "aarch64",
+            "bytes": 151378944,
+            "config_id": "sha256:24268df2086d9348743fbc309113a46a9afc4a9f607fbc75a0987718ff2db2ed",
+            "format": "docker-archive",
+            "layers": [
+              "sha256:055ab12bd547e17a0630037f06a186cf405e3f61bb03a614562ca8f5ab52a8be",
+              "sha256:095145779909c26a66c70376d4b6cde5c2958236c609348586252e0064186c9d",
+              "sha256:3ca71efe23192eaff23483924b9ec0bd7f396e2aaef46640128c3477379fcaa9",
+              "sha256:ff6b919c53481cfc2497fad042e7c6cf042d45097f19fd908d13fcb73b85adcf",
+              "sha256:747b99c95ca9cb909f9c87d19a1421c84eb5342a1ad500a7a19cc6852539b9b2"
+            ],
+            "sha256": "a40ab4026d8e7f711e681e9538e2d091a47ae427fefe8acb83814dd6f90e9bcc"
+          },
+          "root_directory": {
+            "gid": 0,
+            "mode": 493,
+            "uid": 0
+          }
+        },
+        "target": {
+          "content_sha256": "ab5fe73bbade66f04f7ed4aa6ff7311c967023fa702b5c2184d0631005ad873e",
+          "elf_files": 1,
+          "hardlinks": 0,
+          "id": "sha256:50de9aac35fac6d4cada173cf06884c43b506e123cb923e851afae93bcb50273",
+          "members": 1,
+          "portable": {
+            "architecture": "aarch64",
+            "bytes": 5457920,
+            "config_id": "sha256:50de9aac35fac6d4cada173cf06884c43b506e123cb923e851afae93bcb50273",
+            "format": "docker-archive",
+            "layers": [
+              "sha256:6146b2f026ee894e27ae5a5a7957d7df52fe00c4397bab191db710796106a184"
+            ],
+            "sha256": "4da1438f3b8d79588679490212f53ce18508c017abfbaf83b67b2b1776b3fee8"
+          },
+          "root_directory": {
+            "gid": 0,
+            "mode": 365,
+            "uid": 0
+          }
+        }
+      },
+      "native_artifact_hashes_unchanged": true,
+      "root_observations": {
+        "b4f9ec733d1f9925135af89a826bedcea2097011c5d6596211547ff868996fca": [
+          {
+            "log": "command-052.log",
+            "value": {
+              "gid": 0,
+              "mode": 493,
+              "uid": 0
+            }
+          },
+          {
+            "log": "command-055.log",
+            "value": {
+              "gid": 0,
+              "mode": 493,
+              "uid": 0
+            }
+          }
+        ],
+        "daf02109b8ecb49b09debf892d9de95438dce28471493531d6aabd754fb77fda": [
+          {
+            "log": "command-039.log",
+            "value": {
+              "gid": 0,
+              "mode": 365,
+              "uid": 0
+            }
+          },
+          {
+            "log": "command-042.log",
+            "value": {
+              "gid": 0,
+              "mode": 365,
+              "uid": 0
+            }
+          }
+        ],
+        "fcf45c6cc06be86b3cbdf767c1cf752e19400dacb823b66ea8d83bb0b8e8d4f0": [
+          {
+            "log": "command-026.log",
+            "value": {
+              "gid": 0,
+              "mode": 365,
+              "uid": 0
+            }
+          },
+          {
+            "log": "command-029.log",
+            "value": {
+              "gid": 0,
+              "mode": 365,
+              "uid": 0
+            }
+          }
+        ]
+      },
+      "source_files_verified": 55
+    },
+    "x86_64": {
+      "builder_version": "Client:        Podman Engine\nVersion:       5.8.7\nAPI Version:   5.8.7\nGo Version:    go1.26.8-X:nodwarf5\nGit Commit:    c593b672bf3db1173aebea565ebf1a724ea196dc\nBuilt:         Tue Sep 15 20:00:00 2026\nBuild Origin:  Fedora Project\nOS/Arch:       linux/amd64\n",
+      "cleanup_records_verified": 5,
+      "command_kinds": {
+        "build": 5,
+        "container": 15,
+        "cp": 2,
+        "create": 5,
+        "export": 3,
+        "image": 8,
+        "info": 1,
+        "ps": 5,
+        "pull": 2,
+        "rm": 5,
+        "save": 3,
+        "unshare": 6,
+        "version": 1
+      },
+      "commands_verified": 61,
+      "image_set_sha256": "76b30e6cdd7ab4cb8b49e2a50964f5acd5eee1a9a3cd2b2b88d7eea263b84489",
+      "images": {
+        "observer": {
+          "content_sha256": "8e680fab8a46406c6e4cff7dd9a7214444db2abf00a14eb76bf7030fb76e8e46",
+          "elf_files": 1,
+          "hardlinks": 0,
+          "id": "sha256:2046ca5b52ec7adf8ba4ad644401f49e22955b225377b0024e52b386168cd4cf",
+          "members": 1,
+          "portable": {
+            "architecture": "x86_64",
+            "bytes": 5888512,
+            "config_id": "sha256:2046ca5b52ec7adf8ba4ad644401f49e22955b225377b0024e52b386168cd4cf",
+            "format": "docker-archive",
+            "layers": [
+              "sha256:737a5227dfc35f7e47346fefdaa68cb50bf28eaa4a526edd8c14323951c215ea"
+            ],
+            "sha256": "2b45067cf47565ad9ea4222d451425ba5342505cf1d8b4fbad9800f4aae8b16c"
+          },
+          "root_directory": {
+            "gid": 0,
+            "mode": 365,
+            "uid": 0
+          }
+        },
+        "oracle": {
+          "content_sha256": "d85d8565a9cbdfcd97476238b66f646291535acf342bfbacd2401c296af4eb55",
+          "elf_files": 791,
+          "hardlinks": 2,
+          "id": "sha256:26201a7d895b496c26746271a8ff1fa60687d495739f2cfe0456d129f180c940",
+          "members": 6586,
+          "portable": {
+            "architecture": "x86_64",
+            "bytes": 125835264,
+            "config_id": "sha256:26201a7d895b496c26746271a8ff1fa60687d495739f2cfe0456d129f180c940",
+            "format": "docker-archive",
+            "layers": [
+              "sha256:34467cc93912af891dfee8a3902adf9b4f355a9bca4eaa46f658d1181a21de0d",
+              "sha256:0229d3e3d668de7c1d42c1e23d30f4bc5c5e93d68c8fe897e94a6fe9b0262491",
+              "sha256:d119e31e71d7a4e8b81f78a0e11901e1a2b3252619eac69266aa157d943b4763",
+              "sha256:1095031acd1c984ad93c83dadab1d79a3b2fd93d5086537b16593c47a3e3ee06",
+              "sha256:a1860a11aed5e57a56e3847b0129604b32043bc349bd85118312ec8db2bc61fc"
+            ],
+            "sha256": "d15ca6b653e4c8f7d32895b7ac6f8f523ee45538065e09d9b74fa541018ba98a"
+          },
+          "root_directory": {
+            "gid": 0,
+            "mode": 493,
+            "uid": 0
+          }
+        },
+        "target": {
+          "content_sha256": "0b591e3700cc349573d30c0c9d6025371d5da919a21863d7a077368801322b95",
+          "elf_files": 1,
+          "hardlinks": 0,
+          "id": "sha256:1062239ded1acb7b4ac0a8c2f85920fc336e49182dc4e42e8175745e2f813a9f",
+          "members": 1,
+          "portable": {
+            "architecture": "x86_64",
+            "bytes": 5890048,
+            "config_id": "sha256:1062239ded1acb7b4ac0a8c2f85920fc336e49182dc4e42e8175745e2f813a9f",
+            "format": "docker-archive",
+            "layers": [
+              "sha256:81b0644b1b42a1f33c8ff0f9ba24bde6df5ddeb81eb6e1ee10beff44e5fbb8ca"
+            ],
+            "sha256": "dc57e5f47fac799d22ae2ac2c072e937c08d79e647296660ab46dced8fcb7b92"
+          },
+          "root_directory": {
+            "gid": 0,
+            "mode": 365,
+            "uid": 0
+          }
+        }
+      },
+      "native_artifact_hashes_unchanged": true,
+      "root_observations": {
+        "0717f7a289dafe8e34547ba910bee955f4296f7b78475eda557bccb3bc81727a": [
+          {
+            "log": "command-039.log",
+            "value": {
+              "gid": 0,
+              "mode": 365,
+              "uid": 0
+            }
+          },
+          {
+            "log": "command-042.log",
+            "value": {
+              "gid": 0,
+              "mode": 365,
+              "uid": 0
+            }
+          }
+        ],
+        "0c8c5ebf29bcfbf9919e76e06b426745c481770f40b8e208028231a80e05a053": [
+          {
+            "log": "command-052.log",
+            "value": {
+              "gid": 0,
+              "mode": 493,
+              "uid": 0
+            }
+          },
+          {
+            "log": "command-055.log",
+            "value": {
+              "gid": 0,
+              "mode": 493,
+              "uid": 0
+            }
+          }
+        ],
+        "1aeb1ca49a11167839a3f1a5b38dfe2643ae348ebc26fa87d23583a7b20ddcc2": [
+          {
+            "log": "command-026.log",
+            "value": {
+              "gid": 0,
+              "mode": 365,
+              "uid": 0
+            }
+          },
+          {
+            "log": "command-029.log",
+            "value": {
+              "gid": 0,
+              "mode": 365,
+              "uid": 0
+            }
+          }
+        ]
+      },
+      "source_files_verified": 55
+    }
+  }
+}

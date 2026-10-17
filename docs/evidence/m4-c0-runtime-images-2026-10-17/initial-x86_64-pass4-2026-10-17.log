@@ -1,0 +1,23 @@
+Traceback (most recent call last):
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/scripts/prepare-crawl-jobs-v2-observer-images.py", line 10, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/tests/crawl-jobs-v2-observer/image_build.py", line 207, in main
+    result = prepare(args.architecture, args.engine, args.output)
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/tests/crawl-jobs-v2-observer/image_build.py", line 180, in prepare
+    content = verify_content(ImageTree(archive), architecture, role, artifacts,
+        {name: (source / name).read_bytes() for name in (*SOURCE_FILES, "build_oracle.py")})
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/tests/crawl-jobs-v2-observer/image_artifacts.py", line 206, in verify_content
+    elfs = elf_inventory(tree, architecture)
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/tests/crawl-jobs-v2-observer/image_artifacts.py", line 174, in elf_inventory
+    records = {name: elf_record(row["raw"], architecture) for name, row in tree.entries.items()
+                     ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/tests/crawl-jobs-v2-observer/image_artifacts.py", line 127, in elf_record
+    require(elf_architecture(raw[:64]) == architecture and len(raw) <= MAX_FILE, "IMAGE_ELF_ARCHITECTURE")
+            ~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/tests/crawl-jobs-v2-observer/contracts.py", line 129, in elf_architecture
+    require(kind in (2, 3) and version == 1, "ELF_ARCHITECTURE")
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/tests/crawl-jobs-v2-observer/contracts.py", line 27, in require
+    raise Invalid(code)
+contracts.Invalid: ELF_ARCHITECTURE

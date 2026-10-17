@@ -1,0 +1,22 @@
+{
+  "candidate_sha256": "2f42b0b66ec9202005e3cc25d19490bcf3cd69d9927fd3ab7092f258be0d5122",
+  "direct_and_forward_positive_cases_pass": true,
+  "pass": true,
+  "redirected_parent_refusals": {
+    "parent-redirect-conflict.tar": "IMAGE_HARDLINK_PARENT_ALIAS",
+    "parent-redirect-positive.tar": "IMAGE_HARDLINK_PARENT_ALIAS"
+  },
+  "repository_or_frozen_patch_applied": false,
+  "retained_content_records_byte_identical": {
+    "aarch64": [
+      "observer",
+      "oracle",
+      "target"
+    ],
+    "x86_64": [
+      "observer",
+      "oracle",
+      "target"
+    ]
+  }
+}

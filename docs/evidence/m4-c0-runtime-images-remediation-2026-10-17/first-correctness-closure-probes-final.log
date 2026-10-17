@@ -1,0 +1,292 @@
+{
+  "groups": 56,
+  "unexpected_results": [
+    "004-pt-interp-mode-0o644",
+    "root-normalized-duplicate-./.",
+    "root-normalized-duplicate-.//.",
+    "root-normalized-duplicate-././",
+    "root-alias-conflicts-observed-root"
+  ],
+  "per_finding": {
+    "C0ARCH04-COR-001": [
+      {
+        "id": "001-docker-prepare-refused",
+        "accepted": false,
+        "reason": "BUILD_OUTPUT_SCOPE",
+        "matches": true
+      },
+      {
+        "id": "001-docker-builder-refused",
+        "accepted": false,
+        "reason": "BUILD_ENGINE",
+        "matches": true
+      },
+      {
+        "id": "001-rootful-preflight-refused",
+        "accepted": false,
+        "reason": "BUILD_ROOTLESS_REQUIRED",
+        "matches": true
+      },
+      {
+        "id": "001-podman-flags-aarch64-target",
+        "accepted": null,
+        "reason": null,
+        "matches": true
+      },
+      {
+        "id": "001-podman-flags-aarch64-observer",
+        "accepted": null,
+        "reason": null,
+        "matches": true
+      },
+      {
+        "id": "001-podman-flags-aarch64-oracle",
+        "accepted": null,
+        "reason": null,
+        "matches": true
+      },
+      {
+        "id": "001-podman-flags-x86_64-target",
+        "accepted": null,
+        "reason": null,
+        "matches": true
+      },
+      {
+        "id": "001-podman-flags-x86_64-observer",
+        "accepted": null,
+        "reason": null,
+        "matches": true
+      },
+      {
+        "id": "001-podman-flags-x86_64-oracle",
+        "accepted": null,
+        "reason": null,
+        "matches": true
+      },
+      {
+        "id": "001-empty-env-positive",
+        "accepted": true,
+        "reason": null,
+        "matches": true
+      },
+      {
+        "id": "001-buildkit-path-still-forbidden",
+        "accepted": false,
+        "reason": "IMAGE_ENVIRONMENT",
+        "matches": true
+      }
+    ],
+    "C0ARCH04-COR-002": [
+      {
+        "id": "002-original-x64-test-with-arm-module",
+        "accepted": true,
+        "reason": null,
+        "matches": true
+      },
+      {
+        "id": "002-manifest-aarch64-extension-aarch64",
+        "accepted": true,
+        "reason": null,
+        "matches": true
+      },
+      {
+        "id": "002-manifest-aarch64-extension-x86_64",
+        "accepted": false,
+        "reason": "ORACLE_BUILD_ARCHITECTURE",
+        "matches": true
+      },
+      {
+        "id": "002-manifest-x86_64-extension-x86_64",
+        "accepted": true,
+        "reason": null,
+        "matches": true
+      },
+      {
+        "id": "002-manifest-x86_64-extension-aarch64",
+        "accepted": false,
+        "reason": "ORACLE_BUILD_ARCHITECTURE",
+        "matches": true
+      }
+    ],
+    "C0ARCH04-COR-003": [
+      {
+        "id": "003-original-positive-archive",
+        "accepted": true,
+        "reason": null,
+        "matches": true
+      },
+      {
+        "id": "003-original-normalized-config-duplicate",
+        "accepted": false,
+        "reason": "IMAGE_SAVE_DUPLICATE_PATH",
+        "matches": true
+      },
+      {
+        "id": "003-original-normalized-layer-duplicate",
+        "accepted": false,
+        "reason": "IMAGE_SAVE_DUPLICATE_PATH",
+        "matches": true
+      }
+    ],
+    "C0ARCH04-COR-004": [
+      {
+        "id": "004-original-target-0o755",
+        "accepted": true,
+        "reason": null,
+        "matches": true
+      },
+      {
+        "id": "004-original-target-0o700",
+        "accepted": false,
+        "reason": "IMAGE_FILE_IDENTITY",
+        "matches": true
+      },
+      {
+        "id": "004-original-target-0o750",
+        "accepted": false,
+        "reason": "IMAGE_FILE_IDENTITY",
+        "matches": true
+      },
+      {
+        "id": "004-original-target-0o600",
+        "accepted": false,
+        "reason": "IMAGE_FILE_IDENTITY",
+        "matches": true
+      },
+      {
+        "id": "004-target-other-execute-required",
+        "accepted": false,
+        "reason": "IMAGE_FILE_EXECUTABLE",
+        "matches": true
+      },
+      {
+        "id": "004-original-observer-0o755",
+        "accepted": true,
+        "reason": null,
+        "matches": true
+      },
+      {
+        "id": "004-original-observer-0o700",
+        "accepted": false,
+        "reason": "IMAGE_FILE_IDENTITY",
+        "matches": true
+      },
+      {
+        "id": "004-original-observer-0o750",
+        "accepted": false,
+        "reason": "IMAGE_FILE_IDENTITY",
+        "matches": true
+      },
+      {
+        "id": "004-original-observer-0o600",
+        "accepted": false,
+        "reason": "IMAGE_FILE_IDENTITY",
+        "matches": true
+      },
+      {
+        "id": "004-observer-other-execute-required",
+        "accepted": false,
+        "reason": "IMAGE_FILE_EXECUTABLE",
+        "matches": true
+      },
+      {
+        "id": "004-oracle-positive-with-observed-root",
+        "accepted": true,
+        "reason": null,
+        "matches": true
+      },
+      {
+        "id": "004-original-oracle/worker.py",
+        "accepted": false,
+        "reason": "IMAGE_FILE_IDENTITY",
+        "matches": true
+      },
+      {
+        "id": "004-original-oracle",
+        "accepted": false,
+        "reason": "IMAGE_DIRECTORY_ACCESS",
+        "matches": true
+      },
+      {
+        "id": "004-original-usr/local/lib/fixture.so",
+        "accepted": false,
+        "reason": "IMAGE_FILE_IDENTITY",
+        "matches": true
+      },
+      {
+        "id": "004-observed-root-0o555",
+        "accepted": true,
+        "reason": null,
+        "matches": true
+      },
+      {
+        "id": "004-observed-root-0o755",
+        "accepted": true,
+        "reason": null,
+        "matches": true
+      },
+      {
+        "id": "004-observed-root-0o700",
+        "accepted": false,
+        "reason": "IMAGE_DIRECTORY_ACCESS",
+        "matches": true
+      },
+      {
+        "id": "004-pt-interp-mode-0o755",
+        "accepted": true,
+        "reason": null,
+        "matches": true
+      },
+      {
+        "id": "004-pt-interp-mode-0o644",
+        "accepted": true,
+        "reason": null,
+        "matches": false
+      }
+    ],
+    "C0ARCH04-COR-005": [
+      {
+        "id": "005-original-symlink-search-positive",
+        "accepted": true,
+        "reason": null,
+        "matches": true
+      },
+      {
+        "id": "005-original-rpath-ignored-negative",
+        "accepted": false,
+        "reason": "IMAGE_LIBRARY_MISSING",
+        "matches": true
+      },
+      {
+        "id": "005-runpath-overrides-positive",
+        "accepted": true,
+        "reason": null,
+        "matches": true
+      },
+      {
+        "id": "005-active-rpath-explicit-refusal",
+        "accepted": false,
+        "reason": "IMAGE_UNSUPPORTED_RPATH",
+        "matches": true
+      },
+      {
+        "id": "005-search-link-missing",
+        "accepted": false,
+        "reason": "IMAGE_DANGLING_LINK",
+        "matches": true
+      },
+      {
+        "id": "005-search-link-alias",
+        "accepted": false,
+        "reason": "IMAGE_LINK_DEPTH",
+        "matches": true
+      },
+      {
+        "id": "005-distinct-library-candidates-refused",
+        "accepted": false,
+        "reason": "IMAGE_LIBRARY_AMBIGUOUS",
+        "matches": true
+      }
+    ]
+  }
+}

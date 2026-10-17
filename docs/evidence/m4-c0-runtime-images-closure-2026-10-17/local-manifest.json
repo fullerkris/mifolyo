@@ -1,0 +1,42 @@
+{
+  "execution_authorized": false,
+  "files": {
+    "artifact-revalidation.json": {
+      "bytes": 7260,
+      "private_source": "/tmp/opencode/c0-runtime-images-closure-2026-10-17/artifact-revalidation.json",
+      "sha256": "a8f6aee7dee482c03b925bef48a57e2ed5eb5d46edc61ea11f67c9790b5211f7"
+    },
+    "final-source.patch": {
+      "bytes": 94900,
+      "private_source": "/tmp/opencode/c0-runtime-images-closure-2026-10-17/final-source.patch",
+      "sha256": "b273b47963d7536c0d7e77cf2227360c409f9be244e96ab54f28332651a7314f"
+    },
+    "source-inventory.json": {
+      "bytes": 7898,
+      "private_source": "/tmp/opencode/c0-runtime-images-closure-2026-10-17/source-inventory.json",
+      "sha256": "1f0e82a5ca98f02bf36deb4292501a0b97a38ac8bf567fd170fc09c8d4890376"
+    },
+    "tests-022.json": {
+      "bytes": 98376,
+      "private_source": "/tmp/opencode/c0-runtime-images-closure-2026-10-17/tests-022.json",
+      "sha256": "f609fb53cc8b9717da96cd9025a693591d9070b0d64538352e0826ded365d1c7"
+    },
+    "tests-022.log": {
+      "bytes": 48220,
+      "private_source": "/tmp/opencode/c0-runtime-images-closure-2026-10-17/tests-022.log",
+      "sha256": "3d8175afd235305d938ba405d0fd9356e4cdda57bb7dc9f8fc350ba60748df16"
+    },
+    "tests-077.json": {
+      "bytes": 98376,
+      "private_source": "/tmp/opencode/c0-runtime-images-closure-2026-10-17/tests-077.json",
+      "sha256": "f609fb53cc8b9717da96cd9025a693591d9070b0d64538352e0826ded365d1c7"
+    },
+    "tests-077.log": {
+      "bytes": 48220,
+      "private_source": "/tmp/opencode/c0-runtime-images-closure-2026-10-17/tests-077.log",
+      "sha256": "721ea41c9e948d107bfcdf0506a2e5f171be355bd7415621469579c289a30e77"
+    }
+  },
+  "kind": "c0_arch_04_final_validator_local_exports",
+  "version": 1
+}

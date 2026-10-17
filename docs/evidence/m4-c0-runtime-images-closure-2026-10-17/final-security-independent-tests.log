@@ -1,0 +1,16 @@
+test_SEC01_portable_collision_and_matching_config (__main__.ExistingClosures.test_SEC01_portable_collision_and_matching_config) ... ok
+test_SEC02_symlink_order_and_matching_source (__main__.ExistingClosures.test_SEC02_symlink_order_and_matching_source) ... ok
+test_SEC03_duplicate_roots_and_exact_budget (__main__.ExistingClosures.test_SEC03_duplicate_roots_and_exact_budget) ... ok
+test_SEC04_hardlink_target_and_source_positives (__main__.ExistingClosures.test_SEC04_hardlink_target_and_source_positives) ... ok
+test_SEC05_root_alias_metadata_and_positives (__main__.ExistingClosures.test_SEC05_root_alias_metadata_and_positives) ... ok
+test_loader_execute_and_reserved_key (__main__.ExistingClosures.test_loader_execute_and_reserved_key) ... ok
+test_all_ancestor_levels_are_checked_with_forward_directory_positives (__main__.ParentRecordClosure.test_all_ancestor_levels_are_checked_with_forward_directory_positives) ... ok
+test_all_entry_kinds_and_nondirectory_parent_types_refuse (__main__.ParentRecordClosure.test_all_entry_kinds_and_nondirectory_parent_types_refuse) ... ok
+test_every_declared_hardlink_is_checked_not_just_selected_or_first (__main__.ParentRecordClosure.test_every_declared_hardlink_is_checked_not_just_selected_or_first) ... ok
+test_exact_SEC06_parent_redirection_negative_and_literal_forward_positives (__main__.ParentRecordClosure.test_exact_SEC06_parent_redirection_negative_and_literal_forward_positives) ... ok
+test_original_SEC06_metadata_and_both_member_orders (__main__.ParentRecordClosure.test_original_SEC06_metadata_and_both_member_orders) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.532s
+
+OK

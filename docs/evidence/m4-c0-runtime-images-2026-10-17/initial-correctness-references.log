@@ -1,0 +1,58 @@
+[
+  {
+    "url": "https://raw.githubusercontent.com/moby/buildkit/v0.20.2/frontend/dockerfile/dockerfile2llb/image.go",
+    "file": "buildkit-v0.20.2-image.go",
+    "status": 200,
+    "bytes": 1189,
+    "sha256": "cbcd0b08fac635fef173bfec481bd4ea08dbccbdad4cdc8a7348f8cffa089bcb"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/moby/buildkit/v0.20.2/frontend/dockerfile/dockerfile2llb/convert.go",
+    "file": "buildkit-v0.20.2-convert.go",
+    "status": 200,
+    "bytes": 76464,
+    "sha256": "dca50b89e89c90e2a2944c8a0f37241b7d1948dd62974317202eb9b5aee22590"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/moby/buildkit/master/frontend/dockerfile/dockerfile2llb/image.go",
+    "file": "buildkit-current-image.go",
+    "status": 200,
+    "bytes": 1671,
+    "sha256": "5f6740c15351de8b7d842efdfd579ac22af0fcd06a67b39ff4cb71436d63df36"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/moby/buildkit/v0.20.2/util/system/path.go",
+    "file": "buildkit-v0.20.2-path.go",
+    "status": 200,
+    "bytes": 7634,
+    "sha256": "74c1c104ce59e0cb5fb0ee6f4fb9461e3176587c200ef42787feb66de57d0fb8"
+  },
+  {
+    "url": "https://man7.org/linux/man-pages/man8/ld.so.8.html",
+    "file": "ld-so-manual.html",
+    "status": 200,
+    "bytes": 41398,
+    "sha256": "d9b7737e6c9a38f6c7ce11a4feec834704d6ad5139dc790afa9798faf0379f83"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/actions/checkout/11d5960a326750d5838078e36cf38b85af677262/action.yml",
+    "file": "checkout-pinned-action.yml",
+    "status": 200,
+    "bytes": 5144,
+    "sha256": "6188f6991491ed38977347cdaad0b0cd921a6d6232892363c91f433c22954f4f"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/actions/setup-python/a26af69be951a213d495a4c3e4e4022e16d87065/action.yml",
+    "file": "setup-python-pinned-action.yml",
+    "status": 200,
+    "bytes": 2364,
+    "sha256": "0acca40eee6f548ea8269ece66fd625fe9deb1f61f31f0b58562068fc083eb37"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/actions/upload-artifact/ea165f8d65b6e75b540449e92b4886f43607fa02/action.yml",
+    "file": "upload-artifact-pinned-action.yml",
+    "status": 200,
+    "bytes": 3159,
+    "sha256": "29b21270ff44638a165ea12abb4481796770c629e513217af7b4df1aa3821177"
+  }
+]

@@ -1,0 +1,157 @@
+{
+  "archive_extraction": false,
+  "engine_helper_native_worker_executions": 0,
+  "errors": [],
+  "failures": [
+    {
+      "id": "__main__.ConstructorChecks.test_required_constructor_checks_the_actual_hardlink_record_not_a_redirect",
+      "traceback": "Traceback (most recent call last):\n  File \"/tmp/opencode/c0-runtime-images-completion-2026-10-17/security/test_completion.py\", line 173, in test_required_constructor_checks_the_actual_hardlink_record_not_a_redirect\n    with self.assertRaises(c.Invalid): ImageTree(bad, GOOD_ROOT)\n         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^\nAssertionError: Invalid not raised\n"
+    }
+  ],
+  "network_calls": 0,
+  "observations": {
+    "COR004": {
+      "executable_loader_positive": true,
+      "execute_required_in_both_visit_orders": true,
+      "read_only_library_positive": true,
+      "reserved_key_refused": true,
+      "similar_name_positive": true
+    },
+    "SEC01": {
+      "positive": true,
+      "refusal": "IMAGE_SAVE_DUPLICATE_PATH"
+    },
+    "SEC02": {
+      "positive": true,
+      "refusal": "IMAGE_ORACLE_SOURCE",
+      "valid_root_observation": {
+        "gid": 0,
+        "mode": 493,
+        "uid": 0
+      }
+    },
+    "SEC03": {
+      "duplicate_refusal": "IMAGE_ROOT_DUPLICATE",
+      "excess_refusal": "IMAGE_DUPLICATE_OR_COUNT",
+      "positive_count": 20000
+    },
+    "SEC04": {
+      "direct_hardlink_positive": true,
+      "refusal": "IMAGE_HARDLINK_LINK_TARGET",
+      "symbolic_source_positive": true
+    },
+    "SEC05": {
+      "conflict_refusal": "IMAGE_ROOT_CHANGED",
+      "duplicate_refusal": "IMAGE_ROOT_DUPLICATE",
+      "with_and_without_observation_positive": true
+    },
+    "SEC06_member_order_matrix": [
+      {
+        "forward": false,
+        "metadata": {
+          "gid": 0,
+          "mode": 493,
+          "uid": 0
+        },
+        "result": "PASS"
+      },
+      {
+        "forward": false,
+        "metadata": {
+          "gid": 0,
+          "mode": 448,
+          "uid": 0
+        },
+        "result": "IMAGE_HARDLINK_METADATA"
+      },
+      {
+        "forward": false,
+        "metadata": {
+          "gid": 0,
+          "mode": 493,
+          "uid": 999
+        },
+        "result": "IMAGE_HARDLINK_METADATA"
+      },
+      {
+        "forward": false,
+        "metadata": {
+          "gid": 999,
+          "mode": 493,
+          "uid": 0
+        },
+        "result": "IMAGE_HARDLINK_METADATA"
+      },
+      {
+        "forward": true,
+        "metadata": {
+          "gid": 0,
+          "mode": 493,
+          "uid": 0
+        },
+        "result": "PASS"
+      },
+      {
+        "forward": true,
+        "metadata": {
+          "gid": 0,
+          "mode": 448,
+          "uid": 0
+        },
+        "result": "IMAGE_HARDLINK_METADATA"
+      },
+      {
+        "forward": true,
+        "metadata": {
+          "gid": 0,
+          "mode": 493,
+          "uid": 999
+        },
+        "result": "IMAGE_HARDLINK_METADATA"
+      },
+      {
+        "forward": true,
+        "metadata": {
+          "gid": 999,
+          "mode": 493,
+          "uid": 0
+        },
+        "result": "IMAGE_HARDLINK_METADATA"
+      }
+    ],
+    "SEC06_original": {
+      "constructor_refusal": "IMAGE_HARDLINK_METADATA",
+      "matching_positive_content_sha256": "18359ca24129e49759f738007a3d6fecf57cb782d5c8d999b4fadf09c8eb8136",
+      "negative_sha256": "a8926a206e90cb0618f18632db0671600eaebb98ef6df42fcdefc6883ccce070"
+    },
+    "SEC06_parent_redirect": {
+      "content_sha256": "1eb79db144f665aa85b730103f62364497af838d0903ac63622cdce4807ba1f2",
+      "declared_hardlink_target": "/target",
+      "direct_unshadowed_control_refusal": "IMAGE_HARDLINK_METADATA",
+      "execution_authorized": false,
+      "fixture": "fixtures/parent-redirect-conflict.tar",
+      "hardlink_record_name": "/alias-parent/hosts",
+      "matching_metadata_fixture": "fixtures/parent-redirect-positive.tar",
+      "name_lookup_checks_instead": "/etc/hosts",
+      "runtime_acceptance": false,
+      "same_content_record_as_matching_metadata": true,
+      "sha256": "bff3872ac94c209349e1fcb237d4e93bed9f774e682282309009da0cc0c6e600",
+      "target_mode": 493,
+      "unchecked_hardlink_mode": 448,
+      "whole_content_admission_succeeded": true
+    },
+    "forward_directory": {
+      "entry_count": 3,
+      "map_unchanged": true,
+      "resolved": "/future/data"
+    },
+    "unused_target_refusals": [
+      "IMAGE_DANGLING_LINK",
+      "IMAGE_HARDLINK_LINK_TARGET",
+      "IMAGE_HARDLINK_TARGET"
+    ]
+  },
+  "python": "3.14.8 (main, Oct  1 2026, 00:00:00) [GCC 16.2.1 20260819 (Red Hat 16.2.1-2)]",
+  "skipped": [],
+  "tests_run": 11
+}

@@ -1,0 +1,25 @@
+test_COR004_execute_intent_checked_even_after_read_only_visit (__main__.MaterialChangeTests.test_COR004_execute_intent_checked_even_after_read_only_visit) ... ok
+test_hardlink_link_prefix_chain_directory_and_missing_targets_refuse (__main__.MaterialChangeTests.test_hardlink_link_prefix_chain_directory_and_missing_targets_refuse) ... ok
+test_normalized_root_variants_and_non_directory_root_refuse (__main__.MaterialChangeTests.test_normalized_root_variants_and_non_directory_root_refuse) ... ok
+test_referenced_hardlink_requires_all_inode_metadata_fields (__main__.MaterialChangeTests.test_referenced_hardlink_requires_all_inode_metadata_fields) ... ok
+test_required_unreferenced_hardlink_metadata_cannot_modify_checked_inode (__main__.MaterialChangeTests.test_required_unreferenced_hardlink_metadata_cannot_modify_checked_inode) ... FAIL
+test_reserved_dependency_key_refuses_but_similar_library_name_passes (__main__.MaterialChangeTests.test_reserved_dependency_key_refuses_but_similar_library_name_passes) ... ok
+test_SEC01_collision_and_positive_config (__main__.OriginalClosureTests.test_SEC01_collision_and_positive_config) ... ok
+test_SEC02_ordered_symlink_lookup_and_matching_source (__main__.OriginalClosureTests.test_SEC02_ordered_symlink_lookup_and_matching_source) ... ok
+test_SEC03_exact_header_budget_and_duplicate_roots (__main__.OriginalClosureTests.test_SEC03_exact_header_budget_and_duplicate_roots) ... ok
+test_SEC04_original_bad_inode_alias_and_both_source_positives (__main__.OriginalClosureTests.test_SEC04_original_bad_inode_alias_and_both_source_positives) ... ok
+test_SEC05_root_alias_conflict_duplicate_and_both_positive_forms (__main__.OriginalClosureTests.test_SEC05_root_alias_conflict_duplicate_and_both_positive_forms) ... ok
+
+======================================================================
+FAIL: test_required_unreferenced_hardlink_metadata_cannot_modify_checked_inode (__main__.MaterialChangeTests.test_required_unreferenced_hardlink_metadata_cannot_modify_checked_inode)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/opencode/c0-runtime-images-final-2026-10-17/security/test_final.py", line 221, in test_required_unreferenced_hardlink_metadata_cannot_modify_checked_inode
+    with self.assertRaisesRegex(c.Invalid, 'IMAGE_HARDLINK_METADATA'):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Invalid not raised
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.500s
+
+FAILED (failures=1)

@@ -1,0 +1,117 @@
+{
+  "files": {
+    "c0-offline-tests.json": {
+      "bytes": 87404,
+      "private_source": "/tmp/opencode/c0-x64-publication-2026-10-17/sync-1/required/artifacts/c0-offline-tests/c0-offline-tests.json",
+      "sha256": "9ca71df172522bf7c767f4df1fc66c91968afd1005e489b045bc2d4f9a759f69"
+    },
+    "c0-tests.json": {
+      "bytes": 87369,
+      "private_source": "/tmp/opencode/c0-x64-publication-2026-10-17/c0-tests.json",
+      "sha256": "b88d7f34a8fbbd4de29b93e6614921f619ce667bd3539c5d126ff79d1c00dd2f"
+    },
+    "c0-tests.log": {
+      "bytes": 42598,
+      "private_source": "/tmp/opencode/c0-x64-publication-2026-10-17/c0-tests.log",
+      "sha256": "0273792dff5a204c6ffcb83b8b88ba0ffbf3264371134c75f63ddcd1c35b8211"
+    },
+    "ci-gate.json": {
+      "bytes": 7245,
+      "private_source": "/tmp/opencode/c0-x64-publication-2026-10-17/ci-gate.json",
+      "sha256": "e2cf15a8a479982e41b89d4e841db6a97553fd15998209c956ffdef9e4300a7f"
+    },
+    "commit.json": {
+      "bytes": 490,
+      "private_source": "/tmp/opencode/c0-x64-publication-2026-10-17/commit.json",
+      "sha256": "72b5be99823284fed483bbcabbd77d41ef47a0d765d4644d6f7417743eec2284"
+    },
+    "current-ci-gate.json": {
+      "bytes": 7245,
+      "private_source": "/tmp/opencode/c0-x64-publication-2026-10-17/sync-1/ci-gate.json",
+      "sha256": "c2c0806d14d02be7aed7ab6729e51c7b88c418ddc2869f73e472850192208dff"
+    },
+    "current-publication.json": {
+      "bytes": 1007,
+      "private_source": "/tmp/opencode/c0-x64-publication-2026-10-17/sync-1/publication.json",
+      "sha256": "7a909d3347a7a5daa21da8e336a1bb2131eed1c9bdc1d9bf901571ca84fe2f84"
+    },
+    "image-validation.json": {
+      "bytes": 27745,
+      "private_source": "/tmp/opencode/c0-x64-publication-2026-10-17/sync-1/required/artifacts/m4-image-validation-amd64/image-validation.json",
+      "sha256": "713600c485f87d2c89520e8d5c14e925724aef4a2393a0d312b920c102254667"
+    },
+    "preflight.json": {
+      "bytes": 25667,
+      "private_source": "/tmp/opencode/c0-x64-publication-2026-10-17/preflight.json",
+      "sha256": "9093092f3f5b4b6f5466d496cb7c24c3ed3c19749ab10891fbe8ca8c6a3daf7b"
+    },
+    "publication.json": {
+      "bytes": 710,
+      "private_source": "/tmp/opencode/c0-x64-publication-2026-10-17/publication.json",
+      "sha256": "3f62e795024adfabc5c34d5211c0a9c9595684c775f3933d521b839ebbaa0966"
+    },
+    "required-artifacts.json": {
+      "bytes": 1465,
+      "private_source": "/tmp/opencode/c0-x64-publication-2026-10-17/sync-1/required/artifacts.json",
+      "sha256": "9853824368fbcab6786847fd5507cfcec9c8fab6c5a7846e3e3e4703396d21ce"
+    },
+    "required-run.json": {
+      "bytes": 7880,
+      "private_source": "/tmp/opencode/c0-x64-publication-2026-10-17/sync-1/required/run.json",
+      "sha256": "124fbbcdd83d7b3002efdc4fd7d5f9c943578855eacc6a3d81dfc4bc1af48e85"
+    },
+    "shard-0.json": {
+      "bytes": 34154,
+      "private_source": "/tmp/opencode/c0-x64-publication-2026-10-17/sync-1/unit/artifacts/v2-race-shard-0/shard-0.json",
+      "sha256": "4b616f9e283833d0d4133b42b38f23583c46edcc0f10fdd50b94d408b0d73af3"
+    },
+    "shard-1.json": {
+      "bytes": 32362,
+      "private_source": "/tmp/opencode/c0-x64-publication-2026-10-17/sync-1/unit/artifacts/v2-race-shard-1/shard-1.json",
+      "sha256": "15f3a72a8a2f5d058b51b5a238916361dfa329ead49cd2ecb1623942b2380610"
+    },
+    "shard-2.json": {
+      "bytes": 32548,
+      "private_source": "/tmp/opencode/c0-x64-publication-2026-10-17/sync-1/unit/artifacts/v2-race-shard-2/shard-2.json",
+      "sha256": "39a5a753c5ba2f6d68419052850aed2bad20c732c3c30ce451c16e34c8d74cd3"
+    },
+    "shard-3.json": {
+      "bytes": 34474,
+      "private_source": "/tmp/opencode/c0-x64-publication-2026-10-17/sync-1/unit/artifacts/v2-race-shard-3/shard-3.json",
+      "sha256": "3d48d2b80b1fda3f05b519eec56e5284492d0c8cb1363ccbdc2798debd190e00"
+    },
+    "shard-4.json": {
+      "bytes": 35560,
+      "private_source": "/tmp/opencode/c0-x64-publication-2026-10-17/sync-1/unit/artifacts/v2-race-shard-4/shard-4.json",
+      "sha256": "ef971cf8aacdc190ff48710a0c5a7c9446cfed7b7bd80b872daed5a269e71537"
+    },
+    "shard-5.json": {
+      "bytes": 32470,
+      "private_source": "/tmp/opencode/c0-x64-publication-2026-10-17/sync-1/unit/artifacts/v2-race-shard-5/shard-5.json",
+      "sha256": "e7ced5ac0e82158616b4b0dcecf4837d72572c860c6aff651099f4ccf0fed8ec"
+    },
+    "shard-6.json": {
+      "bytes": 32014,
+      "private_source": "/tmp/opencode/c0-x64-publication-2026-10-17/sync-1/unit/artifacts/v2-race-shard-6/shard-6.json",
+      "sha256": "b01082a022fa204f76ea09668b602200231c31cdf450c029c1e589dcfd3a92af"
+    },
+    "shard-7.json": {
+      "bytes": 32210,
+      "private_source": "/tmp/opencode/c0-x64-publication-2026-10-17/sync-1/unit/artifacts/v2-race-shard-7/shard-7.json",
+      "sha256": "44d151d958fa29eb8b7b6bf7ff807e7e2b52aa45347be1ae8a6aab2333948432"
+    },
+    "unit-artifacts.json": {
+      "bytes": 5713,
+      "private_source": "/tmp/opencode/c0-x64-publication-2026-10-17/sync-1/unit/artifacts.json",
+      "sha256": "0797d8d967b285e220808ee394a9cefda829b0cc851fe8d5f8b2505436565ec0"
+    },
+    "unit-run.json": {
+      "bytes": 40282,
+      "private_source": "/tmp/opencode/c0-x64-publication-2026-10-17/sync-1/unit/run.json",
+      "sha256": "bc3a325831bf119745e9297acf54cc8b934d80ca65a5cc604ab79bfb358be390"
+    }
+  },
+  "head": "7ef2041e2844aa34bec54da61c2e8469c1382bac",
+  "kind": "c0_arch_03_publication_ci_exports",
+  "version": 1
+}

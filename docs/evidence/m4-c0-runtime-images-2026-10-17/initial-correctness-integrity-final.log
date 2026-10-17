@@ -1,0 +1,11 @@
+{
+  "inventory_sha256": "f789846f36fd23c21cad7b7ef461ec1dbb5521e0ad6d8948ae5cace2fde9dec4",
+  "head": "7ef2041e2844aa34bec54da61c2e8469c1382bac",
+  "branch": "feature/crawl-jobs-v2-c0-runtime-images",
+  "match": true,
+  "evidence_files_checked": 282,
+  "evidence_unchanged": true,
+  "snapshot_inventory_exact": true,
+  "package_inventory_exact": true,
+  "unrelated_git_status_not_compared": true
+}

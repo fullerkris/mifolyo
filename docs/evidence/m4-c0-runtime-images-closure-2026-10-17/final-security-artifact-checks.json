@@ -1,0 +1,266 @@
+{
+  "all_retained_entries_match_prior_review": true,
+  "continuity_sha256": "a8f6aee7dee482c03b925bef48a57e2ed5eb5d46edc61ea11f67c9790b5211f7",
+  "current_inventory_sha256": "1f0e82a5ca98f02bf36deb4292501a0b97a38ac8bf567fd170fc09c8d4890376",
+  "engine_or_helper_executions": 0,
+  "exact_host_only_delta": {
+    "tests/crawl-jobs-v2-observer/image_artifacts.py": {
+      "after": "d6104f24562ed1f605043314b2f505c9f3609ca599f040fc6a9feb8d863252e5",
+      "before": "61df24f28e9e4ef2c92e21503637e22863c1da4d9d47b112a2d97be6fb8c9683"
+    },
+    "tests/crawl-jobs-v2-observer/test_image_review.py": {
+      "after": "605cabb8937c184d3caad088e1468af2cb5871a3f4f3e0f3ff150a173e6e83e4",
+      "before": "f74202962d08bf0509fba42bf3dc7af3ea0dae3dc987d378ac6a025cc816fe77"
+    }
+  },
+  "historical_inventory_sha256": "14ac223d10a72ff859d653c29bf721e35af320fc3dbfe823a4c8176180576670",
+  "image_sets": {
+    "aarch64": {
+      "cleanup_records_verified": 5,
+      "command_kinds": {
+        "build": 5,
+        "container": 15,
+        "cp": 2,
+        "create": 5,
+        "export": 3,
+        "image": 8,
+        "info": 1,
+        "ps": 5,
+        "pull": 2,
+        "rm": 5,
+        "save": 3,
+        "unshare": 6,
+        "version": 1
+      },
+      "commands_verified": 61,
+      "historical_source_map_preserved": true,
+      "image_set_sha256": "ac29a71a14c21cf5b2e498b716f01fac2a888443df7e3f87fbf5c014007bd1c8",
+      "images": {
+        "observer": {
+          "archive_members": 1,
+          "content_bytes_unchanged": true,
+          "content_sha256": "d93a59cbc80ba05045cffd7fb14d1594ac956da1d0531700b88552435af50b7c",
+          "hardlinks": {},
+          "id": "sha256:f36e584c1808d192263ec9da1071ff16122afff0e67ee3e5ccda4881ec44ab12",
+          "payload_sha256": "948e94e91f84930729e7c2ad73c51a6cf105ee84e7333c261bf654f8526f2c63",
+          "portable_archive": {
+            "architecture": "aarch64",
+            "bytes": 5460992,
+            "config_id": "sha256:f36e584c1808d192263ec9da1071ff16122afff0e67ee3e5ccda4881ec44ab12",
+            "format": "docker-archive",
+            "layers": [
+              "sha256:6f48e6fd9894e6fd8a3c8b6ec0b157c4f5da3433aa39d3406847558a77e55305"
+            ],
+            "sha256": "cd59a9f9bffb5e9078f5f9da8173e7fd230bd7753a6519f7400539deddfecb0d"
+          },
+          "root_directory": {
+            "gid": 0,
+            "mode": 365,
+            "uid": 0
+          }
+        },
+        "oracle": {
+          "archive_members": 6581,
+          "content_bytes_unchanged": true,
+          "content_sha256": "b54c5b92251392f21db152efce4aa33c1e6ff17285c58066ab859a2a49fd6cd7",
+          "hardlinks": {
+            "/usr/bin/perl5.36.0": "/usr/bin/perl",
+            "/usr/bin/uncompress": "/usr/bin/gunzip"
+          },
+          "id": "sha256:24268df2086d9348743fbc309113a46a9afc4a9f607fbc75a0987718ff2db2ed",
+          "payload_sha256": "64d004592dc8299702d448f04436b6b7bd393d79963196e5c4ebcdce254e9354",
+          "portable_archive": {
+            "architecture": "aarch64",
+            "bytes": 151378944,
+            "config_id": "sha256:24268df2086d9348743fbc309113a46a9afc4a9f607fbc75a0987718ff2db2ed",
+            "format": "docker-archive",
+            "layers": [
+              "sha256:055ab12bd547e17a0630037f06a186cf405e3f61bb03a614562ca8f5ab52a8be",
+              "sha256:095145779909c26a66c70376d4b6cde5c2958236c609348586252e0064186c9d",
+              "sha256:3ca71efe23192eaff23483924b9ec0bd7f396e2aaef46640128c3477379fcaa9",
+              "sha256:ff6b919c53481cfc2497fad042e7c6cf042d45097f19fd908d13fcb73b85adcf",
+              "sha256:747b99c95ca9cb909f9c87d19a1421c84eb5342a1ad500a7a19cc6852539b9b2"
+            ],
+            "sha256": "a40ab4026d8e7f711e681e9538e2d091a47ae427fefe8acb83814dd6f90e9bcc"
+          },
+          "root_directory": {
+            "gid": 0,
+            "mode": 493,
+            "uid": 0
+          }
+        },
+        "target": {
+          "archive_members": 1,
+          "content_bytes_unchanged": true,
+          "content_sha256": "ab5fe73bbade66f04f7ed4aa6ff7311c967023fa702b5c2184d0631005ad873e",
+          "hardlinks": {},
+          "id": "sha256:50de9aac35fac6d4cada173cf06884c43b506e123cb923e851afae93bcb50273",
+          "payload_sha256": "7f9346b3a01d65dde54026b91b7e7cc7333442ea5d500fa9404bebfc7e2366e7",
+          "portable_archive": {
+            "architecture": "aarch64",
+            "bytes": 5457920,
+            "config_id": "sha256:50de9aac35fac6d4cada173cf06884c43b506e123cb923e851afae93bcb50273",
+            "format": "docker-archive",
+            "layers": [
+              "sha256:6146b2f026ee894e27ae5a5a7957d7df52fe00c4397bab191db710796106a184"
+            ],
+            "sha256": "4da1438f3b8d79588679490212f53ce18508c017abfbaf83b67b2b1776b3fee8"
+          },
+          "root_directory": {
+            "gid": 0,
+            "mode": 365,
+            "uid": 0
+          }
+        }
+      },
+      "root_observations_verified": 6
+    },
+    "x86_64": {
+      "cleanup_records_verified": 5,
+      "command_kinds": {
+        "build": 5,
+        "container": 15,
+        "cp": 2,
+        "create": 5,
+        "export": 3,
+        "image": 8,
+        "info": 1,
+        "ps": 5,
+        "pull": 2,
+        "rm": 5,
+        "save": 3,
+        "unshare": 6,
+        "version": 1
+      },
+      "commands_verified": 61,
+      "historical_source_map_preserved": true,
+      "image_set_sha256": "76b30e6cdd7ab4cb8b49e2a50964f5acd5eee1a9a3cd2b2b88d7eea263b84489",
+      "images": {
+        "observer": {
+          "archive_members": 1,
+          "content_bytes_unchanged": true,
+          "content_sha256": "8e680fab8a46406c6e4cff7dd9a7214444db2abf00a14eb76bf7030fb76e8e46",
+          "hardlinks": {},
+          "id": "sha256:2046ca5b52ec7adf8ba4ad644401f49e22955b225377b0024e52b386168cd4cf",
+          "payload_sha256": "117ca4c7220f2646ea6e3934581c52affd7b091d9513255b540295083db70901",
+          "portable_archive": {
+            "architecture": "x86_64",
+            "bytes": 5888512,
+            "config_id": "sha256:2046ca5b52ec7adf8ba4ad644401f49e22955b225377b0024e52b386168cd4cf",
+            "format": "docker-archive",
+            "layers": [
+              "sha256:737a5227dfc35f7e47346fefdaa68cb50bf28eaa4a526edd8c14323951c215ea"
+            ],
+            "sha256": "2b45067cf47565ad9ea4222d451425ba5342505cf1d8b4fbad9800f4aae8b16c"
+          },
+          "root_directory": {
+            "gid": 0,
+            "mode": 365,
+            "uid": 0
+          }
+        },
+        "oracle": {
+          "archive_members": 6586,
+          "content_bytes_unchanged": true,
+          "content_sha256": "d85d8565a9cbdfcd97476238b66f646291535acf342bfbacd2401c296af4eb55",
+          "hardlinks": {
+            "/usr/bin/perl5.36.0": "/usr/bin/perl",
+            "/usr/bin/uncompress": "/usr/bin/gunzip"
+          },
+          "id": "sha256:26201a7d895b496c26746271a8ff1fa60687d495739f2cfe0456d129f180c940",
+          "payload_sha256": "f6a268986ce2e718f48c85a4dcd65d4ec01b6aff47af7aa57abf7aca7c8f07a4",
+          "portable_archive": {
+            "architecture": "x86_64",
+            "bytes": 125835264,
+            "config_id": "sha256:26201a7d895b496c26746271a8ff1fa60687d495739f2cfe0456d129f180c940",
+            "format": "docker-archive",
+            "layers": [
+              "sha256:34467cc93912af891dfee8a3902adf9b4f355a9bca4eaa46f658d1181a21de0d",
+              "sha256:0229d3e3d668de7c1d42c1e23d30f4bc5c5e93d68c8fe897e94a6fe9b0262491",
+              "sha256:d119e31e71d7a4e8b81f78a0e11901e1a2b3252619eac69266aa157d943b4763",
+              "sha256:1095031acd1c984ad93c83dadab1d79a3b2fd93d5086537b16593c47a3e3ee06",
+              "sha256:a1860a11aed5e57a56e3847b0129604b32043bc349bd85118312ec8db2bc61fc"
+            ],
+            "sha256": "d15ca6b653e4c8f7d32895b7ac6f8f523ee45538065e09d9b74fa541018ba98a"
+          },
+          "root_directory": {
+            "gid": 0,
+            "mode": 493,
+            "uid": 0
+          }
+        },
+        "target": {
+          "archive_members": 1,
+          "content_bytes_unchanged": true,
+          "content_sha256": "0b591e3700cc349573d30c0c9d6025371d5da919a21863d7a077368801322b95",
+          "hardlinks": {},
+          "id": "sha256:1062239ded1acb7b4ac0a8c2f85920fc336e49182dc4e42e8175745e2f813a9f",
+          "payload_sha256": "c9f5f201adfaa4d419f2154c2baeef5f64011a130b9443d3cf70c46e2a28eb52",
+          "portable_archive": {
+            "architecture": "x86_64",
+            "bytes": 5890048,
+            "config_id": "sha256:1062239ded1acb7b4ac0a8c2f85920fc336e49182dc4e42e8175745e2f813a9f",
+            "format": "docker-archive",
+            "layers": [
+              "sha256:81b0644b1b42a1f33c8ff0f9ba24bde6df5ddeb81eb6e1ee10beff44e5fbb8ca"
+            ],
+            "sha256": "dc57e5f47fac799d22ae2ac2c072e937c08d79e647296660ab46dced8fcb7b92"
+          },
+          "root_directory": {
+            "gid": 0,
+            "mode": 365,
+            "uid": 0
+          }
+        }
+      },
+      "root_observations_verified": 6
+    }
+  },
+  "pass": true,
+  "recorded_suites": {
+    "tests-022.json": {
+      "added_ids": [
+        "test_image_review.ImageReviewTests.test_flat_archive_entries_require_literal_directory_ancestors"
+      ],
+      "all_287_prior_ids_retained": true,
+      "independently_rerun": false,
+      "sha256": "f609fb53cc8b9717da96cd9025a693591d9070b0d64538352e0826ded365d1c7",
+      "source_bound": true,
+      "tests_run": 288
+    },
+    "tests-077.json": {
+      "added_ids": [
+        "test_image_review.ImageReviewTests.test_flat_archive_entries_require_literal_directory_ancestors"
+      ],
+      "all_287_prior_ids_retained": true,
+      "independently_rerun": false,
+      "sha256": "f609fb53cc8b9717da96cd9025a693591d9070b0d64538352e0826ded365d1c7",
+      "source_bound": true,
+      "tests_run": 288
+    }
+  },
+  "root_helper_sha256": "4b60558d5ddb0ce85ebccc4b7edd359ba95ddd6689787a4d6ce8140b8ada097c",
+  "unchanged_construction_inputs": [
+    ".dockerignore",
+    "Dockerfile",
+    "Dockerfile.oracle",
+    "Dockerfile.oracle.dockerignore",
+    "build_oracle.py",
+    "build_tools.py",
+    "contracts.py",
+    "linux_observation.py",
+    "native/admission.h",
+    "native/architecture.h",
+    "native/common.h",
+    "native/observer.c",
+    "native/target.c",
+    "native/test_x86_debug.c",
+    "native/x86_debug.h",
+    "oracle.py",
+    "oracle_protocol.py",
+    "oracle_worker.py",
+    "profiles.py",
+    "runtime_admission.py",
+    "worker.py"
+  ]
+}

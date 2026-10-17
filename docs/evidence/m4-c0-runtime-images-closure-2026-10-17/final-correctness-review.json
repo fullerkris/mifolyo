@@ -1,0 +1,522 @@
+{
+  "artifact_revalidation": {
+    "independently_verified": true,
+    "path": "/tmp/opencode/c0-runtime-images-closure-2026-10-17/artifact-revalidation.json",
+    "rebuild_required": false,
+    "sha256": "a8f6aee7dee482c03b925bef48a57e2ed5eb5d46edc61ea11f67c9790b5211f7",
+    "unchanged_construction_inputs": {
+      ".dockerignore": "25170fdb33082a47a01bdc344bfabe8ef4460eed2da175e6dd1159557fcaa13d",
+      "Dockerfile": "6925c36fe1cd42800333b4c72c54143b0c706e26e0aa37a09fd8679a684fa06c",
+      "Dockerfile.oracle": "61c196ddc98e522516fd1e36ce239f36f27f04e844be66752227c90de5897429",
+      "Dockerfile.oracle.dockerignore": "679f3cd226874aa189596199b105352137171eed114a1393e478eafc43f330d3",
+      "build_oracle.py": "cb702f624c986320e6f4c690dfc4eac1187104c711a52eb9e2bab28ec12e7ed6",
+      "build_tools.py": "a402d791a3cd1dc35ed709a985cbcd9b06a9af9b2f370616f44f2bcfe6519acb",
+      "contracts.py": "6a3c4dfe7b6fb4524771b26fdcbcba39be2c5893d52e2e4caeebf762df27a7f4",
+      "linux_observation.py": "58934a305a1c7bf5877c4e5f7ae5969181c61fed267b150d0ed1ed91c195282d",
+      "native/admission.h": "b64f55c4f5184506bc442bf13405f282b92d4bc600d8958b5febda5108fe0a96",
+      "native/architecture.h": "c0b078cd257852bc3cb57e1405e18c943bf2d0a48520523195846c8f58cfea2b",
+      "native/common.h": "4b221886a774007a74ed68a44a6e5088bc7f2e4ccf4980ddb8815f85cfc27042",
+      "native/observer.c": "a45816e40320c8560f439dfdd0b1ebef636dc74a0a101c19f0a726ae38098a5c",
+      "native/target.c": "aedd6549923876d28b7d39748c6506dbad539459200b276a9f409500daf3f82d",
+      "native/test_x86_debug.c": "ca8c49152d575c6b42e37914ea7dc5d805975e49fee4fa799137799ceaaa6f6f",
+      "native/x86_debug.h": "42844fba32b39dfe752fe84f84b1748a872b93aed6c5810a9a30aeab2fbd1777",
+      "oracle.py": "fa14b08caee86b65d9a01c16bb3e6ea236264275a48a3f32ad6694c57df23bc8",
+      "oracle_protocol.py": "f867fdc33eb271385176ab25c09a573e9662f77b7f6a73e559dbf07fcb115f45",
+      "oracle_worker.py": "91e84a5d3f47b043d6c12f9564604dba11f2ad9cc49e58a905ee714d2ece07d0",
+      "profiles.py": "b149039b977bd78daf53a6ddb7635419b36338925c25d125a3d49fac8f60a539",
+      "runtime_admission.py": "307e4486f4c23c426d543ddc3cee65d99dcee77c7c01087f4c8840cc81d3b076",
+      "worker.py": "08c319e7ec3790f619e4bf4ba3160e0db3bdc34f8dd86256bf998639aa2ea273"
+    },
+    "unchanged_driver_and_auxiliary": {
+      ".github/workflows/c0-runtime-images.yml": "47d0205d931100d096e8720d4bc6a21d3d542ab64db5eaefba4e46827e9c770c",
+      "scripts/prepare-crawl-jobs-v2-observer-images.py": "a97a270010e48dfee61c3c3317c4fcad7069bb70ba83ee0181d3c6d83b7e71cc",
+      "scripts/test-crawl-jobs-v2-observer.py": "9afb715125f734f5b905da63dde5c9787fc5997b2e5a73a0bf62d781b23aef84",
+      "tests/crawl-jobs-v2-observer/image_build.py": "6926bdb5bf01c25b3c29ac5607e4602bf831772fe34e06c85bee7700baee0d85"
+    }
+  },
+  "checks": {
+    "actual_ancestry_verification": "Every ancestor of every stored entry independently checked, in addition to constructor validation.",
+    "actual_images": {
+      "aarch64": {
+        "cleanup_records": 5,
+        "image_set_sha256": "ac29a71a14c21cf5b2e498b716f01fac2a888443df7e3f87fbf5c014007bd1c8",
+        "roles": {
+          "observer": {
+            "content_bytes_unchanged": true,
+            "content_sha256": "d93a59cbc80ba05045cffd7fb14d1594ac956da1d0531700b88552435af50b7c",
+            "elf_count": 1,
+            "hardlinks": [],
+            "id": "sha256:f36e584c1808d192263ec9da1071ff16122afff0e67ee3e5ccda4881ec44ab12",
+            "literal_ancestry_entries_checked": 1,
+            "payload_sha256": "948e94e91f84930729e7c2ad73c51a6cf105ee84e7333c261bf654f8526f2c63",
+            "portable_archive": {
+              "architecture": "aarch64",
+              "bytes": 5460992,
+              "config_id": "sha256:f36e584c1808d192263ec9da1071ff16122afff0e67ee3e5ccda4881ec44ab12",
+              "format": "docker-archive",
+              "layers": [
+                "sha256:6f48e6fd9894e6fd8a3c8b6ec0b157c4f5da3433aa39d3406847558a77e55305"
+              ],
+              "sha256": "cd59a9f9bffb5e9078f5f9da8173e7fd230bd7753a6519f7400539deddfecb0d"
+            },
+            "required_elf_count": 1,
+            "root_directory": {
+              "gid": 0,
+              "mode": 365,
+              "uid": 0
+            }
+          },
+          "oracle": {
+            "content_bytes_unchanged": true,
+            "content_sha256": "b54c5b92251392f21db152efce4aa33c1e6ff17285c58066ab859a2a49fd6cd7",
+            "elf_count": 790,
+            "hardlinks": [
+              {
+                "declared_target": "/usr/bin/perl",
+                "name": "/usr/bin/perl5.36.0",
+                "resolved_target": "/usr/bin/perl"
+              },
+              {
+                "declared_target": "/usr/bin/gunzip",
+                "name": "/usr/bin/uncompress",
+                "resolved_target": "/usr/bin/gunzip"
+              }
+            ],
+            "id": "sha256:24268df2086d9348743fbc309113a46a9afc4a9f607fbc75a0987718ff2db2ed",
+            "literal_ancestry_entries_checked": 6581,
+            "payload_sha256": "64d004592dc8299702d448f04436b6b7bd393d79963196e5c4ebcdce254e9354",
+            "portable_archive": {
+              "architecture": "aarch64",
+              "bytes": 151378944,
+              "config_id": "sha256:24268df2086d9348743fbc309113a46a9afc4a9f607fbc75a0987718ff2db2ed",
+              "format": "docker-archive",
+              "layers": [
+                "sha256:055ab12bd547e17a0630037f06a186cf405e3f61bb03a614562ca8f5ab52a8be",
+                "sha256:095145779909c26a66c70376d4b6cde5c2958236c609348586252e0064186c9d",
+                "sha256:3ca71efe23192eaff23483924b9ec0bd7f396e2aaef46640128c3477379fcaa9",
+                "sha256:ff6b919c53481cfc2497fad042e7c6cf042d45097f19fd908d13fcb73b85adcf",
+                "sha256:747b99c95ca9cb909f9c87d19a1421c84eb5342a1ad500a7a19cc6852539b9b2"
+              ],
+              "sha256": "a40ab4026d8e7f711e681e9538e2d091a47ae427fefe8acb83814dd6f90e9bcc"
+            },
+            "required_elf_count": 18,
+            "root_directory": {
+              "gid": 0,
+              "mode": 493,
+              "uid": 0
+            }
+          },
+          "target": {
+            "content_bytes_unchanged": true,
+            "content_sha256": "ab5fe73bbade66f04f7ed4aa6ff7311c967023fa702b5c2184d0631005ad873e",
+            "elf_count": 1,
+            "hardlinks": [],
+            "id": "sha256:50de9aac35fac6d4cada173cf06884c43b506e123cb923e851afae93bcb50273",
+            "literal_ancestry_entries_checked": 1,
+            "payload_sha256": "7f9346b3a01d65dde54026b91b7e7cc7333442ea5d500fa9404bebfc7e2366e7",
+            "portable_archive": {
+              "architecture": "aarch64",
+              "bytes": 5457920,
+              "config_id": "sha256:50de9aac35fac6d4cada173cf06884c43b506e123cb923e851afae93bcb50273",
+              "format": "docker-archive",
+              "layers": [
+                "sha256:6146b2f026ee894e27ae5a5a7957d7df52fe00c4397bab191db710796106a184"
+              ],
+              "sha256": "4da1438f3b8d79588679490212f53ce18508c017abfbaf83b67b2b1776b3fee8"
+            },
+            "required_elf_count": 1,
+            "root_directory": {
+              "gid": 0,
+              "mode": 365,
+              "uid": 0
+            }
+          }
+        },
+        "verified_command_logs": 61
+      },
+      "x86_64": {
+        "cleanup_records": 5,
+        "image_set_sha256": "76b30e6cdd7ab4cb8b49e2a50964f5acd5eee1a9a3cd2b2b88d7eea263b84489",
+        "roles": {
+          "observer": {
+            "content_bytes_unchanged": true,
+            "content_sha256": "8e680fab8a46406c6e4cff7dd9a7214444db2abf00a14eb76bf7030fb76e8e46",
+            "elf_count": 1,
+            "hardlinks": [],
+            "id": "sha256:2046ca5b52ec7adf8ba4ad644401f49e22955b225377b0024e52b386168cd4cf",
+            "literal_ancestry_entries_checked": 1,
+            "payload_sha256": "117ca4c7220f2646ea6e3934581c52affd7b091d9513255b540295083db70901",
+            "portable_archive": {
+              "architecture": "x86_64",
+              "bytes": 5888512,
+              "config_id": "sha256:2046ca5b52ec7adf8ba4ad644401f49e22955b225377b0024e52b386168cd4cf",
+              "format": "docker-archive",
+              "layers": [
+                "sha256:737a5227dfc35f7e47346fefdaa68cb50bf28eaa4a526edd8c14323951c215ea"
+              ],
+              "sha256": "2b45067cf47565ad9ea4222d451425ba5342505cf1d8b4fbad9800f4aae8b16c"
+            },
+            "required_elf_count": 1,
+            "root_directory": {
+              "gid": 0,
+              "mode": 365,
+              "uid": 0
+            }
+          },
+          "oracle": {
+            "content_bytes_unchanged": true,
+            "content_sha256": "d85d8565a9cbdfcd97476238b66f646291535acf342bfbacd2401c296af4eb55",
+            "elf_count": 791,
+            "hardlinks": [
+              {
+                "declared_target": "/usr/bin/perl",
+                "name": "/usr/bin/perl5.36.0",
+                "resolved_target": "/usr/bin/perl"
+              },
+              {
+                "declared_target": "/usr/bin/gunzip",
+                "name": "/usr/bin/uncompress",
+                "resolved_target": "/usr/bin/gunzip"
+              }
+            ],
+            "id": "sha256:26201a7d895b496c26746271a8ff1fa60687d495739f2cfe0456d129f180c940",
+            "literal_ancestry_entries_checked": 6586,
+            "payload_sha256": "f6a268986ce2e718f48c85a4dcd65d4ec01b6aff47af7aa57abf7aca7c8f07a4",
+            "portable_archive": {
+              "architecture": "x86_64",
+              "bytes": 125835264,
+              "config_id": "sha256:26201a7d895b496c26746271a8ff1fa60687d495739f2cfe0456d129f180c940",
+              "format": "docker-archive",
+              "layers": [
+                "sha256:34467cc93912af891dfee8a3902adf9b4f355a9bca4eaa46f658d1181a21de0d",
+                "sha256:0229d3e3d668de7c1d42c1e23d30f4bc5c5e93d68c8fe897e94a6fe9b0262491",
+                "sha256:d119e31e71d7a4e8b81f78a0e11901e1a2b3252619eac69266aa157d943b4763",
+                "sha256:1095031acd1c984ad93c83dadab1d79a3b2fd93d5086537b16593c47a3e3ee06",
+                "sha256:a1860a11aed5e57a56e3847b0129604b32043bc349bd85118312ec8db2bc61fc"
+              ],
+              "sha256": "d15ca6b653e4c8f7d32895b7ac6f8f523ee45538065e09d9b74fa541018ba98a"
+            },
+            "required_elf_count": 18,
+            "root_directory": {
+              "gid": 0,
+              "mode": 493,
+              "uid": 0
+            }
+          },
+          "target": {
+            "content_bytes_unchanged": true,
+            "content_sha256": "0b591e3700cc349573d30c0c9d6025371d5da919a21863d7a077368801322b95",
+            "elf_count": 1,
+            "hardlinks": [],
+            "id": "sha256:1062239ded1acb7b4ac0a8c2f85920fc336e49182dc4e42e8175745e2f813a9f",
+            "literal_ancestry_entries_checked": 1,
+            "payload_sha256": "c9f5f201adfaa4d419f2154c2baeef5f64011a130b9443d3cf70c46e2a28eb52",
+            "portable_archive": {
+              "architecture": "x86_64",
+              "bytes": 5890048,
+              "config_id": "sha256:1062239ded1acb7b4ac0a8c2f85920fc336e49182dc4e42e8175745e2f813a9f",
+              "format": "docker-archive",
+              "layers": [
+                "sha256:81b0644b1b42a1f33c8ff0f9ba24bde6df5ddeb81eb6e1ee10beff44e5fbb8ca"
+              ],
+              "sha256": "dc57e5f47fac799d22ae2ac2c072e937c08d79e647296660ab46dced8fcb7b92"
+            },
+            "required_elf_count": 1,
+            "root_directory": {
+              "gid": 0,
+              "mode": 365,
+              "uid": 0
+            }
+          }
+        },
+        "verified_command_logs": 61
+      }
+    },
+    "content_records_byte_identical": 6,
+    "engine_commands_executed": 0,
+    "exact_prior_counterexamples": 8,
+    "full_288_suite_rerun": false,
+    "full_local_reports": [
+      {
+        "count": 288,
+        "log_sha256": "3d8175afd235305d938ba405d0fd9356e4cdda57bb7dc9f8fc350ba60748df16",
+        "new_ids": [
+          "test_image_review.ImageReviewTests.test_flat_archive_entries_require_literal_directory_ancestors"
+        ],
+        "report_sha256": "f609fb53cc8b9717da96cd9025a693591d9070b0d64538352e0826ded365d1c7",
+        "retained_ids": 287,
+        "umask": "022"
+      },
+      {
+        "count": 288,
+        "log_sha256": "721ea41c9e948d107bfcdf0506a2e5f171be355bd7415621469579c289a30e77",
+        "new_ids": [
+          "test_image_review.ImageReviewTests.test_flat_archive_entries_require_literal_directory_ancestors"
+        ],
+        "report_sha256": "f609fb53cc8b9717da96cd9025a693591d9070b0d64538352e0826ded365d1c7",
+        "retained_ids": 287,
+        "umask": "077"
+      }
+    ],
+    "image_unit_tests": {
+      "count": 32,
+      "log": "image-tests.log",
+      "resource_warnings": "error",
+      "status": "PASS"
+    },
+    "independent_overlay_recomputed_this_round": false,
+    "independent_probe_groups": 80,
+    "independent_probe_status": "PASS",
+    "mounted_root_helper_executed": false,
+    "native_hosted_image_ci_executed": false,
+    "prior_overlay_relation_retained_by_identical_archive_hashes": true
+  },
+  "date": "2026-10-17",
+  "execution_authorized": false,
+  "finding_closure": [
+    {
+      "id": "C0ARCH04-COR-001",
+      "prior_status": "CLOSED_RETAINED",
+      "reason": "Prior correction remains present; only the post-parse hardlink scan and its new test differ from the GO snapshot. Current image regression tests pass.",
+      "status": "CLOSED_RETAINED"
+    },
+    {
+      "id": "C0ARCH04-COR-002",
+      "prior_status": "CLOSED_RETAINED",
+      "reason": "Prior correction remains present; only the post-parse hardlink scan and its new test differ from the GO snapshot. Current image regression tests pass.",
+      "status": "CLOSED_RETAINED"
+    },
+    {
+      "id": "C0ARCH04-COR-003",
+      "prior_status": "CLOSED_RETAINED",
+      "reason": "Prior correction remains present; only the post-parse hardlink scan and its new test differ from the GO snapshot. Current image regression tests pass.",
+      "status": "CLOSED_RETAINED"
+    },
+    {
+      "id": "C0ARCH04-COR-004",
+      "prior_status": "CLOSED",
+      "reason": "Prior correction remains present; only the post-parse hardlink scan and its new test differ from the GO snapshot. Current image regression tests pass.",
+      "status": "CLOSED_RETAINED"
+    },
+    {
+      "id": "C0ARCH04-COR-005",
+      "prior_status": "CLOSED_WITH_DOCUMENTED_MODEL_LIMITS",
+      "reason": "Prior correction remains present; only the post-parse hardlink scan and its new test differ from the GO snapshot. Current image regression tests pass.",
+      "status": "CLOSED_RETAINED"
+    },
+    {
+      "id": "C0ARCH04-COR-006",
+      "prior_status": "CLOSED",
+      "reason": "Prior correction remains present; only the post-parse hardlink scan and its new test differ from the GO snapshot. Current image regression tests pass.",
+      "status": "CLOSED_RETAINED"
+    },
+    {
+      "current_regression": "test_image_review.ImageReviewTests.test_flat_archive_entries_require_literal_directory_ancestors",
+      "exact_prior_counterexamples_refused": 8,
+      "id": "C0ARCH04-COR-007",
+      "independent_controls": "probes.json",
+      "location": "tests/crawl-jobs-v2-observer/image_artifacts.py:125-134",
+      "reason": "Global literal-parent validation runs on the complete map before hardlink traversal. Every nonroot ancestor must be a real directory record; own-name lookup cannot bypass the stored hardlink through a symlink/file parent. Forward parents/targets and legitimate symbolic-reference lookup remain supported.",
+      "refusal": "IMAGE_MEMBER_PARENT",
+      "source_sha256": "d6104f24562ed1f605043314b2f505c9f3609ca599f040fc6a9feb8d863252e5",
+      "status": "CLOSED"
+    }
+  ],
+  "findings": [],
+  "kind": "c0_arch_04_cor007_bounded_closure_review",
+  "limits": [
+    "New writes only in the closure correctness directory. No prior report/probe/script/source/artifact edited; no previous review script executed.",
+    "No engine or mounted-root helper execution, builds/pulls/loads/starts, mounts/unmounts, real C0 native actor/collector/worker-main execution, tracing, installed filters, deployment or calibration.",
+    "Image tests use inert fixtures/private synthetic extension inventories/fake engines. Mounted-root helper text was only compared to retained commands, never executed.",
+    "Archive members were read as data streams, never extracted onto the host or executed.",
+    "Historical root/container/cleanup observations are joined within retained evidence, not freshly observed on an engine.",
+    "32 current image unit tests and 80 independent groups ran; complete 288-test source-bound reports/287-ID continuity were verified rather than rerun.",
+    "Previous independent overlay result carried forward by identical archive bytes; this round independently checks all actual entry ancestors. No timestamps/xattrs or full dynamic-loader execution claim.",
+    "Native hosted image CI and native/runtime acceptance remain unexecuted/unproven. C0-ARCH-05 calibration and C0-ARCH-06 publication remain separately gated."
+  ],
+  "new_fixture_hashes": {
+    "aarch64-forward-positive-False-False.tar": "b5d2f125edcd2c6c45802a3b9e1c32c0a683e67b0ee64382ab2bb4da14dd0a1b",
+    "aarch64-forward-positive-False-True.tar": "b20ba7a5a3b4d28897f3beaebb3026e5212ee76f711799a98515368fe1835c03",
+    "aarch64-forward-positive-True-False.tar": "c8e97f2f52121e5a522536dbf9eba35bc7250c060c29bd587e7269b8c2c57a31",
+    "aarch64-forward-positive-True-True.tar": "a4df0e68a3bba833dfafb78bab09004da33245d380321a2477b513b72ef0e29b",
+    "aarch64-higher-ancestor-file.tar": "4cacc98f26e9d3b1f5a2163a0360fc7153d2fd559bb2b09ed7d74424d42d26ac",
+    "aarch64-higher-ancestor-link.tar": "2f36a33b54ccdbbec4eda182354a58a14be5fd2088f3c5ba9a3a2c48e0cb6ac5",
+    "aarch64-higher-ancestor-missing.tar": "84aa2828ff42d805c32d7fb60d664901394be8c0429e98c16ab889ebd9676a66",
+    "aarch64-literal-..literal.tar": "7e041bb6589653dfe2d24fff503ce65c1c5e4afb22d054c43868efcd04e91d6c",
+    "aarch64-literal-.hidden.tar": "14ffb327f3a65584fccadc32e27d58992f8fe451e540d2ea3d45af7c2c0528d5",
+    "aarch64-missing-parent-directory.tar": "65c53d1f7b84002a1eb7db7d2eff57dc819e1cb627c34135f48ad8ba3c87a3fa",
+    "aarch64-missing-parent-file.tar": "ef4944b01f30411cfc8cc35a3a15845956a59ba910ee4be3c54a265317e29879",
+    "aarch64-missing-parent-hardlink.tar": "757ae3af1d0ef7064c01d16c6fa3bda5e0b842deb6c7748cb72cbaff5feb2d87",
+    "aarch64-missing-parent-link.tar": "b21e2d4702f9f39fccfc1400af50e920484e71db3b7c30ccf8f7ede4e61a9324",
+    "aarch64-parent-file-child-directory.tar": "cb0db698cd00f5a2c6b624e06821156c4d09b2b185f9c79ea6e0d1ddd9c03d48",
+    "aarch64-parent-file-child-file.tar": "308a06071c83cff642e6ea2645ff541f37aa8937a7a3568f5c606b27df498117",
+    "aarch64-parent-file-child-hardlink.tar": "e6c601cbf7c63e3923bfef26421a55f212f4f9493bf0b27208693b83b48187a2",
+    "aarch64-parent-file-child-link.tar": "c94f2dbbbd1289a6d879fdc250914a958ea80c4fcfe01107265c9186438c1f9b",
+    "aarch64-parent-link-child-directory.tar": "57657766d63da4d23ca4c8a0452491245b7ed1cc5111b05d9e8df57ca7aaedb4",
+    "aarch64-parent-link-child-file.tar": "5de000dff41b7c5a07ce497b0189fe49478609b03a692a83d06e84ac32cb6d8e",
+    "aarch64-parent-link-child-hardlink.tar": "1d871acb599bb285f2453bd67c268bcebd16a133e35cc75d1543990b38d8d107",
+    "aarch64-parent-link-child-link.tar": "68682aa57aa61cad1ce8a14662750be4d2b71fc7d8b646207ff773c775788ebb",
+    "aarch64-reference-symlinks-positive.tar": "ec68efe7f4dfdf0100dd4504f5c5a206435048e6078029df3766314edd3cf8d9",
+    "x86_64-forward-positive-False-False.tar": "557f1bf0567b8a5b9919a3667dde57cdcb2fc6a04cef990badc89d9b847a6d33",
+    "x86_64-forward-positive-False-True.tar": "be09f93b44afad7718616de76584d43a980b9ad90ba89c0073002f21a06263e0",
+    "x86_64-forward-positive-True-False.tar": "9ca793fd1997cb0398b53e83bd677f7348f175a3c915506ebf5d0dea1d598f2c",
+    "x86_64-forward-positive-True-True.tar": "ae969f95262528b1eaa7b1122c19549e053d0854292f2a746cdcb980e2970316",
+    "x86_64-higher-ancestor-file.tar": "d7a1c54cbf187ed4a15960414186539dcade6312ac63df32c7dc0d330c2f430f",
+    "x86_64-higher-ancestor-link.tar": "be69b239b124359951567c2f836ae03c9d74f41f7411d2f671e25e24cedacffb",
+    "x86_64-higher-ancestor-missing.tar": "87d094115f664208df7a53c8e0f5b248a989d190814f44c2b5ec171d9155d2b9",
+    "x86_64-literal-..literal.tar": "642b68afc7c1440d1eaf009e6e7fa2a91e57c1f48ad67fe5f17af45950f34cae",
+    "x86_64-literal-.hidden.tar": "383a866a4901530e2b7d6a8c8a3a9c06b5e770168f73658feb8ea68947230a87",
+    "x86_64-missing-parent-directory.tar": "185e0b0bde8f228615bcc41b6fa28c1cd8163ff95cc49360106d40127fc21b3c",
+    "x86_64-missing-parent-file.tar": "6735c0b208f9afaef14248a483ef1b081d87d23aa6d25420d4e33058560cb99b",
+    "x86_64-missing-parent-hardlink.tar": "2b0cee725ae043d090ddd11304d51839bcb26524362d7c01782bf91275117144",
+    "x86_64-missing-parent-link.tar": "db64cfde8e29f8fc350f8a2f7cca59e49d8211c235bf281396c71639ea7fcc99",
+    "x86_64-parent-file-child-directory.tar": "362c2a9f394d366b1e6737dadd30a3b81fbe0baf2b88aaf72c812acb38e59670",
+    "x86_64-parent-file-child-file.tar": "2e0cc16b267be531f8c153c724ccc4677986f1d8faa8836fa9a5a7c8a1b5c6db",
+    "x86_64-parent-file-child-hardlink.tar": "09c5a7654f887cd2f54f14425507b0af84b76fb8e8dd32c8e28215546d2a95ed",
+    "x86_64-parent-file-child-link.tar": "d797369eae8596682a44a9952ba77a63bb327196b5c81d5a0a68e970cd013c22",
+    "x86_64-parent-link-child-directory.tar": "f0cd79a707a7ec5940ffa03ec965db08c96fb75a18097503ba0c477402e60976",
+    "x86_64-parent-link-child-file.tar": "0f3cd3a0addad27f4e1c756fc20599d7704a418f2ebb952c079a01ac7df6fde0",
+    "x86_64-parent-link-child-hardlink.tar": "e11ec5b0c1e6e98ea80f323435a55c3beda2e3608db0ca4beb46d221c93d4b65",
+    "x86_64-parent-link-child-link.tar": "32ede411f3a5036d5464ad9e01065bf9670cb5c352cecec814e6041db8f75985",
+    "x86_64-reference-symlinks-positive.tar": "e25322c211d65c4adffa47048867f82e43beec94122c81fc61928542bcb7941d"
+  },
+  "next_steps": "Continue implementation/documentation with COR-001 through COR-007 closures preserved. Hosted/native execution still requires separate approval and evidence.",
+  "preservation": {
+    "after_manifest_sha256": "02f4b7083ad2277f64643a420a4cb3bf605fa24bb06e5626342569b8e360927b",
+    "all_original_files_unchanged": true,
+    "before_manifest_sha256": "f77cbedb42005783c85798b41f2f0e6421c5f03e0f9e1741f3857f78892d4ddb",
+    "protected_file_count": 1429,
+    "protected_roots": {
+      "/tmp/opencode/c0-images-aarch64-pass5-2026-10-17": 137,
+      "/tmp/opencode/c0-images-aarch64-remediation-2026-10-17": 146,
+      "/tmp/opencode/c0-images-x86_64-pass5-2026-10-17": 137,
+      "/tmp/opencode/c0-images-x86_64-remediation-2026-10-17": 146,
+      "/tmp/opencode/c0-runtime-images-2026-10-17": 184,
+      "/tmp/opencode/c0-runtime-images-completion-2026-10-17": 176,
+      "/tmp/opencode/c0-runtime-images-final-2026-10-17": 226,
+      "/tmp/opencode/c0-runtime-images-remediation-2026-10-17": 173,
+      "/var/home/kfuller/Documents/Git_Projects/mifolyo/out/c0-runtime-images-2026-10-17/14ac223d10a72": 104
+    },
+    "unreviewed_parent_additions": {
+      "export-review.py": "78c328ccd3dbc2a14703b7c24ec700df020e1e5fce8b2b04a9729e84c762452c"
+    },
+    "whole_git_status_compared": false
+  },
+  "prior_review": {
+    "originals_preserved": true,
+    "path": "/tmp/opencode/c0-runtime-images-completion-2026-10-17/correctness/review.json",
+    "report_md_sha256": "dfe5244d0f31175f64be9e68e9dc5682853204b754e735827dcd93fa6cb60ebf",
+    "sha256": "12559ac96078b1f18b202debb86772480ada3330c6c17b75e220c11b7ce51990"
+  },
+  "review_markdown_sha256": "05f19c3efd77cb99e9e7f9f531bf2d130122134e820aa96d5fb146792b0cfde5",
+  "runtime_acceptance": false,
+  "source": {
+    "auxiliary_files": 3,
+    "before_after_match": true,
+    "branch": "feature/crawl-jobs-v2-c0-runtime-images",
+    "delta_from_completion": {
+      "tests/crawl-jobs-v2-observer/image_artifacts.py": {
+        "after": "d6104f24562ed1f605043314b2f505c9f3609ca599f040fc6a9feb8d863252e5",
+        "before": "d13b720e62727d27a3d37c7cf2f2bc6726baf14d5d01025c6f0dd0437da5e64b"
+      },
+      "tests/crawl-jobs-v2-observer/test_image_review.py": {
+        "after": "605cabb8937c184d3caad088e1468af2cb5871a3f4f3e0f3ff150a173e6e83e4",
+        "before": "18b01b5f504e1359469e8d239564aa21ddb5e692d00c0c7b51acbaee807fec2b"
+      }
+    },
+    "delta_from_construction": {
+      "tests/crawl-jobs-v2-observer/image_artifacts.py": {
+        "after": "d6104f24562ed1f605043314b2f505c9f3609ca599f040fc6a9feb8d863252e5",
+        "before": "61df24f28e9e4ef2c92e21503637e22863c1da4d9d47b112a2d97be6fb8c9683"
+      },
+      "tests/crawl-jobs-v2-observer/test_image_review.py": {
+        "after": "605cabb8937c184d3caad088e1468af2cb5871a3f4f3e0f3ff150a173e6e83e4",
+        "before": "f74202962d08bf0509fba42bf3dc7af3ea0dae3dc987d378ac6a025cc816fe77"
+      }
+    },
+    "exact_inventory": true,
+    "files": {
+      ".github/workflows/c0-runtime-images.yml": "47d0205d931100d096e8720d4bc6a21d3d542ab64db5eaefba4e46827e9c770c",
+      "scripts/prepare-crawl-jobs-v2-observer-images.py": "a97a270010e48dfee61c3c3317c4fcad7069bb70ba83ee0181d3c6d83b7e71cc",
+      "scripts/test-crawl-jobs-v2-observer.py": "9afb715125f734f5b905da63dde5c9787fc5997b2e5a73a0bf62d781b23aef84",
+      "tests/crawl-jobs-v2-observer/.dockerignore": "25170fdb33082a47a01bdc344bfabe8ef4460eed2da175e6dd1159557fcaa13d",
+      "tests/crawl-jobs-v2-observer/Dockerfile": "6925c36fe1cd42800333b4c72c54143b0c706e26e0aa37a09fd8679a684fa06c",
+      "tests/crawl-jobs-v2-observer/Dockerfile.oracle": "61c196ddc98e522516fd1e36ce239f36f27f04e844be66752227c90de5897429",
+      "tests/crawl-jobs-v2-observer/Dockerfile.oracle.dockerignore": "679f3cd226874aa189596199b105352137171eed114a1393e478eafc43f330d3",
+      "tests/crawl-jobs-v2-observer/README.md": "bd2a7769032332fc79300c281ea9be01354e16906e23fe4c1ca27a44c8e3fd14",
+      "tests/crawl-jobs-v2-observer/build_oracle.py": "cb702f624c986320e6f4c690dfc4eac1187104c711a52eb9e2bab28ec12e7ed6",
+      "tests/crawl-jobs-v2-observer/build_tools.py": "a402d791a3cd1dc35ed709a985cbcd9b06a9af9b2f370616f44f2bcfe6519acb",
+      "tests/crawl-jobs-v2-observer/context_files.py": "956ce03c56e6df84006e9bf16775f1d3d83d2acbda5bec8d9d41b1de2e72d396",
+      "tests/crawl-jobs-v2-observer/context_provision.py": "d0869ab36372a1af94ce0ffd04f1e364b318519a7e1f3c4bb7fefa95e2df340e",
+      "tests/crawl-jobs-v2-observer/context_ssh.py": "94ededb449423cbc822282ab05cc725316caef186cdba227613631618b9f2a03",
+      "tests/crawl-jobs-v2-observer/context_transport.py": "43193118350d4d52d0f3901e4a93561fa7cd94dd4e81c2ce99337b5364404af0",
+      "tests/crawl-jobs-v2-observer/context_worker.py": "f01980f5b3322eabafd5b99c97b76f4313aa9a28ce90a5f3ce66c5175843e03f",
+      "tests/crawl-jobs-v2-observer/contracts.py": "6a3c4dfe7b6fb4524771b26fdcbcba39be2c5893d52e2e4caeebf762df27a7f4",
+      "tests/crawl-jobs-v2-observer/controller.py": "23b28206e550efbe408a970161ebed7ddbd3430c771baece6765a165fc2e2ec5",
+      "tests/crawl-jobs-v2-observer/d02.py": "d7df595daeefcc3f5a785a89c191c93b5b6724e42655222befa1b07c88be29f2",
+      "tests/crawl-jobs-v2-observer/docker_backend.py": "51cf4ad679a961d5b7631af1769216dc0300e740228ce8d7cf2423ed7373ebcf",
+      "tests/crawl-jobs-v2-observer/image_artifacts.py": "d6104f24562ed1f605043314b2f505c9f3609ca599f040fc6a9feb8d863252e5",
+      "tests/crawl-jobs-v2-observer/image_build.py": "6926bdb5bf01c25b3c29ac5607e4602bf831772fe34e06c85bee7700baee0d85",
+      "tests/crawl-jobs-v2-observer/linux_observation.py": "58934a305a1c7bf5877c4e5f7ae5969181c61fed267b150d0ed1ed91c195282d",
+      "tests/crawl-jobs-v2-observer/native/admission.h": "b64f55c4f5184506bc442bf13405f282b92d4bc600d8958b5febda5108fe0a96",
+      "tests/crawl-jobs-v2-observer/native/architecture.h": "c0b078cd257852bc3cb57e1405e18c943bf2d0a48520523195846c8f58cfea2b",
+      "tests/crawl-jobs-v2-observer/native/common.h": "4b221886a774007a74ed68a44a6e5088bc7f2e4ccf4980ddb8815f85cfc27042",
+      "tests/crawl-jobs-v2-observer/native/observer.c": "a45816e40320c8560f439dfdd0b1ebef636dc74a0a101c19f0a726ae38098a5c",
+      "tests/crawl-jobs-v2-observer/native/target.c": "aedd6549923876d28b7d39748c6506dbad539459200b276a9f409500daf3f82d",
+      "tests/crawl-jobs-v2-observer/native/test_x86_debug.c": "ca8c49152d575c6b42e37914ea7dc5d805975e49fee4fa799137799ceaaa6f6f",
+      "tests/crawl-jobs-v2-observer/native/x86_debug.h": "42844fba32b39dfe752fe84f84b1748a872b93aed6c5810a9a30aeab2fbd1777",
+      "tests/crawl-jobs-v2-observer/oracle.py": "fa14b08caee86b65d9a01c16bb3e6ea236264275a48a3f32ad6694c57df23bc8",
+      "tests/crawl-jobs-v2-observer/oracle_bridge.py": "9d1efdbac6ea8b74585344884fb8264bed82f7413d32259146718872e4247f86",
+      "tests/crawl-jobs-v2-observer/oracle_protocol.py": "f867fdc33eb271385176ab25c09a573e9662f77b7f6a73e559dbf07fcb115f45",
+      "tests/crawl-jobs-v2-observer/oracle_worker.py": "91e84a5d3f47b043d6c12f9564604dba11f2ad9cc49e58a905ee714d2ece07d0",
+      "tests/crawl-jobs-v2-observer/owned_resources.py": "5e235811e610d51009c03ee8e70fe2c8fc0927708ddd2dba5a1173b3bcca5108",
+      "tests/crawl-jobs-v2-observer/profiles.py": "b149039b977bd78daf53a6ddb7635419b36338925c25d125a3d49fac8f60a539",
+      "tests/crawl-jobs-v2-observer/runtime_admission.py": "307e4486f4c23c426d543ddc3cee65d99dcee77c7c01087f4c8840cc81d3b076",
+      "tests/crawl-jobs-v2-observer/runtime_context.py": "85caefcf88973b0f78143d629dd8f3e46b16a0d987b680f48e875b9ed97739cd",
+      "tests/crawl-jobs-v2-observer/streams.py": "85f8d1b16a84462f1defe641cb2c75879fe356928c7497b06628f86d2f599cbd",
+      "tests/crawl-jobs-v2-observer/test_admission_dispatch.py": "f565e9c7672a6b2185ded0731c8481fc7cd3186e408ffad270e5a91a2792d5fa",
+      "tests/crawl-jobs-v2-observer/test_architecture_contracts.py": "3a68f407df26a17eccc3c3397a91b65ff604247bf43b3c0418f2dd2ede21b57d",
+      "tests/crawl-jobs-v2-observer/test_architecture_review.py": "89197d92221c854e92064965c1a6d73aa8cb52b8e22cda68773e095c44f4548a",
+      "tests/crawl-jobs-v2-observer/test_context_oracle_review.py": "2b7a342bd1ac25c912aebe7813d4f056ba1ebc29a96d0a2bdb0b38b02ce7c660",
+      "tests/crawl-jobs-v2-observer/test_context_provisioning.py": "47af7da18e75e311d280927b83cb64bf1b12b01562217f75bfd21b10255e83de",
+      "tests/crawl-jobs-v2-observer/test_contracts.py": "f95b6879e06055cb26b1ac80214a9708deda71561511862d7833e981ebdd0716",
+      "tests/crawl-jobs-v2-observer/test_d02.py": "f158944c10aa24dc397efdb1d03471a7a02f4b46cec46d2442e8bbe4eb772b72",
+      "tests/crawl-jobs-v2-observer/test_filter.py": "b434138a353c257b18f3262373a5fa226223d8f44b0414e3b6b2aaf40f7a7614",
+      "tests/crawl-jobs-v2-observer/test_image_artifacts.py": "81ea1082f3f4c7d38b37f4aeef0a84f215f546331d9c46d24f828d357a4835fa",
+      "tests/crawl-jobs-v2-observer/test_image_review.py": "605cabb8937c184d3caad088e1468af2cb5871a3f4f3e0f3ff150a173e6e83e4",
+      "tests/crawl-jobs-v2-observer/test_oracle_bridge.py": "e7ec3950202388b09014bd175e7668aa3375f93c4029e04910296975cdec52f1",
+      "tests/crawl-jobs-v2-observer/test_oracle_worker.py": "3c899ec2036f74167aa213cda6c42b8e71547f1e32f9c58df4e6f9cd1eca9d0a",
+      "tests/crawl-jobs-v2-observer/test_owned_resources.py": "e8b7d53c1c6081a095a116beca16680c85b35dca66249ef830f0146304cc41ab",
+      "tests/crawl-jobs-v2-observer/test_runtime_admission.py": "1e53248dbeacb1dae04f184ad844ae2d17dd7a338311ea5403e491cc373ac430",
+      "tests/crawl-jobs-v2-observer/test_runtime_context.py": "040f04d8bd9a120758e2d03c2052c666d6f88c32fc38f3ecb8f1c5614f487b7c",
+      "tests/crawl-jobs-v2-observer/test_streams.py": "0f5a4e23592bd7e849c7c90a49815704c7322f04c3804728f5ab1a3990fdd695",
+      "tests/crawl-jobs-v2-observer/test_watchdog.py": "271b8f611ec10b2d7ad523368aa6e98e3a66ebc0351beef32c94c75b3331b7da",
+      "tests/crawl-jobs-v2-observer/test_x64_runtime.py": "871dbc791fe792326b9f25516230c4e1fa2379be87cab000fd8896f950d21250",
+      "tests/crawl-jobs-v2-observer/watchdog.py": "cc2e7e1212caa6be74e2266ce3a4ab156064a3ae96f01281cfa3ba5660ba5813",
+      "tests/crawl-jobs-v2-observer/worker.py": "08c319e7ec3790f619e4bf4ba3160e0db3bdc34f8dd86256bf998639aa2ea273"
+    },
+    "head": "7ef2041e2844aa34bec54da61c2e8469c1382bac",
+    "inventory_sha256": "1f0e82a5ca98f02bf36deb4292501a0b97a38ac8bf567fd170fc09c8d4890376",
+    "package_files": 55
+  },
+  "summary": "COR-007 is closed; COR-001 through COR-006 remain closed. No blocker found in the small constructor delta. Actual retained content/config/archive records remain unchanged.",
+  "support_hashes": {
+    "common.py": "48d572738e3d8b27d0173d2d0130def41a3867b01f9f343883348c93d682056a",
+    "image-tests.log": "650751355944fe5433c231419ef274334305bbad7f6e538f59a9f135c429b976",
+    "integrity-after.log": "588e14b4e49d46e874b62b41a76cefb6c66c20ad9fbbc6fabf20c13db2293c1e",
+    "integrity-before.log": "cbeb67dd76f47887483adef5cb574048cb09135c22105462752c171684772164",
+    "integrity.py": "3716f307f2a48ad575e9efc8e1580320b7158031121f404253b8c2a27bcabda3",
+    "inventory-after.json": "02f4b7083ad2277f64643a420a4cb3bf605fa24bb06e5626342569b8e360927b",
+    "inventory-before.json": "f77cbedb42005783c85798b41f2f0e6421c5f03e0f9e1741f3857f78892d4ddb",
+    "probes.json": "1477a54e85b2c789b4eab450349e0d4e62c79892b3b7caaaf68ff90513fa92d5",
+    "probes.log": "a821fb7933a50e0360f73f48736495c78ae493e4cd0a31d906d39ac88adc9532",
+    "probes.py": "c784a229bc6e18a7ab4759639b278e63fa58a51f8f3ca5ea56c5b67c89e6738a",
+    "replay.json": "0c9aba4c3bd9a62736c1474ace49ae28fde97d32757c23e6516b73c8372f6204",
+    "replay.log": "9306c1fd26b206c922e6546dcd042e5785aef123c934c3f8f25e093717345f0d",
+    "replay.py": "4f7ffcc071bfb2e3d197e92a088fc4536f69665426fd84704a2cd405aab598ce",
+    "review.md": "05f19c3efd77cb99e9e7f9f531bf2d130122134e820aa96d5fb146792b0cfde5",
+    "write_review.py": "9edcd44b1517b14bf8b06ade73f2867bf159aa0c5aea1fff74ac023b98eac051"
+  },
+  "verdict": "GO_FOR_CONTINUED_IMPLEMENTATION",
+  "version": 1
+}

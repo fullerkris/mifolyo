@@ -1,0 +1,128 @@
+{
+  "auxiliary_files": 3,
+  "c0_actors_started": 0,
+  "images": {
+    "aarch64": {
+      "image_set_sha256": "3d609be13a2926c6601835dbb7a4713d9c29380269007fafaf1fcb087637cdb9",
+      "images": {
+        "observer": {
+          "elf_files": 1,
+          "id": "sha256:6925646147d317dd63b184bc1a810391ad0e2a8d0110bc0da102fdfea880d5d1",
+          "payload_sha256": "579d3ac4109523a42f46326045fc1ce9e9b2667b3a77eeb97d8bea4ca87cd761",
+          "portable_archive": {
+            "architecture": "aarch64",
+            "bytes": 5460992,
+            "config_id": "sha256:6925646147d317dd63b184bc1a810391ad0e2a8d0110bc0da102fdfea880d5d1",
+            "format": "docker-archive",
+            "layers": [
+              "sha256:9c286a349c8d2eb1098bf9a5013120897ccd3ea59d9520fba0388a9bd0f648ef"
+            ],
+            "sha256": "7d60506510a62599ffc5d8a4b50cceed8f2fca42bc9e64fd192e533987e90b8e"
+          }
+        },
+        "oracle": {
+          "elf_files": 790,
+          "id": "sha256:782e4fe370a81542e6561bfd8449acb0897303425502a7dd6d3daaf95a09f8fb",
+          "payload_sha256": "c8f1ff8d58d93ee9f55acbcb1beff1a91b62a31c269fcc6ade650c1462bd8cd1",
+          "portable_archive": {
+            "architecture": "aarch64",
+            "bytes": 151378432,
+            "config_id": "sha256:782e4fe370a81542e6561bfd8449acb0897303425502a7dd6d3daaf95a09f8fb",
+            "format": "docker-archive",
+            "layers": [
+              "sha256:055ab12bd547e17a0630037f06a186cf405e3f61bb03a614562ca8f5ab52a8be",
+              "sha256:095145779909c26a66c70376d4b6cde5c2958236c609348586252e0064186c9d",
+              "sha256:3ca71efe23192eaff23483924b9ec0bd7f396e2aaef46640128c3477379fcaa9",
+              "sha256:ff6b919c53481cfc2497fad042e7c6cf042d45097f19fd908d13fcb73b85adcf",
+              "sha256:1bfce93bd9d99442936070e0703b751565b49dc0db307be7eb5f5d5e6dba5044"
+            ],
+            "sha256": "05a5c7dcf56ea67ebe2079de3ae7598c9dfb362af16f76042bd0bafd08cfc514"
+          }
+        },
+        "target": {
+          "elf_files": 1,
+          "id": "sha256:55291d45474bd986511e0f80894a03d5c916951ef0680296b53bf2519b5240fc",
+          "payload_sha256": "8754e13df4fa863d4fcf6b7f3a1f0530c3b5796f6dea6aaa63c7e0e8324e6f6a",
+          "portable_archive": {
+            "architecture": "aarch64",
+            "bytes": 5457920,
+            "config_id": "sha256:55291d45474bd986511e0f80894a03d5c916951ef0680296b53bf2519b5240fc",
+            "format": "docker-archive",
+            "layers": [
+              "sha256:23b518abc7a25153594a70a9cb38c1db96977f846affdb812afbc35d5f4636d5"
+            ],
+            "sha256": "ef19c66d74e926206196c8c74b463d6b495bbb4b46adc9ae12e0bc262bb9efb5"
+          }
+        }
+      },
+      "stopped_inspections_removed": 5
+    },
+    "x86_64": {
+      "image_set_sha256": "a1d9ebd5ed7b0173f79187fcee97cc3650208c1de49006d0b614b5de8d9ebf89",
+      "images": {
+        "observer": {
+          "elf_files": 1,
+          "id": "sha256:fb6caa0d83658e28901d31b5c2c22b2ebf0c51a7911aa6fa671d1772af42d145",
+          "payload_sha256": "d04d7a2280a3d3b8fa56bf003fcbb18f3a03e78e498ac6663ccf432b4d2ff027",
+          "portable_archive": {
+            "architecture": "x86_64",
+            "bytes": 5888512,
+            "config_id": "sha256:fb6caa0d83658e28901d31b5c2c22b2ebf0c51a7911aa6fa671d1772af42d145",
+            "format": "docker-archive",
+            "layers": [
+              "sha256:b9a6c6452bf2acb2bf51a032f151ed20ec84f65509c8c494bdc87fbaa890a050"
+            ],
+            "sha256": "8b3894577c5bf29720d1a8c92268df1f5d78512947a2062d48880e62e3833705"
+          }
+        },
+        "oracle": {
+          "elf_files": 791,
+          "id": "sha256:27db4a6429ecc2cd7fa013865542d55b4fbe1283d8c2dbb280e2a04fbd6cb56f",
+          "payload_sha256": "99d6fc812cb935566e56009811c7365ac54c45fc954effcba63b97f9ccfce28f",
+          "portable_archive": {
+            "architecture": "x86_64",
+            "bytes": 125834752,
+            "config_id": "sha256:27db4a6429ecc2cd7fa013865542d55b4fbe1283d8c2dbb280e2a04fbd6cb56f",
+            "format": "docker-archive",
+            "layers": [
+              "sha256:34467cc93912af891dfee8a3902adf9b4f355a9bca4eaa46f658d1181a21de0d",
+              "sha256:0229d3e3d668de7c1d42c1e23d30f4bc5c5e93d68c8fe897e94a6fe9b0262491",
+              "sha256:d119e31e71d7a4e8b81f78a0e11901e1a2b3252619eac69266aa157d943b4763",
+              "sha256:1095031acd1c984ad93c83dadab1d79a3b2fd93d5086537b16593c47a3e3ee06",
+              "sha256:79e10b00a07ccd4db5332cbecd56776b215b51a7994d3466177a5f7c2e74f242"
+            ],
+            "sha256": "cb1f1705d728a6280780af20a9bf1453f9cbe3c2b06644d32e836feb8c2576b3"
+          }
+        },
+        "target": {
+          "elf_files": 1,
+          "id": "sha256:e62e9bb7f8310ecfae4cd1e3abbaf2155adeac789d8a49e0c536dd32f2c19dbe",
+          "payload_sha256": "01e4cdf9431a6d2c6f99f8506d134928bcf242acd23749ac54ba56070b83ba24",
+          "portable_archive": {
+            "architecture": "x86_64",
+            "bytes": 5890048,
+            "config_id": "sha256:e62e9bb7f8310ecfae4cd1e3abbaf2155adeac789d8a49e0c536dd32f2c19dbe",
+            "format": "docker-archive",
+            "layers": [
+              "sha256:40a902fc1be4a753c137fefff809b29084638f4b53641827503b8ca474476e99"
+            ],
+            "sha256": "6f333e9cef33b430c05ff85ad17b18ed0d5cd3ff8963cd62cce7974447775974"
+          }
+        }
+      },
+      "stopped_inspections_removed": 5
+    }
+  },
+  "independent_review": "pending",
+  "inspection_containers_started": 0,
+  "kind": "c0_arch_04_local_image_preparation",
+  "new_hosted_image_workflow_executed": false,
+  "package_files": 54,
+  "registry_publication": false,
+  "runtime_acceptance": false,
+  "source_inventory_sha256": "f789846f36fd23c21cad7b7ef461ec1dbb5521e0ad6d8948ae5cace2fde9dec4",
+  "status": "PASS_LOCAL_STATIC_IMAGE_CONSTRUCTION",
+  "stopped_inspections_removed": 10,
+  "tests_under_each_umask": 272,
+  "version": 1
+}

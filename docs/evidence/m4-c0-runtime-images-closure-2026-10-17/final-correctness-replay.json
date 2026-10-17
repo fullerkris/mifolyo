@@ -1,0 +1,270 @@
+{
+  "delta_from_completion": {
+    "tests/crawl-jobs-v2-observer/image_artifacts.py": {
+      "after": "d6104f24562ed1f605043314b2f505c9f3609ca599f040fc6a9feb8d863252e5",
+      "before": "d13b720e62727d27a3d37c7cf2f2bc6726baf14d5d01025c6f0dd0437da5e64b"
+    },
+    "tests/crawl-jobs-v2-observer/test_image_review.py": {
+      "after": "605cabb8937c184d3caad088e1468af2cb5871a3f4f3e0f3ff150a173e6e83e4",
+      "before": "18b01b5f504e1359469e8d239564aa21ddb5e692d00c0c7b51acbaee807fec2b"
+    }
+  },
+  "delta_from_construction": {
+    "tests/crawl-jobs-v2-observer/image_artifacts.py": {
+      "after": "d6104f24562ed1f605043314b2f505c9f3609ca599f040fc6a9feb8d863252e5",
+      "before": "61df24f28e9e4ef2c92e21503637e22863c1da4d9d47b112a2d97be6fb8c9683"
+    },
+    "tests/crawl-jobs-v2-observer/test_image_review.py": {
+      "after": "605cabb8937c184d3caad088e1468af2cb5871a3f4f3e0f3ff150a173e6e83e4",
+      "before": "f74202962d08bf0509fba42bf3dc7af3ea0dae3dc987d378ac6a025cc816fe77"
+    }
+  },
+  "images": {
+    "aarch64": {
+      "cleanup_records": 5,
+      "image_set_sha256": "ac29a71a14c21cf5b2e498b716f01fac2a888443df7e3f87fbf5c014007bd1c8",
+      "roles": {
+        "observer": {
+          "content_bytes_unchanged": true,
+          "content_sha256": "d93a59cbc80ba05045cffd7fb14d1594ac956da1d0531700b88552435af50b7c",
+          "elf_count": 1,
+          "hardlinks": [],
+          "id": "sha256:f36e584c1808d192263ec9da1071ff16122afff0e67ee3e5ccda4881ec44ab12",
+          "literal_ancestry_entries_checked": 1,
+          "payload_sha256": "948e94e91f84930729e7c2ad73c51a6cf105ee84e7333c261bf654f8526f2c63",
+          "portable_archive": {
+            "architecture": "aarch64",
+            "bytes": 5460992,
+            "config_id": "sha256:f36e584c1808d192263ec9da1071ff16122afff0e67ee3e5ccda4881ec44ab12",
+            "format": "docker-archive",
+            "layers": [
+              "sha256:6f48e6fd9894e6fd8a3c8b6ec0b157c4f5da3433aa39d3406847558a77e55305"
+            ],
+            "sha256": "cd59a9f9bffb5e9078f5f9da8173e7fd230bd7753a6519f7400539deddfecb0d"
+          },
+          "required_elf_count": 1,
+          "root_directory": {
+            "gid": 0,
+            "mode": 365,
+            "uid": 0
+          }
+        },
+        "oracle": {
+          "content_bytes_unchanged": true,
+          "content_sha256": "b54c5b92251392f21db152efce4aa33c1e6ff17285c58066ab859a2a49fd6cd7",
+          "elf_count": 790,
+          "hardlinks": [
+            {
+              "declared_target": "/usr/bin/perl",
+              "name": "/usr/bin/perl5.36.0",
+              "resolved_target": "/usr/bin/perl"
+            },
+            {
+              "declared_target": "/usr/bin/gunzip",
+              "name": "/usr/bin/uncompress",
+              "resolved_target": "/usr/bin/gunzip"
+            }
+          ],
+          "id": "sha256:24268df2086d9348743fbc309113a46a9afc4a9f607fbc75a0987718ff2db2ed",
+          "literal_ancestry_entries_checked": 6581,
+          "payload_sha256": "64d004592dc8299702d448f04436b6b7bd393d79963196e5c4ebcdce254e9354",
+          "portable_archive": {
+            "architecture": "aarch64",
+            "bytes": 151378944,
+            "config_id": "sha256:24268df2086d9348743fbc309113a46a9afc4a9f607fbc75a0987718ff2db2ed",
+            "format": "docker-archive",
+            "layers": [
+              "sha256:055ab12bd547e17a0630037f06a186cf405e3f61bb03a614562ca8f5ab52a8be",
+              "sha256:095145779909c26a66c70376d4b6cde5c2958236c609348586252e0064186c9d",
+              "sha256:3ca71efe23192eaff23483924b9ec0bd7f396e2aaef46640128c3477379fcaa9",
+              "sha256:ff6b919c53481cfc2497fad042e7c6cf042d45097f19fd908d13fcb73b85adcf",
+              "sha256:747b99c95ca9cb909f9c87d19a1421c84eb5342a1ad500a7a19cc6852539b9b2"
+            ],
+            "sha256": "a40ab4026d8e7f711e681e9538e2d091a47ae427fefe8acb83814dd6f90e9bcc"
+          },
+          "required_elf_count": 18,
+          "root_directory": {
+            "gid": 0,
+            "mode": 493,
+            "uid": 0
+          }
+        },
+        "target": {
+          "content_bytes_unchanged": true,
+          "content_sha256": "ab5fe73bbade66f04f7ed4aa6ff7311c967023fa702b5c2184d0631005ad873e",
+          "elf_count": 1,
+          "hardlinks": [],
+          "id": "sha256:50de9aac35fac6d4cada173cf06884c43b506e123cb923e851afae93bcb50273",
+          "literal_ancestry_entries_checked": 1,
+          "payload_sha256": "7f9346b3a01d65dde54026b91b7e7cc7333442ea5d500fa9404bebfc7e2366e7",
+          "portable_archive": {
+            "architecture": "aarch64",
+            "bytes": 5457920,
+            "config_id": "sha256:50de9aac35fac6d4cada173cf06884c43b506e123cb923e851afae93bcb50273",
+            "format": "docker-archive",
+            "layers": [
+              "sha256:6146b2f026ee894e27ae5a5a7957d7df52fe00c4397bab191db710796106a184"
+            ],
+            "sha256": "4da1438f3b8d79588679490212f53ce18508c017abfbaf83b67b2b1776b3fee8"
+          },
+          "required_elf_count": 1,
+          "root_directory": {
+            "gid": 0,
+            "mode": 365,
+            "uid": 0
+          }
+        }
+      },
+      "verified_command_logs": 61
+    },
+    "x86_64": {
+      "cleanup_records": 5,
+      "image_set_sha256": "76b30e6cdd7ab4cb8b49e2a50964f5acd5eee1a9a3cd2b2b88d7eea263b84489",
+      "roles": {
+        "observer": {
+          "content_bytes_unchanged": true,
+          "content_sha256": "8e680fab8a46406c6e4cff7dd9a7214444db2abf00a14eb76bf7030fb76e8e46",
+          "elf_count": 1,
+          "hardlinks": [],
+          "id": "sha256:2046ca5b52ec7adf8ba4ad644401f49e22955b225377b0024e52b386168cd4cf",
+          "literal_ancestry_entries_checked": 1,
+          "payload_sha256": "117ca4c7220f2646ea6e3934581c52affd7b091d9513255b540295083db70901",
+          "portable_archive": {
+            "architecture": "x86_64",
+            "bytes": 5888512,
+            "config_id": "sha256:2046ca5b52ec7adf8ba4ad644401f49e22955b225377b0024e52b386168cd4cf",
+            "format": "docker-archive",
+            "layers": [
+              "sha256:737a5227dfc35f7e47346fefdaa68cb50bf28eaa4a526edd8c14323951c215ea"
+            ],
+            "sha256": "2b45067cf47565ad9ea4222d451425ba5342505cf1d8b4fbad9800f4aae8b16c"
+          },
+          "required_elf_count": 1,
+          "root_directory": {
+            "gid": 0,
+            "mode": 365,
+            "uid": 0
+          }
+        },
+        "oracle": {
+          "content_bytes_unchanged": true,
+          "content_sha256": "d85d8565a9cbdfcd97476238b66f646291535acf342bfbacd2401c296af4eb55",
+          "elf_count": 791,
+          "hardlinks": [
+            {
+              "declared_target": "/usr/bin/perl",
+              "name": "/usr/bin/perl5.36.0",
+              "resolved_target": "/usr/bin/perl"
+            },
+            {
+              "declared_target": "/usr/bin/gunzip",
+              "name": "/usr/bin/uncompress",
+              "resolved_target": "/usr/bin/gunzip"
+            }
+          ],
+          "id": "sha256:26201a7d895b496c26746271a8ff1fa60687d495739f2cfe0456d129f180c940",
+          "literal_ancestry_entries_checked": 6586,
+          "payload_sha256": "f6a268986ce2e718f48c85a4dcd65d4ec01b6aff47af7aa57abf7aca7c8f07a4",
+          "portable_archive": {
+            "architecture": "x86_64",
+            "bytes": 125835264,
+            "config_id": "sha256:26201a7d895b496c26746271a8ff1fa60687d495739f2cfe0456d129f180c940",
+            "format": "docker-archive",
+            "layers": [
+              "sha256:34467cc93912af891dfee8a3902adf9b4f355a9bca4eaa46f658d1181a21de0d",
+              "sha256:0229d3e3d668de7c1d42c1e23d30f4bc5c5e93d68c8fe897e94a6fe9b0262491",
+              "sha256:d119e31e71d7a4e8b81f78a0e11901e1a2b3252619eac69266aa157d943b4763",
+              "sha256:1095031acd1c984ad93c83dadab1d79a3b2fd93d5086537b16593c47a3e3ee06",
+              "sha256:a1860a11aed5e57a56e3847b0129604b32043bc349bd85118312ec8db2bc61fc"
+            ],
+            "sha256": "d15ca6b653e4c8f7d32895b7ac6f8f523ee45538065e09d9b74fa541018ba98a"
+          },
+          "required_elf_count": 18,
+          "root_directory": {
+            "gid": 0,
+            "mode": 493,
+            "uid": 0
+          }
+        },
+        "target": {
+          "content_bytes_unchanged": true,
+          "content_sha256": "0b591e3700cc349573d30c0c9d6025371d5da919a21863d7a077368801322b95",
+          "elf_count": 1,
+          "hardlinks": [],
+          "id": "sha256:1062239ded1acb7b4ac0a8c2f85920fc336e49182dc4e42e8175745e2f813a9f",
+          "literal_ancestry_entries_checked": 1,
+          "payload_sha256": "c9f5f201adfaa4d419f2154c2baeef5f64011a130b9443d3cf70c46e2a28eb52",
+          "portable_archive": {
+            "architecture": "x86_64",
+            "bytes": 5890048,
+            "config_id": "sha256:1062239ded1acb7b4ac0a8c2f85920fc336e49182dc4e42e8175745e2f813a9f",
+            "format": "docker-archive",
+            "layers": [
+              "sha256:81b0644b1b42a1f33c8ff0f9ba24bde6df5ddeb81eb6e1ee10beff44e5fbb8ca"
+            ],
+            "sha256": "dc57e5f47fac799d22ae2ac2c072e937c08d79e647296660ab46dced8fcb7b92"
+          },
+          "required_elf_count": 1,
+          "root_directory": {
+            "gid": 0,
+            "mode": 365,
+            "uid": 0
+          }
+        }
+      },
+      "verified_command_logs": 61
+    }
+  },
+  "status": "PASS",
+  "tests": [
+    {
+      "count": 288,
+      "log_sha256": "3d8175afd235305d938ba405d0fd9356e4cdda57bb7dc9f8fc350ba60748df16",
+      "new_ids": [
+        "test_image_review.ImageReviewTests.test_flat_archive_entries_require_literal_directory_ancestors"
+      ],
+      "report_sha256": "f609fb53cc8b9717da96cd9025a693591d9070b0d64538352e0826ded365d1c7",
+      "retained_ids": 287,
+      "umask": "022"
+    },
+    {
+      "count": 288,
+      "log_sha256": "721ea41c9e948d107bfcdf0506a2e5f171be355bd7415621469579c289a30e77",
+      "new_ids": [
+        "test_image_review.ImageReviewTests.test_flat_archive_entries_require_literal_directory_ancestors"
+      ],
+      "report_sha256": "f609fb53cc8b9717da96cd9025a693591d9070b0d64538352e0826ded365d1c7",
+      "retained_ids": 287,
+      "umask": "077"
+    }
+  ],
+  "unchanged_construction_inputs": {
+    ".dockerignore": "25170fdb33082a47a01bdc344bfabe8ef4460eed2da175e6dd1159557fcaa13d",
+    "Dockerfile": "6925c36fe1cd42800333b4c72c54143b0c706e26e0aa37a09fd8679a684fa06c",
+    "Dockerfile.oracle": "61c196ddc98e522516fd1e36ce239f36f27f04e844be66752227c90de5897429",
+    "Dockerfile.oracle.dockerignore": "679f3cd226874aa189596199b105352137171eed114a1393e478eafc43f330d3",
+    "build_oracle.py": "cb702f624c986320e6f4c690dfc4eac1187104c711a52eb9e2bab28ec12e7ed6",
+    "build_tools.py": "a402d791a3cd1dc35ed709a985cbcd9b06a9af9b2f370616f44f2bcfe6519acb",
+    "contracts.py": "6a3c4dfe7b6fb4524771b26fdcbcba39be2c5893d52e2e4caeebf762df27a7f4",
+    "linux_observation.py": "58934a305a1c7bf5877c4e5f7ae5969181c61fed267b150d0ed1ed91c195282d",
+    "native/admission.h": "b64f55c4f5184506bc442bf13405f282b92d4bc600d8958b5febda5108fe0a96",
+    "native/architecture.h": "c0b078cd257852bc3cb57e1405e18c943bf2d0a48520523195846c8f58cfea2b",
+    "native/common.h": "4b221886a774007a74ed68a44a6e5088bc7f2e4ccf4980ddb8815f85cfc27042",
+    "native/observer.c": "a45816e40320c8560f439dfdd0b1ebef636dc74a0a101c19f0a726ae38098a5c",
+    "native/target.c": "aedd6549923876d28b7d39748c6506dbad539459200b276a9f409500daf3f82d",
+    "native/test_x86_debug.c": "ca8c49152d575c6b42e37914ea7dc5d805975e49fee4fa799137799ceaaa6f6f",
+    "native/x86_debug.h": "42844fba32b39dfe752fe84f84b1748a872b93aed6c5810a9a30aeab2fbd1777",
+    "oracle.py": "fa14b08caee86b65d9a01c16bb3e6ea236264275a48a3f32ad6694c57df23bc8",
+    "oracle_protocol.py": "f867fdc33eb271385176ab25c09a573e9662f77b7f6a73e559dbf07fcb115f45",
+    "oracle_worker.py": "91e84a5d3f47b043d6c12f9564604dba11f2ad9cc49e58a905ee714d2ece07d0",
+    "profiles.py": "b149039b977bd78daf53a6ddb7635419b36338925c25d125a3d49fac8f60a539",
+    "runtime_admission.py": "307e4486f4c23c426d543ddc3cee65d99dcee77c7c01087f4c8840cc81d3b076",
+    "worker.py": "08c319e7ec3790f619e4bf4ba3160e0db3bdc34f8dd86256bf998639aa2ea273"
+  },
+  "unchanged_driver_and_auxiliary": {
+    ".github/workflows/c0-runtime-images.yml": "47d0205d931100d096e8720d4bc6a21d3d542ab64db5eaefba4e46827e9c770c",
+    "scripts/prepare-crawl-jobs-v2-observer-images.py": "a97a270010e48dfee61c3c3317c4fcad7069bb70ba83ee0181d3c6d83b7e71cc",
+    "scripts/test-crawl-jobs-v2-observer.py": "9afb715125f734f5b905da63dde5c9787fc5997b2e5a73a0bf62d781b23aef84",
+    "tests/crawl-jobs-v2-observer/image_build.py": "6926bdb5bf01c25b3c29ac5607e4602bf831772fe34e06c85bee7700baee0d85"
+  }
+}

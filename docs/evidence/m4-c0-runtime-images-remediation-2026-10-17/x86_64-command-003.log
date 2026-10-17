@@ -1,0 +1,127 @@
+[
+     {
+          "Id": "f3d916a4884034b89cb6148781f07d8c92d94b6c6dc1b74dcbec3475d16400da",
+          "Digest": "sha256:a689e29bc3adf4663ef9a141d23081252764d1319c63f591a027bd6fd676f4c1",
+          "RepoTags": [],
+          "RepoDigests": [
+               "docker.io/library/gcc@sha256:a689e29bc3adf4663ef9a141d23081252764d1319c63f591a027bd6fd676f4c1"
+          ],
+          "Parent": "",
+          "Comment": "debuerreotype 0.15",
+          "Created": "2025-05-23T14:25:19Z",
+          "Config": {
+               "Env": [
+                    "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                    "GPG_KEYS=B215C1633BCA0477615F1B35A5B3A004745C015A \tB3C42148A44E6983B3E4CC0793FA9B1AB75C61B8 \t90AA470469D3965A87A5DCB494D03953902C9419 \t80F98B2E0DAB6C8281BDF541A7C8C3B2F71EDF1C \t7F74F97C103468EE5D750B583AB00996FC26A641 \t33C235A34C46AA3FFB293709A328C3A2C3C45C06 \tD3A93CAD751C2AF4F8C7AD516C35B99309B5FA62",
+                    "GCC_MIRRORS=https://ftpmirror.gnu.org/gcc \t\thttps://mirrors.kernel.org/gnu/gcc \t\thttps://bigsearcher.com/mirrors/gcc/releases \t\thttp://www.netgull.com/gcc/releases \t\thttps://ftpmirror.gnu.org/gcc \t\thttps://sourceware.org/pub/gcc/releases \t\tftp://ftp.gnu.org/gnu/gcc",
+                    "GCC_VERSION=14.3.0"
+               ],
+               "Cmd": [
+                    "bash"
+               ]
+          },
+          "Version": "",
+          "Author": "",
+          "Architecture": "amd64",
+          "Os": "linux",
+          "Size": 1444940831,
+          "VirtualSize": 1444940831,
+          "GraphDriver": {
+               "Name": "overlay",
+               "Data": {
+                    "LowerDir": "/var/home/kfuller/.local/share/containers/storage/overlay/e645eb3da2567058ad21ab39ec169ab696d18ac636fc071378b3bd29d7e0dbd9/diff:/var/home/kfuller/.local/share/containers/storage/overlay/127491882fc7e50dd9bef644e83d6b35b0ad0ba05b783fc75cbb0a886551a269/diff:/var/home/kfuller/.local/share/containers/storage/overlay/7bd4ef6ac2c897ec3c2efbf949f18b664c53460b84cc1156eaf082b6ad95a898/diff:/var/home/kfuller/.local/share/containers/storage/overlay/974d6d2dd932344821f437b3afa8a9b92c40491132e59b4f1a8e239de9fc49c5/diff:/var/home/kfuller/.local/share/containers/storage/overlay/e4ac7a9fedacdc5e513ee005a977ac70752c820e9c0cf915ac7492944f017335/diff:/var/home/kfuller/.local/share/containers/storage/overlay/f22e98f447664b55a0ff202e2be3183b95f74b47d5fae4f369a19457d8b93fa2/diff:/var/home/kfuller/.local/share/containers/storage/overlay/175a198361755136c75d537bc9057c9c8e1b7a20eb771374a8339eaadfef29e9/diff",
+                    "UpperDir": "/var/home/kfuller/.local/share/containers/storage/overlay/12a482fbb7520fe60da46f4f52ce7ce983b5de5a0b24d2d6409dbaf6c49f03fd/diff",
+                    "WorkDir": "/var/home/kfuller/.local/share/containers/storage/overlay/12a482fbb7520fe60da46f4f52ce7ce983b5de5a0b24d2d6409dbaf6c49f03fd/work"
+               }
+          },
+          "RootFS": {
+               "Type": "layers",
+               "Layers": [
+                    "sha256:175a198361755136c75d537bc9057c9c8e1b7a20eb771374a8339eaadfef29e9",
+                    "sha256:20c8aca2133815a3376afc0bd1ba1a4e93b82f22d80e21f7da955a15daad62c8",
+                    "sha256:a9b908787288c1175777d74ddae2fc23855c6ca88a4df3936e47eb26285b0372",
+                    "sha256:1b90aaaeb596009f84acae5557eecdfc5936b2942d428ba71e3fcd084e9afbdd",
+                    "sha256:ad5e248cf4ece91ac13fec2f6dfabbe6327f61520567fccc5470935d2eaa4e72",
+                    "sha256:f79c480d87ef8a150cbc879af0e42af40f3e138a3cbc43f1a3ccacb73bfe3476",
+                    "sha256:7eec36a05b2b4f13c1647b63f82b9f21720f6ba3392650872ff275e9e108d437",
+                    "sha256:cd7ec85123dbbac71e766ad962cae2c30c4e0bce0f661b0914716439eb98c53b"
+               ]
+          },
+          "Labels": null,
+          "Annotations": {
+               "com.docker.official-images.bashbrew.arch": "amd64",
+               "org.opencontainers.image.base.digest": "sha256:f4ff545c6e7d36e7f5511f69f8a8d325fad868d93bcc05bf4b1093baa84219ab",
+               "org.opencontainers.image.base.name": "buildpack-deps:bookworm",
+               "org.opencontainers.image.created": "2025-05-23T14:25:19Z",
+               "org.opencontainers.image.revision": "d262936418fbf062bb25907d5126a178578ab58b",
+               "org.opencontainers.image.source": "https://github.com/docker-library/gcc.git#d262936418fbf062bb25907d5126a178578ab58b:14",
+               "org.opencontainers.image.url": "https://hub.docker.com/_/gcc",
+               "org.opencontainers.image.version": "14.3.0"
+          },
+          "ManifestType": "application/vnd.oci.image.manifest.v1+json",
+          "User": "",
+          "History": [
+               {
+                    "created": "2023-05-10T23:29:59Z",
+                    "created_by": "# debian.sh --arch 'amd64' out/ 'bookworm' '@1753056000'",
+                    "comment": "debuerreotype 0.15"
+               },
+               {
+                    "created": "2023-05-10T23:29:59Z",
+                    "created_by": "RUN /bin/sh -c set -eux; \tapt-get update; \tapt-get install -y --no-install-recommends \t\tca-certificates \t\tcurl \t\tgnupg \t\tnetbase \t\tsq \t\twget \t; \trm -rf /var/lib/apt/lists/* # buildkit",
+                    "comment": "buildkit.dockerfile.v0"
+               },
+               {
+                    "created": "2024-01-09T01:14:25Z",
+                    "created_by": "RUN /bin/sh -c set -eux; \tapt-get update; \tapt-get install -y --no-install-recommends \t\tgit \t\tmercurial \t\topenssh-client \t\tsubversion \t\t\t\tprocps \t; \trm -rf /var/lib/apt/lists/* # buildkit",
+                    "comment": "buildkit.dockerfile.v0"
+               },
+               {
+                    "created": "2024-01-09T01:14:25Z",
+                    "created_by": "RUN /bin/sh -c set -ex; \tapt-get update; \tapt-get install -y --no-install-recommends \t\tautoconf \t\tautomake \t\tbzip2 \t\tdefault-libmysqlclient-dev \t\tdpkg-dev \t\tfile \t\tg++ \t\tgcc \t\timagemagick \t\tlibbz2-dev \t\tlibc6-dev \t\tlibcurl4-openssl-dev \t\tlibdb-dev \t\tlibevent-dev \t\tlibffi-dev \t\tlibgdbm-dev \t\tlibglib2.0-dev \t\tlibgmp-dev \t\tlibjpeg-dev \t\tlibkrb5-dev \t\tliblzma-dev \t\tlibmagickcore-dev \t\tlibmagickwand-dev \t\tlibmaxminddb-dev \t\tlibncurses5-dev \t\tlibncursesw5-dev \t\tlibpng-dev \t\tlibpq-dev \t\tlibreadline-dev \t\tlibsqlite3-dev \t\tlibssl-dev \t\tlibtool \t\tlibwebp-dev \t\tlibxml2-dev \t\tlibxslt-dev \t\tlibyaml-dev \t\tmake \t\tpatch \t\tunzip \t\txz-utils \t\tzlib1g-dev \t; \trm -rf /var/lib/apt/lists/* # buildkit",
+                    "comment": "buildkit.dockerfile.v0"
+               },
+               {
+                    "created": "2025-05-23T14:25:19Z",
+                    "created_by": "RUN /bin/sh -c set -eux; \tapt-get update; \tapt-get install -y --no-install-recommends \t\tabigail-tools \t; \trm -rf /var/lib/apt/lists/* # buildkit",
+                    "comment": "buildkit.dockerfile.v0"
+               },
+               {
+                    "created": "2025-05-23T14:25:19Z",
+                    "created_by": "ENV GPG_KEYS=B215C1633BCA0477615F1B35A5B3A004745C015A \tB3C42148A44E6983B3E4CC0793FA9B1AB75C61B8 \t90AA470469D3965A87A5DCB494D03953902C9419 \t80F98B2E0DAB6C8281BDF541A7C8C3B2F71EDF1C \t7F74F97C103468EE5D750B583AB00996FC26A641 \t33C235A34C46AA3FFB293709A328C3A2C3C45C06 \tD3A93CAD751C2AF4F8C7AD516C35B99309B5FA62",
+                    "comment": "buildkit.dockerfile.v0",
+                    "empty_layer": true
+               },
+               {
+                    "created": "2025-05-23T14:25:19Z",
+                    "created_by": "ENV GCC_MIRRORS=https://ftpmirror.gnu.org/gcc \t\thttps://mirrors.kernel.org/gnu/gcc \t\thttps://bigsearcher.com/mirrors/gcc/releases \t\thttp://www.netgull.com/gcc/releases \t\thttps://ftpmirror.gnu.org/gcc \t\thttps://sourceware.org/pub/gcc/releases \t\tftp://ftp.gnu.org/gnu/gcc",
+                    "comment": "buildkit.dockerfile.v0",
+                    "empty_layer": true
+               },
+               {
+                    "created": "2025-05-23T14:25:19Z",
+                    "created_by": "ENV GCC_VERSION=14.3.0",
+                    "comment": "buildkit.dockerfile.v0",
+                    "empty_layer": true
+               },
+               {
+                    "created": "2025-05-23T14:25:19Z",
+                    "created_by": "RUN /bin/sh -c set -ex; \t\tsavedAptMark=\"$(apt-mark showmanual)\"; \tapt-get update; \tapt-get install -y --no-install-recommends \t\tdpkg-dev \t\tflex \t\tgnupg \t; \trm -r /var/lib/apt/lists/*; \t\t_fetch() { \t\tlocal fetch=\"$1\"; shift; \t\tlocal file=\"$1\"; shift; \t\tfor mirror in $GCC_MIRRORS; do \t\t\tif curl -fL \"$mirror/$fetch\" -o \"$file\"; then \t\t\t\treturn 0; \t\t\tfi; \t\tdone; \t\techo >&2 \"error: failed to download '$fetch' from several mirrors\"; \t\treturn 1; \t}; \t\t_fetch \"gcc-$GCC_VERSION/gcc-$GCC_VERSION.tar.xz.sig\" 'gcc.tar.xz.sig'; \t_fetch \"gcc-$GCC_VERSION/gcc-$GCC_VERSION.tar.xz\" 'gcc.tar.xz'; \texport GNUPGHOME=\"$(mktemp -d)\"; \tfor key in $GPG_KEYS; do \t\tgpg --batch --keyserver keyserver.ubuntu.com --recv-keys \"$key\"; \tdone; \tgpg --batch --verify gcc.tar.xz.sig gcc.tar.xz; \tgpgconf --kill all; \trm -rf \"$GNUPGHOME\"; \tmkdir -p /usr/src/gcc; \ttar -xf gcc.tar.xz -C /usr/src/gcc --strip-components=1; \trm gcc.tar.xz*; \t\tcd /usr/src/gcc; \t\t./contrib/download_prerequisites; \t{ rm *.tar.* || true; }; \t\tfor f in config.guess config.sub; do \t\twget -O \"$f\" \"https://git.savannah.gnu.org/cgit/config.git/plain/$f?id=7d3d27baf8107b630586c962c057e22149653deb\"; \t\tfind -mindepth 2 -name \"$f\" -exec cp -v \"$f\" '{}' ';'; \tdone; \t\tdir=\"$(mktemp -d)\"; \tcd \"$dir\"; \t\textraConfigureArgs=''; \tdpkgArch=\"$(dpkg --print-architecture)\"; \tcase \"$dpkgArch\" in \t\tarmel) \t\t\textraConfigureArgs=\"$extraConfigureArgs --with-arch=armv5te --with-float=soft\" \t\t\t;; \t\tarmhf) \t\t\textraConfigureArgs=\"$extraConfigureArgs --with-arch=armv7-a+fp --with-float=hard --with-mode=thumb\" \t\t\t;; \t\t\t\ti386) \t\t\textraConfigureArgs=\"$extraConfigureArgs --with-arch-32=i686\"; \t\t\t;; \tesac; \t\tgnuArch=\"$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)\"; \t/usr/src/gcc/configure \t\t--build=\"$gnuArch\" \t\t--disable-multilib \t\t--enable-languages=c,c++,fortran,go \t\t$extraConfigureArgs \t; \tmake -j \"$(nproc)\"; \tmake install-strip; \t\tcd ..; \t\trm -rf \"$dir\" /usr/src/gcc; \t\tapt-mark auto '.*' > /dev/null; \t[ -z \"$savedAptMark\" ] || apt-mark manual $savedAptMark; \tapt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false # buildkit",
+                    "comment": "buildkit.dockerfile.v0"
+               },
+               {
+                    "created": "2025-05-23T14:25:19Z",
+                    "created_by": "RUN /bin/sh -c set -ex; \t{ echo '/usr/local/lib64'; echo '/usr/local/lib'; } > /etc/ld.so.conf.d/000-local-lib.conf; \tldconfig -v; \tdeb=\"$(readlink -ve /usr/lib/*/libstdc++.so* | head -1)\"; \tgcc=\"$(readlink -ve /usr/local/lib*/libstdc++.so | head -1)\"; \tLD_PRELOAD=\"$deb\" abidiff --no-added-syms \"$deb\" \"$gcc\" # buildkit",
+                    "comment": "buildkit.dockerfile.v0"
+               },
+               {
+                    "created": "2025-05-23T14:25:19Z",
+                    "created_by": "RUN /bin/sh -c set -ex; \tdpkg-divert --divert /usr/bin/gcc.orig --rename /usr/bin/gcc; \tdpkg-divert --divert /usr/bin/g++.orig --rename /usr/bin/g++; \tdpkg-divert --divert /usr/bin/gfortran.orig --rename /usr/bin/gfortran; \tupdate-alternatives --install /usr/bin/cc cc /usr/local/bin/gcc 999 # buildkit",
+                    "comment": "buildkit.dockerfile.v0"
+               }
+          ],
+          "NamesHistory": [
+               "docker.io/library/gcc@sha256:a689e29bc3adf4663ef9a141d23081252764d1319c63f591a027bd6fd676f4c1"
+          ]
+     }
+]

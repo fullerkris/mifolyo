@@ -33,7 +33,7 @@
             <div class="mf-result-actions">
                 <a href="{{ $source }}" class="mf-button mf-primary">View page <x-search-icon name="external" /></a>
                 <a href="{{ $discussionPage }}" class="mf-button mf-secondary" data-discuss-url="{{ $source }}" data-discuss-title="{{ $label }}"><x-search-icon name="chat" /> Discuss<span class="mf-discussion-count" data-discussion-count hidden></span><span class="mf-sr-only"> {{ $label }}</span></a>
-                <a href="{{ route('page_connections', ['url' => $source]) }}" class="mf-text-link">Page links</a>
+                <a href="{{ route('page.links', array_filter(['url' => $source, 'from' => $searchReturn])) }}" class="mf-text-link">Page links</a>
             </div>
         @endif
     </article>

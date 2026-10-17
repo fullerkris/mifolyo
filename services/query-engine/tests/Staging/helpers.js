@@ -20,6 +20,34 @@ export async function waitUntilReady(request, url) {
     }, { timeout: 30000, intervals: [500, 1000, 2000] }).toBe(200);
 }
 
+export async function navigate(page, action) {
+    for (let attempt = 0; attempt < 2; attempt++) {
+        const [response] = await Promise.all([
+            page.waitForResponse(response => response.request().isNavigationRequest() && response.frame() === page.mainFrame() && (response.status() < 300 || response.status() >= 400)),
+            action(),
+        ]);
+        if (response.status() !== 429 || attempt === 1) {
+            expect(response.ok(), `Navigation to ${response.url()} must succeed`).toBe(true);
+            return;
+        }
+        const retry = page.getByRole('link', { name: 'Try again', exact: true });
+        await expect(retry).toBeVisible();
+        const original = new URL(response.url());
+        const destination = new URL(await retry.getAttribute('href'));
+        expect(destination.pathname).toBe(original.pathname);
+        for (const key of ['q', 'url', 'direction', 'page', 'from']) {
+            if (original.searchParams.has(key)) expect(destination.searchParams.get(key)).toBe(original.searchParams.get(key));
+        }
+        const seconds = Number(response.headers()['retry-after']);
+        expect(seconds).toBeGreaterThanOrEqual(1);
+        expect(seconds).toBeLessThanOrEqual(60);
+        const delay = (seconds + 1) * 1000;
+        test.info().setTimeout(test.info().timeout + delay);
+        await wait(delay);
+        action = () => retry.click();
+    }
+}
+
 export async function signIn(page) {
     const returnTo = new URL(page.url()).searchParams.get('return_to');
     for (let attempt = 0; attempt < 2; attempt++) {

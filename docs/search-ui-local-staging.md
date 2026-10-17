@@ -9,9 +9,14 @@ controllers and databases; the browser-fixture router and HTTP mocks are absent.
 - Forum: <http://127.0.0.1:18082>
 - Search terms: **staging**, **search**, **documentation**; use exact search for
   **ux05 café C++** to review highlighting and metadata edge cases.
+- Image search: <http://127.0.0.1:18081/images?q=ux06> (also **staging** or
+  **gallery**). Choose **Page links** on the first `staging` web result to explore
+  25 outgoing and 25 incoming connections.
 - Data: 25 baseline documentation URLs plus four synthetic `example.test` UX-05
   entries. The first baseline result has 23 discussions and one persisted reply
-  per discussion. Metadata and conversations are synthetic.
+  per discussion. There are also 25 page-image associations using local synthetic
+  artwork in different aspect ratios, including one deliberately missing preview.
+  Metadata, connections and conversations are synthetic.
 
 ## Start and seed
 
@@ -59,7 +64,9 @@ posting without JavaScript. Exact-search return checks cover the query/mode/page
 selected source, scroll, desktop panel, and live counts after sign-in/thread/reply
 posting. Result-presentation checks cover literal/Unicode highlighting, late
 matches in indexed snippets, missing/malformed metadata and expandable titles
-and URLs in both themes. Recovery tests briefly stop/restart **this project's**
+and URLs in both themes. Image/link discovery checks cover pagination, broken
+previews, map rendering, no-JavaScript browsing and exact-search return navigation.
+Recovery tests briefly stop/restart **this project's**
 forum and MongoDB services and verify error/retry behavior. They restore the services in
 `finally` blocks. Run the suite when the local staging UI can be interrupted.
 
@@ -143,6 +150,40 @@ after completing their account journeys.
 - Highlighting, excerpts and metadata disclosure render on the server and work
   without JavaScript. Both themes have dedicated highlight colors; long text wraps
   within narrow cards.
+
+## Image search and Page links
+
+- `/images?q=…` uses the shared header, Web/Images navigation, themes, responsive
+  image cards and 20-result pagination. Source, full-image, discussion and Page
+  links actions retain the indexed HTTP(S) destinations, including supported
+  legacy scheme-less image records. Invalid URLs render without active links;
+  broken previews leave source navigation available.
+- Image ordering has a deterministic association-ID tie-breaker; images shared
+  by different source pages retain their separate source associations. Plain-text
+  metadata is normalized/escaped and long image titles have native disclosure.
+- `/page-links?url=…` presents outgoing and incoming links with independent
+  totals, direction selection and pagination. Duplicate/invalid edges are filtered;
+  unindexed titles and missing link data have explicit fallbacks. Empty index data
+  is not presented as proof that a source has no links on the web.
+- The optional connection map is bounded to the current 20-link page plus up to
+  20 links in the other direction. Cytoscape is bundled and loaded only on opening
+  the map. It uses theme colors, directed edges, reciprocal-link labels, node
+  selection, fit/zoom controls and a page-reload recovery action. Paginated lists
+  remain available when JavaScript or the map download is unavailable.
+- A validated `from` destination preserves exact web-search query/mode/page through
+  image search, Page links, discussion/thread reading and sign-in. Image origins
+  can retain one web-search origin; nested image return chains are discarded.
+  The legacy `/api/search_images`, `/api/search_images_force` and
+  `/api/page-connections` HTML routes continue to render the shared views.
+- Validation, throttling and MongoDB failures have shared-layout recovery views.
+  Retry keeps the image query/page or source/direction/page and search origin;
+  HTTP status and `Retry-After` are preserved. JSON validation stays JSON.
+  The new browser image/Page links routes have separate throttle buckets, so
+  browsing one view cannot consume the other view's or web search's budget.
+  Staging navigation honors the actual server backoff when a limit is reached.
+- Staging artwork is served by Caddy from the read-only
+  `scripts/fixtures/search-ui-media/` bind mount. Production images do not include
+  these staging fixtures.
 
 ## Inspect and stop
 
@@ -324,4 +365,47 @@ Local image IDs for the dependency patches (not registry digests):
 ```text
 query: sha256:4ef6bc7577bde5bb0fb30c495af02a2c3383c259f500300395d0a8236f844e67
 forum: sha256:bd4ce860a792bc1e00046559cf4569e280a7bbd7f3686d47a7549a82e5fbd261
+```
+
+## UX-06 validation — 2026-10-15
+
+- Shared image-search and Page links views are implemented on
+  `feature/search-ui-ux06`, based on `main` at
+  `142334acbd72134536c42b2b1c2a34256b1227a3`. GitHub reports that the owner merged
+  PR #27 at 17:03:38 UTC on October 15. Its merged tree matched the previous
+  `68f1440` feature head exactly. UX-06 is a separate review increment.
+- Query Engine PHP/MongoDB: **85 passed, 646 assertions**. Coverage includes
+  stable image association pagination, safe metadata/URLs, filtered/deduplicated
+  incoming/outgoing links, bounded map enrichment, exact navigation context,
+  validation/outage recovery and independent browser-view rate limits.
+- Browser fixtures: **46 passed, 2 expected mobile skips** for the existing
+  desktop-only panel races. The secondary-view checks cover both themes,
+  pagination, broken previews, source/discussion/thread return, native map
+  disclosure, zoom/fit, failed map download and reload, and no-JavaScript browsing.
+- Real-service staging: **26 passed, 0 skipped** (1.7 minutes). This includes all
+  existing account/thread/reply/count/return journeys, real image associations,
+  outgoing/incoming pagination, graph rendering and both service outage cases.
+  The MongoDB outage check now verifies query, source, direction, page and return
+  preservation for all three discovery views before recovering against the index.
+- Initial staging checks reproduced shared numeric-throttle buckets between web
+  search and the new routes. Separate image/Page links buckets fix that collision;
+  the staging navigation helper honors `Retry-After` and verifies retained retry
+  parameters. A strict locator was also narrowed to the actual thread body.
+- Production Query Engine image/asset builds, a zero-finding npm dependency audit,
+  focused PHP formatting (12 files), and Git whitespace checks pass.
+- Full-suite captures: `services/query-engine/test-results/staging-ux06-final/`
+  and `services/query-engine/test-results/ux06-browser-final/`.
+- Reviewed the final rebuilt views at **320/768/1440px in both themes**. No
+  horizontal overflow or browser JavaScript errors were observed. Keyboard map
+  opening, touch/mouse node selection and fit controls passed. The final image
+  fallback refinement exposes the unavailable label to assistive technology only
+  when the preview is absent/failed; loaded and failed cases passed at all three
+  widths. Captures: `services/query-engine/test-results/staging-ux06-layouts/`.
+- Both readiness endpoints returned HTTP 200 after the final walkthrough; all
+  six long-running staging services are healthy. UX-06 remains unmerged for review.
+
+Final local Query Engine image ID (not a registry digest):
+
+```text
+sha256:80e3e55fd0a6ceec87016d0f96f0dfb94abe9bc576b7963d7ec344e8723f3638
 ```

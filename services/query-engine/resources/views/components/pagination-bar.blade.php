@@ -1,9 +1,10 @@
 @if ($totalPages > 1)
     @php
         $query = request()->query('q', '');
-        $pageUrl = fn ($number) => request()->url().'?'.http_build_query(['q' => is_string($query) ? $query : '', 'page' => $number], '', '&', PHP_QUERY_RFC3986);
+        $pageParams = $parameters ?? ['q' => is_string($query) ? $query : ''];
+        $pageUrl = fn ($number) => request()->url().'?'.http_build_query(array_merge($pageParams, ['page' => $number]), '', '&', PHP_QUERY_RFC3986);
     @endphp
-    <nav class="mf-pagination" aria-label="Search result pages">
+    <nav class="mf-pagination" aria-label="{{ $label }}">
         @if ($currentPage > 1)
             <a href="{{ $pageUrl(min($totalPages, $currentPage - 1)) }}" rel="prev" class="mf-pagination-direction">← Previous</a>
         @endif

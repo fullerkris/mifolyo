@@ -55,7 +55,7 @@ class ForumApi
 
         // Only local reading journeys are valid authentication return targets.
         return is_string($path) && ! preg_match('/[\\\\\x00-\x20\x7f]/', $path)
-            && preg_match('~\A/(?:threads/[1-9][0-9]*|discussions|search(?:/exact)?)?(?:\?[^#]*)?\z~', $path)
+            && preg_match('~\A/(?:threads/[1-9][0-9]*|discussions|search(?:/exact)?|images|page-links)?(?:\?[^#]*)?\z~', $path)
             ? $path : '/';
     }
 }

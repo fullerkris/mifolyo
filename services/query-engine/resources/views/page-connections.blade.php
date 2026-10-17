@@ -1,274 +1,63 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <title>Graph View</title>
-    <style>
-        html {
-            color: black;
-        }
-
-        #cy {
-            width: 100%;
-            height: 100vh;
-            display: block;
-            background: #1f2335;
-        }
-
-        .legend {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 10px;
-            border-radius: 5px;
-            color: white;
-            font-family: Arial, sans-serif;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 5px;
-        }
-
-        .legend-color {
-            width: 20px;
-            height: 20px;
-            margin-right: 10px;
-            border-radius: 50%;
-        }
-    </style>
-</head>
-
-<body>
-    <div id="cy"></div>
-    <div class="legend">
-        <h3>Legend</h3>
-        <div class="legend-item">
-            <div class="legend-color" style="background-color: #ff757f;"></div>
-            <div>Current Page</div>
+@php
+    $label = $title !== '' ? $title : (parse_url($url, PHP_URL_HOST) ?: 'Unindexed page');
+    $from = \App\Support\SearchContext::parameters(request());
+@endphp
+<x-search-layout title="Page links — MiFolyo">
+    <main id="main" class="mf-page" tabindex="-1">
+        <x-search-return />
+        <div class="mf-results-heading">
+            <div><p class="mf-eyebrow">Follow your curiosity</p><h1>Page links</h1></div>
+            <p class="mf-muted">Discover how indexed pages connect.</p>
         </div>
-        <div class="legend-item">
-            <div class="legend-color" style="background-color: #7dcfff;"></div>
-            <div>Outgoing Link</div>
-        </div>
-        <div class="legend-item">
-            <div class="legend-color" style="background-color: #c3e88d;"></div>
-            <div>Incoming Link</div>
-        </div>
-        <div class="legend-item">
-            <div class="legend-color" style="background-color: #957FB8;"></div>
-            <div>Bidirectional Link</div>
-        </div>
-    </div>
-    <script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
-    <script>
-        const url = "{{ $url }}";
-        const title = "{{ $title }}";
-        console.log(title);
-        const outlinks = {!! json_encode($outlinks) !!};
-        const backlinks = {!! json_encode($backlinks) !!};
-        const nodesMap = new Map();
-        const edges = [];
-
-        // Helper function to extract titles or use URLs as fallback
-        function getTitleFromUrl(urlStr, list) {
-            const item = list.find(l => l.url === urlStr);
-            return item && item.title ? item.title : urlStr;
-        }
-
-        // Add the main node
-        nodesMap.set(url, {
-            data: {
-                id: url,
-                label: title,
-                nodeType: 'main'
-            }
-        });
-
-        const outlinkSet = new Set(outlinks.map(l => l.url));
-        const backlinkSet = new Set(backlinks.map(l => l.url));
-        const allLinks = new Set([...outlinkSet, ...backlinkSet]);
-
-        // Create nodes for all links
-        for (const link of allLinks) {
-            let nodeType = '';
-
-            if (outlinkSet.has(link) && backlinkSet.has(link)) {
-                nodeType = 'both';
-            } else if (outlinkSet.has(link)) {
-                nodeType = 'outlink';
-            } else if (backlinkSet.has(link)) {
-                nodeType = 'backlink';
-            }
-
-            // Find title in outlinks or backlinks
-            const title = getTitleFromUrl(link, outlinks) ||
-                getTitleFromUrl(link, backlinks) ||
-                link;
-
-            nodesMap.set(link, {
-                data: {
-                    id: link,
-                    label: title,
-                    nodeType: nodeType
-                }
-            });
-        }
-
-        // Add edges with edge type data for styling
-        for (const outlink of outlinks) {
-            edges.push({
-                data: {
-                    source: url,
-                    target: outlink.url,
-                    edgeType: 'outgoing'
-                }
-            });
-        }
-
-        for (const backlink of backlinks) {
-            edges.push({
-                data: {
-                    source: backlink.url,
-                    target: url,
-                    edgeType: 'incoming'
-                }
-            });
-        }
-
-        const cy = cytoscape({
-            container: document.getElementById('cy'),
-            elements: [
-                ...Array.from(nodesMap.values()),
-                ...edges
-            ],
-            style: [{
-                    selector: 'node',
-                    style: {
-                        'label': 'data(label)',
-                        'text-valign': 'center',
-                        'text-halign': 'center',
-                        'color': '#fff',
-                        'font-size': 14,
-                        'text-wrap': 'ellipsis',
-                        'text-max-width': '80px',
-                        'width': 120,
-                        'height': 120,
-                        'border-width': 2,
-                        'border-color': '#222',
-                        'text-outline-color': '#000',
-                        'text-outline-width': 2
-                    }
-                },
-                {
-                    selector: 'node[nodeType="main"]',
-                    style: {
-                        'background-color': '#ff757f'
-                    }
-                },
-                {
-                    selector: 'node[nodeType="outlink"]',
-                    style: {
-                        'background-color': '#7dcfff'
-                    }
-                },
-                {
-                    selector: 'node[nodeType="backlink"]',
-                    style: {
-                        'background-color': '#c3e88d'
-                    }
-                },
-                {
-                    selector: 'node[nodeType="both"]',
-                    style: {
-                        'background-color': '#957FB8'
-                    }
-                },
-                {
-                    selector: 'edge',
-                    style: {
-                        'width': 2,
-                        'curve-style': 'bezier',
-                        'target-arrow-shape': 'triangle',
-                        'arrow-scale': 1.5
-                    }
-                },
-                {
-                    selector: 'edge[edgeType="outgoing"]',
-                    style: {
-                        'line-color': '#00ff00',
-                        'target-arrow-color': '#00ff00'
-                    }
-                },
-                {
-                    selector: 'edge[edgeType="incoming"]',
-                    style: {
-                        'line-color': '#007bff',
-                        'target-arrow-color': '#007bff'
-                    }
-                }
-            ],
-            layout: {
-                name: 'concentric',
-                concentric: function(node) {
-                    return node.data('nodeType') === 'main' ? 10 : 0;
-                },
-                levelWidth: function() {
-                    return 1;
-                },
-                padding: 50,
-                animate: true
-            }
-        });
-
-        // Track the expanded state of nodes
-        const expandedNodes = new Set();
-
-        // Add single-click event to toggle node size
-        cy.on('click', 'node', function(evt) {
-            const node = evt.target;
-
-            if (expandedNodes.has(node.id())) {
-                // Collapse the node
-                node.animate({
-                    style: {
-                        'width': 120,
-                        'height': 120,
-                        'font-size': 14,
-                        'text-max-width': 80
-                    },
-                    duration: 300
-                });
-                expandedNodes.delete(node.id());
-            } else {
-                // Expand the node
-                node.animate({
-                    style: {
-                        'width': 250,
-                        'height': 250,
-                        'font-size': 30,
-                        'text-max-width': 1000,
-                        'text-wrap': 'wrap'
-                    },
-                    duration: 300
-                });
-                expandedNodes.add(node.id());
-            }
-        });
-
-        // Add double-click event to redirect to the node's URL
-        cy.on('dblclick', 'node', function(evt) {
-            const node = evt.target;
-            const url = node.data('id'); // Use the node's ID as the URL
-
-            if (url) {
-                window.open(url.startsWith('http') ? url : `https://${url}`, '_blank');
-            }
-        });
-    </script>
-</body>
-
-</html>
+        <x-page-url-form :url="$url" />
+        @if ($url === '')
+            <div class="mf-empty-state"><x-search-icon name="links" /><h2>Every page is part of a bigger picture.</h2><p>Enter a page URL to explore its outgoing links and the indexed pages that link to it.</p></div>
+        @else
+            <section class="mf-page-source" aria-label="Selected source">
+                <div><p class="mf-eyebrow">Selected source</p><h2>{{ \App\Support\SearchResultPresenter::shorten($label, 140) }}</h2><a class="mf-source-link" href="{{ $url }}"><bdi dir="ltr">{{ $url }}</bdi></a>
+                    @if (mb_strlen($label) > 140)<details class="mf-result-details"><summary>Full title</summary><p>{{ $label }}</p></details>@endif
+                </div>
+                <div class="mf-image-actions"><a class="mf-button mf-primary" href="{{ $url }}">View page <x-search-icon name="external" /></a><a class="mf-button mf-secondary" href="{{ route('discussions', ['url' => $url, 'title' => mb_substr($label, 0, 300)] + $from) }}">Discuss source</a></div>
+            </section>
+            <nav class="mf-link-directions" aria-label="Link direction">
+                @foreach (['outgoing' => ['Outgoing links', 'Pages this source links to'], 'incoming' => ['Incoming links', 'Indexed pages linking here']] as $key => [$heading, $description])
+                    <a href="{{ route('page.links', ['url' => $url, 'direction' => $key] + $from) }}" @if ($direction === $key) aria-current="page" @endif><span>{{ $heading }} <strong>{{ number_format($counts[$key]) }}</strong></span><small>{{ $description }}</small></a>
+                @endforeach
+            </nav>
+            @if (count($mapLinks) > 0)
+                <x-connection-map :url="$url" :label="$label" :links="$mapLinks" :direction="$direction" />
+            @endif
+            <div class="mf-connections-grid">
+                <section aria-label="{{ ucfirst($direction) }} links">
+                    <div class="mf-connections-heading"><h2>{{ ucfirst($direction) }} links</h2>@if ($counts[$direction] > 0)<span class="mf-muted">Page {{ $page }}</span>@endif</div>
+                    @if (count($connections) > 0)
+                        <ul class="mf-connection-list">
+                            @foreach ($connections as $link)
+                                @php
+                                    $linkLabel = $link['title'] !== '' ? $link['title'] : (parse_url($link['url'], PHP_URL_HOST) ?: 'Untitled page');
+                                @endphp
+                                <li>
+                                    <h3><a href="{{ $link['url'] }}">{{ \App\Support\SearchResultPresenter::shorten($linkLabel, 140) }}</a></h3>
+                                    @if (mb_strlen($linkLabel) > 140)<details class="mf-result-details"><summary>Full title</summary><p>{{ $linkLabel }}</p></details>@endif
+                                    <p class="mf-result-path"><bdi dir="ltr">{{ $link['url'] }}</bdi></p>
+                                    <div class="mf-connection-actions">
+                                        <span class="mf-muted">{{ $link['incoming'] && $link['outgoing'] ? 'Links both ways' : ($link['title'] === '' ? 'Page title not indexed' : ($direction === 'outgoing' ? 'Linked from this source' : 'Links to this source')) }}</span>
+                                        <a class="mf-text-link" href="{{ route('page.links', ['url' => $link['url']] + $from) }}">Explore links <span class="mf-sr-only">for {{ $linkLabel }}</span> →</a>
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @else
+                        <div class="mf-empty-state"><x-search-icon name="links" /><h2>{{ $counts[$direction] > 0 ? 'No links on this page' : 'No '.$direction.' links indexed' }}</h2><p>{{ $counts[$direction] > 0 ? 'Return to the first page to explore the available connections.' : 'The index may not yet include these connections. This does not mean the page has no links on the web.' }}</p>
+                            @if ($counts[$direction] > 0)<a class="mf-button mf-primary" href="{{ route('page.links', $parameters) }}">Back to first page</a>@endif
+                        </div>
+                    @endif
+                    <x-pagination-bar :total-results="$counts[$direction]" :parameters="$parameters" label="Page link result pages" />
+                </section>
+                <aside class="mf-connection-aside">
+                    <div class="mf-context-card"><x-search-icon name="links" /><p class="mf-eyebrow">A little more context</p><h2>Follow the connections.</h2><p>Outgoing links lead to the sources a page references. Incoming links show where other indexed pages point to it.</p><p>Connections are an index snapshot, not a live crawl or an endorsement.</p></div>
+                </aside>
+            </div>
+        @endif
+    </main>
+</x-search-layout>

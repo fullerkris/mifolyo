@@ -49,7 +49,27 @@ if ($mode === 'query') {
         $database->metadata->updateOne(['_id' => $url], ['$set' => $sample], ['upsert' => true]);
         $database->words->updateOne(['word' => 'ux05', 'url' => $url], ['$set' => ['weight' => 1.0 - $index / 100]], ['upsert' => true]);
     }
-    echo 'Seeded '.count($pages).' baseline sources and '.count($presentation)." UX-05 examples. Search for staging or ux05.\n";
+    // Image associations share artwork while preserving their individual source pages.
+    $artwork = ['http://127.0.0.1:18081/staging-media/connections.svg', 'http://127.0.0.1:18081/staging-media/reading.svg', 'http://127.0.0.1:18081/mifolyo-mark.svg'];
+    foreach ($pages as $index => [$pageUrl, $title]) {
+        $imageUrl = $index === 23 ? 'http://127.0.0.1:18081/staging-media/missing.svg' : $artwork[$index % count($artwork)];
+        $association = hash('sha256', $pageUrl."\0".$imageUrl);
+        $database->images->updateOne(['_id' => $association], ['$set' => ['source_url' => $imageUrl, 'page_url' => $pageUrl, 'alt' => 'Synthetic staging artwork for '.$title, 'filename' => basename($imageUrl)]], ['upsert' => true]);
+        foreach (['staging', 'ux06', 'gallery'] as $word) {
+            $database->word_images->updateOne(['word' => $word, 'association_id' => $association], ['$set' => ['page_url' => $pageUrl, 'weight' => 1.0 - $index / 100]], ['upsert' => true]);
+        }
+    }
+    $outgoing = array_merge(array_column(array_slice($pages, 1), 0), ['https://example.test/ux06/unindexed-outgoing']);
+    $incoming = array_merge(array_column(array_slice($pages, 1, 22), 0), ['https://example.test/ux06/incoming-a', 'https://example.test/ux06/incoming-b', 'https://example.test/ux06/incoming-c']);
+    $database->outlinks->updateOne(['_id' => $source], ['$set' => ['links' => $outgoing]], ['upsert' => true]);
+    $database->backlinks->updateOne(['_id' => $source], ['$set' => ['links' => $incoming]], ['upsert' => true]);
+    foreach ($outgoing as $target) {
+        $database->backlinks->updateOne(['_id' => $target], ['$addToSet' => ['links' => $source]], ['upsert' => true]);
+    }
+    foreach ($incoming as $origin) {
+        $database->outlinks->updateOne(['_id' => $origin], ['$addToSet' => ['links' => $source]], ['upsert' => true]);
+    }
+    echo 'Seeded '.count($pages).' baseline sources, '.count($presentation)." UX-05 examples, 25 image associations and bidirectional UX-06 connections.\n";
 } elseif ($mode === 'forum') {
     if (config('database.connections.pgsql.database') !== 'mifolyo_search_ui_staging'
         || config('database.connections.pgsql.host') !== 'postgres') {

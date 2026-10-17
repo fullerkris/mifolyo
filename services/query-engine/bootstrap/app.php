@@ -38,7 +38,7 @@ return Application::configure(basePath: dirname(__DIR__))
                         ->withHeaders($exception->getHeaders())->header('Cache-Control', 'private, no-store');
                 }
             }
-            if ($request->expectsJson() || ! $request->is('search', 'search/exact', 'api/search', 'api/search_force')) {
+            if ($request->expectsJson() || ! $request->is('search', 'search/exact', 'api/search', 'api/search_force', 'images', 'api/search_images', 'api/search_images_force', 'page-links', 'api/page-connections')) {
                 return null;
             }
 
@@ -52,6 +52,22 @@ return Application::configure(basePath: dirname(__DIR__))
                 return null;
             }
 
+            if ($request->is('page-links', 'api/page-connections')) {
+                [$heading, $message] = match ($status) {
+                    422 => ['Let’s adjust that page URL', 'Enter a complete HTTP or HTTPS URL (up to 2,048 characters). Choose incoming or outgoing links and a page between 1 and 100.'],
+                    429 => ['A moment to catch up', 'You’ve explored several pages in a short time. Please wait a minute, then try again.'],
+                    default => ['Page links are temporarily unavailable', 'We couldn’t reach the link index. Your source is still here — please try again shortly.'],
+                };
+                $url = $request->query('url', '');
+                $url = is_string($url) && mb_check_encoding($url, 'UTF-8') ? mb_substr($url, 0, 2048) : '';
+                $direction = $request->query('direction') === 'incoming' ? 'incoming' : 'outgoing';
+                $page = filter_var($request->query('page', 1), FILTER_VALIDATE_INT);
+                $retryUrl = $status === 422 ? null : route('page.links', ['url' => $url, 'direction' => $direction, 'page' => max(1, min(100, $page ?: 1))] + \App\Support\SearchContext::parameters($request));
+
+                return response()->view('page-links-error', compact('status', 'heading', 'message', 'url', 'retryUrl'), $status,
+                    $exception instanceof HttpExceptionInterface ? $exception->getHeaders() : []);
+            }
+
             [$heading, $message] = match ($status) {
                 422 => ['Let’s adjust that search', 'Use up to 20 search terms (500 characters) and a page between 1 and 100. Edit your search above and try again.'],
                 429 => ['A moment to catch up', 'You’ve made several searches in a short time. Please wait a minute, then try again.'],
@@ -60,10 +76,11 @@ return Application::configure(basePath: dirname(__DIR__))
             $query = $request->query('q', '');
             $query = is_string($query) && mb_check_encoding($query, 'UTF-8') ? mb_substr($query, 0, 500) : '';
             $page = filter_var($request->query('page', 1), FILTER_VALIDATE_INT);
-            $route = $request->is('search/exact', 'api/search_force') ? 'search.exact' : 'search';
-            $retryUrl = $status === 422 ? null : route($route, ['q' => $query, 'page' => max(1, min(100, $page ?: 1))]);
+            $searchMode = $request->is('images', 'api/search_images', 'api/search_images_force') ? 'images' : 'web';
+            $route = $searchMode === 'images' ? 'search.images' : ($request->is('search/exact', 'api/search_force') ? 'search.exact' : 'search');
+            $retryUrl = $status === 422 ? null : route($route, ['q' => $query, 'page' => max(1, min(100, $page ?: 1))] + ($searchMode === 'images' ? \App\Support\SearchContext::parameters($request) : []));
 
-            return response()->view('search-error', compact('status', 'heading', 'message', 'query', 'retryUrl'), $status,
+            return response()->view('search-error', compact('status', 'heading', 'message', 'query', 'retryUrl', 'searchMode'), $status,
                 $exception instanceof HttpExceptionInterface ? $exception->getHeaders() : []);
         });
     })->create();

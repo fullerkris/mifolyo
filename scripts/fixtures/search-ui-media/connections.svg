@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540">
+  <rect width="960" height="540" fill="#edf2ff"/>
+  <g fill="none" stroke="#9eb4dd" stroke-width="5"><path d="M480 270 210 130M480 270 750 130M480 270 210 410M480 270 750 410"/></g>
+  <g fill="#235ed8"><circle cx="210" cy="130" r="44"/><circle cx="750" cy="130" r="44"/><circle cx="210" cy="410" r="44"/><circle cx="750" cy="410" r="44"/></g>
+  <circle cx="480" cy="270" r="72" fill="#c4470d"/>
+  <text x="480" y="500" text-anchor="middle" font-family="sans-serif" font-size="22" fill="#235ed8">Local staging artwork · Page connections</text>
+</svg>

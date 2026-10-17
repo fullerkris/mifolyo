@@ -30,6 +30,10 @@ Route::get('/search', [QuerySearchController::class, 'search'])
     ->middleware(['throttle:30,1', FuzzySearch::class, StoreSearchTerm::class])->name('search');
 Route::get('/search/exact', [QuerySearchController::class, 'search'])
     ->middleware('throttle:30,1')->name('search.exact');
+Route::get('/images', [QuerySearchController::class, 'search_images'])
+    ->middleware('throttle:15,1,image-search')->name('search.images');
+Route::get('/page-links', [QuerySearchController::class, 'get_page_connections'])
+    ->middleware('throttle:20,1,page-links')->name('page.links');
 
 Route::get('/explore', function (Request $request) {
     $mode = $request->query('mode', 'search');

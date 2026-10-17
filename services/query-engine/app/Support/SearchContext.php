@@ -6,14 +6,14 @@ use Illuminate\Http\Request;
 
 class SearchContext
 {
-    public static function url(mixed $value): ?string
+    public static function url(mixed $value, bool $allowImages = true): ?string
     {
         if (! is_string($value) || strlen($value) > 8192 || preg_match('/[\\\\\x00-\x20\x7f]/', $value)) {
             return null;
         }
         $parts = parse_url($value);
         if ($parts === false || isset($parts['scheme']) || isset($parts['host']) || isset($parts['fragment'])
-            || ! in_array($parts['path'] ?? '', ['/search', '/search/exact'], true)) {
+            || ! in_array($parts['path'] ?? '', $allowImages ? ['/search', '/search/exact', '/images'] : ['/search', '/search/exact'], true)) {
             return null;
         }
         parse_str($parts['query'] ?? '', $query);
@@ -27,6 +27,10 @@ class SearchContext
                 return null;
             }
             $input['page'] = $page;
+        }
+        // Keep one web-search origin through image/discussion journeys, never a nested return chain.
+        if ($parts['path'] === '/images' && ($from = self::url($query['from'] ?? null, false))) {
+            $input['from'] = $from;
         }
 
         return $parts['path'].'?'.http_build_query($input, '', '&', PHP_QUERY_RFC3986);

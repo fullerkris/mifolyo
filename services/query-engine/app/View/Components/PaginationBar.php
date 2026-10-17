@@ -16,11 +16,17 @@ class PaginationBar extends Component
 
     public $pages;
 
+    public $parameters;
+
+    public $label;
+
     /**
      * Create a new component instance.
      */
-    public function __construct($totalResults, $perPage = 20)
+    public function __construct($totalResults, $perPage = 20, $parameters = null, $label = 'Search result pages')
     {
+        $this->parameters = $parameters;
+        $this->label = $label;
         $this->totalResults = $totalResults;
         $this->totalPages = min(100, (int) ceil($totalResults / $perPage));
         $page = filter_var(request()->query('page', 1), FILTER_VALIDATE_INT);

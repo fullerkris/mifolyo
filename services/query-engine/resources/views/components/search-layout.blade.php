@@ -1,4 +1,4 @@
-@props(['title' => 'MiFolyo', 'query' => '', 'home' => false])
+@props(['title' => 'MiFolyo', 'query' => '', 'home' => false, 'searchMode' => 'web'])
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,7 +25,7 @@
             <img src="/mifolyo-mark.svg" width="100" height="32" alt=""><span>MiFolyo</span>
         </a>
         @unless ($home)
-            <x-search-form :query="$query" />
+            <x-search-form :query="$query" :mode="$searchMode" />
         @endunless
         <nav class="mf-header-actions" aria-label="Main navigation">
             @if (session()->has('forum.user'))
@@ -38,7 +38,7 @@
             <button type="button" class="mf-icon-button" data-theme-toggle aria-label="Switch color theme" aria-pressed="false" hidden><x-search-icon name="theme" /></button>
         </nav>
     </header>
-    <div class="mf-navigation-status" role="status" data-navigation-status hidden>Searching indexed pages…</div>
+    <div class="mf-navigation-status" role="status" data-navigation-status hidden>{{ $searchMode === 'images' ? 'Searching indexed images…' : 'Searching indexed pages…' }}</div>
     @if (session('notice'))<div class="mf-notice" role="status">{{ session('notice') }}</div>@endif
     {{ $slot }}
     <footer class="mf-footer">

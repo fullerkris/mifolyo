@@ -234,6 +234,69 @@ class PageRankSearchTest extends TestCase
         $this->get('/api/search_images?q=0')->assertOk();
     }
 
+    public function test_image_pages_have_stable_pagination_exact_sources_and_malformed_metadata_fallbacks(): void
+    {
+        for ($number = 1; $number <= 25; $number++) {
+            $id = sprintf('association-%02d', $number);
+            $pageUrl = 'https://example.test/page/'.$number.'?b=2&a=1#details';
+            $imageUrl = 'https://cdn.example.test/shared.jpg';
+            $this->mongoDatabase->word_images->insertOne(['word' => 'café', 'association_id' => $id, 'weight' => 1]);
+            $this->mongoDatabase->images->insertOne(['_id' => $id, 'source_url' => $imageUrl, 'page_url' => $pageUrl, 'alt' => ['invalid']]);
+            $this->mongoDatabase->metadata->insertOne(['_id' => $pageUrl, 'title' => 'Image page '.$number, 'summary_text' => ['invalid']]);
+        }
+        $from = '/search/exact?q=caf%C3%A9&page=2';
+        $response = $this->get('/images?'.http_build_query(['q' => "CAFÉ\tmore", 'from' => $from]));
+        $response->assertOk()->assertViewHas('total', 25)->assertViewHas('results', fn ($results) => count($results) === 20)
+            ->assertSee('href="https://example.test/page/1?b=2&amp;a=1#details"', false)
+            ->assertSee('src="https://cdn.example.test/shared.jpg"', false)
+            ->assertSee('from=%2Fsearch%2Fexact%3Fq%3Dcaf%25C3%25A9%26page%3D2', false);
+        $this->get('/images?q=caf%C3%A9&page=2')->assertOk()->assertViewHas('results', function ($results) {
+            $this->assertCount(5, $results);
+            $this->assertSame('Image page 21', $results[0]['page_title']);
+
+            return true;
+        })->assertDontSee('rel="next"', false);
+        $this->get('/images?q=caf%C3%A9&page=3')->assertOk()->assertSee('No images on this page')->assertSee('Back to first page');
+        $this->get('/api/search_images?q=caf%C3%A9')->assertOk()->assertSee('Image page 1');
+    }
+
+    public function test_page_links_filter_invalid_edges_deduplicate_paginate_and_escape_graph_metadata(): void
+    {
+        $source = 'https://example.test/source?b=2&a=1#details';
+        $links = array_map(fn ($n) => sprintf('https://example.test/link/%02d', $n), range(1, 25));
+        $this->mongoDatabase->outlinks->insertOne(['_id' => $source, 'links' => array_merge(array_reverse($links), [$links[0], 'javascript:alert(1)', ['invalid'], null])]);
+        $this->mongoDatabase->backlinks->insertOne(['_id' => $source, 'links' => [$links[0], 'https://other.test/incoming']]);
+        $this->mongoDatabase->metadata->insertMany([
+            ['_id' => $source, 'title' => '<script>bad()</script>'],
+            ['_id' => $links[0], 'title' => '<img src=x onerror=bad()>'],
+            ['_id' => $links[1], 'title' => ['invalid']],
+        ]);
+        $params = ['url' => $source, 'from' => '/search/exact?q=alpha&page=2'];
+        $this->get('/page-links?'.http_build_query($params))->assertOk()
+            ->assertViewHas('counts', ['outgoing' => 25, 'incoming' => 2])
+            ->assertViewHas('connections', fn ($links) => count($links) === 20 && $links[0]['incoming'])
+            ->assertViewHas('mapLinks', fn ($links) => count($links) === 21)
+            ->assertSee('&lt;script&gt;bad()&lt;/script&gt;', false)->assertSee('&lt;img src=x onerror=bad()&gt;', false)
+            ->assertDontSee('<img src=x', false)->assertDontSee('<script>bad()', false)->assertDontSee('javascript:', false)
+            ->assertSee('Links both ways')->assertSee('Page title not indexed')->assertSee('href="'.e($source).'"', false);
+        $this->get('/page-links?'.http_build_query($params + ['page' => 2]))->assertOk()
+            ->assertViewHas('connections', fn ($links) => count($links) === 5 && str_ends_with($links[0]['url'], '/21'))
+            ->assertDontSee('rel="next"', false);
+        $this->get('/page-links?'.http_build_query($params + ['direction' => 'incoming']))->assertOk()
+            ->assertViewHas('connections', fn ($links) => count($links) === 2)->assertSee('https://other.test/incoming');
+        $this->get('/page-links?'.http_build_query($params + ['page' => 3]))->assertOk()->assertSee('No links on this page');
+        $this->get('/api/page-connections?'.http_build_query($params))->assertOk()->assertSee('Page links');
+    }
+
+    public function test_missing_or_malformed_link_documents_have_honest_empty_states(): void
+    {
+        $source = 'https://example.test/missing';
+        $this->mongoDatabase->outlinks->insertOne(['_id' => $source, 'links' => 'bad shape']);
+        $this->get('/page-links?'.http_build_query(['url' => $source]))->assertOk()
+            ->assertSee('No outgoing links indexed')->assertSee('This does not mean the page has no links on the web.')
+            ->assertDontSee('data-map-canvas', false)->assertDontSee('aria-label="Page link result pages"', false);
+    }
+
     public function test_fuzzy_search_normalizes_and_matches_uppercase_accented_input(): void
     {
         $url = 'https://unicode.test/';

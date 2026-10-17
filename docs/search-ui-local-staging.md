@@ -66,6 +66,9 @@ posting. Result-presentation checks cover literal/Unicode highlighting, late
 matches in indexed snippets, missing/malformed metadata and expandable titles
 and URLs in both themes. Image/link discovery checks cover pagination, broken
 previews, map rendering, no-JavaScript browsing and exact-search return navigation.
+Voting checks cover persisted thread/nested-comment scores, selected votes,
+change/removal, duplicate writes, token rotation, keyboard use, both themes,
+no-JavaScript forms and explicit retry after a real forum outage.
 Recovery tests briefly stop/restart **this project's**
 forum and MongoDB services and verify error/retry behavior. They restore the services in
 `finally` blocks. Run the suite when the local staging UI can be interrupted.
@@ -94,7 +97,8 @@ after completing their account journeys.
   is a CSRF-protected POST and clears the browser session and saved drafts.
 - The Query Engine holds the forum bearer token encrypted in its server session.
   Browser writes use the session cookie and CSRF token through `/community/threads`
-  and `/threads/{id}/comments`. No manual API token is needed in the UI.
+  and `/threads/{id}/comments` or `/threads/{id}/votes`. No manual API token is
+  needed in the UI.
 - The existing forum issues one active token per account. A new login rotates it;
   the previous session must sign in again. Submitted drafts survive that flow.
   An uncertain write keeps its draft and asks the reader to check before retrying.
@@ -104,6 +108,31 @@ after completing their account journeys.
   endpoints reject expired forum tokens.
 - Repository CI runs PHP/MongoDB tests and desktop/mobile browser-fixture checks.
   `npm run test:staging` separately validates the real local services.
+
+## Thread and comment voting
+
+- Full thread pages show upvote/downvote controls and net scores for the original
+  post and each visible comment, including nested replies. The pressed state
+  identifies your vote; selecting it again removes the vote. Removed comments
+  show an unavailable message, and locked threads/comments have disabled controls.
+- Signed-out readers can see scores and **Sign in to vote**. Authentication
+  returns to the selected thread/comment anchor, reply target and validated
+  web/image search origin. It does not submit a vote automatically.
+- `POST /threads/{id}/votes` uses the encrypted session-held forum token and CSRF
+  protection. It binds every target to the route's thread, validates the response
+  identity/value/score, and returns only the display data needed by the browser.
+- JavaScript adds a saving state, duplicate-submit protection, retained keyboard
+  focus and live status feedback. Only confirmed scores/selections replace the
+  displayed values, and an unfinished reply stays in place while voting.
+- **Retry vote** resubmits the same explicit `1`, `-1`, or `0` after an uncertain
+  response. No automatic write retry occurs. A 429 honors `Retry-After`; expired
+  sessions offer sign-in, and access/removed/locked/expired-page responses offer
+  a readable conversation reload. Ordinary HTML forms also set/change/remove
+  votes and preserve the conversation, comment and search origin.
+- The forum's post/comment reads include private viewer-specific vote state;
+  nested-comment selections use one batched lookup. The vote transaction checks
+  current access and locked/removed state under row locks before changing totals.
+  The API contract is documented in `services/forum-engine/README.md`.
 
 ## Search return navigation and result counts
 
@@ -409,3 +438,69 @@ Final local Query Engine image ID (not a registry digest):
 ```text
 sha256:80e3e55fd0a6ceec87016d0f96f0dfb94abe9bc576b7963d7ec344e8723f3638
 ```
+
+## COM-01 voting validation — 2026-10-15
+
+- Thread and nested-comment voting is implemented on
+  `feature/search-ui-com01-voting`, based on UX-06 head `37fa178`. UX-06 PR #28
+  remains open; all 20 Unit Tests jobs and three Required Checks jobs passed at
+  that exact head. The voting increment retains the owner's merge hold.
+- Query Engine PHP/MongoDB: **95 passed, 727 assertions**. Forum API: **139 passed**
+  with isolated SQLite. Coverage includes explicit set/change/removal and repeated
+  writes, private membership, fresh authentication, viewer-specific reads, one
+  batched nested-comment vote query, locked/removed/cross-thread targets, proxy
+  credentials, CSRF, safe return anchors, malformed responses and error recovery.
+- Browser fixtures: **60 passed, two expected mobile skips** for existing
+  desktop-only panel races. New checks cover selected scores, nested independence,
+  keyboard focus, unfinished replies, saving/duplicate prevention, a lost
+  successful response followed by same-value retry, 429 backoff, malformed success,
+  expired/forbidden/missing/locked states and no-JavaScript forms.
+- Rebuilt real-service staging: **33 passed, 0 skipped** (2.7 minutes). Votes and
+  counters persist in PostgreSQL through changes, removals, repeat submissions
+  and reloads. Token rotation returns to the exact comment/reply/search origin
+  without replaying a vote. Desktop/mobile HTML voting and a real forum-outage
+  retry pass, alongside all prior discovery/account/reply/count/recovery journeys.
+- The first expanded run passed all new voting checks but one existing index
+  recovery check received a per-worker MongoDB connection timeout just after
+  readiness recovered. The check now exercises the actual retry link within a
+  bounded 15-second recovery window, verifying its exact destination; the final
+  full run passes. This adds no automatic vote retries.
+- Reviewed the rebuilt thread view at **320/768/1440px in both themes**. The
+  original-post upvote and nested-comment downvote render selected, controls
+  remain at least 44px, and keyboard voting retains focus. No horizontal overflow
+  or browser JavaScript errors were observed. Review conversation: `/threads/94`.
+- Evidence: `services/query-engine/test-results/com01-browser-final/`,
+  `staging-com01-final/`, and `staging-com01-layouts/` (ignored by Git).
+- Both application images and production frontend assets built successfully;
+  npm audit reports zero vulnerabilities. Focused PHP formatting and whitespace
+  checks pass. Both readiness endpoints return HTTP 200 and all six long-running
+  staging services are healthy after recovery testing and the visual walkthrough.
+
+Validated local image IDs (not registry digests):
+
+```text
+query: sha256:69bce813a4adfad77a3fdc966effaa86df9e697916b056dac666649faf1dc305
+forum: sha256:c340b41de504141562b60f698b54f03d5ac5d445af9f28e05fa16dd3eba10dd7
+```
+
+### Hosted CI follow-up — fixture publication race
+
+At voting implementation head `2e3eac2`, all 20
+[Unit Tests jobs](https://github.com/fullerkris/mifolyo/actions/runs/38787942820)
+passed. [Required Checks](https://github.com/fullerkris/mifolyo/actions/runs/38787942798)
+passed build and smoke; its test job passed the forum suite (139 tests / 762
+assertions), Composer audit and formatting, then failed one existing crawler
+regression, `test_nonreaping_exit_observation_and_inherited_open_pipes`.
+
+The test waited for marker-file existence, but `Path.write_text` creates the file
+before writing its contents. CI observed the empty intermediate file (`''`
+instead of `'True'`). Publishing a completed sibling file with atomic rename
+closes that window. The assertions, process checks and deadlines are preserved.
+The subsequent missing C0 artifact was a consequence of the earlier failed step.
+
+A controlled 100ms open-before-write delay reproduced the original failure in
+Linux/Python 3.13; the corrected fixture passes with the same injected delay.
+All 18 related recovery-review/parked-command tests pass on macOS and Linux,
+including Linux-native filesystem and Docker `--init` runs. The latter supplies
+a normal parent process for the existing worker-PID-greater-than-one invariant.
+Updated exact-head hosted results are tracked in PR #29 and the Obsidian notes.

@@ -52,6 +52,9 @@ class ForumApi
 
             return $search === null ? '/' : $search.'#mf-return';
         }
+        if (is_string($path) && preg_match('~\A(/threads/[1-9][0-9]*(?:\?[^#]*)?)#(?:comment-[1-9][0-9]*|thread-votes)\z~', $path, $matches)) {
+            return self::returnTo($matches[1]) === $matches[1] ? $path : '/';
+        }
 
         // Only local reading journeys are valid authentication return targets.
         return is_string($path) && ! preg_match('/[\\\\\x00-\x20\x7f]/', $path)

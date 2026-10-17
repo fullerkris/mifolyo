@@ -28,6 +28,9 @@ state = Path(sys.argv[3])
 import oracle_worker as worker
 base = worker.Engine
 class SimulatedLinux:
+    @classmethod
+    def native_process(cls):
+        return cls()
     def monotonic_ns(self):
         return 2000000 + time.monotonic_ns() - config["clock_origin"]
     def actor_frames(self, case_id, invocation):
@@ -46,9 +49,9 @@ raise SystemExit(worker.main())
 
 
 class OraclePair(PipePair):
-    def __init__(self, wrong_source=False):
-        super().__init__(8, 8)
-        self.preparation = preparation()
+    def __init__(self, wrong_source=False, *, architecture="aarch64"):
+        super().__init__(8, 8, architecture=architecture)
+        self.preparation = preparation(architecture)
         self.clock_origin = time.monotonic_ns()
         self.preparation["artifacts"]["oracle_worker_source"] = wire.source_digest()
         self.deadlines["oracle"] = Deadline(8)
@@ -88,11 +91,11 @@ class OraclePair(PipePair):
 
     def collect(self, role):
         return self.backend.collect_native_admission(self.streams[role], self.registry.entries[role]["reference"],
-            self.registry.snapshot(), self.preparation, context(), self.deadlines[role])
+            self.registry.snapshot(), self.preparation, context(self.architecture), self.deadlines[role])
 
     def open_oracle(self):
         return self.backend.open_oracle(self.registry.entries["oracle"]["reference"], self.registry.snapshot(),
-            self.preparation, context(), self.budget, self.deadlines["oracle"])
+            self.preparation, context(self.architecture), self.budget, self.deadlines["oracle"])
 
     def stopped(self, role):
         value = self.fake.containers[self.registry.entries[role]["reference"]["id"]]

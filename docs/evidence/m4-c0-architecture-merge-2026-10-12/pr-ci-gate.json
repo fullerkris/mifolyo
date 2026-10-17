@@ -1,0 +1,207 @@
+{
+  "all_jobs_passed": 23,
+  "base": "ced6e1cff36101f76fb54904b6b0fa2cf33cb48f",
+  "c0": {
+    "package_files": 47,
+    "report_sha256": "d9ce41f75ad4dd4c329117f9c685520b8b422edffbde24ff69d5b10af19de24e",
+    "runner_sha256": "9afb715125f734f5b905da63dde5c9787fc5997b2e5a73a0bf62d781b23aef84",
+    "skipped": 0,
+    "source_inventory_sha256": "a02661da8cb299ff60e4ad9752ea53329b65c384d7f8e15853641dcf6db426cc",
+    "tests": 238
+  },
+  "digest_vectors": "PASS",
+  "harness_tests": 183,
+  "head": "d6b5bdd1a55d18a9c86e97d193bed27ade571ee2",
+  "kind": "c0_architecture_contract_exact_pr_ci",
+  "logs": {
+    "required": "83d0a22aeb0f118bf2bbbbb9360dcb1d1bcf971d27caa7dcb39f6da5210d961d",
+    "unit": "19f8c0bf865828d5f428c854c01805430513744d211d39240a03cdafa4f14ebe"
+  },
+  "m4_accepted": false,
+  "m4_image": {
+    "architecture": "amd64",
+    "files": 74,
+    "recipes": 20,
+    "report_sha256": "fcd7e156b07493747fce21f855e111c7bc71fc3d2ef4115a31b6bfc5ec2202d9",
+    "selected_case": "ledger-claim-release-v1",
+    "stopped_admission_and_cleanup": "PASS"
+  },
+  "main_ci_verified_for_merge": false,
+  "merge_performed": false,
+  "native_c0_runtime_accepted": false,
+  "pr": "https://github.com/fullerkris/mifolyo/pull/26",
+  "race": {
+    "m4_roots_passed": [
+      "TestM4AdministrativeDenialOffline",
+      "TestM4ClaimReleaseOffline",
+      "TestM4NegativeBootOffline",
+      "TestM4NegativeStoredStateOffline",
+      "TestM4NegativeWireOffline",
+      "TestM4OfflineArtifacts",
+      "TestM4PositiveIntervalOffline",
+      "TestM4RecoveryOracleOffline",
+      "TestM4RequestLifecycleOffline",
+      "TestM4SharedGroupCancellationOffline",
+      "TestM4SharedGroupCapacityOffline"
+    ],
+    "passed": 479,
+    "reports": {
+      "unit/artifacts/v2-race-shard-0/shard-0.json": "6593bc6ad0f1a4e09b1feb6225f9cf6819b8c5ac08bbe7c43d9dc347c0822887",
+      "unit/artifacts/v2-race-shard-1/shard-1.json": "771295c9a72701885ea3b7afbdd2c2c200754668f6227dd6493222b7016253b6",
+      "unit/artifacts/v2-race-shard-2/shard-2.json": "1571ce46a781b95fb0ab962eaf1ba92c7f79900e445d6ffb7fe9d0b3f64adbfd",
+      "unit/artifacts/v2-race-shard-3/shard-3.json": "28f8dbef7e7385d8f334508fa26c9ddf66201d4539c49a296ebefd9ac3208d54",
+      "unit/artifacts/v2-race-shard-4/shard-4.json": "c08c113fa573d66d9e5d3cbe68c7848a7766a558b31588039b34f67ae4e98e04",
+      "unit/artifacts/v2-race-shard-5/shard-5.json": "5f6f799da2a6afe32e49634a7e3377965be2dc981005f8260d3b991bd03d8e78",
+      "unit/artifacts/v2-race-shard-6/shard-6.json": "1fe457772ad1d791d765fc5623ab4a652b469ba60adce084a4cd007bb0f40833",
+      "unit/artifacts/v2-race-shard-7/shard-7.json": "f15c5f5ef0f09b46d64d0e3bdc4c8828965408a763d0512cf9e0d231bdb3e3a7"
+    },
+    "roots": 480,
+    "skipped": [
+      "TestJobLuaNativeFactoryParity"
+    ]
+  },
+  "recorded_utc": "2026-10-12T22:24:24.553400+00:00",
+  "required_contexts": [
+    {
+      "conclusion": "success",
+      "details_url": "https://github.com/fullerkris/mifolyo/actions/runs/38311331873/job/115017505661",
+      "head_sha": "d6b5bdd1a55d18a9c86e97d193bed27ade571ee2",
+      "id": 115017505661,
+      "name": "required-tests",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "details_url": "https://github.com/fullerkris/mifolyo/actions/runs/38311331873/job/115017505821",
+      "head_sha": "d6b5bdd1a55d18a9c86e97d193bed27ade571ee2",
+      "id": 115017505821,
+      "name": "required-build",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "details_url": "https://github.com/fullerkris/mifolyo/actions/runs/38311331873/job/115017505853",
+      "head_sha": "d6b5bdd1a55d18a9c86e97d193bed27ade571ee2",
+      "id": 115017505853,
+      "name": "required-smoke",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "details_url": "https://github.com/fullerkris/mifolyo/actions/runs/38311331874/job/115033428493",
+      "head_sha": "d6b5bdd1a55d18a9c86e97d193bed27ade571ee2",
+      "id": 115033428493,
+      "name": "Test Spider Service",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "details_url": "https://github.com/fullerkris/mifolyo/actions/runs/38311331874/job/115017505843",
+      "head_sha": "d6b5bdd1a55d18a9c86e97d193bed27ade571ee2",
+      "id": 115017505843,
+      "name": "Test Seed Importer Service",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "details_url": "https://github.com/fullerkris/mifolyo/actions/runs/38311331874/job/115017505484",
+      "head_sha": "d6b5bdd1a55d18a9c86e97d193bed27ade571ee2",
+      "id": 115017505484,
+      "name": "Test Image Indexer Service",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "details_url": "https://github.com/fullerkris/mifolyo/actions/runs/38311331874/job/115017505829",
+      "head_sha": "d6b5bdd1a55d18a9c86e97d193bed27ade571ee2",
+      "id": 115017505829,
+      "name": "Audit backlinks-processor Python Dependencies",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "details_url": "https://github.com/fullerkris/mifolyo/actions/runs/38311331874/job/115017505783",
+      "head_sha": "d6b5bdd1a55d18a9c86e97d193bed27ade571ee2",
+      "id": 115017505783,
+      "name": "Audit dmoz-importer Python Dependencies",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "details_url": "https://github.com/fullerkris/mifolyo/actions/runs/38311331874/job/115017505827",
+      "head_sha": "d6b5bdd1a55d18a9c86e97d193bed27ade571ee2",
+      "id": 115017505827,
+      "name": "Audit tfidf Python Dependencies",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "details_url": "https://github.com/fullerkris/mifolyo/actions/runs/38311331874/job/115017505840",
+      "head_sha": "d6b5bdd1a55d18a9c86e97d193bed27ade571ee2",
+      "id": 115017505840,
+      "name": "Check Monitoring Service",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "details_url": "https://github.com/fullerkris/mifolyo/actions/runs/38311331874/job/115017505803",
+      "head_sha": "d6b5bdd1a55d18a9c86e97d193bed27ade571ee2",
+      "id": 115017505803,
+      "name": "Test Query Engine",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "details_url": "https://github.com/fullerkris/mifolyo/actions/runs/38311331874/job/115017505652",
+      "head_sha": "d6b5bdd1a55d18a9c86e97d193bed27ade571ee2",
+      "id": 115017505652,
+      "name": "Test PageRank Service",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "details_url": "https://github.com/fullerkris/mifolyo/actions/runs/38311331874/job/115017505716",
+      "head_sha": "d6b5bdd1a55d18a9c86e97d193bed27ade571ee2",
+      "id": 115017505716,
+      "name": "Test Indexer Service",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "details_url": "https://github.com/fullerkris/mifolyo/actions/runs/38311331874/job/115017505771",
+      "head_sha": "d6b5bdd1a55d18a9c86e97d193bed27ade571ee2",
+      "id": 115017505771,
+      "name": "Test Render Worker",
+      "status": "completed"
+    }
+  ],
+  "runs": {
+    "required": {
+      "attempt": 1,
+      "conclusion": "success",
+      "databaseId": 38311331873,
+      "event": "pull_request",
+      "headSha": "d6b5bdd1a55d18a9c86e97d193bed27ade571ee2",
+      "status": "completed",
+      "url": "https://github.com/fullerkris/mifolyo/actions/runs/38311331873",
+      "workflowName": "Required Checks"
+    },
+    "unit": {
+      "attempt": 1,
+      "conclusion": "success",
+      "databaseId": 38311331874,
+      "event": "pull_request",
+      "headSha": "d6b5bdd1a55d18a9c86e97d193bed27ade571ee2",
+      "status": "completed",
+      "url": "https://github.com/fullerkris/mifolyo/actions/runs/38311331874",
+      "workflowName": "Unit Tests"
+    }
+  },
+  "script_tests": 31,
+  "status": "PASS_EXACT_PR_CI",
+  "tested_merge_commit": "47ee579b9d41350e4e0a36adc30e3921189ddf9f",
+  "tree": "f5d215c7b0e0656649364d315bcecf87e213b92a",
+  "version": 1,
+  "worktree_clean": true,
+  "x64_c0_runtime_implemented": false
+}

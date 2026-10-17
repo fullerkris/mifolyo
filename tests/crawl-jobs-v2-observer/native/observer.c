@@ -2,7 +2,9 @@
 #include "common.h"
 #include "admission.h"
 #include "target_manifest.h"
+#if defined(__aarch64__)
 #include <asm/ptrace.h>
+#endif
 #include <elf.h>
 #include <linux/audit.h>
 #include <linux/filter.h>
@@ -16,12 +18,19 @@
 #include <sys/wait.h>
 #include "target_filter.h"
 
+_Static_assert(OBS_TARGET_MACHINE == OBS_ELF_MACHINE, "target manifest architecture must match observer");
+#if defined(__aarch64__)
 _Static_assert(__NR_ptrace == 117 && __NR_execve == 221 && __NR_execveat == 281, "closed AArch64 syscall ABI");
+#else
+_Static_assert(__NR_ptrace == 101 && __NR_execve == 59 && __NR_execveat == 322, "closed x86-64 syscall ABI");
+#endif
 
 static uint64_t deadline, reads, events, start_ticks, load_bias;
 static struct stat executable, pid_namespace, user_namespace, time_namespace;
+#if defined(__aarch64__)
 static unsigned slots;
 static struct user_hwdebug_state saved_debug;
+#endif
 
 static void sha_file(int fd, char output[65]) {
     EVP_MD_CTX *context = EVP_MD_CTX_new();
@@ -146,6 +155,7 @@ static int wait_stop(void) {
     return 0;
 }
 
+#if defined(__aarch64__)
 static void debug_state(struct user_hwdebug_state *value, int set) {
     struct iovec io = {.iov_base = value, .iov_len = set ? 8 + 16 * slots : sizeof *value};
     request(set ? PTRACE_SETREGSET : PTRACE_GETREGSET, NT_ARM_HW_BREAK, (uintptr_t)&io);
@@ -159,6 +169,42 @@ static void breakpoint(uintptr_t pc, int enabled) {
         desired.dbg_regs[0].ctrl = 0x1e5; /* enabled, EL0, execute, four instruction bytes */
     }
     debug_state(&desired, 1);
+}
+
+static void debug_capture(void) {
+    memset(&saved_debug, 0, sizeof saved_debug);
+    debug_state(&saved_debug, 0);
+    slots = saved_debug.dbg_info & 255;
+    if (slots < 1 || slots > 16) invalid("regset");
+    for (unsigned i = 0; i < 16; i++) if (saved_debug.dbg_regs[i].addr || saved_debug.dbg_regs[i].ctrl) invalid("debug_state");
+}
+#else
+#include "x86_debug.h"
+#endif
+
+static uintptr_t stopped_pc(void) {
+#if defined(__aarch64__)
+    struct user_pt_regs registers;
+#else
+    struct user_regs_struct registers;
+#endif
+    struct iovec regs = {.iov_base = &registers, .iov_len = sizeof registers};
+    request(PTRACE_GETREGSET, NT_PRSTATUS, (uintptr_t)&regs);
+    if (regs.iov_len != sizeof registers) invalid("regset");
+#if defined(__aarch64__)
+    return registers.pc;
+#else
+    if (registers.cs != 0x33) invalid("regset");  /* Linux native 64-bit code selector. */
+    return registers.rip;
+#endif
+}
+
+static void instruction_check(uintptr_t pc, uint64_t expected, unsigned size) {
+    if (!size || size > 8 || pc > UINTPTR_MAX - size) invalid("instruction");
+    uint64_t word = peek(pc & ~(uintptr_t)7), instruction = word >> ((pc & 7) * 8);
+    if ((pc & 7) + size > 8) instruction |= peek((pc & ~(uintptr_t)7) + 8) << ((8 - (pc & 7)) * 8);
+    if (size < 8) instruction &= (UINT64_C(1) << (size * 8)) - 1;
+    if (instruction != expected) invalid("instruction");
 }
 
 static uintptr_t witness_pointer(void) {
@@ -208,32 +254,28 @@ int main(int argc, char **argv) {
     request(PTRACE_INTERRUPT, 0, 0);
     int status = wait_stop();
     if (WSTOPSIG(status) != SIGTRAP || (unsigned)status >> 16 != PTRACE_EVENT_STOP) invalid("stop_reason");
-    memset(&saved_debug, 0, sizeof saved_debug);
-    debug_state(&saved_debug, 0);
-    slots = saved_debug.dbg_info & 255;
-    if (slots < 1 || slots > 16) invalid("regset");
-    for (unsigned i = 0; i < 16; i++) if (saved_debug.dbg_regs[i].addr || saved_debug.dbg_regs[i].ctrl) invalid("debug_state");
+    debug_capture();
     const unsigned ordinals[] = {1, 2, 127, 128, 129, 1049, 1050};
     unsigned wanted = selected < 140 ? ordinals[(selected % 70) / 10] : selected < 240 ? 1 : 129;
     uintptr_t relative = selected < 140 ? (selected < 70 ? OBS_PRE_EFFECT : OBS_POST_EFFECT) :
         selected < 200 ? OBS_VM_MARKER : selected >= 210 && selected < 240 ? OBS_SEND_MARKER : OBS_PRE_EFFECT;
     uintptr_t pc = load_bias + relative;
-    uint32_t instruction = (uint32_t)(peek(pc & ~(uintptr_t)7) >> ((pc & 7) * 8));
-    uint32_t expected = selected < 140 ? (selected < 70 ? OBS_PRE_INSTRUCTION : OBS_POST_INSTRUCTION) : OBS_NOP_INSTRUCTION;
-    if (selected >= 200 && !(selected >= 210 && selected < 240)) expected = OBS_PRE_INSTRUCTION;
-    if (instruction != expected) invalid("instruction");
+    uint64_t expected = relative == OBS_PRE_EFFECT ? OBS_PRE_INSTRUCTION : relative == OBS_POST_EFFECT ? OBS_POST_INSTRUCTION : OBS_NOP_INSTRUCTION;
+    unsigned instruction_bytes = relative == OBS_PRE_EFFECT ? OBS_PRE_BYTES : relative == OBS_POST_EFFECT ? OBS_POST_BYTES : OBS_NOP_BYTES;
+    instruction_check(pc, expected, instruction_bytes);
     breakpoint(pc, 1);
     emit("{\"phase\":\"ARMED\",\"version\":1}\n");
     request(PTRACE_CONT, 0, 0);
     for (;;) {
         status = wait_stop();
         siginfo_t signal;
-        struct user_pt_regs registers;
-        struct iovec regs = {.iov_base = &registers, .iov_len = sizeof registers};
         if (WSTOPSIG(status) != SIGTRAP || (unsigned)status >> 16 != 0) invalid("stop_reason");
         request(PTRACE_GETSIGINFO, 0, (uintptr_t)&signal);
-        request(PTRACE_GETREGSET, NT_PRSTATUS, (uintptr_t)&regs);
-        if (signal.si_code != TRAP_HWBKPT || regs.iov_len != sizeof registers || registers.pc != pc) invalid("stop_reason");
+        if (signal.si_code != TRAP_HWBKPT || stopped_pc() != pc) invalid("stop_reason");
+#if defined(__x86_64__)
+        if ((uintptr_t)signal.si_addr != pc) invalid("stop_reason");
+        debug_hit(pc);
+#endif
         uintptr_t pointer = witness_pointer();
         uint64_t ordinal = peek(pointer + offsetof(struct witness, ordinal));
         int match = ordinal == wanted;
@@ -267,6 +309,10 @@ int main(int argc, char **argv) {
         if (WSTOPSIG(status) != SIGTRAP || (unsigned)status >> 16 != 0) invalid("stop_reason");
         request(PTRACE_GETSIGINFO, 0, (uintptr_t)&signal);
         if (signal.si_code != TRAP_TRACE) invalid("stop_reason");
+#if defined(__x86_64__)
+        debug_step();
+        if (relative != OBS_POST_EFFECT && stopped_pc() != pc + instruction_bytes) invalid("stop_reason");
+#endif
         breakpoint(pc, 1);
         request(PTRACE_CONT, 0, 0);
     }

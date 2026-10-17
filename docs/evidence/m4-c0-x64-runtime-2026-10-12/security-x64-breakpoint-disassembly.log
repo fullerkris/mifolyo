@@ -1,0 +1,65 @@
+
+/tmp/opencode/m4-c0-x64-runtime-2026-10-12/final-build/x86_64/artifacts/observer:     file format elf64-x86-64
+
+
+Disassembly of section .init:
+
+Disassembly of section .plt:
+
+Disassembly of section .plt.got:
+
+Disassembly of section .text:
+
+000000000006fc60 <breakpoint>:
+   6fc60:	41 54                	push   %r12
+   6fc62:	31 d2                	xor    %edx,%edx
+   6fc64:	55                   	push   %rbp
+   6fc65:	89 f5                	mov    %esi,%ebp
+   6fc67:	be 88 03 00 00       	mov    $0x388,%esi
+   6fc6c:	53                   	push   %rbx
+   6fc6d:	48 89 fb             	mov    %rdi,%rbx
+   6fc70:	bf 06 00 00 00       	mov    $0x6,%edi
+   6fc75:	e8 c6 fd ff ff       	call   6fa40 <request>
+   6fc7a:	4c 8b 25 cf 2a 44 00 	mov    0x442acf(%rip),%r12        # 4b2750 <saved_debug+0x30>
+   6fc81:	85 ed                	test   %ebp,%ebp
+   6fc83:	75 5b                	jne    6fce0 <breakpoint+0x80>
+   6fc85:	48 8b 1d 94 2a 44 00 	mov    0x442a94(%rip),%rbx        # 4b2720 <saved_debug>
+   6fc8c:	be 50 03 00 00       	mov    $0x350,%esi
+   6fc91:	bf 06 00 00 00       	mov    $0x6,%edi
+   6fc96:	48 89 da             	mov    %rbx,%rdx
+   6fc99:	e8 a2 fd ff ff       	call   6fa40 <request>
+   6fc9e:	4c 89 e2             	mov    %r12,%rdx
+   6fca1:	be 80 03 00 00       	mov    $0x380,%esi
+   6fca6:	bf 06 00 00 00       	mov    $0x6,%edi
+   6fcab:	e8 90 fd ff ff       	call   6fa40 <request>
+   6fcb0:	be 88 03 00 00       	mov    $0x388,%esi
+   6fcb5:	bf 06 00 00 00       	mov    $0x6,%edi
+   6fcba:	48 8b 2d 97 2a 44 00 	mov    0x442a97(%rip),%rbp        # 4b2758 <saved_debug+0x38>
+   6fcc1:	48 89 ea             	mov    %rbp,%rdx
+   6fcc4:	e8 77 fd ff ff       	call   6fa40 <request>
+   6fcc9:	48 89 ea             	mov    %rbp,%rdx
+   6fccc:	4c 89 e6             	mov    %r12,%rsi
+   6fccf:	48 89 df             	mov    %rbx,%rdi
+   6fcd2:	5b                   	pop    %rbx
+   6fcd3:	5d                   	pop    %rbp
+   6fcd4:	41 5c                	pop    %r12
+   6fcd6:	e9 25 fe ff ff       	jmp    6fb00 <debug_verify>
+   6fcdb:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+   6fce0:	48 89 da             	mov    %rbx,%rdx
+   6fce3:	be 50 03 00 00       	mov    $0x350,%esi
+   6fce8:	bf 06 00 00 00       	mov    $0x6,%edi
+   6fced:	bd 01 00 00 00       	mov    $0x1,%ebp
+   6fcf2:	e8 49 fd ff ff       	call   6fa40 <request>
+   6fcf7:	4c 89 e2             	mov    %r12,%rdx
+   6fcfa:	be 80 03 00 00       	mov    $0x380,%esi
+   6fcff:	bf 06 00 00 00       	mov    $0x6,%edi
+   6fd04:	e8 37 fd ff ff       	call   6fa40 <request>
+   6fd09:	ba 01 00 00 00       	mov    $0x1,%edx
+   6fd0e:	be 88 03 00 00       	mov    $0x388,%esi
+   6fd13:	bf 06 00 00 00       	mov    $0x6,%edi
+   6fd18:	e8 23 fd ff ff       	call   6fa40 <request>
+   6fd1d:	eb aa                	jmp    6fcc9 <breakpoint+0x69>
+
+Disassembly of section __libc_freeres_fn:
+
+Disassembly of section .fini:

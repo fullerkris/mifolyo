@@ -1,0 +1,48 @@
+
+/tmp/opencode/m4-c0-x64-runtime-2026-10-12/final-build/x86_64/artifacts/observer:     file format elf64-x86-64
+
+
+Disassembly of section .init:
+
+Disassembly of section .plt:
+
+Disassembly of section .plt.got:
+
+Disassembly of section .text:
+
+000000000006fbd0 <stopped_pc>:
+   6fbd0:	48 81 ec f8 00 00 00 	sub    $0xf8,%rsp
+   6fbd7:	be 01 00 00 00       	mov    $0x1,%esi
+   6fbdc:	bf 04 42 00 00       	mov    $0x4204,%edi
+   6fbe1:	64 48 8b 04 25 28 00 	mov    %fs:0x28,%rax
+   6fbe8:	00 00 
+   6fbea:	48 89 84 24 e8 00 00 	mov    %rax,0xe8(%rsp)
+   6fbf1:	00 
+   6fbf2:	48 8d 44 24 10       	lea    0x10(%rsp),%rax
+   6fbf7:	48 89 e2             	mov    %rsp,%rdx
+   6fbfa:	48 c7 44 24 08 d8 00 	movq   $0xd8,0x8(%rsp)
+   6fc01:	00 00 
+   6fc03:	48 89 04 24          	mov    %rax,(%rsp)
+   6fc07:	e8 34 fe ff ff       	call   6fa40 <request>
+   6fc0c:	48 81 7c 24 08 d8 00 	cmpq   $0xd8,0x8(%rsp)
+   6fc13:	00 00 
+   6fc15:	75 2e                	jne    6fc45 <stopped_pc+0x75>
+   6fc17:	48 83 bc 24 98 00 00 	cmpq   $0x33,0x98(%rsp)
+   6fc1e:	00 33 
+   6fc20:	75 23                	jne    6fc45 <stopped_pc+0x75>
+   6fc22:	48 8b 84 24 90 00 00 	mov    0x90(%rsp),%rax
+   6fc29:	00 
+   6fc2a:	48 8b 94 24 e8 00 00 	mov    0xe8(%rsp),%rdx
+   6fc31:	00 
+   6fc32:	64 48 2b 14 25 28 00 	sub    %fs:0x28,%rdx
+   6fc39:	00 00 
+   6fc3b:	75 14                	jne    6fc51 <stopped_pc+0x81>
+   6fc3d:	48 81 c4 f8 00 00 00 	add    $0xf8,%rsp
+   6fc44:	c3                   	ret
+   6fc45:	48 8d 3d a4 eb 2e 00 	lea    0x2eeba4(%rip),%rdi        # 35e7f0 <_IO_stdin_used+0x7f0>
+   6fc4c:	e8 8f eb ff ff       	call   6e7e0 <invalid>
+   6fc51:	e8 1a 8e 27 00       	call   2e8a70 <__stack_chk_fail>
+
+Disassembly of section __libc_freeres_fn:
+
+Disassembly of section .fini:

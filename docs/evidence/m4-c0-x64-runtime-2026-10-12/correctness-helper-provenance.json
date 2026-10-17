@@ -1,0 +1,12 @@
+{
+  "debug_header": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/snapshot/tests/crawl-jobs-v2-observer/native/x86_debug.h",
+  "exact_extracted_helpers": {
+    "instruction_check": "15937059e31a90fbca669cbed105cfc426af911e6ca798daad011798836b1e47",
+    "peek": "528a2168c1c6d532ccd357ca537f8e988a53f91b5c5f9fc66cc70e0414135a91",
+    "request": "d8c3fba242fea1bc2e5218435cf02de8fc2b46c49776974e9e451ab25e41c029",
+    "stopped_pc": "f7e131ce616bee81e59ccee494c7e60dcd536d821fe092a3887bd962ec71f8b8"
+  },
+  "native_actor_main_included": false,
+  "observer_sha256": "a45816e40320c8560f439dfdd0b1ebef636dc74a0a101c19f0a726ae38098a5c",
+  "ptrace_replacement": "simulated_ptrace"
+}

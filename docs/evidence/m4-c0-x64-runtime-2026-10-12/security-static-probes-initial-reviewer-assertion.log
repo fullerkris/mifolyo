@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/security/probe_static.py", line 140, in <module>
+    check('compiled_filter_readonly_mapped', len(loads) == 1 and loads[0][1] == 4 and not s[2] & 1)
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/security/probe_static.py", line 30, in check
+    assert condition, name
+           ^^^^^^^^^
+AssertionError: compiled_filter_readonly_mapped

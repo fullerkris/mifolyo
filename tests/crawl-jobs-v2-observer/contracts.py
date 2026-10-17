@@ -118,9 +118,8 @@ def platform_digest(architecture):
 
 
 def runtime_architecture(architecture):
-    value = platform(architecture)
-    require(architecture == "aarch64", "ARCHITECTURE_NOT_IMPLEMENTED")
-    return value
+    """Implemented native ABIs; image/host admission remains independently required."""
+    return platform(architecture)
 
 
 def elf_architecture(raw):

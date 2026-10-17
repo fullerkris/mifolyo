@@ -15,10 +15,10 @@ from watchdog import WatchState, validate_cleanup
 DAEMON = b"synthetic-daemon"
 
 
-def fixture_scope(case="P1.pre.1.1"):
+def fixture_scope(case="P1.pre.1.1", architecture="aarch64"):
     return owned.scope(case, "1" * 32,
         {role: "sha256:" + str(i + 1) * 64 for i, role in enumerate(owned.ACTORS)},
-        {role: c.sha(c.canonical([])) for role in owned.ACTORS}, c.sha(DAEMON))
+        {role: c.sha(c.canonical([])) for role in owned.ACTORS}, c.sha(DAEMON), architecture)
 
 
 def volume_metadata(spec):
@@ -41,7 +41,7 @@ def container_metadata(spec, volume_metadata_by_name):
             "CapDrop": ["ALL"], "CapAdd": None, "Memory": spec["memory"], "MemorySwap": spec["memory"],
             "NanoCpus": 1000000000, "PidsLimit": spec["pids_limit"], "RestartPolicy": {"Name": "no", "MaximumRetryCount": 0},
             "AutoRemove": False, "LogConfig": {"Type": "none", "Config": {}}, "Ulimits": [{"Name": "core", "Hard": 0, "Soft": 0}],
-            "PublishAllPorts": False, "Runtime": "runc", "SecurityOpt": ["no-new-privileges:true", "seccomp=" + json.dumps(profile(spec["role"]))],
+            "PublishAllPorts": False, "Runtime": "runc", "SecurityOpt": ["no-new-privileges:true", "seccomp=" + json.dumps(profile(spec["role"], spec["architecture"]))],
             "Mounts": declared},
         "Mounts": mounts, "State": {"Running": False, "Pid": 0, "Status": "created", "ExitCode": 0,
             "Paused": False, "Restarting": False, "Dead": False, "OOMKilled": False}}
@@ -65,7 +65,7 @@ class FakeDocker:
         if self.fail_inspect == selector:
             raise c.Invalid("INSPECTION_FAILED")
         if kind == "image":
-            return {"Id": selector, "Os": "linux", "Architecture": "arm64",
+            return {"Id": selector, "Os": "linux", "Architecture": c.platform(self.scope["architecture"])["image_architecture"],
                 "Config": {"Env": [], "OnBuild": None, "Volumes": None}} if selector in self.scope["images"].values() else None
         if kind == "volume":
             return copy.deepcopy(self.volumes.get(selector))
@@ -112,8 +112,8 @@ class FakeDocker:
             del self.volumes[ref["name"]]
 
 
-def prepared():
-    value = fixture_scope()
+def prepared(architecture="aarch64"):
+    value = fixture_scope(architecture=architecture)
     history = []
     registry = owned.Registry(value, lambda row: history.append(copy.deepcopy(row)))
     backend = FakeDocker(value)

@@ -148,7 +148,7 @@ def main():
     try:
         require(len(sys.argv) == 1, "ORACLE_ARGV")
         until = time.monotonic() + LIMITS["admission_ms"] / 1000
-        reader, linux_end, admitting = LinuxReader(), None, True
+        reader, linux_end, admitting = LinuxReader.native_process(), None, True
         os.set_blocking(0, False)
         os.set_blocking(1, False)
         poll = select.poll()

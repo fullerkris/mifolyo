@@ -1,0 +1,157 @@
+{
+  "execution_authorized": false,
+  "files": {
+    "aarch64-build.json": {
+      "bytes": 7148,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/final-build/aarch64/build.json",
+      "sha256": "d7149a6cef748604d2745a24ff8d532ba650d35e95d647ed77225c4d1622e308"
+    },
+    "aarch64-build.log": {
+      "bytes": 2802,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/final-build/aarch64/build.log",
+      "sha256": "909ecfc131bdd73c6dea5fbdc6cd82527e8cbf983d60436d4aef26e3552d0338"
+    },
+    "aarch64-observer-seccomp.json": {
+      "bytes": 2813,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/final-build/aarch64/artifacts/observer-seccomp.json",
+      "sha256": "abf581851c19631ba5125ac03443f4ad72c6e8fd7b92fa086218060e07b56bf2"
+    },
+    "aarch64-oracle-seccomp.json": {
+      "bytes": 1657,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/final-build/aarch64/artifacts/oracle-seccomp.json",
+      "sha256": "f82e0ae5335e1393c402265c4a14a4e56ad8df27ab48eee70907745fef3b6835"
+    },
+    "aarch64-target-manifest.json": {
+      "bytes": 913,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/final-build/aarch64/artifacts/target-manifest.json",
+      "sha256": "da627a29851deb9fa5196db1b10c3319d93fdb2d6ba95afd1ef9b7c2aa8baa65"
+    },
+    "aarch64-target-seccomp.json": {
+      "bytes": 1412,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/final-build/aarch64/artifacts/target-seccomp.json",
+      "sha256": "6a1ffdf7326ae1370bd55cc2edb2bcfb49b2d65ce7090205576d3b6e9496ab3e"
+    },
+    "aarch64-toolchain.json": {
+      "bytes": 2240,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/final-build/aarch64/artifacts/toolchain.json",
+      "sha256": "6f50da1a0f09718036aa11c5c191e42657ef97228fa07f9a3d09951b84ad2de5"
+    },
+    "initial-tests.json": {
+      "bytes": 81456,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/initial-tests.json",
+      "sha256": "2369e9a5199fc69c65fb2b036963604cb046952267c1183aa1f4f13631cbcfb5"
+    },
+    "initial-tests.log": {
+      "bytes": 57173,
+      "private_source": "/tmp/opencode/m4-c0-x64-initial-tests.log",
+      "sha256": "e7ac7b84ddaa603c07387cb90f04d2b87773a4984c7fb60d2057898285df0185"
+    },
+    "initial-x64-build.json": {
+      "bytes": 6120,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/build-pass1/x86_64/build.json",
+      "sha256": "083e9045c932661b3d5cc01790ca7f55773e512004cc8567f23c71429a756199"
+    },
+    "initial-x64-build.log": {
+      "bytes": 3659,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/build-pass1/x86_64/build.log",
+      "sha256": "a5f1ed2cf3d7fd48cd1a870632fd824361588f04e1c136d51f650fcfe2c20313"
+    },
+    "local-verification.json": {
+      "bytes": 7221,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/local-verification.json",
+      "sha256": "942e0fda99fff4b3418af90a6aa929a802ffdee1f8908d5962ab32017c99bd49"
+    },
+    "oracle-aarch64-build.log": {
+      "bytes": 854,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/oracle-probes/aarch64-build.log",
+      "sha256": "911f7077ca30bce14a6bd75ea7ec69098effa19d6ea715976f03ca097c93ee4c"
+    },
+    "oracle-aarch64-manifest.json": {
+      "bytes": 1048,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/oracle-probes/aarch64-artifacts/oracle-artifacts.json",
+      "sha256": "45cc9cba72c6fa63cce223b694cc50134ae80c25715747992e83ffb6b1b1bb0b"
+    },
+    "oracle-probes.json": {
+      "bytes": 2246,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/oracle-probes/verification.json",
+      "sha256": "400038ec69910a7b6659c653eadfba93aece10e7397b0347de937a0397411c33"
+    },
+    "oracle-x86_64-host-interpreter-manifest.json": {
+      "bytes": 1074,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/oracle-probes/x86_64-host-interpreter/oracle-artifacts.json",
+      "sha256": "64b01577de97863ed996c3ab1305c1c6cac224b164897a0d916390ecf47fd8b5"
+    },
+    "source-inventory.json": {
+      "bytes": 6520,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/source-inventory.json",
+      "sha256": "7ed3b955be1fe4d2621a43896d1a3e4d49cf9edcf6e86a0c2dd567d105f14720"
+    },
+    "tests-022.json": {
+      "bytes": 87369,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/tests-022.json",
+      "sha256": "b88d7f34a8fbbd4de29b93e6614921f619ce667bd3539c5d126ff79d1c00dd2f"
+    },
+    "tests-022.log": {
+      "bytes": 42598,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/tests-022.log",
+      "sha256": "22f99c87b7793d8591d07e4668d64e59cf620462c34511cef30fe8ffbe572ad2"
+    },
+    "tests-077.json": {
+      "bytes": 87369,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/tests-077.json",
+      "sha256": "b88d7f34a8fbbd4de29b93e6614921f619ce667bd3539c5d126ff79d1c00dd2f"
+    },
+    "tests-077.log": {
+      "bytes": 42598,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/tests-077.log",
+      "sha256": "1cb55e6f4108dbb0bd7b03190a5d1130f165b50f751e894877ea44251dd972ab"
+    },
+    "tests-pass1.json": {
+      "bytes": 86565,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/tests-pass1.json",
+      "sha256": "dc70a11f448c0cf930ae82d8d44f47fca1f0555f53660caef06380a7ef400aa7"
+    },
+    "tests-pass1.log": {
+      "bytes": 43458,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/tests-pass1.log",
+      "sha256": "bc7298edb48e66a34e6da06683a8cd9e5e78a22750e54171b5b648f89f38a8b1"
+    },
+    "x86_64-build.json": {
+      "bytes": 7140,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/final-build/x86_64/build.json",
+      "sha256": "e24ed9a382cc4fcbf41bc4b425e229aaf62027886c6590c1d1d078e438aa4a3d"
+    },
+    "x86_64-build.log": {
+      "bytes": 2795,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/final-build/x86_64/build.log",
+      "sha256": "818c457c24f3de0ed39ef316bef9210af0be1b0912ea0c1c7e66974ca9f49ac7"
+    },
+    "x86_64-observer-seccomp.json": {
+      "bytes": 4497,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/final-build/x86_64/artifacts/observer-seccomp.json",
+      "sha256": "68111f7b57683bfcf4e8e0dd99a93c4c040b6d3afa37ae4f7ee4180fda58a013"
+    },
+    "x86_64-oracle-seccomp.json": {
+      "bytes": 1771,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/final-build/x86_64/artifacts/oracle-seccomp.json",
+      "sha256": "8397f4c4f904a40e43d17bc8552ccff4f53f3fc7da72922aa45cae46b1ad5f5b"
+    },
+    "x86_64-target-manifest.json": {
+      "bytes": 988,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/final-build/x86_64/artifacts/target-manifest.json",
+      "sha256": "d3e44a6cd06249e5fa10a2fe0d3b1150906f57fe56477580bc152a8e13dfbf00"
+    },
+    "x86_64-target-seccomp.json": {
+      "bytes": 1534,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/final-build/x86_64/artifacts/target-seccomp.json",
+      "sha256": "c05b23afcec906e98cfa7dada5b095c4a553cb7d7fc0745608cf0f69aa70ead9"
+    },
+    "x86_64-toolchain.json": {
+      "bytes": 2238,
+      "private_source": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/final-build/x86_64/artifacts/toolchain.json",
+      "sha256": "96336154f765a6d8c89748b0b130f60723e6f9585258b848b64a021d6b4c14ad"
+    }
+  },
+  "kind": "c0_x64_runtime_local_evidence_exports",
+  "version": 1
+}

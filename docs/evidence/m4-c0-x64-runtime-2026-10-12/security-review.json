@@ -1,0 +1,315 @@
+{
+  "artifacts": {
+    "aarch64": {
+      "elfs": {
+        "observer": {
+          "bytes": 5451408,
+          "elf_machine": 183,
+          "sha256": "a995ae45fff124d4949325700e8bbf04fd0bdc4fe2ed76e782ad236784f937a6"
+        },
+        "target": {
+          "bytes": 5448400,
+          "elf_machine": 183,
+          "sha256": "74f88a9a5af266f5a414abfca241a6162284c8c6da749c5cafed771e87049644"
+        }
+      },
+      "filter_bytes": 272,
+      "filter_file_offset": 3498664,
+      "filter_sha256": "701824ff5f8ccafa359f711d2714b23c8a303789cd1987a3a85aba19a3667b93",
+      "filter_vaddr": 3498664,
+      "profiles": {
+        "observer": "abf581851c19631ba5125ac03443f4ad72c6e8fd7b92fa086218060e07b56bf2",
+        "oracle": "f82e0ae5335e1393c402265c4a14a4e56ad8df27ab48eee70907745fef3b6835",
+        "target": "6a1ffdf7326ae1370bd55cc2edb2bcfb49b2d65ce7090205576d3b6e9496ab3e"
+      }
+    },
+    "x86_64": {
+      "elfs": {
+        "observer": {
+          "bytes": 5878952,
+          "elf_machine": 62,
+          "sha256": "a82b61b0d1000195087543dec812c42489c807013739555f32e2f8728874f77d"
+        },
+        "target": {
+          "bytes": 5880480,
+          "elf_machine": 62,
+          "sha256": "28e15e20192695839ae5ffe9491fd392fbaa77472edf6df6f5ce75dd3f0f6fa7"
+        }
+      },
+      "filter_bytes": 440,
+      "filter_file_offset": 3991008,
+      "filter_sha256": "b080f5d5047014d30d7f9e40280b6dd89f71abc029fb75081a7a8b40e1f2b88b",
+      "filter_vaddr": 3991008,
+      "profiles": {
+        "observer": "68111f7b57683bfcf4e8e0dd99a93c4c040b6d3afa37ae4f7ee4180fda58a013",
+        "oracle": "8397f4c4f904a40e43d17bc8552ccff4f53f3fc7da72922aa45cae46b1ad5f5b",
+        "target": "c05b23afcec906e98cfa7dada5b095c4a553cb7d7fc0745608cf0f69aa70ead9"
+      }
+    }
+  },
+  "base_and_reviewed_head": "d8016469a5ffcceeb04329deec4e3dea2c72dd97",
+  "baseline_report_reference": {
+    "path": "docs/evidence/m4-c0-architecture-remediation-2026-10-12/security-review.md",
+    "sha256": "f7218530a813adf7e5f5e822fa04ce2d2bc1bd2835c6e8b1d036c011c82c9fa0"
+  },
+  "blocking_findings": [],
+  "boundaries": [
+    {
+      "evidence": [
+        "static-probes.json",
+        "x64-main-disassembly.log"
+      ],
+      "id": "SEC-C0-X64-B01",
+      "source": [
+        "profiles.py:87-173"
+      ],
+      "status": "PASS",
+      "subject": "Native audit architecture; x32/historical compat/negative syscall aliases; post-admission exec denial"
+    },
+    {
+      "evidence": [
+        "static-probes.json",
+        "debug-probe.log",
+        "x64-debug-verify-disassembly.log"
+      ],
+      "id": "SEC-C0-X64-B02",
+      "source": [
+        "profiles.py:63-84",
+        "profiles.py:113-163",
+        "native/x86_debug.h:7-54"
+      ],
+      "status": "PASS",
+      "subject": "Full-width ptrace/TID/offset/data constraints; DR0..3/6/7 read versus DR0/reset-only DR6/DR7=0,1 writes; no GPR/memory/data-watchpoint widening"
+    },
+    {
+      "evidence": [
+        "static-probes.json",
+        "x64-main-disassembly.log"
+      ],
+      "id": "SEC-C0-X64-B03",
+      "source": [
+        "build_tools.py:145-157",
+        "native/observer.c:120-125"
+      ],
+      "status": "PASS",
+      "subject": "Actual embedded BPF and installation pointer/length versus canonical generator, sidecar and record-mode malicious mutations"
+    },
+    {
+      "evidence": [
+        "debug-probe.log",
+        "static-probes.json",
+        "runtime-probes.json",
+        "x64-stopped-pc-disassembly.log",
+        "x64-main-disassembly.log"
+      ],
+      "id": "SEC-C0-X64-B04",
+      "source": [
+        "native/architecture.h:3-14",
+        "native/observer.c:81-118",
+        "native/observer.c:185-199",
+        "native/observer.c:237-278",
+        "runtime_admission.py:98-147"
+      ],
+      "status": "PASS_STATIC_ONLY",
+      "subject": "LP64, native GP regset, CS/RIP/signal/debug-state readback and executable identity joins"
+    },
+    {
+      "evidence": [
+        "runtime-probes.json",
+        "tests.json",
+        "continuity.json"
+      ],
+      "id": "SEC-C0-X64-B05",
+      "source": [
+        "docker_backend.py:197-338",
+        "runtime_context.py:47-184",
+        "context_transport.py:158-184",
+        "linux_observation.py:42-51",
+        "linux_observation.py:113-194",
+        "oracle_worker.py:149-187"
+      ],
+      "status": "PASS_OFFLINE",
+      "subject": "Image/profile/deployment/anchor/context/ELF cross-architecture substitutions; observed oracle ABI"
+    },
+    {
+      "evidence": [
+        "x64-guards.json",
+        "runtime-probes.json",
+        "tests.json"
+      ],
+      "id": "SEC-C0-X64-B06",
+      "source": [
+        "docker_backend.py:287-338",
+        "docker_backend.py:360-478",
+        "oracle_bridge.py:37-170",
+        "streams.py:128-207"
+      ],
+      "status": "PASS_OFFLINE",
+      "subject": "Authorization, own/peer/oracle/context expiry after final polls, held-evidence joins, replay, restart and fail-closed dispatch"
+    },
+    {
+      "evidence": [
+        "static-probes.json",
+        "continuity.json"
+      ],
+      "id": "SEC-C0-X64-B07",
+      "source": [
+        "profiles.py"
+      ],
+      "status": "PASS",
+      "subject": "ARM64 three-profile/BPF bytes unchanged from merged-base generation"
+    }
+  ],
+  "branch": "feature/crawl-jobs-v2-c0-x64-runtime",
+  "date": "2026-10-12",
+  "decision": "GO_FOR_CONTINUED_IMPLEMENTATION",
+  "evidence_sha256": {
+    "continuity.json": "890738f9644aa0c07fe4a580fe9edbf4ce5fbf9abb21c90dee8d0cf751d7aea1",
+    "continuity.log": "c8bdcb945d182d27a9e5b671d97eaa3d122f1ffa3a778193c76b295983c95f0b",
+    "debug-probe.log": "65f5d7c45e804d8f1282f068d2538019eb8bff5c020fbe02aa4c57cb780122fe",
+    "debug-undefined-symbols.log": "dbea1f147ef6ec84548978244cdff0184345b6d2f3287e68c65e741504bbb2c6",
+    "integrity-after-initial-global-status.json": "39174274d8017004e8217cd8e0a727b8f5aa44ca2109c4fd76bbca04c70c5bc0",
+    "integrity-after-initial-global-status.log": "bd57a83b9ef1fe1f96d61568ab5b2f3ab04eabb0a4c1a152a0e802df4687f8b5",
+    "integrity-after.json": "faf44835e5b1a987e000177e436e2471867ed317f3bd41f1972aca233bb934ca",
+    "integrity-after.log": "605fd555187141078b41d1330d6dde32eea4c3fbac67773ae84d41081c665625",
+    "integrity-before.json": "40cd5fa7caba7cbba7444919e7ac3e8e89d3e9fe15a16077062ff7c48f304474",
+    "integrity.py": "c6848a291ea6482b6f05e09c73b1ecc05302f4524a1cebfe3962063d65395eda",
+    "probe-compiler.log": "361c40d813a1a40b1b818cd65102f5fc41e57c783abda737f65ccc790d0372db",
+    "probe_continuity.py": "829eae9e6e371505072ea9edbe5abc53a83bb0e29354645f64c29910bd3f1647",
+    "probe_runtime.py": "e4a052dc2031e970972cadcad692cb9c168b8367f666edb61c860d13ec5dcf0e",
+    "probe_static.py": "72dcdcdf903f0641275fa7e3529466de2c0058af13717fca35b24eb9ec6c0e04",
+    "replay_x64_guards.py": "8245bae657edaf24dce37b1ed52d4b1982b893bcbb6215c44b12bd0e9b11d7e5",
+    "review.md": "143f727a2fdbad70ab8a89f266ee18ad7bb7fc351a17a02a936a8fcda240bab0",
+    "runtime-probes.json": "cc2b29aaf4ca0f625bc358dc3723c118544236f229d161ce7b0aba53bf8f32e1",
+    "runtime-probes.log": "a3f2bf9f036365126da8f51add6ba58882f91caaecad44398ccb66bb91196960",
+    "static-probes-initial-reviewer-assertion.log": "7463b4ee7b4691bdbf0cafdddaef7371737c549856699f735bbb8dbc2f4cc095",
+    "static-probes.json": "dc3bd174de6fd85a60dde19a23fb40b8472c308133dd13f65a05768e37817016",
+    "static-probes.log": "8ac27a81de8bb85e0e825923041f6e863dead12620c91fa8ab935e7f8184fe76",
+    "test-x86-debug": "1ceecc6f579618673a93a765582bd3f8799d55dde12828aa7ccbac3575ce81b1",
+    "tests.json": "b88d7f34a8fbbd4de29b93e6614921f619ce667bd3539c5d126ff79d1c00dd2f",
+    "tests.log": "75cfecedc3ab26ef9bd4903ba393c494dfb223ee59ca1242e53c25fb1910a697",
+    "write_review.py": "53811cb4ffeea2fbcb2cafda527f0452b3f11e506356a19f733d4ccd04471524",
+    "x64-breakpoint-disassembly.log": "5012299e39dd77898962cf6c9573be1f745a4f18da3b4c7b6b0e8fdb0b135708",
+    "x64-debug-verify-disassembly.log": "ef3b72e2016da901d77b44c14214570c9419f02e43224f751eada9ac2cdf074d",
+    "x64-guards.json": "1b66e2931d16567cab391594d225fe35ba9e5d5affdc0bd8a882417c8edb9788",
+    "x64-guards.log": "171b5873f0a5fee4133fe97747a968463a179c6a7a6728fb2f73f6f4e42a3b54",
+    "x64-main-disassembly.log": "21ef19c49edb113c764ddb3c046e7dc49a79f3da06df72eeb6f83905426cadb8",
+    "x64-request-disassembly.log": "455964fef9bd6499da41c36d27523b5215f1b0137729795257c569b83cf61b2f",
+    "x64-stopped-pc-disassembly.log": "b3583f115b616982f33ffa2d4e937d6314e7cad1a2b480af0bb0e9e3cdc05dd4"
+  },
+  "execution_authorized": false,
+  "finding_counts": {
+    "critical": 0,
+    "high": 0,
+    "informational": 0,
+    "low": 0,
+    "medium": 0
+  },
+  "findings": [],
+  "inventory": {
+    "additional_runner_files": 1,
+    "final_build_files_verified_unchanged": 130,
+    "package_files": 51,
+    "path": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/source-inventory.json",
+    "sha256": "7ed3b955be1fe4d2621a43896d1a3e4d49cf9edcf6e86a0c2dd567d105f14720",
+    "source_trees": {
+      "repository": {
+        "exact_package_file_inventory": true,
+        "file_count": 51
+      },
+      "snapshot": {
+        "exact_package_file_inventory": true,
+        "file_count": 51
+      }
+    },
+    "verified_before_and_after": true
+  },
+  "kind": "independent_c0_arch_03_security_review",
+  "limits": [
+    "C0-ARCH-04 complete dual-runtime images remain unproven; Dockerfile.oracle intentionally remains ARM64.",
+    "C0-ARCH-05 actual kernel/tracing/debug-register stop semantics/timing/calibration and non-emulated execution remain unproven.",
+    "OCI rules interpreted offline; no OCI libseccomp/runc compilation or installed kernel-filter readback is claimed.",
+    "No native actor, actual ptrace, filter installation, live Docker/Podman workload, real host collector, live SSH or host policy mutation.",
+    "Oracle worker main exercised only with simulated Linux and witness readers in permitted benign-pipe tests.",
+    "Only the in-memory native/test_x86_debug.c executable was compiled/run; actor build records inspected, not independently rebuilt.",
+    "Operator/context source/compiler remain trust roots; fixture-key-signed counterexamples are not MAC forgery or hostile-root demonstrations.",
+    "No atomic multi-artifact filesystem attestation, full SCA/CVE/SBOM audit, or separate correctness-role algorithm approval.",
+    "Fresh architecture-bound preparation/deployment/oracle manifests are required for the recorded new source bundle identities."
+  ],
+  "m4_accepted": false,
+  "out_of_scope_git_status_changes": {
+    "added_lines": [
+      " M docs/crawl-jobs-v2-plan.md",
+      "?? docs/crawl-jobs-v2-m4-c0-x64-runtime-2026-10-12.md",
+      "?? docs/evidence/m4-c0-architecture-merge-2026-10-12/",
+      "?? docs/evidence/m4-c0-x64-runtime-2026-10-12/"
+    ],
+    "removed_lines": [],
+    "reviewer_modified_these_paths": false
+  },
+  "remediation_required": false,
+  "repository": "/var/home/kfuller/Documents/Git_Projects/mifolyo",
+  "review_markdown_sha256": "143f727a2fdbad70ab8a89f266ee18ad7bb7fc351a17a02a936a8fcda240bab0",
+  "reviewer_corrections": [
+    {
+      "artifact": "static-probes-initial-reviewer-assertion.log",
+      "explanation": "Initial reviewer check required an R-only PT_LOAD; the ARM64 filter resides in RX, not writable. Corrected to require readable/non-writable mapping. No product change."
+    },
+    {
+      "artifact": "integrity-after-initial-global-status.json",
+      "explanation": "Whole Git-status equality failed only because of concurrent out-of-inventory documentation edits. All inventoried source/build bytes and HEAD matched. Final check separates scoped integrity from global status."
+    }
+  ],
+  "runtime_acceptance": false,
+  "schema_version": 1,
+  "scope": "Source and static-artifact security boundaries for C0-ARCH-03 continued implementation; no instruction/witness algorithm certification.",
+  "snapshot": "/tmp/opencode/m4-c0-x64-runtime-2026-10-12/snapshot",
+  "source_bundle_digests": {
+    "oracle_worker_source": "ddbe957a80cbe1a490c5536719dd080be0793d53ea511f1e72e430905e5c95ed",
+    "runtime_context_source": "1710b96326062a711ed549e1172440e53c4ef1b3a760a45524dbce10d110bb32"
+  },
+  "test_results": {
+    "actual_ptrace_calls": 0,
+    "changed_prior_test_method_asts": [
+      "test_architecture_contracts.ArchitectureBoundaryTests.test_linux_reader_rejects_foreign_kernel_before_observations",
+      "test_architecture_contracts.ArchitectureContractTests.test_both_preparation_contracts_are_explicit_and_non_authorizing",
+      "test_architecture_contracts.ArchitectureContractTests.test_elf_headers_are_classified_from_bytes_not_requested_labels",
+      "test_architecture_contracts.ArchitectureContractTests.test_existing_arm64_profiles_and_compiled_filter_bytes_are_preserved"
+    ],
+    "compiled_x64_filter_vectors": 158796,
+    "filter_installations": 0,
+    "in_memory_c_debug_controls": 29,
+    "independent_original_runner": {
+      "elapsed_seconds_from_log": 13.67,
+      "log": "tests.log",
+      "report": "tests.json",
+      "resource_warnings_fatal": true,
+      "status": "PASS",
+      "tests_run": 256,
+      "umask": "077"
+    },
+    "input_provenance_positive_controls": 24,
+    "input_provenance_refusals": 313,
+    "malicious_artifact_refusals": 29,
+    "native_actor_executions": 0,
+    "oci_ptrace_vectors": 156701,
+    "prior_test_ids_intentionally_replaced": [
+      "test_architecture_contracts.ArchitectureBoundaryTests.test_admission_summary_cannot_promote_an_unsupported_architecture",
+      "test_architecture_contracts.ArchitectureBoundaryTests.test_direct_ssh_transport_refuses_x64_before_client_or_process_io",
+      "test_architecture_contracts.ArchitectureBoundaryTests.test_known_x64_deployment_is_metadata_only_until_the_port",
+      "test_architecture_contracts.ArchitectureBoundaryTests.test_x64_process_stream_refuses_before_spawning",
+      "test_architecture_contracts.ArchitectureContractTests.test_build_entrypoints_refuse_x64_before_writing_outputs"
+    ],
+    "prior_test_ids_retained": 233,
+    "unchanged_prior_test_method_asts": 229,
+    "x64_guard_replay": {
+      "fixture_only_parameterization": true,
+      "production_edits": false,
+      "report": "x64-guards.json",
+      "status": "PASS",
+      "test_assertion_changes": false,
+      "tests_run": 31,
+      "x64_backend_instances": 57
+    }
+  }
+}

@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,20 +18,20 @@ class EnsureApiTokenIsFresh
         }
 
         if ($user->api_token_expires_at && $user->api_token_expires_at->isPast()) {
-            $user->forceFill([
+            User::query()->whereKey($user->id)->where('api_token', $user->api_token)->update([
                 'api_token' => null,
                 'api_token_expires_at' => null,
                 'api_token_last_used_at' => null,
-            ])->saveQuietly();
+            ]);
 
             return response()->json([
                 'message' => 'Token expired.',
             ], 401);
         }
 
-        $user->forceFill([
+        User::query()->whereKey($user->id)->where('api_token', $user->api_token)->update([
             'api_token_last_used_at' => now(),
-        ])->saveQuietly();
+        ]);
 
         return $next($request);
     }

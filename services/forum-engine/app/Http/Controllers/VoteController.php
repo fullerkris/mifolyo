@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreVoteRequest;
 use App\Models\Comment;
 use App\Models\Post;
+use App\Models\User;
 use App\Models\Vote;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
@@ -25,27 +26,24 @@ class VoteController extends Controller
             ], 404);
         }
 
-        $post = $votable instanceof Post ? $votable : $votable->post;
-
-        if (! $this->canAccessPost($request, $post)) {
-            return response()->json([
-                'message' => 'You do not have access to vote on this resource.',
-            ], 403);
-        }
-
-        if ($post->is_locked || $post->is_removed) {
-            return response()->json([
-                'message' => 'Voting is disabled for this resource.',
-            ], 423);
-        }
-
         $votableType = $votable::class;
         $votableId = (int) $votable->getKey();
         $value = (int) $validated['value'];
         $userId = (int) $request->user()->id;
 
-        $result = DB::transaction(function () use ($votable, $votableType, $votableId, $value, $userId): array {
-            $lockedVotable = $votable::query()->lockForUpdate()->findOrFail($votableId);
+        $result = DB::transaction(function () use ($request, $validated, $votable, $votableType, $votableId, $value, $userId): array {
+            // Account deletion/reset and voting serialize before locking any target.
+            $actor = User::query()->lockForUpdate()->find($userId);
+            abort_unless($actor && $actor->api_token && $request->bearerToken()
+                && hash_equals($actor->api_token, hash('sha256', $request->bearerToken()))
+                && ! $actor->api_token_expires_at?->isPast(), 401);
+            // Lock the parent first for both post and comment votes, then recheck access/state.
+            $post = Post::query()->with('community')->lockForUpdate()
+                ->findOrFail($votable instanceof Post ? $votableId : $votable->post_id);
+            $lockedVotable = $votable instanceof Post ? $post : Comment::query()->lockForUpdate()->findOrFail($votableId);
+            abort_unless($this->canAccessPost($request, $post), 403, 'You do not have access to vote on this resource.');
+            abort_if(isset($validated['post_id']) && (int) $validated['post_id'] !== $post->id, 422, 'This resource does not belong to the selected thread.');
+            abort_if($post->is_locked || $post->is_removed || $lockedVotable->is_locked || $lockedVotable->is_removed, 423, 'Voting is disabled for this resource.');
 
             $existingVote = Vote::query()
                 ->where('user_id', $userId)
@@ -54,7 +52,8 @@ class VoteController extends Controller
                 ->lockForUpdate()
                 ->first();
 
-            if ($existingVote && (int) $existingVote->value === $value) {
+            $oldValue = $existingVote ? (int) $existingVote->value : 0;
+            if ($oldValue === $value) {
                 return [
                     'vote' => $existingVote,
                     'changed' => false,
@@ -62,9 +61,10 @@ class VoteController extends Controller
                 ];
             }
 
-            $oldValue = $existingVote ? (int) $existingVote->value : 0;
-
-            if ($existingVote) {
+            if ($value === 0) {
+                $existingVote?->delete();
+                $vote = null;
+            } elseif ($existingVote) {
                 $existingVote->value = $value;
                 $existingVote->save();
                 $vote = $existingVote;
@@ -99,6 +99,7 @@ class VoteController extends Controller
         return response()->json([
             'data' => [
                 'changed' => $result['changed'],
+                'viewer_vote' => $value,
                 'vote' => $result['vote'],
                 'votable' => [
                     'type' => $validated['votable_type'],
@@ -108,7 +109,7 @@ class VoteController extends Controller
                     'downvote_count' => $result['votable']->downvote_count,
                 ],
             ],
-        ]);
+        ])->header('Cache-Control', 'private, no-store');
     }
 
     private function resolveVotable(string $type, int $id): ?Model

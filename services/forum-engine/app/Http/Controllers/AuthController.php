@@ -7,6 +7,7 @@ use App\Http\Requests\AuthRegisterRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -30,15 +31,18 @@ class AuthController extends Controller
     {
         $credentials = $request->validated();
 
-        $user = User::query()->where('email', $credentials['email'])->first();
+        return DB::transaction(function () use ($credentials): JsonResponse {
+            // Reset/deletion must not be followed by a token issued from a stale password.
+            $user = User::query()->where('email', $credentials['email'])->lockForUpdate()->first();
 
-        if (! $user || ! Hash::check($credentials['password'], $user->password)) {
-            return response()->json([
-                'message' => 'Invalid credentials.',
-            ], 422);
-        }
+            if (! $user || ! Hash::check($credentials['password'], $user->password)) {
+                return response()->json([
+                    'message' => 'Invalid credentials.',
+                ], 422);
+            }
 
-        return response()->json($this->authenticatedPayload($user));
+            return response()->json($this->authenticatedPayload($user));
+        }, 3);
     }
 
     public function me(Request $request): JsonResponse
@@ -50,11 +54,12 @@ class AuthController extends Controller
 
     public function logout(Request $request): JsonResponse
     {
-        $request->user('api')->forceFill([
-            'api_token' => null,
-            'api_token_expires_at' => null,
-            'api_token_last_used_at' => null,
-        ])->save();
+        User::query()->whereKey($request->user('api')->id)
+            ->where('api_token', hash('sha256', $request->bearerToken() ?? ''))->update([
+                'api_token' => null,
+                'api_token_expires_at' => null,
+                'api_token_last_used_at' => null,
+            ]);
 
         return response()->json([
             'message' => 'Logged out.',
@@ -63,7 +68,14 @@ class AuthController extends Controller
 
     public function refresh(Request $request): JsonResponse
     {
-        return response()->json($this->authenticatedPayload($request->user('api')));
+        return DB::transaction(function () use ($request): JsonResponse {
+            $user = User::query()->lockForUpdate()->find($request->user('api')->id);
+            abort_unless($user && $user->api_token && $request->bearerToken()
+                && hash_equals($user->api_token, hash('sha256', $request->bearerToken()))
+                && ! $user->api_token_expires_at?->isPast(), 401);
+
+            return response()->json($this->authenticatedPayload($user));
+        }, 3);
     }
 
     private function authenticatedPayload(User $user): array

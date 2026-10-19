@@ -35,6 +35,10 @@ return [
         ],
     ],
 
+    'search_ui' => [
+        'url' => env('SEARCH_UI_URL'),
+    ],
+
     'search' => [
         'base_url' => env('SEARCH_API_BASE_URL', 'http://localhost:8080'),
         'timeout_seconds' => (float) env('SEARCH_API_TIMEOUT_SECONDS', 3),

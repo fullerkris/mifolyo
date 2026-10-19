@@ -1,6 +1,12 @@
 @props(['name' => 'search'])
 <svg {{ $attributes->class(['mf-icon']) }} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     @switch($name)
+        @case('up')
+            <path d="m5 13 7-7 7 7M12 6v14"/>
+            @break
+        @case('down')
+            <path d="m5 11 7 7 7-7M12 4v14"/>
+            @break
         @case('image')
             <rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1.5"/><path d="m3 17 5-5 4 4 4-6 5 7"/>
             @break

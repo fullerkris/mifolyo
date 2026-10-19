@@ -34,6 +34,10 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute(20)->by($request->ip());
         });
 
+        RateLimiter::for('account-recovery', function (Request $request): Limit {
+            return Limit::perMinute(10)->by($request->ip());
+        });
+
         RateLimiter::for('api-read', function (Request $request): Limit {
             return Limit::perMinute(180)->by((string) ($request->user('api')?->id ?? $request->ip()));
         });

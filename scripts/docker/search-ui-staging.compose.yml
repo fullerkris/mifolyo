@@ -40,6 +40,20 @@ services:
       timeout: 3s
       retries: 20
 
+  mail:
+    image: axllent/mailpit:v1.27@sha256:e22dce5b36f93c77082e204a3942fb6b283b7896e057458400a4c88344c3df68
+    environment:
+      MP_MAX_MESSAGES: "100"
+    ports:
+      - "127.0.0.1:${SEARCH_UI_STAGING_MAIL_PORT:-18085}:8025"
+    networks: [web, ingress]
+    mem_limit: 128m
+    healthcheck:
+      test: [CMD, /mailpit, readyz]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
   query-assets:
     image: mifolyo-search-ui-staging-query:local
     entrypoint: [/bin/sh, -ec]
@@ -100,6 +114,7 @@ services:
     command: [/bin/sh, -ec, "php artisan migrate --force && exec php artisan serve --host=0.0.0.0 --port=8000"]
     environment:
       APP_NAME: MiFolyo Forum Staging
+      PHP_CLI_SERVER_WORKERS: "2"
       APP_ENV: staging
       APP_KEY: base64:BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=
       APP_DEBUG: "false"
@@ -115,7 +130,12 @@ services:
       SESSION_COOKIE: mifolyo_forum_staging_session
       CACHE_STORE: database
       QUEUE_CONNECTION: sync
-      MAIL_MAILER: log
+      MAIL_MAILER: smtp
+      MAIL_HOST: mail
+      MAIL_PORT: "1025"
+      MAIL_FROM_ADDRESS: accounts@staging.mifolyo.test
+      MAIL_FROM_NAME: MiFolyo Staging
+      SEARCH_UI_URL: http://127.0.0.1:18081
       SEARCH_API_BASE_URL: http://caddy
       MIFOLYO_LOCAL_SEARCH_STAGING: "1"
     volumes:
@@ -124,6 +144,8 @@ services:
     mem_limit: 384m
     depends_on:
       postgres:
+        condition: service_healthy
+      mail:
         condition: service_healthy
     healthcheck:
       test: [CMD, php, -r, "exit(@file_get_contents('http://127.0.0.1:8000/api/health/ready') === false ? 1 : 0);"]

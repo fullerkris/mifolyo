@@ -17,7 +17,8 @@ class StoreVoteRequest extends FormRequest
         return [
             'votable_type' => ['required', Rule::in(['post', 'comment'])],
             'votable_id' => ['required', 'integer', 'min:1'],
-            'value' => ['required', 'integer', Rule::in([-1, 1])],
+            'value' => ['required', 'integer', Rule::in([-1, 0, 1])],
+            'post_id' => ['sometimes', 'required', 'integer', 'min:1'],
         ];
     }
 }

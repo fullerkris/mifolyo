@@ -24,10 +24,11 @@ class PostController extends Controller
 
         $data = $post->toArray();
         $data['author'] = $post->author?->only(['id', 'username', 'name', 'level']);
+        $data['viewer_vote'] = $user ? (int) ($post->votes()->where('user_id', $user->id)->value('value') ?? 0) : 0;
 
         return response()->json([
             'data' => $data,
-        ]);
+        ])->header('Cache-Control', 'private, no-store');
     }
 
     public function store(StorePostRequest $request): JsonResponse

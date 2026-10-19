@@ -20,7 +20,24 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [\App\Http\Middleware\ResolveForumAccount::class]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
+        $exceptions->dontFlash(['token']);
         $exceptions->render(function (Throwable $exception, Request $request) {
+            if ($exception instanceof HttpExceptionInterface && $request->is('forgot-password', 'reset-password', 'account')) {
+                $status = $exception->getStatusCode();
+                if (in_array($status, [401, 419, 429, 503], true)) {
+                    [$heading, $message] = match ($status) {
+                        401 => ['Please sign in again', 'Your session has expired. Sign in before managing your account.'],
+                        419 => ['This page has expired', 'Reload the form before submitting it again.'],
+                        429 => ['A moment to catch up', 'Please wait a minute before trying again.'],
+                        default => ['Account service unavailable', 'We could not reach the account service. Please try again shortly.'],
+                    };
+                    $route = $request->is('forgot-password') ? 'account.password.request' : ($request->is('reset-password') ? 'account.password.reset' : 'account.show');
+                    $retryUrl = route($route, ['return_to' => \App\Services\ForumApi::returnTo($request->input('return_to'))]);
+
+                    return response()->view('account-error', compact('heading', 'message', 'retryUrl'), $status)
+                        ->withHeaders($exception->getHeaders())->header('Cache-Control', 'private, no-store')->header('Referrer-Policy', 'no-referrer');
+                }
+            }
             if ($exception instanceof HttpExceptionInterface && $request->is('threads/*', 'community/*', 'sign-in', 'register', 'sign-out')) {
                 $status = $exception->getStatusCode();
                 if (in_array($status, [401, 403, 404, 419, 429, 503], true)) {

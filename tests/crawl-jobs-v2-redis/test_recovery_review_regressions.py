@@ -33,7 +33,11 @@ if child == 0:
     deadline=time.monotonic()+3
     while os.getppid()==leader and time.monotonic()<deadline:
         time.sleep(.01)
-    Path(sys.argv[1]).write_text(str(os.getppid()!=leader))
+    # Publish only the complete marker; exists() must not observe an empty write.
+    marker=Path(sys.argv[1])
+    pending=marker.with_suffix('.pending')
+    pending.write_text(str(os.getppid()!=leader))
+    pending.replace(marker)
     signal.alarm(5)
     signal.pause()
     os._exit(0)

@@ -18,6 +18,7 @@
                 @if ($register)<label for="account-confirm">Confirm password</label><input id="account-confirm" name="password_confirmation" type="password" autocomplete="new-password" minlength="8" maxlength="1024" required>@endif
                 <button type="submit" class="mf-button mf-primary">{{ $register ? 'Create account' : 'Sign in' }}</button>
             </form>
+            @unless ($register)<p class="mf-account-switch"><a class="mf-text-link" href="{{ route('account.password.request', ['return_to' => $returnTo]) }}">Forgot your password?</a></p>@endunless
             <p class="mf-account-switch">{{ $register ? 'Already have an account?' : 'New to MiFolyo?' }} <a class="mf-text-link" href="{{ route($register ? 'account.sign-in' : 'account.register', ['return_to' => $returnTo]) }}">{{ $register ? 'Sign in' : 'Create an account' }}</a></p>
         </section>
     </main>

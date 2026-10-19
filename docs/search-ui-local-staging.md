@@ -1,12 +1,13 @@
 # Search UI local staging
 
-This runs the real Query Engine, forum API, MongoDB, PostgreSQL, Redis and Caddy
+This runs the real Query Engine, forum API, MongoDB, PostgreSQL, Redis, Caddy and Mailpit
 in the dedicated `mifolyo-search-ui-staging` Compose project. The index and forum
 contain controlled, explicitly labelled seed data. Requests use the application
 controllers and databases; the browser-fixture router and HTTP mocks are absent.
 
 - Search UI: <http://127.0.0.1:18081>
 - Forum: <http://127.0.0.1:18082>
+- Local reset-email inbox: <http://127.0.0.1:18085> (Mailpit; no external delivery)
 - Search terms: **staging**, **search**, **documentation**; use exact search for
   **ux05 café C++** to review highlighting and metadata edge cases.
 - Image search: <http://127.0.0.1:18081/images?q=ux06> (also **staging** or
@@ -37,7 +38,7 @@ discussions created during manual or browser validation.
 MongoDB server selection rescans for up to two seconds so every PHP worker can
 recover after an index restart, even when its persistent topology recorded an outage.
 
-Only Caddy publishes ports, both on loopback. The data and application networks
+Only Caddy and the Mailpit inbox publish ports, all on loopback. The data and application networks
 are internal, and all database/asset volumes are project-owned. This definition
 contains only the Search UI and forum stack. Its known local-only application
 keys and database credentials are for this loopback environment.
@@ -66,8 +67,15 @@ posting. Result-presentation checks cover literal/Unicode highlighting, late
 matches in indexed snippets, missing/malformed metadata and expandable titles
 and URLs in both themes. Image/link discovery checks cover pagination, broken
 previews, map rendering, no-JavaScript browsing and exact-search return navigation.
+Voting checks cover persisted thread/nested-comment scores, selected votes,
+change/removal, duplicate writes, token rotation, keyboard use, both themes,
+no-JavaScript forms and explicit retry after a real forum outage. Account checks
+exercise real SMTP reset links, single-use token consumption, password-confirmed
+deletion, revoked credentials, retained discussions/other-reader votes, and
+concurrent PostgreSQL reset/deletion/voting. The account forms run with and without
+JavaScript on desktop and mobile.
 Recovery tests briefly stop/restart **this project's**
-forum and MongoDB services and verify error/retry behavior. They restore the services in
+forum, MongoDB and mail services and verify error/retry behavior. They restore the services in
 `finally` blocks. Run the suite when the local staging UI can be interrupted.
 
 Tests verify the staging response marker before operating and use fixed
@@ -90,11 +98,13 @@ after completing their account journeys.
   Locked threads and locked/removed comments cannot receive replies. Removed
   comments retain their visible children and show a removal placeholder.
 - `/sign-in` and `/register` return readers to their selected source, search, or
-  thread. Return destinations are restricted to local reading routes. `/sign-out`
+  thread or account settings. Return destinations are restricted to local reading
+  routes and `/account`. `/sign-out`
   is a CSRF-protected POST and clears the browser session and saved drafts.
 - The Query Engine holds the forum bearer token encrypted in its server session.
   Browser writes use the session cookie and CSRF token through `/community/threads`
-  and `/threads/{id}/comments`. No manual API token is needed in the UI.
+  and `/threads/{id}/comments` or `/threads/{id}/votes`. No manual API token is
+  needed in the UI.
 - The existing forum issues one active token per account. A new login rotates it;
   the previous session must sign in again. Submitted drafts survive that flow.
   An uncertain write keeps its draft and asks the reader to check before retrying.
@@ -104,6 +114,57 @@ after completing their account journeys.
   endpoints reject expired forum tokens.
 - Repository CI runs PHP/MongoDB tests and desktop/mobile browser-fixture checks.
   `npm run test:staging` separately validates the real local services.
+
+## Account recovery, deletion and visible levels
+
+- **Forgot your password?** on sign-in opens `/forgot-password`. The generic
+  result preserves the intended search/thread/reply destination. Open the email
+  in the local Mailpit inbox at port 18085; its link lands on the Search UI and
+  redirects to a clean `/reset-password` URL. Reset tokens stay encrypted in the
+  server session rather than appearing in form fields or subsequent links.
+- Reset requires matching passwords, consumes the email token once, revokes old
+  credentials and returns to sign-in. A stale reset tab cannot submit another
+  tab's flow. Invalid/expired links, throttling and service/mail outages have
+  recovery messages; passwords are never flashed back into inputs.
+- The signed-in username opens **Your account**, showing the current email and
+  existing forum level. Deletion requires the current password and an explicit
+  checkbox. It clears identity, sessions and votes while keeping posts/comments
+  under **Community member**; affected vote totals and membership counts are
+  corrected transactionally. Other readers' votes remain intact.
+- Thread cards, full threads and nested comments show **Level N** from the API.
+  Missing/removed authors have no fabricated level. This increment implements
+  presentation, not level calculation, eligibility or vote weighting.
+- All forms support ordinary HTML submission, both themes and narrow screens.
+  Account/recovery pages are private/non-cacheable and suppress referrers.
+- Deployments must set the forum's public `SEARCH_UI_URL` and a working mail
+  transport. Staging uses the pinned Mailpit image, `MAIL_MAILER=smtp` and
+  `SEARCH_UI_URL=http://127.0.0.1:18081`; `SEARCH_UI_STAGING_MAIL_PORT` can change
+  the inbox's loopback port. The forum API contract is in its README.
+
+## Thread and comment voting
+
+- Full thread pages show upvote/downvote controls and net scores for the original
+  post and each visible comment, including nested replies. The pressed state
+  identifies your vote; selecting it again removes the vote. Removed comments
+  show an unavailable message, and locked threads/comments have disabled controls.
+- Signed-out readers can see scores and **Sign in to vote**. Authentication
+  returns to the selected thread/comment anchor, reply target and validated
+  web/image search origin. It does not submit a vote automatically.
+- `POST /threads/{id}/votes` uses the encrypted session-held forum token and CSRF
+  protection. It binds every target to the route's thread, validates the response
+  identity/value/score, and returns only the display data needed by the browser.
+- JavaScript adds a saving state, duplicate-submit protection, retained keyboard
+  focus and live status feedback. Only confirmed scores/selections replace the
+  displayed values, and an unfinished reply stays in place while voting.
+- **Retry vote** resubmits the same explicit `1`, `-1`, or `0` after an uncertain
+  response. No automatic write retry occurs. A 429 honors `Retry-After`; expired
+  sessions offer sign-in, and access/removed/locked/expired-page responses offer
+  a readable conversation reload. Ordinary HTML forms also set/change/remove
+  votes and preserve the conversation, comment and search origin.
+- The forum's post/comment reads include private viewer-specific vote state;
+  nested-comment selections use one batched lookup. The vote transaction checks
+  current access and locked/removed state under row locks before changing totals.
+  The API contract is documented in `services/forum-engine/README.md`.
 
 ## Search return navigation and result counts
 
@@ -158,6 +219,8 @@ after completing their account journeys.
   links actions retain the indexed HTTP(S) destinations, including supported
   legacy scheme-less image records. Invalid URLs render without active links;
   broken previews leave source navigation available.
+- Web results' **Related images** sidebar uses the same unavailable-preview
+  fallback, with exact source links and single-column cards on narrow screens.
 - Image ordering has a deterministic association-ID tie-breaker; images shared
   by different source pages retain their separate source associations. Plain-text
   metadata is normalized/escaped and long image titles have native disclosure.
@@ -409,3 +472,128 @@ Final local Query Engine image ID (not a registry digest):
 ```text
 sha256:80e3e55fd0a6ceec87016d0f96f0dfb94abe9bc576b7963d7ec344e8723f3638
 ```
+
+## COM-01 voting validation — 2026-10-15
+
+- Thread and nested-comment voting is implemented on
+  `feature/search-ui-com01-voting`, based on UX-06 head `37fa178`. UX-06 PR #28
+  remains open; all 20 Unit Tests jobs and three Required Checks jobs passed at
+  that exact head. The voting increment retains the owner's merge hold.
+- Query Engine PHP/MongoDB: **95 passed, 727 assertions**. Forum API: **139 passed**
+  with isolated SQLite. Coverage includes explicit set/change/removal and repeated
+  writes, private membership, fresh authentication, viewer-specific reads, one
+  batched nested-comment vote query, locked/removed/cross-thread targets, proxy
+  credentials, CSRF, safe return anchors, malformed responses and error recovery.
+- Browser fixtures: **60 passed, two expected mobile skips** for existing
+  desktop-only panel races. New checks cover selected scores, nested independence,
+  keyboard focus, unfinished replies, saving/duplicate prevention, a lost
+  successful response followed by same-value retry, 429 backoff, malformed success,
+  expired/forbidden/missing/locked states and no-JavaScript forms.
+- Rebuilt real-service staging: **33 passed, 0 skipped** (2.7 minutes). Votes and
+  counters persist in PostgreSQL through changes, removals, repeat submissions
+  and reloads. Token rotation returns to the exact comment/reply/search origin
+  without replaying a vote. Desktop/mobile HTML voting and a real forum-outage
+  retry pass, alongside all prior discovery/account/reply/count/recovery journeys.
+- The first expanded run passed all new voting checks but one existing index
+  recovery check received a per-worker MongoDB connection timeout just after
+  readiness recovered. The check now exercises the actual retry link within a
+  bounded 15-second recovery window, verifying its exact destination; the final
+  full run passes. This adds no automatic vote retries.
+- Reviewed the rebuilt thread view at **320/768/1440px in both themes**. The
+  original-post upvote and nested-comment downvote render selected, controls
+  remain at least 44px, and keyboard voting retains focus. No horizontal overflow
+  or browser JavaScript errors were observed. Review conversation: `/threads/94`.
+- Evidence: `services/query-engine/test-results/com01-browser-final/`,
+  `staging-com01-final/`, and `staging-com01-layouts/` (ignored by Git).
+- Both application images and production frontend assets built successfully;
+  npm audit reports zero vulnerabilities. Focused PHP formatting and whitespace
+  checks pass. Both readiness endpoints return HTTP 200 and all six long-running
+  staging services are healthy after recovery testing and the visual walkthrough.
+
+Validated local image IDs (not registry digests):
+
+```text
+query: sha256:69bce813a4adfad77a3fdc966effaa86df9e697916b056dac666649faf1dc305
+forum: sha256:c340b41de504141562b60f698b54f03d5ac5d445af9f28e05fa16dd3eba10dd7
+```
+
+### Hosted CI follow-up — fixture publication race
+
+At voting implementation head `2e3eac2`, all 20
+[Unit Tests jobs](https://github.com/fullerkris/mifolyo/actions/runs/38787942820)
+passed. [Required Checks](https://github.com/fullerkris/mifolyo/actions/runs/38787942798)
+passed build and smoke; its test job passed the forum suite (139 tests / 762
+assertions), Composer audit and formatting, then failed one existing crawler
+regression, `test_nonreaping_exit_observation_and_inherited_open_pipes`.
+
+The test waited for marker-file existence, but `Path.write_text` creates the file
+before writing its contents. CI observed the empty intermediate file (`''`
+instead of `'True'`). Publishing a completed sibling file with atomic rename
+closes that window. The assertions, process checks and deadlines are preserved.
+The subsequent missing C0 artifact was a consequence of the earlier failed step.
+
+A controlled 100ms open-before-write delay reproduced the original failure in
+Linux/Python 3.13; the corrected fixture passes with the same injected delay.
+All 18 related recovery-review/parked-command tests pass on macOS and Linux,
+including Linux-native filesystem and Docker `--init` runs. The latter supplies
+a normal parent process for the existing worker-PID-greater-than-one invariant.
+Updated exact-head hosted results are tracked in PR #29 and the Obsidian notes.
+
+## Voting integration, presentation and account flows — 2026-10-17
+
+`feature/search-ui-account-completion` starts from owner-merged UX-06 main
+`e26e5c1`. Voting and the atomic CI marker correction are replayed as `631d830`
+and `e2e0621`. This integration also delivers the Related images fallback,
+API-provided author levels, reset-email forms and password-confirmed deletion.
+The captured-web report is published in
+[`search-ui-captured-review-2026-10-17.md`](search-ui-captured-review-2026-10-17.md),
+with the distinct merge destinations of PRs #28/#29 corrected.
+
+| Check | Verified result |
+| --- | --- |
+| Forum PHPUnit | 149 passed / 840 assertions |
+| Query Engine PHPUnit with isolated MongoDB databases | 106 passed / 861 assertions; final account return-link regression also passed 5 focused tests / 49 assertions |
+| Full desktop/mobile browser suite | 66 passed, two existing desktop-panel-only mobile skips; no failures |
+| Final presentation check | Six desktop/mobile checks passed after the last CSS adjustment |
+| Real-service staging | 39 passed, zero failures/skips/suite retries |
+| Final real-service sidebar/account-return probe | Six 320/768/1440px light/dark layouts passed, five unavailable previews per layout, exact source links and keyboard focus; nested account-reset return retained |
+| Build and dependencies | Production assets and both application images built; both Composer audits found no advisories; npm build install audit found zero vulnerabilities |
+| Formatting/configuration | Forum Pint, focused Query Engine Pint, Compose validation and whitespace checks passed |
+| Deployed source binding | 90 Query Engine and 127 forum application/resource/configuration/migration/lockfile paths matched the checkout; zero mismatches |
+
+The account checks use real Mailpit SMTP and PostgreSQL: one-time reset token
+consumption, invalid/expired/used links, current-password confirmation, stale
+credentials, concurrent deletion/voting, retained anonymous conversations and
+other-reader vote totals. Desktop/mobile journeys pass with and without
+JavaScript. SMTP outage recovery verifies that a failed send does not leave a
+token cooldown blocking immediate delivery retry. PHP tests cover CSRF,
+credential flashing, safe returns, private state, and stale token refresh/logout.
+
+The first expanded staging run passed all new account journeys but found two
+test-harness recovery assumptions: the shared-reader setup encountered the
+replies-unavailable state before the intended outage, and image search could
+reach a different FPM worker still reconnecting to MongoDB. The vote-outage
+fixture now uses a fresh account; all three index surfaces follow their real
+retry links within the existing bounded recovery window. The final full run
+passes all 39 checks. Original failure traces remain retained.
+
+Final deployed images:
+
+```text
+query: sha256:2f7155ce179e18e49e6b95e798892f28c1cd4376275b89b246703287a8f23489
+forum: sha256:82ba2dbe8ffc979cd7a268d95d4219c30cb18abbe0b45f7fe2a9dcd3ed2e1b12
+```
+
+Local ignored evidence under `services/query-engine/test-results/`:
+
+- `account-browser-final/` and `account-presentation-verified/`
+- `account-staging-verified/` (final); `account-staging-final/` (initial findings)
+- `account-sidebar-probe/` and its adjacent `.mjs` reproduction script
+- `account-source-binding.json`
+
+The separate captured-review stack still runs its reviewed `18ff77d` images;
+retained crawl/index inputs and unrelated stacks were preserved. All 23 UX-06
+merged-main jobs passed at `e26e5c1` (runs `39032004534` / `39032004529`). This
+follow-up's owner merge and actual merged-main CI remain separate delivery steps.
+Release-environment email delivery/beta acceptance and TRUST-02 level rules remain
+open.

@@ -109,4 +109,15 @@ class ThreadPageTest extends TestCase
         $this->fakeForum();
         $this->get('/threads/12')->assertOk()->assertDontSee('href="javascript:', false);
     }
+
+    public function test_author_levels_are_visible_without_inventing_levels_for_missing_or_removed_authors(): void
+    {
+        $this->post['author'] = ['username' => '<script>author</script>', 'level' => 4];
+        $this->comments[0]['author']['level'] = 2;
+        $this->comments[0]['children'][0]['author'] = ['username' => 'Hidden author', 'level' => 8];
+        $this->comments[0]['children'][0]['is_removed'] = true;
+        $this->fakeForum();
+        $this->get('/threads/12')->assertOk()->assertSee('Level 4')->assertSee('Level 2')->assertSee('Community member')
+            ->assertDontSee('Level 8')->assertDontSee('Hidden author')->assertDontSee('<script>author</script>', false);
+    }
 }

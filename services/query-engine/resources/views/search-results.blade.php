@@ -57,7 +57,7 @@
                                 $isHttp = fn ($value) => is_string($value) && filter_var($value, FILTER_VALIDATE_URL) && in_array(strtolower(parse_url($value, PHP_URL_SCHEME) ?? ''), ['http', 'https'], true);
                             @endphp
                             @if ($isHttp($imageUrl) && $isHttp($imagePage))
-                                <a href="{{ $imagePage }}"><img src="{{ $imageUrl }}" alt="{{ data_get($image, 'alt', '') }}" loading="lazy" referrerpolicy="no-referrer"><span>{{ data_get($image, 'page_title') ?: 'View image source' }}</span></a>
+                                <a href="{{ $imagePage }}"><span class="mf-related-preview"><span class="mf-image-fallback" aria-hidden="true">Preview unavailable</span><img src="{{ $imageUrl }}" alt="{{ \App\Support\SearchResultPresenter::text(data_get($image, 'alt'), 500) }}" loading="lazy" referrerpolicy="no-referrer" data-image-preview></span><span>{{ \App\Support\SearchResultPresenter::text(data_get($image, 'page_title'), 300) ?: 'View image source' }}</span></a>
                             @endif
                         @endforeach
                     </section>

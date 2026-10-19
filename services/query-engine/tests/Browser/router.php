@@ -124,28 +124,46 @@ $app->instance(App\Http\Controllers\QuerySearchController::class, new class exte
 
         return view('search-results', [
             'query' => $query, 'originalQuery' => $query, 'page' => $page, 'total' => $total,
-            'results' => $results, 'topImages' => [], 'suggestions' => false,
+            'results' => $results, 'topImages' => $query === 'sidebar-preview' ? [
+                ['_id' => request()->getSchemeAndHttpHost().'/missing-preview.png', 'page_url' => 'https://example.test/images?b=2&a=1#source', 'page_title' => '<em>A captured image source</em>', 'alt' => []],
+                ['_id' => request()->getSchemeAndHttpHost().'/mifolyo-mark.svg', 'page_url' => 'https://example.test/working', 'page_title' => 'Working preview', 'alt' => ''],
+            ] : [], 'suggestions' => false,
         ]);
     }
 });
 Illuminate\Support\Facades\Http::preventStrayRequests();
 Illuminate\Support\Facades\Http::fake([
+    '*/api/auth/login' => Illuminate\Support\Facades\Http::response(['data' => ['user' => ['id' => 3, 'username' => 'reader'], 'token' => 'browser-fixture-server-token']]),
+    '*/api/auth/me' => Illuminate\Support\Facades\Http::response(['data' => ['id' => 3, 'username' => 'reader']]),
+    '*/api/auth/logout' => Illuminate\Support\Facades\Http::response(['message' => 'Signed out']),
+    '*/api/votes' => function ($request) {
+        $type = $request['votable_type'];
+        $id = (int) $request['votable_id'];
+        $value = (int) $request['value'];
+        request()->session()->put('fixture_votes.'.$type.'.'.$id, $value);
+        $base = $type === 'post' ? 4 : 2;
+
+        return Illuminate\Support\Facades\Http::response(['data' => ['viewer_vote' => $value, 'votable' => ['type' => $type, 'id' => $id, 'score' => $base + $value]]]);
+    },
     '*/api/threads/counts' => fn ($request) => Illuminate\Support\Facades\Http::response(['data' => array_map(
         fn ($url) => ['url' => $url, 'count' => str_contains($url, '/guide/1?') ? 2 : 0], $request['urls']
     )]),
-    '*/api/posts/1' => Illuminate\Support\Facades\Http::response(['data' => [
+    '*/api/posts/1' => fn () => Illuminate\Support\Facades\Http::response(['data' => [
         'id' => 1, 'title' => 'What makes this source useful?', 'body' => 'A full conversation grounded in the original source.',
-        'source_url' => 'https://example.test/source', 'comment_count' => 2, 'author' => ['username' => 'reader'],
+        'source_url' => 'https://example.test/source', 'comment_count' => 2, 'author' => ['username' => 'reader', 'level' => 4],
+        'score' => 4 + session('fixture_votes.post.1', 0), 'viewer_vote' => session('fixture_votes.post.1', 0),
     ]]),
-    '*/api/posts/1/comments' => Illuminate\Support\Facades\Http::response(['data' => [
-        ['id' => 4, 'body' => 'A thoughtful question', 'author' => ['username' => 'reader'], 'depth' => 0, 'children' => [
-            ['id' => 5, 'body' => 'A nested perspective', 'author' => ['username' => 'curious'], 'depth' => 1, 'children' => []],
+    '*/api/posts/1/comments' => fn () => Illuminate\Support\Facades\Http::response(['data' => [
+        ['id' => 4, 'body' => 'A thoughtful question', 'score' => 2 + session('fixture_votes.comment.4', 0), 'viewer_vote' => session('fixture_votes.comment.4', 0), 'author' => ['username' => 'reader', 'level' => 4], 'depth' => 0, 'children' => [
+            ['id' => 5, 'body' => 'A nested perspective', 'score' => 2 + session('fixture_votes.comment.5', 0), 'viewer_vote' => session('fixture_votes.comment.5', 0), 'author' => ['username' => 'curious', 'level' => 2], 'depth' => 1, 'children' => []],
         ]],
+        ['id' => 6, 'body' => 'A locked comment', 'score' => 0, 'viewer_vote' => 0, 'is_locked' => true, 'children' => []],
+        ['id' => 7, 'body' => '[Comment removed]', 'is_removed' => true, 'children' => []],
     ]]),
     '*' => Illuminate\Support\Facades\Http::response([
         'data' => [
-            ['id' => 1, 'title' => 'What makes this source useful?', 'body' => 'The examples give us a starting point. I would like to compare them with other sources and hear which details helped people most.', 'author' => ['username' => 'reader'], 'community' => ['name' => 'Reference'], 'score' => 4, 'comment_count' => 2],
-            ['id' => 2, 'title' => 'Another perspective on the same page', 'body' => 'This is a deterministic browser-test conversation, attached to the selected source.', 'author' => ['username' => 'curious'], 'score' => 2, 'comment_count' => 1],
+            ['id' => 1, 'title' => 'What makes this source useful?', 'body' => 'The examples give us a starting point. I would like to compare them with other sources and hear which details helped people most.', 'author' => ['username' => 'reader', 'level' => 4], 'community' => ['name' => 'Reference'], 'score' => 4, 'comment_count' => 2],
+            ['id' => 2, 'title' => 'Another perspective on the same page', 'body' => 'This is a deterministic browser-test conversation, attached to the selected source.', 'author' => ['username' => 'curious', 'level' => 2], 'score' => 2, 'comment_count' => 1],
         ],
         'meta' => ['total' => 2, 'current_page' => 1, 'last_page' => 1],
     ]),

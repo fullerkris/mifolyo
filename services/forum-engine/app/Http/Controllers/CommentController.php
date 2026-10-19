@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCommentRequest;
 use App\Models\Comment;
 use App\Models\Post;
+use App\Models\Vote;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -29,12 +30,17 @@ class CommentController extends Controller
             ->get();
 
         $grouped = $comments->groupBy(fn (Comment $comment) => (string) ($comment->parent_comment_id ?? 'root'));
+        $user = $request->user('api');
+        // One viewer-specific lookup for the entire tree, regardless of nesting depth.
+        $votes = $user ? Vote::query()->where('user_id', $user->id)->where('votable_type', Comment::class)
+            ->whereIn('votable_id', $comments->modelKeys())->pluck('value', 'votable_id') : collect();
 
-        $buildTree = function (string $parentKey) use (&$buildTree, $grouped): array {
+        $buildTree = function (string $parentKey) use (&$buildTree, $grouped, $votes): array {
             return ($grouped->get($parentKey) ?? collect())
-                ->map(function (Comment $comment) use (&$buildTree): array {
+                ->map(function (Comment $comment) use (&$buildTree, $votes): array {
                     $node = $comment->toArray();
                     $node['author'] = $comment->is_removed ? null : $comment->author?->only(['id', 'username', 'name', 'level']);
+                    $node['viewer_vote'] = $comment->is_removed ? 0 : (int) $votes->get($comment->id, 0);
                     if ($comment->is_removed) {
                         $node['body'] = '[Comment removed]';
                     }
@@ -48,7 +54,7 @@ class CommentController extends Controller
 
         return response()->json([
             'data' => $buildTree('root'),
-        ]);
+        ])->header('Cache-Control', 'private, no-store');
     }
 
     public function store(StoreCommentRequest $request, Post $post): JsonResponse

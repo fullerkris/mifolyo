@@ -167,6 +167,12 @@ Its reviewed PR and actual main merge both pass all fourteen required contexts /
 their identities. Earlier source/image/execution records keep their original
 version bindings; the old cancellation inventory is not a new security-fix review.
 
+The [October 22 certificate-validation follow-up](go-x509-security-2026-10-22.md)
+advances the current Go toolchain and exact oracle pins to **1.26.10** for
+GO-2026-6809. Offline regeneration preserves the sealed Unicode oracle/data
+hashes; all six URL/Unicode race-test roots pass. Fresh exact-head hosted CI
+verification remains pending.
+
 PR #18 result publication `c8c5ee2`, squash merge `d3b241e` and exact merged-main CI
 are **complete**. The merge has the same tree as the reviewed PR head. See the
 [merge checkpoint](evidence/m4-shared-group-merge-2026-10-03/README.md).

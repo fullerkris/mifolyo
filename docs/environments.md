@@ -30,6 +30,30 @@ For the current Home → search results → discussions journey, use the
 [Search UI local staging runbook](search-ui-local-staging.md). It builds the real
 query/forum services and provides repeatable browser and service-recovery checks.
 
+## GitHub Actions databases
+
+The MongoDB service containers in `unit-tests.yml` and `required-checks.yml`
+use `mongo:9.0.4@sha256:dc28ed5a9d0fc616903c3f463bb1e53b92b49f441721b91926e87d90bf957ce8`
+on `ubuntu-latest`. These are fresh, per-job databases. This is a **CI-only
+major-version dependency upgrade**; the retained V1 environments below use
+MongoDB 8, so these CI results establish MongoDB 9 compatibility rather than
+revalidating MongoDB 8 deployments.
+
+PR #32's initial `required-tests` and Indexer jobs stopped before checkout
+because `mongo:8` resolved to 8.3.13, whose startup guard rejected the newer
+Ubuntu kernel. MongoDB 9.0.4 includes
+[SERVER-131779](https://jira.mongodb.org/browse/SERVER-131779): Ubuntu's kernel
+release can say `7.0.0` while `/proc/version_signature` identifies a patched
+upstream version of 7.0.14 or newer. The released fix reads that signature;
+the guard still rejects incompatible kernels. The 8.3.14 backport was not
+published as of 2026-10-22.
+
+`scripts/verify-ci-mongodb.sh` records the service's kernel, Ubuntu version
+signature when available, and database build, and requires the pinned version
+to answer a ping before the existing integration suites run. Upgrade the image
+digest and expected version together. Full integration results on the hosted
+runner are required to validate a future database change.
+
 ## Development local
 
 The root `docker-compose.yml` remains the general development environment. It

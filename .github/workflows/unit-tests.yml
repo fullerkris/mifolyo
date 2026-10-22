@@ -186,7 +186,8 @@ jobs:
     runs-on: ubuntu-latest
     services:
       mongo:
-        image: mongo:8
+        # 9.0.4 recognizes patched Ubuntu 7.0 kernels (SERVER-131779).
+        image: mongo:9.0.4@sha256:dc28ed5a9d0fc616903c3f463bb1e53b92b49f441721b91926e87d90bf957ce8
         ports:
           - 127.0.0.1:27017:27017
         options: >-
@@ -213,6 +214,10 @@ jobs:
         working-directory: ./services/seed-importer
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - name: Verify MongoDB CI runtime
+        env:
+          MONGO_CONTAINER_ID: ${{ job.services.mongo.id }}
+        run: bash "${GITHUB_WORKSPACE}/scripts/verify-ci-mongodb.sh" "${MONGO_CONTAINER_ID}"
       - name: Set up Python
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
@@ -413,7 +418,8 @@ jobs:
     runs-on: ubuntu-latest
     services:
       mongo:
-        image: mongo:8
+        # 9.0.4 recognizes patched Ubuntu 7.0 kernels (SERVER-131779).
+        image: mongo:9.0.4@sha256:dc28ed5a9d0fc616903c3f463bb1e53b92b49f441721b91926e87d90bf957ce8
         ports:
           - 127.0.0.1:27017:27017
         options: >-
@@ -438,6 +444,10 @@ jobs:
         working-directory: ./services/backlinks-processor
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - name: Verify MongoDB CI runtime
+        env:
+          MONGO_CONTAINER_ID: ${{ job.services.mongo.id }}
+        run: bash "${GITHUB_WORKSPACE}/scripts/verify-ci-mongodb.sh" "${MONGO_CONTAINER_ID}"
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: "3.13"
@@ -464,7 +474,8 @@ jobs:
     runs-on: ubuntu-latest
     services:
       mongo:
-        image: mongo:8
+        # 9.0.4 recognizes patched Ubuntu 7.0 kernels (SERVER-131779).
+        image: mongo:9.0.4@sha256:dc28ed5a9d0fc616903c3f463bb1e53b92b49f441721b91926e87d90bf957ce8
         ports:
           - 127.0.0.1:27017:27017
         options: >-
@@ -489,6 +500,10 @@ jobs:
         working-directory: ./services/image-indexer
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - name: Verify MongoDB CI runtime
+        env:
+          MONGO_CONTAINER_ID: ${{ job.services.mongo.id }}
+        run: bash "${GITHUB_WORKSPACE}/scripts/verify-ci-mongodb.sh" "${MONGO_CONTAINER_ID}"
       - name: Set up Python
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
@@ -570,7 +585,8 @@ jobs:
     runs-on: ubuntu-latest
     services:
       mongo:
-        image: mongo:8
+        # 9.0.4 recognizes patched Ubuntu 7.0 kernels (SERVER-131779).
+        image: mongo:9.0.4@sha256:dc28ed5a9d0fc616903c3f463bb1e53b92b49f441721b91926e87d90bf957ce8
         ports:
           - 127.0.0.1:27017:27017
         options: >-
@@ -580,6 +596,10 @@ jobs:
           --health-retries 20
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - name: Verify MongoDB CI runtime
+        env:
+          MONGO_CONTAINER_ID: ${{ job.services.mongo.id }}
+        run: bash "${GITHUB_WORKSPACE}/scripts/verify-ci-mongodb.sh" "${MONGO_CONTAINER_ID}"
       - name: Set up Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
@@ -631,7 +651,8 @@ jobs:
         working-directory: ./services/page-rank
     services:
       mongo:
-        image: mongo:8
+        # 9.0.4 recognizes patched Ubuntu 7.0 kernels (SERVER-131779).
+        image: mongo:9.0.4@sha256:dc28ed5a9d0fc616903c3f463bb1e53b92b49f441721b91926e87d90bf957ce8
         ports:
           - 127.0.0.1:27017:27017
         options: >-
@@ -643,6 +664,10 @@ jobs:
       PAGERANK_MONGO_INTEGRATION_URI: mongodb://127.0.0.1:27017
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - name: Verify MongoDB CI runtime
+        env:
+          MONGO_CONTAINER_ID: ${{ job.services.mongo.id }}
+        run: bash "${GITHUB_WORKSPACE}/scripts/verify-ci-mongodb.sh" "${MONGO_CONTAINER_ID}"
       - name: Set up Go
         uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5.6.0
         with:
@@ -662,7 +687,8 @@ jobs:
     runs-on: ubuntu-latest
     services:
       mongo:
-        image: mongo:8
+        # 9.0.4 recognizes patched Ubuntu 7.0 kernels (SERVER-131779).
+        image: mongo:9.0.4@sha256:dc28ed5a9d0fc616903c3f463bb1e53b92b49f441721b91926e87d90bf957ce8
         ports:
           - 127.0.0.1:27017:27017
         options: >-
@@ -685,6 +711,10 @@ jobs:
       PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - name: Verify MongoDB CI runtime
+        env:
+          MONGO_CONTAINER_ID: ${{ job.services.mongo.id }}
+        run: bash "${GITHUB_WORKSPACE}/scripts/verify-ci-mongodb.sh" "${MONGO_CONTAINER_ID}"
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: "3.13"

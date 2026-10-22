@@ -179,16 +179,27 @@ class X64BuildTests(unittest.TestCase):
             self.assertFalse((root / "toolchain.json").exists())
 
     def test_oracle_manifest_binds_x64_interpreter_without_running_worker(self):
+        from importlib.machinery import ExtensionFileLoader
+        import oracle_worker
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder); executable = root / "python"; executable.write_bytes(header("x86_64"))
+            extension = root / "fixture.so"; extension.write_bytes(header("x86_64"))
+            module = SimpleNamespace(__spec__=SimpleNamespace(loader=ExtensionFileLoader("fixture", str(extension)), origin=str(extension)))
+            collect = build_oracle.extension_inventory
             destination = root / "artifacts"
             with patch.object(sys, "argv", ["build_oracle.py", str(destination), "x86_64"]), \
                     patch.object(sys, "executable", str(executable)), \
-                    patch.object(build_oracle.os, "uname", return_value=SimpleNamespace(sysname="Linux", machine="x86_64")):
+                    patch.object(build_oracle.os, "uname", return_value=SimpleNamespace(sysname="Linux", machine="x86_64")), \
+                    patch.object(build_oracle, "extension_inventory", side_effect=lambda arch: collect(arch, [module])), \
+                    patch.object(oracle_worker, "main") as worker_main, patch.object(oracle_worker, "Engine") as engine:
                 build_oracle.main()
+                worker_main.assert_not_called(); engine.assert_not_called()
             record = c.decode((destination / "oracle-artifacts.json").read_bytes())
             self.assertEqual(record["architecture"], "x86_64")
             self.assertEqual(record["oracle_elf"], c.sha(header("x86_64")))
+            self.assertEqual(record["version"], 3)
+            self.assertTrue(record["worker_import_checked"] and record["extensions"])
+            self.assertEqual(record["extensions"], {str(extension): c.sha(header("x86_64"))})
             self.assertFalse(record["worker_executed"] or record["runtime_feasibility_proven"])
 
 

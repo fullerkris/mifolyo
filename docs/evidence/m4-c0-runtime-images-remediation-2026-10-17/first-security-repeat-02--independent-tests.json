@@ -1,0 +1,88 @@
+{
+  "engine_commands_executed": 0,
+  "errors": [],
+  "failures": [
+    {
+      "id": "__main__.RemainingBoundaryProbes.test_required_hardlink_to_relative_symlink_cannot_bind_different_bytes",
+      "traceback": "Traceback (most recent call last):\n  File \"/tmp/opencode/c0-runtime-images-remediation-2026-10-17/security/test_rereview.py\", line 202, in test_required_hardlink_to_relative_symlink_cannot_bind_different_bytes\n    with self.assertRaises(c.Invalid):\n         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^\nAssertionError: Invalid not raised\n"
+    },
+    {
+      "id": "__main__.RemainingBoundaryProbes.test_required_normalized_root_alias_must_join_observation",
+      "traceback": "Traceback (most recent call last):\n  File \"/tmp/opencode/c0-runtime-images-remediation-2026-10-17/security/test_rereview.py\", line 218, in test_required_normalized_root_alias_must_join_observation\n    with self.assertRaisesRegex(c.Invalid, 'IMAGE_ROOT_CHANGED'):\n         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: Invalid not raised\n"
+    }
+  ],
+  "native_or_worker_execution": false,
+  "networking_performed": false,
+  "observations": {
+    "C0-IMG-SEC-04": {
+      "actual_relative_path": "worker.py",
+      "actual_sha256": "9923e75e179e2dcf23a9966d58e0794e428e64eb98fe9d93ad85b44a39e660e1",
+      "admitted_path": "/src/worker.py",
+      "admitted_sha256": "12ded7d07c41abaa6b8ee908a0c83e56ed386393ed6bdcad406628eb8d66b152",
+      "execution_authorized": false,
+      "fixture": "fixtures/hardlink-to-symlink.tar",
+      "root_observation": {
+        "gid": 0,
+        "mode": 493,
+        "uid": 0
+      },
+      "runtime_acceptance": false,
+      "same_symlink_inode_confirmed": true,
+      "sha256": "1179c922fdc234effc5748bf02741fb79df9acb92f12d0b6a867478f339ce974"
+    },
+    "C0-IMG-SEC-05": {
+      "duplicate_archive_accepted": true,
+      "duplicate_fixture": "fixtures/root-alias-duplicate.tar",
+      "duplicate_sha256": "510c9c12f02f882315adf89433c15e7ac5d4055849fdb8b919620a2d0c8cac69",
+      "fixture": "fixtures/root-alias-conflict.tar",
+      "positive_fixture": "fixtures/root-alias-positive.tar",
+      "reported_root": {
+        "gid": 0,
+        "mode": 493,
+        "uid": 0
+      },
+      "sha256": "19fa6a282a2d10c31a4a537ba527c95dce35bf39cd2365f280fa5aece6e4dc10",
+      "unjoined_root_alias": {
+        "gid": 0,
+        "kind": "directory",
+        "mode": 448,
+        "uid": 0
+      }
+    },
+    "SEC01": {
+      "negative": "/tmp/opencode/c0-runtime-images-2026-10-17/security/unit-run-02/inert-fixtures/portable-config-alias.tar",
+      "positive": "/tmp/opencode/c0-runtime-images-2026-10-17/security/unit-run-02/inert-fixtures/portable-good.tar",
+      "positive_config_id": "sha256:c042848616c4d95ef39ed85d1fd9a9aabb0398dfa920ef335bce90db0a4ef8df",
+      "refusal": "IMAGE_SAVE_DUPLICATE_PATH"
+    },
+    "SEC02": {
+      "fixture": "/tmp/opencode/c0-runtime-images-2026-10-17/security/unit-run-02/inert-fixtures/oracle-link-dotdot.tar",
+      "matching_source_admitted_sha256": "67e533f08cb5cb33a5186578b153063464246023f5d03ba452f20237f2f3660a",
+      "refusal": "IMAGE_ORACLE_SOURCE",
+      "resolved": "/foreign/worker.py",
+      "root_observation": {
+        "gid": 0,
+        "mode": 493,
+        "uid": 0
+      }
+    },
+    "SEC03": {
+      "excess_refusal": "IMAGE_DUPLICATE_OR_COUNT",
+      "original_refusal": "IMAGE_ROOT_DUPLICATE",
+      "positive_members": 20000
+    },
+    "mock_root_failure": {
+      "calls": [
+        "create",
+        "rm",
+        "ps"
+      ],
+      "exception_propagated": true,
+      "removed": true
+    }
+  },
+  "python": "3.14.8 (main, Oct  1 2026, 00:00:00) [GCC 16.2.1 20260819 (Red Hat 16.2.1-2)]",
+  "root_metadata_helper_executed": false,
+  "skipped": [],
+  "tests_run": 10
+}

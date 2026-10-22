@@ -1,0 +1,351 @@
+{
+  "COR004": {
+    "executable_loader_positive": true,
+    "non_executable_loader_refused_in_both_visit_orders": true,
+    "read_only_library_positive": true,
+    "reserved_name_refused": true,
+    "similar_name_positive": true
+  },
+  "artifact_continuity": {
+    "cleanup_records_verified": 10,
+    "construction_inputs_unchanged": true,
+    "content_records_byte_identical": true,
+    "current_inventory_sha256": "1f0e82a5ca98f02bf36deb4292501a0b97a38ac8bf567fd170fc09c8d4890376",
+    "engine_or_helper_executions": 0,
+    "historical_full_source_maps_not_relabelled": true,
+    "historical_inventory_sha256": "14ac223d10a72ff859d653c29bf721e35af320fc3dbfe823a4c8176180576670",
+    "images_revalidated": 6,
+    "recorded_commands_verified": 122,
+    "root_observations_rejoined": 12,
+    "supplied_record_sha256": "a8f6aee7dee482c03b925bef48a57e2ed5eb5d46edc61ea11f67c9790b5211f7"
+  },
+  "authority": {
+    "continued_implementation_static_review_only": true,
+    "execution_authorized": false,
+    "hosted_image_CI_executed": false,
+    "publishing_authorized": false,
+    "runtime_acceptance": false
+  },
+  "branch": "feature/crawl-jobs-v2-c0-runtime-images",
+  "closed_findings": {
+    "C0-IMG-SEC-01": {
+      "evidence": {
+        "positive": true,
+        "refusal": "IMAGE_SAVE_DUPLICATE_PATH"
+      },
+      "historical_severity": "Medium",
+      "positive_controls_passed": true,
+      "status": "CLOSED"
+    },
+    "C0-IMG-SEC-02": {
+      "evidence": {
+        "matching_source_positive": true,
+        "refusal": "IMAGE_ORACLE_SOURCE",
+        "root_observation": {
+          "gid": 0,
+          "mode": 493,
+          "uid": 0
+        }
+      },
+      "historical_severity": "Medium",
+      "positive_controls_passed": true,
+      "status": "CLOSED"
+    },
+    "C0-IMG-SEC-03": {
+      "evidence": {
+        "duplicate_refusal": "IMAGE_ROOT_DUPLICATE",
+        "excess_refusal": "IMAGE_DUPLICATE_OR_COUNT",
+        "positive_count": 20000
+      },
+      "historical_severity": "Low",
+      "positive_controls_passed": true,
+      "status": "CLOSED"
+    },
+    "C0-IMG-SEC-04": {
+      "evidence": {
+        "direct_hardlink_positive": true,
+        "refusal": "IMAGE_HARDLINK_LINK_TARGET",
+        "symbolic_source_positive": true
+      },
+      "historical_severity": "Medium",
+      "positive_controls_passed": true,
+      "status": "CLOSED"
+    },
+    "C0-IMG-SEC-05": {
+      "evidence": {
+        "conflict_refusal": "IMAGE_ROOT_CHANGED",
+        "duplicate_refusal": "IMAGE_ROOT_DUPLICATE",
+        "positive_with_and_without_observation": true
+      },
+      "historical_severity": "Medium",
+      "positive_controls_passed": true,
+      "status": "CLOSED"
+    },
+    "C0-IMG-SEC-06": {
+      "all_parent_entry_kinds": {
+        "negative_combinations": 16,
+        "refusal": "IMAGE_MEMBER_PARENT"
+      },
+      "ancestor_chain_checks": {
+        "indirect_redirect_refused_in_both_orders": true,
+        "literal_multi_level_forward_and_backward_maps_pass": true
+      },
+      "each_declared_record_checked": {
+        "each_individual_unused_mismatch_refuses": true,
+        "matching_forward_map_passes": true,
+        "names": [
+          "a/first",
+          "a/b/second",
+          "third"
+        ]
+      },
+      "historical_severity": "Medium",
+      "inode_metadata_reproducer": {
+        "both_order_mismatch_refusals": [
+          {
+            "code": "IMAGE_HARDLINK_METADATA",
+            "fixture": "metadata-False-1.tar"
+          },
+          {
+            "code": "IMAGE_HARDLINK_METADATA",
+            "fixture": "metadata-False-2.tar"
+          },
+          {
+            "code": "IMAGE_HARDLINK_METADATA",
+            "fixture": "metadata-False-3.tar"
+          },
+          {
+            "code": "IMAGE_HARDLINK_METADATA",
+            "fixture": "metadata-True-1.tar"
+          },
+          {
+            "code": "IMAGE_HARDLINK_METADATA",
+            "fixture": "metadata-True-2.tar"
+          },
+          {
+            "code": "IMAGE_HARDLINK_METADATA",
+            "fixture": "metadata-True-3.tar"
+          }
+        ],
+        "matching_positive": true,
+        "original_refusal": "IMAGE_HARDLINK_METADATA"
+      },
+      "parent_record_reproducer": {
+        "forward_directory_and_target_positive": true,
+        "positive_content_sha256": {
+          "literal-parent-positive.tar": "1eb79db144f665aa85b730103f62364497af838d0903ac63622cdce4807ba1f2",
+          "metadata-False-0.tar": "18359ca24129e49759f738007a3d6fecf57cb782d5c8d999b4fadf09c8eb8136",
+          "metadata-True-0.tar": "18359ca24129e49759f738007a3d6fecf57cb782d5c8d999b4fadf09c8eb8136"
+        },
+        "refusals": {
+          "parent-redirect-conflict.tar": {
+            "code": "IMAGE_MEMBER_PARENT",
+            "sha256": "bff3872ac94c209349e1fcb237d4e93bed9f774e682282309009da0cc0c6e600"
+          },
+          "parent-redirect-positive.tar": {
+            "code": "IMAGE_MEMBER_PARENT",
+            "sha256": "8504e12c828770cd588cccd6f3a8d0ef64015071d44767ec5bdd93a70113141a"
+          }
+        },
+        "valid_root_observation": {
+          "gid": 0,
+          "mode": 493,
+          "uid": 0
+        }
+      },
+      "positive_controls_passed": true,
+      "status": "CLOSED"
+    }
+  },
+  "constraints": {
+    "archive_extraction": false,
+    "container_image_loading_or_execution": false,
+    "deployment": false,
+    "engine_commands": 0,
+    "helper_executions": 0,
+    "network_calls": 0,
+    "repository_or_frozen_source_edits": false,
+    "system_policy_changes": false,
+    "unchanged_native_review_or_execution": false,
+    "worker_main_or_collector_execution": false
+  },
+  "constructor_assessment": {
+    "canonical_parent_chains_strictly_shorten_to_root": true,
+    "every_entry_including_directories_is_checked": true,
+    "full_map_before_validation_preserves_forward_declarations": true,
+    "integrated_control_location": "image_artifacts.py:125-134",
+    "no_link_or_missing_parent_can_redirect_declared_member_lookup": true,
+    "parent_validation_precedes_all_hardlink_lookups": true,
+    "scope_limit": "This is the flattened in-memory archive-map invariant, not a complete tar/POSIX/loader proof."
+  },
+  "date": "2026-10-17",
+  "delta_from_actual_build": {
+    "tests/crawl-jobs-v2-observer/image_artifacts.py": {
+      "after": "d6104f24562ed1f605043314b2f505c9f3609ca599f040fc6a9feb8d863252e5",
+      "before": "61df24f28e9e4ef2c92e21503637e22863c1da4d9d47b112a2d97be6fb8c9683"
+    },
+    "tests/crawl-jobs-v2-observer/test_image_review.py": {
+      "after": "605cabb8937c184d3caad088e1468af2cb5871a3f4f3e0f3ff150a173e6e83e4",
+      "before": "f74202962d08bf0509fba42bf3dc7af3ea0dae3dc987d378ac6a025cc816fe77"
+    }
+  },
+  "delta_from_previous_review": {
+    "tests/crawl-jobs-v2-observer/image_artifacts.py": {
+      "after": "d6104f24562ed1f605043314b2f505c9f3609ca599f040fc6a9feb8d863252e5",
+      "before": "d13b720e62727d27a3d37c7cf2f2bc6726baf14d5d01025c6f0dd0437da5e64b"
+    },
+    "tests/crawl-jobs-v2-observer/test_image_review.py": {
+      "after": "605cabb8937c184d3caad088e1468af2cb5871a3f4f3e0f3ff150a173e6e83e4",
+      "before": "18b01b5f504e1359469e8d239564aa21ddb5e692d00c0c7b51acbaee807fec2b"
+    }
+  },
+  "evidence_sha256": {
+    "artifact-checks.json": "c25db2f1d6f8b5e7278192dbe16f6d0ee45a3d8b1ae2da68eecbe5725b03628c",
+    "artifact-checks.log": "85fbe8c7ccc00210c70579944d216c0a838b9e99cf6b7a133b0d64f3b7a97f31",
+    "check_artifacts.py": "f2ba987be23cbaca44cf7a433bf6867099d75f30662d893fc40672029ff6d4f0",
+    "existing-image-tests.json": "fc5381f1626c7e8949dba3d4635f55c83fb69f53d64cf0c06b8cea4d59ead205",
+    "existing-image-tests.log": "8a752eba695a7aec67fcbbe9034a4d3669426c873ee0008b23a7c7dfc3d62d12",
+    "independent-tests-repeat.log": "46f897f030141556066560f82aa9cf1a35a0e18d1f1b8f78bbc56b6fe856b595",
+    "independent-tests.json": "7899c21776e824e7d3dd5308ca08cd4c637d12f6217b42c2e473c4e4292b3ff1",
+    "independent-tests.log": "faf22893fce5ba0960e813b3c1fd0ce7a15342def058c2afbd7f86031bca11ad",
+    "inputs-after.json": "4632fa4b1d7d818aabb8caa9dd87ff19ea464874006b080dad4ab9d674cd2362",
+    "inputs-before.json": "8c5d04ebab886b86d035d46e315d62e2347c9750c94a6a5335d5230738bc1f9f",
+    "repeat-02/fixtures/all-records-0.tar": "a553014eae086bfad5a39e24011d89f3626e655e201ceb598ce1167c730f2e2b",
+    "repeat-02/fixtures/all-records-1.tar": "2feadc5db85ccc2570c74bb9d2ef30dd2ac1df3bda27c2dccf3d615c10bfd42c",
+    "repeat-02/fixtures/all-records-2.tar": "3dad00a8f814752215437faae5f309bc657603b1ed7b79a54307b9e47e8de717",
+    "repeat-02/fixtures/all-records-None.tar": "acf2cecc98f16561212a7315afe5a54049b1fd73c73000e7b475b4e59575827a",
+    "repeat-02/fixtures/ancestor-False-False.tar": "b0b1ced95b72cdac8af171351c2daaf64a503682e34f590880b77df9502f137b",
+    "repeat-02/fixtures/ancestor-False-True.tar": "1cd5e0b9149882dec3dde2f62898fed9ff7063518174c5d838207ff2d8d5fb4a",
+    "repeat-02/fixtures/ancestor-True-False.tar": "71ba8fb9f04c24e9442c38a07dd5cee93097e27a9c519e95e033bd6eb83e79d9",
+    "repeat-02/fixtures/ancestor-True-True.tar": "73cdcade5da3da038f107b0076c082aabd977e6a5137f114c9d91069559c79ac",
+    "repeat-02/fixtures/parent-file-child-dir.tar": "aa46074770ebbda501ea3a039b05d27878c431e67f9a5d18f79f6508a2c68df0",
+    "repeat-02/fixtures/parent-file-child-file.tar": "53dd749e4195bfa98f92936c9220285f4b01307511786e6f91e1815e1393fd72",
+    "repeat-02/fixtures/parent-file-child-hardlink.tar": "f620df945c858ff32f523eaa38c259908a932c1709eb16c0c4c2b307e039737d",
+    "repeat-02/fixtures/parent-file-child-link.tar": "d22e4aa244b734595636b785ee1a2d23e223b173920e802731e4d5974aaca2f8",
+    "repeat-02/fixtures/parent-hardlink-child-dir.tar": "70a56363d624a761b7631ddbddfba290b955132510da6cab6d6ea8ac4613ed64",
+    "repeat-02/fixtures/parent-hardlink-child-file.tar": "35359257c69f5e8227e9bdda4470cb4618871e196c6a61399ba371e09803a54d",
+    "repeat-02/fixtures/parent-hardlink-child-hardlink.tar": "79ca2b3f29fa69b509855e7e2f010617c3d31cf1b9167a822f016a1dabaa666a",
+    "repeat-02/fixtures/parent-hardlink-child-link.tar": "b3fa2efb8394d8a30b5d5b5ffcd4222fa208b03c39b3d69c4781734e036b4d91",
+    "repeat-02/fixtures/parent-link-child-dir.tar": "8043b67bbbf2998227c019d395446c41ef72b09fc9bca45a90512f234274244d",
+    "repeat-02/fixtures/parent-link-child-file.tar": "7ac10a8567d23d2a62b979996f0c4b41b22d49865e63be311e5960edf7cd967d",
+    "repeat-02/fixtures/parent-link-child-hardlink.tar": "8e2652a83845bbdf26f2135597145b3690ee7d5a4a8c9338b3042fb31e8096d9",
+    "repeat-02/fixtures/parent-link-child-link.tar": "900faf6928c600e64b715e531b2b59f435601f549d88232e89a09f7cfe73c75b",
+    "repeat-02/fixtures/parent-missing-child-dir.tar": "7908a1a56b85cfffeeb9fa4a13dc7eeb2d98557273c6c13a64f1e27ad50a3e69",
+    "repeat-02/fixtures/parent-missing-child-file.tar": "217d01440f1e46e7bf9939dcfe551f90ae232fa22bce2790beff4384671df292",
+    "repeat-02/fixtures/parent-missing-child-hardlink.tar": "fcafb05fff84312058749ffe493dc510271735f05afb0993e7182595f2a8f2ba",
+    "repeat-02/fixtures/parent-missing-child-link.tar": "2758abebabeaf849bd398e075d4182d59c787de85890af92dda945926b138c7f",
+    "repeat-02/independent-tests.json": "7899c21776e824e7d3dd5308ca08cd4c637d12f6217b42c2e473c4e4292b3ff1",
+    "review.md": "9b9b669f9aa9a166f4f1dadbd761d851bc2020ddaf9dcb1a47e4004a6aec87fa",
+    "run_existing_tests.py": "6b9c7edfa3db618364ed9a31fea3f24eef437db7e52dbe9772a7fd9f94672e1d",
+    "test_closure.py": "5774c5786a4c2df07f908c24909799637b971e86be896b206ea10b56e813df8f",
+    "verify_inputs.py": "56b13aefbfb5eff90725009f50a1cfa57741c66a030e88ed3f436c25c6766d31",
+    "write_reports.py": "f8f86b8556a7e3f863107b0720db21bd509d02843bb2a9671ff468062ed77735"
+  },
+  "head": "7ef2041e2844aa34bec54da61c2e8469c1382bac",
+  "limits": [
+    "No exhaustive archive fuzzing, resource-exhaustion exercise or complete tar/POSIX/ELF/loader proof.",
+    "No actual image loading, live engine/helper races, or new cleanup observation.",
+    "No native runtime/hardware/timing, hosted image matrix, registry publishing or deployment acceptance.",
+    "GO applies only to the specified inventory-bound static-review scope; C0-ARCH-05/06 remain separate gates."
+  ],
+  "no_unresolved_blocker_found_in_reviewed_delta": true,
+  "open_finding_counts": {
+    "Critical": 0,
+    "High": 0,
+    "Low": 0,
+    "Medium": 0
+  },
+  "open_findings": [],
+  "prior_outputs_preserved": {
+    "completion": {
+      "entries": 56,
+      "report_sha256": {
+        "review.json": "d9906dd6cb2a30f640d5a3acd18a1916500f9c7539dc6ee57ff6b5bc69c1aee9",
+        "review.md": "9bff16a9a8fc05ca834406f4be10e051ac9adb78d47f9fa9b673e538f89af16d"
+      }
+    },
+    "final": {
+      "entries": 79,
+      "report_sha256": {
+        "review.json": "6ce9057ac233f69e36d66177123581b82d944596e5c381b63566d8ba7fa47485",
+        "review.md": "80318947a8b181289b3d844abeb47eafbd491665a3e8ea15b84c3eac83480d65"
+      }
+    },
+    "initial": {
+      "entries": 79,
+      "report_sha256": {
+        "review.json": "27e8242087612e0ada7eba888c1c3b27d5b5d00b5b5a985b11987e7b88090f5d",
+        "review.md": "7ad721556be8fb019fde0a74a00e306f8efbcf43ae53dafcf4b45753bd5c4ced"
+      }
+    },
+    "remediation": {
+      "entries": 68,
+      "report_sha256": {
+        "review.json": "6fe0049309b4d0b220b90743ee858f052ec9f5db7699065772bfea75c8526095",
+        "review.md": "d0b8a56c8b489648927bfd5fba85e5906da676ba12e8107c061fb77639109783"
+      }
+    }
+  },
+  "retained_image_set_entries_unchanged": {
+    "aarch64": 150,
+    "x86_64": 150
+  },
+  "reviewed_source_sha256": {
+    ".github/workflows/c0-runtime-images.yml": "47d0205d931100d096e8720d4bc6a21d3d542ab64db5eaefba4e46827e9c770c",
+    "scripts/prepare-crawl-jobs-v2-observer-images.py": "a97a270010e48dfee61c3c3317c4fcad7069bb70ba83ee0181d3c6d83b7e71cc",
+    "scripts/test-crawl-jobs-v2-observer.py": "9afb715125f734f5b905da63dde5c9787fc5997b2e5a73a0bf62d781b23aef84",
+    "tests/crawl-jobs-v2-observer/build_oracle.py": "cb702f624c986320e6f4c690dfc4eac1187104c711a52eb9e2bab28ec12e7ed6",
+    "tests/crawl-jobs-v2-observer/image_artifacts.py": "d6104f24562ed1f605043314b2f505c9f3609ca599f040fc6a9feb8d863252e5",
+    "tests/crawl-jobs-v2-observer/image_build.py": "6926bdb5bf01c25b3c29ac5607e4602bf831772fe34e06c85bee7700baee0d85",
+    "tests/crawl-jobs-v2-observer/test_image_review.py": "605cabb8937c184d3caad088e1468af2cb5871a3f4f3e0f3ff150a173e6e83e4"
+  },
+  "schema_version": 1,
+  "scope": "Inventory-bound Python static-admission constructor and prior SEC-01..06 closure checks only.",
+  "source_and_input_preservation_verified": true,
+  "source_file_counts": {
+    "auxiliary": 3,
+    "package": 55
+  },
+  "source_inventory_sha256": "1f0e82a5ca98f02bf36deb4292501a0b97a38ac8bf567fd170fc09c8d4890376",
+  "tests": {
+    "distinct_targeted_unit_tests": 43,
+    "full_288_suite_independently_rerun": false,
+    "independent_suite_passed_twice": true,
+    "independent_tests": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 11,
+      "run": 11,
+      "skipped": 0
+    },
+    "python": "3.14.8 (main, Oct  1 2026, 00:00:00) [GCC 16.2.1 20260819 (Red Hat 16.2.1-2)]",
+    "recorded_full_suite_checks": {
+      "tests-022.json": {
+        "added_ids": [
+          "test_image_review.ImageReviewTests.test_flat_archive_entries_require_literal_directory_ancestors"
+        ],
+        "all_287_prior_ids_retained": true,
+        "independently_rerun": false,
+        "sha256": "f609fb53cc8b9717da96cd9025a693591d9070b0d64538352e0826ded365d1c7",
+        "source_bound": true,
+        "tests_run": 288
+      },
+      "tests-077.json": {
+        "added_ids": [
+          "test_image_review.ImageReviewTests.test_flat_archive_entries_require_literal_directory_ancestors"
+        ],
+        "all_287_prior_ids_retained": true,
+        "independently_rerun": false,
+        "sha256": "f609fb53cc8b9717da96cd9025a693591d9070b0d64538352e0826ded365d1c7",
+        "source_bound": true,
+        "tests_run": 288
+      }
+    },
+    "repository_image_tests": {
+      "passed": 32,
+      "run": 32
+    }
+  },
+  "validator_delta_is_exact_parent_pass": true,
+  "verdict": "GO_FOR_CONTINUED_IMPLEMENTATION"
+}

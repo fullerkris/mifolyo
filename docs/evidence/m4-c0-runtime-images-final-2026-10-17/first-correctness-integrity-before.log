@@ -1,0 +1,18 @@
+{
+  "phase": "before",
+  "source_files": 58,
+  "protected_file_count": 1027,
+  "protected_roots": {
+    "/tmp/opencode/c0-runtime-images-2026-10-17": 184,
+    "/tmp/opencode/c0-runtime-images-remediation-2026-10-17": 173,
+    "/var/home/kfuller/Documents/Git_Projects/mifolyo/out/c0-runtime-images-2026-10-17/14ac223d10a72": 104,
+    "/tmp/opencode/c0-images-aarch64-remediation-2026-10-17": 146,
+    "/tmp/opencode/c0-images-x86_64-remediation-2026-10-17": 146,
+    "/tmp/opencode/c0-images-aarch64-pass5-2026-10-17": 137,
+    "/tmp/opencode/c0-images-x86_64-pass5-2026-10-17": 137
+  },
+  "match": true,
+  "head": "7ef2041e2844aa34bec54da61c2e8469c1382bac",
+  "inventory_sha256": "83288b8fd89fcbd6453626df75b6b48dd02150fda5def59d0942d92dc6483a6b",
+  "artifact_revalidation_sha256": "40e1106f132e054fa7654a94bba30ff85a3567b738f057527e24bba21704b851"
+}

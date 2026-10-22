@@ -1,0 +1,33 @@
+test_helper_result_shape_and_docker_selection_refuse_without_execution (__main__.AdditionalControls.test_helper_result_shape_and_docker_selection_refuse_without_execution) ... ok
+test_host_archive_symlink_and_hardlink_identity_refuse (__main__.AdditionalControls.test_host_archive_symlink_and_hardlink_identity_refuse) ... ok
+test_matching_and_conflicting_explicit_root_observation (__main__.AdditionalControls.test_matching_and_conflicting_explicit_root_observation) ... ok
+test_regular_file_hardlink_and_symbolic_source_alias_both_match (__main__.AdditionalControls.test_regular_file_hardlink_and_symbolic_source_alias_both_match) ... ok
+test_root_observation_failure_cleans_owned_stopped_mock_and_propagates (__main__.AdditionalControls.test_root_observation_failure_cleans_owned_stopped_mock_and_propagates) ... ok
+test_SEC01_original_collision_refuses_and_original_positive_accepts (__main__.OriginalClosures.test_SEC01_original_collision_refuses_and_original_positive_accepts) ... ok
+test_SEC02_original_chain_refuses_source_join_and_matching_actual_bytes_accept (__main__.OriginalClosures.test_SEC02_original_chain_refuses_source_join_and_matching_actual_bytes_accept) ... ok
+test_SEC03_original_roots_refuse_and_boundary_member_counts_are_exact (__main__.OriginalClosures.test_SEC03_original_roots_refuse_and_boundary_member_counts_are_exact) ... ok
+test_required_hardlink_to_relative_symlink_cannot_bind_different_bytes (__main__.RemainingBoundaryProbes.test_required_hardlink_to_relative_symlink_cannot_bind_different_bytes) ... FAIL
+test_required_normalized_root_alias_must_join_observation (__main__.RemainingBoundaryProbes.test_required_normalized_root_alias_must_join_observation) ... FAIL
+
+======================================================================
+FAIL: test_required_hardlink_to_relative_symlink_cannot_bind_different_bytes (__main__.RemainingBoundaryProbes.test_required_hardlink_to_relative_symlink_cannot_bind_different_bytes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/opencode/c0-runtime-images-remediation-2026-10-17/security/test_rereview.py", line 202, in test_required_hardlink_to_relative_symlink_cannot_bind_different_bytes
+    with self.assertRaises(c.Invalid):
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+AssertionError: Invalid not raised
+
+======================================================================
+FAIL: test_required_normalized_root_alias_must_join_observation (__main__.RemainingBoundaryProbes.test_required_normalized_root_alias_must_join_observation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/opencode/c0-runtime-images-remediation-2026-10-17/security/test_rereview.py", line 218, in test_required_normalized_root_alias_must_join_observation
+    with self.assertRaisesRegex(c.Invalid, 'IMAGE_ROOT_CHANGED'):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Invalid not raised
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.943s
+
+FAILED (failures=2)

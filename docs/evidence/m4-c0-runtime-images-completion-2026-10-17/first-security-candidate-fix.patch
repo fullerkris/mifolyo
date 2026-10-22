@@ -1,0 +1,8 @@
+--- image_artifacts.py (reviewed snapshot; NOT modified)
++++ image_artifacts.py (proposed)
+@@
+         for name, row in self.entries.items():
+             if row.get("hardlink"):
++                parent = str(PurePosixPath(name).parent)
++                require(self.resolve(parent) == parent, "IMAGE_HARDLINK_PARENT_ALIAS")
+                 self.resolve(name)

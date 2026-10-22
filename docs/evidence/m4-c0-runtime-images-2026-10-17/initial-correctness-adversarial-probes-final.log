@@ -1,0 +1,102 @@
+[
+  {
+    "id": "buildkit-scratch-path",
+    "finding": "C0ARCH04-COR-001",
+    "control": null
+  },
+  {
+    "id": "arm-ci-x64-manifest-fixture",
+    "finding": "C0ARCH04-COR-002",
+    "control": null
+  },
+  {
+    "id": "portable-normalized-config-duplicate",
+    "finding": "C0ARCH04-COR-003",
+    "control": null
+  },
+  {
+    "id": "portable-normalized-layer-duplicate",
+    "finding": "C0ARCH04-COR-003",
+    "control": null
+  },
+  {
+    "id": "portable-exact-duplicate-control",
+    "finding": null,
+    "control": null
+  },
+  {
+    "id": "target-not-executable-by-999",
+    "finding": "C0ARCH04-COR-004",
+    "control": null
+  },
+  {
+    "id": "observer-not-executable-by-999",
+    "finding": "C0ARCH04-COR-004",
+    "control": null
+  },
+  {
+    "id": "inaccessible-oracle/worker.py",
+    "finding": "C0ARCH04-COR-004",
+    "control": null
+  },
+  {
+    "id": "inaccessible-oracle",
+    "finding": "C0ARCH04-COR-004",
+    "control": null
+  },
+  {
+    "id": "inaccessible-usr/local/lib/fixture.so",
+    "finding": "C0ARCH04-COR-004",
+    "control": null
+  },
+  {
+    "id": "runpath-symlink-directory-false-refusal",
+    "finding": "C0ARCH04-COR-005",
+    "control": null
+  },
+  {
+    "id": "rpath-runpath-false-positive-closure",
+    "finding": "C0ARCH04-COR-005",
+    "control": null
+  },
+  {
+    "id": "lifecycle-create-timeout",
+    "finding": null,
+    "control": "expected fail-closed"
+  },
+  {
+    "id": "lifecycle-malformed-create-output",
+    "finding": null,
+    "control": "expected fail-closed"
+  },
+  {
+    "id": "lifecycle-copy-failure",
+    "finding": null,
+    "control": "expected fail-closed"
+  },
+  {
+    "id": "lifecycle-export-timeout",
+    "finding": null,
+    "control": "expected fail-closed"
+  },
+  {
+    "id": "lifecycle-remove-failure",
+    "finding": null,
+    "control": "expected fail-closed"
+  },
+  {
+    "id": "lifecycle-absence-failure",
+    "finding": null,
+    "control": "expected fail-closed"
+  },
+  {
+    "id": "lifecycle-foreign-during-cleanup",
+    "finding": null,
+    "control": "expected fail-closed"
+  },
+  {
+    "id": "lifecycle-started-after-export",
+    "finding": null,
+    "control": "expected fail-closed"
+  }
+]

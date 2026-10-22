@@ -170,6 +170,28 @@ This is a point-in-time baseline, not a permanent guarantee. The npm advisory
 database changes independently of the repository, so rerun the gate for every
 dependency update and immediately before image promotion.
 
+### October 22, 2026 audit follow-up
+
+PR #32's image audit identified two high-severity vulnerable packages in the
+locked graph: `follow-redirects` 1.16.0 and Vite 6.4.3. The patch updates only
+those resolved packages to **1.16.1** and **6.4.5**, respectively, and raises
+the Vite dependency floor to `^6.4.5`.
+
+The redirect update addresses
+[array-form credential stripping](https://github.com/advisories/GHSA-q3jh-wrc6-jgq8)
+and [sensitive-header regex escaping](https://github.com/advisories/GHSA-8r9p-f939-6h3c).
+The Vite patch incorporates the bundled editor-launch fixes plus
+[cross-origin middleware execution](https://github.com/advisories/GHSA-9jrq-w75r-8gcw)
+and [filesystem allow-list handling](https://github.com/advisories/GHSA-rq7h-c2jc-7f22).
+Validate the source graph, production assets and rebuilt image through the
+same gate below; the earlier table records the historical baseline.
+
+Local verification on 2026-10-22: clean `npm ci`, zero vulnerabilities in both
+the source and rebuilt-image audits, successful production assets, and **66
+browser passes / two existing skips** against the rebuilt image. Its identity
+is `sha256:fd23bed25ec3de6cdba0c3400dd1c3f1eb3d19bc560405d1e8046032376b301a`;
+asset ownership and embedded-environment-file checks also pass.
+
 ### Verification gate
 
 With Node.js available, validate the source dependency graph and production

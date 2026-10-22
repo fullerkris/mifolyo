@@ -1,0 +1,92 @@
+{
+  "files": {
+    "c0-offline-tests.json": {
+      "bytes": 87404,
+      "private_source": "/tmp/opencode/c0-x64-main-2026-10-17/required/artifacts/c0-offline-tests/c0-offline-tests.json",
+      "sha256": "1a457bc5ed243de204ec641a0c4e4a00f8ba64886cd7e3d760cd7b680f0ff6bd"
+    },
+    "ci-gate.json": {
+      "bytes": 7341,
+      "private_source": "/tmp/opencode/c0-x64-main-2026-10-17/ci-gate.json",
+      "sha256": "fa674a604010ca9f95743e1964cad78a539aaf4e53b0887153a21354375e914a"
+    },
+    "image-validation.json": {
+      "bytes": 27745,
+      "private_source": "/tmp/opencode/c0-x64-main-2026-10-17/required/artifacts/m4-image-validation-amd64/image-validation.json",
+      "sha256": "c9c56acb9c3e8c8c4590c5dbc4da5a8a5136e8558de03047b4f0a530d0bebe3f"
+    },
+    "prior-pr-ci-gate.json": {
+      "bytes": 7245,
+      "private_source": "/tmp/opencode/c0-x64-publication-2026-10-17/sync-1/ci-gate.json",
+      "sha256": "c2c0806d14d02be7aed7ab6729e51c7b88c418ddc2869f73e472850192208dff"
+    },
+    "publication.json": {
+      "bytes": 535,
+      "private_source": "/tmp/opencode/c0-x64-main-2026-10-17/publication.json",
+      "sha256": "97588c3ef35e287eb7ce9d4ef7cdf0fda1a3e151c7e91c9dbd8ed865be16a408"
+    },
+    "required-artifacts.json": {
+      "bytes": 1401,
+      "private_source": "/tmp/opencode/c0-x64-main-2026-10-17/required/artifacts.json",
+      "sha256": "70cbd450a936f90b0c1fb1c4bc68e13451a243caa48694a0965cda812eca56e3"
+    },
+    "required-run.json": {
+      "bytes": 7840,
+      "private_source": "/tmp/opencode/c0-x64-main-2026-10-17/required/run.json",
+      "sha256": "13161d52ac3992e040eb9a7d2d0fd6d3452376f1428a2d7b16b2dda1c84e7413"
+    },
+    "shard-0.json": {
+      "bytes": 34154,
+      "private_source": "/tmp/opencode/c0-x64-main-2026-10-17/unit/artifacts/v2-race-shard-0/shard-0.json",
+      "sha256": "5fdf81e629508b14314352c93af5df8971c7d684d08762ef2e77759e97c95ea5"
+    },
+    "shard-1.json": {
+      "bytes": 32362,
+      "private_source": "/tmp/opencode/c0-x64-main-2026-10-17/unit/artifacts/v2-race-shard-1/shard-1.json",
+      "sha256": "b0d3ee0b82fc8ac535d41ab6b71d687069a5acb6ec24f56a6cad65f6fe40d0aa"
+    },
+    "shard-2.json": {
+      "bytes": 32548,
+      "private_source": "/tmp/opencode/c0-x64-main-2026-10-17/unit/artifacts/v2-race-shard-2/shard-2.json",
+      "sha256": "2cfdcc11545ee48747ee57c9d88335d482876abe4f88c45e51e019610c37f297"
+    },
+    "shard-3.json": {
+      "bytes": 34474,
+      "private_source": "/tmp/opencode/c0-x64-main-2026-10-17/unit/artifacts/v2-race-shard-3/shard-3.json",
+      "sha256": "8041c4583937f80d5a79ddfc0a9f05a047b7f0685eccfb9baadd0cb8c8405852"
+    },
+    "shard-4.json": {
+      "bytes": 35560,
+      "private_source": "/tmp/opencode/c0-x64-main-2026-10-17/unit/artifacts/v2-race-shard-4/shard-4.json",
+      "sha256": "31bc3fc8ce8fd4df8bef6d3a2d45f75c21703cec94d98a27218bb9c2f6b7916a"
+    },
+    "shard-5.json": {
+      "bytes": 32470,
+      "private_source": "/tmp/opencode/c0-x64-main-2026-10-17/unit/artifacts/v2-race-shard-5/shard-5.json",
+      "sha256": "e381a1dbc354dec2dadbb1e184bd5063cd58ce0a8f76d744f7971345176a946d"
+    },
+    "shard-6.json": {
+      "bytes": 32014,
+      "private_source": "/tmp/opencode/c0-x64-main-2026-10-17/unit/artifacts/v2-race-shard-6/shard-6.json",
+      "sha256": "5b9229dc8d071cf5fbdc7f7815202639d0077842789f62086822e2352ca6dd6c"
+    },
+    "shard-7.json": {
+      "bytes": 32210,
+      "private_source": "/tmp/opencode/c0-x64-main-2026-10-17/unit/artifacts/v2-race-shard-7/shard-7.json",
+      "sha256": "eeb00e195580afac4bde2c708865cf14e4d3d622da1443c626689bc3d492ae43"
+    },
+    "unit-artifacts.json": {
+      "bytes": 5457,
+      "private_source": "/tmp/opencode/c0-x64-main-2026-10-17/unit/artifacts.json",
+      "sha256": "0c76589a1261d0e326f4d6fa8eabc33dc1ab718f8f704d1642c247d83d6f6ed6"
+    },
+    "unit-run.json": {
+      "bytes": 40242,
+      "private_source": "/tmp/opencode/c0-x64-main-2026-10-17/unit/run.json",
+      "sha256": "2e898ca619060788b2ef74ea2ae408047109e516c3cc84a4b2400e13f210438b"
+    }
+  },
+  "head": "82cd307899a1b3eab7f97fe660b1121be763f2c1",
+  "kind": "c0_arch_03_merged_main_exports",
+  "version": 1
+}

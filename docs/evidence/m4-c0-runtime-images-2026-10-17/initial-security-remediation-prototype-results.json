@@ -1,0 +1,48 @@
+{
+  "fixtures": {
+    "oracle-link-dotdot.tar": {
+      "correct_resolved_path": "/foreign/worker.py",
+      "correct_source_sha256": "67e533f08cb5cb33a5186578b153063464246023f5d03ba452f20237f2f3660a"
+    },
+    "portable-config-alias.tar": {
+      "reason": "IMAGE_SAVE_DUPLICATE_PATH",
+      "refused": true
+    },
+    "repeated-root-headers.tar": {
+      "reason": "IMAGE_ROOT_DUPLICATE",
+      "refused": true
+    }
+  },
+  "mode": "detached-test-only-not-applied",
+  "pass": true,
+  "retained_sets": {
+    "aarch64": {
+      "oracle_content_unchanged": true,
+      "parent_component_links_preserved": 135,
+      "portable_member_counts": {
+        "observer": 7,
+        "oracle": 23,
+        "target": 7
+      },
+      "rootfs_member_counts": {
+        "observer": 1,
+        "oracle": 6581,
+        "target": 1
+      }
+    },
+    "x86_64": {
+      "oracle_content_unchanged": true,
+      "parent_component_links_preserved": 135,
+      "portable_member_counts": {
+        "observer": 7,
+        "oracle": 23,
+        "target": 7
+      },
+      "rootfs_member_counts": {
+        "observer": 1,
+        "oracle": 6586,
+        "target": 1
+      }
+    }
+  }
+}

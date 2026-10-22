@@ -1,0 +1,112 @@
+{
+  "execution_authorized": false,
+  "files": {
+    "first-security-artifact-checks.json": {
+      "bytes": 10690,
+      "private_source": "/tmp/opencode/c0-runtime-images-final-2026-10-17/security/artifact-checks.json",
+      "sha256": "140dbf020cee68a15b996e4b769a58457f9ac0a02aa197202815e33cf32ef4b1"
+    },
+    "first-security-artifact-checks.log": {
+      "bytes": 188,
+      "private_source": "/tmp/opencode/c0-runtime-images-final-2026-10-17/security/artifact-checks.log",
+      "sha256": "285cde62e9392f76ea3fda0087a6b27051c55eaf2bc9b9f20a32a09e5589528b"
+    },
+    "first-security-candidate-fix-results.json": {
+      "bytes": 991,
+      "private_source": "/tmp/opencode/c0-runtime-images-final-2026-10-17/security/candidate-fix-results.json",
+      "sha256": "f11298ccf364c19539e0275aba2ede980aa436203c51fd784f47c253d22c7b48"
+    },
+    "first-security-candidate-fix-results.log": {
+      "bytes": 805,
+      "private_source": "/tmp/opencode/c0-runtime-images-final-2026-10-17/security/candidate-fix-results.log",
+      "sha256": "b11f7e41f608211c0bf06737a98f0185050b850b4cb372a8e914309a1023df7d"
+    },
+    "first-security-candidate-fix.patch": {
+      "bytes": 410,
+      "private_source": "/tmp/opencode/c0-runtime-images-final-2026-10-17/security/candidate-fix.patch",
+      "sha256": "256c3cbd9678b65abc78138cc9373ec05d83024e105641b4d6073090943d1952"
+    },
+    "first-security-check_artifact_continuity.py": {
+      "bytes": 11178,
+      "private_source": "/tmp/opencode/c0-runtime-images-final-2026-10-17/security/check_artifact_continuity.py",
+      "sha256": "33e7850decc18d5bba161cfa173ba463abb4e52d6396153a2af34e9e3ba3acee"
+    },
+    "first-security-check_candidate_fix.py": {
+      "bytes": 3367,
+      "private_source": "/tmp/opencode/c0-runtime-images-final-2026-10-17/security/check_candidate_fix.py",
+      "sha256": "e14ad4674a753d7cc7d0b7681c4530d32ea8c9ebd2b5449a212062ddfe15b8e9"
+    },
+    "first-security-existing-image-tests.json": {
+      "bytes": 3537,
+      "private_source": "/tmp/opencode/c0-runtime-images-final-2026-10-17/security/existing-image-tests.json",
+      "sha256": "325b3d642d5f98ba8c4b15d7a3287a1f26ef4cc5817a8e539b8e44ff74fc69e8"
+    },
+    "first-security-existing-image-tests.log": {
+      "bytes": 5379,
+      "private_source": "/tmp/opencode/c0-runtime-images-final-2026-10-17/security/existing-image-tests.log",
+      "sha256": "d7df05ec0a6e023e6bed5e77f78434981425a31786cf831ac0ee8dfc333e2141"
+    },
+    "first-security-independent-tests-repeat.log": {
+      "bytes": 2578,
+      "private_source": "/tmp/opencode/c0-runtime-images-final-2026-10-17/security/independent-tests-repeat.log",
+      "sha256": "36fa26633ddabcb47c84d537134f426eb312cb5aba5eaba8d7ec7c0f86620900"
+    },
+    "first-security-independent-tests.json": {
+      "bytes": 4078,
+      "private_source": "/tmp/opencode/c0-runtime-images-final-2026-10-17/security/independent-tests.json",
+      "sha256": "b2ab63fe57a20ea4fafa23e28790c6bbe203d518ffb9452bd7f95b30a691df15"
+    },
+    "first-security-independent-tests.log": {
+      "bytes": 2578,
+      "private_source": "/tmp/opencode/c0-runtime-images-final-2026-10-17/security/independent-tests.log",
+      "sha256": "037ad323a72df09ef6d9ec3db660ab4189952f6e309c3decae9842a084895c23"
+    },
+    "first-security-inputs-after.json": {
+      "bytes": 97914,
+      "private_source": "/tmp/opencode/c0-runtime-images-final-2026-10-17/security/inputs-after.json",
+      "sha256": "6487cd4bc4da96c45f4b2648ba4ff1d0dd9850a87029e82e3266f0c0a65c3cef"
+    },
+    "first-security-inputs-before.json": {
+      "bytes": 97880,
+      "private_source": "/tmp/opencode/c0-runtime-images-final-2026-10-17/security/inputs-before.json",
+      "sha256": "c7ea700e9fdb7b8582c344f61bca1a76c2a5ded5dbaf28237b7e109e47a75a52"
+    },
+    "first-security-repeat-02--independent-tests.json": {
+      "bytes": 4231,
+      "private_source": "/tmp/opencode/c0-runtime-images-final-2026-10-17/security/repeat-02/independent-tests.json",
+      "sha256": "49fadcc12b30de8b6b9cfb1ce415ca55deaf2a0bd559ada0411eceabeaf8a67b"
+    },
+    "first-security-review.json": {
+      "bytes": 12650,
+      "private_source": "/tmp/opencode/c0-runtime-images-final-2026-10-17/security/review.json",
+      "sha256": "6ce9057ac233f69e36d66177123581b82d944596e5c381b63566d8ba7fa47485"
+    },
+    "first-security-review.md": {
+      "bytes": 11064,
+      "private_source": "/tmp/opencode/c0-runtime-images-final-2026-10-17/security/review.md",
+      "sha256": "80318947a8b181289b3d844abeb47eafbd491665a3e8ea15b84c3eac83480d65"
+    },
+    "first-security-run_existing_tests.py": {
+      "bytes": 1550,
+      "private_source": "/tmp/opencode/c0-runtime-images-final-2026-10-17/security/run_existing_tests.py",
+      "sha256": "0e7420787a34ccc0e288ffc91751820219da2f8b291f44f215ca425613fb8332"
+    },
+    "first-security-test_final.py": {
+      "bytes": 15013,
+      "private_source": "/tmp/opencode/c0-runtime-images-final-2026-10-17/security/test_final.py",
+      "sha256": "30ea9ffb9ed7cc5afaa1f65bbcbf1203066a08c702f86fcf5b2e8f64539d3937"
+    },
+    "first-security-verify_inputs.py": {
+      "bytes": 4317,
+      "private_source": "/tmp/opencode/c0-runtime-images-final-2026-10-17/security/verify_inputs.py",
+      "sha256": "55e681c861acc860b48f26ec1907c5961ac3273f77f24317643ee10738e5ed83"
+    },
+    "first-security-write_reports.py": {
+      "bytes": 7794,
+      "private_source": "/tmp/opencode/c0-runtime-images-final-2026-10-17/security/write_reports.py",
+      "sha256": "92a772944b1887d5e5bc6bdb8c251ff096115868d0a98e95ae3553373a1361e5"
+    }
+  },
+  "kind": "c0_arch_04_first_security_exports",
+  "version": 1
+}

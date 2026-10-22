@@ -1,0 +1,632 @@
+{
+  "status": "PROBES_COMPLETED",
+  "results": [
+    {
+      "id": "buildkit-scratch-path",
+      "finding": "C0ARCH04-COR-001",
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_ENVIRONMENT"
+      },
+      "fake_engine_command": [
+        "build",
+        "--no-cache",
+        "--platform",
+        "linux/amd64",
+        "--build-arg",
+        "C0_ARCHITECTURE=x86_64",
+        "--network",
+        "none",
+        "--pull=false",
+        "--target",
+        "target",
+        "--file",
+        "/tmp/opencode/c0-runtime-images-2026-10-17/correctness/inert-fixtures/Dockerfile",
+        "--iidfile",
+        "/tmp/opencode/c0-runtime-images-2026-10-17/correctness/inert-fixtures/docker-fake.iid",
+        "/tmp/opencode/c0-runtime-images-2026-10-17/correctness/inert-fixtures"
+      ],
+      "limitation": "Modeled documented BuildKit output, not a Docker build."
+    },
+    {
+      "id": "arm-ci-x64-manifest-fixture",
+      "finding": "C0ARCH04-COR-002",
+      "control_on_x64": {
+        "accepted": true,
+        "value": null
+      },
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "ORACLE_BUILD_ARCHITECTURE"
+      },
+      "limitation": "One inert native-ARM extension metadata entry simulates the real ARM host extension inventory; no ARM actor or image executes."
+    },
+    {
+      "id": "portable-normalized-config-duplicate",
+      "finding": "C0ARCH04-COR-003",
+      "observed": {
+        "accepted": true,
+        "value": {
+          "format": "docker-archive",
+          "sha256": "5ccfea8286e2db2f8bf16dac62f3f199a8736f4dcf9bfc20003a77e19843437c",
+          "bytes": 20480,
+          "config_id": "sha256:37620d3dc2ba8687c8673db453b85928ee167878d2832dfe3a547b4831988ec6",
+          "layers": [
+            "sha256:8a71f177143b3a2d2fd8a4ae0e01a6fad7327377a9e09251eefffeba9e5bab4d"
+          ],
+          "architecture": "x86_64"
+        }
+      },
+      "normalized_last_member_sha256": "82371a9ce1dd41485ab0c9f5ce69435ec7bc263523d4eb8d8c7e2a94f69cbd45",
+      "claimed_sha256": "37620d3dc2ba8687c8673db453b85928ee167878d2832dfe3a547b4831988ec6",
+      "fixture": "/tmp/opencode/c0-runtime-images-2026-10-17/correctness/inert-fixtures/portable-alias-config.tar",
+      "limitation": "No extraction or image load. Conflicting normalized member identities established by pure reads."
+    },
+    {
+      "id": "portable-normalized-layer-duplicate",
+      "finding": "C0ARCH04-COR-003",
+      "observed": {
+        "accepted": true,
+        "value": {
+          "format": "docker-archive",
+          "sha256": "c54ffd9e24370175cbee772a81c18ee2d4f53659805c18a733d451a1fd0d4a78",
+          "bytes": 30720,
+          "config_id": "sha256:37620d3dc2ba8687c8673db453b85928ee167878d2832dfe3a547b4831988ec6",
+          "layers": [
+            "sha256:8a71f177143b3a2d2fd8a4ae0e01a6fad7327377a9e09251eefffeba9e5bab4d"
+          ],
+          "architecture": "x86_64"
+        }
+      },
+      "normalized_last_member_sha256": "0bedbcc8ec39c75795f5beb6eb1d55d014290999cf0153ba3c5f3b7f035c17c4",
+      "claimed_sha256": "8a71f177143b3a2d2fd8a4ae0e01a6fad7327377a9e09251eefffeba9e5bab4d",
+      "fixture": "/tmp/opencode/c0-runtime-images-2026-10-17/correctness/inert-fixtures/portable-alias-layer.tar",
+      "limitation": "No extraction or image load. Conflicting normalized member identities established by pure reads."
+    },
+    {
+      "id": "portable-exact-duplicate-control",
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_SAVE_MEMBER"
+      },
+      "expected_refusal": true
+    },
+    {
+      "id": "target-not-executable-by-999",
+      "finding": "C0ARCH04-COR-004",
+      "observed": {
+        "0o755": {
+          "accepted": true,
+          "payload": "394232be327bd02a3f39cbd8b9e3966c1d811c46a574d18be95cbd039a1d6658",
+          "reason": null
+        },
+        "0o700": {
+          "accepted": true,
+          "payload": "394232be327bd02a3f39cbd8b9e3966c1d811c46a574d18be95cbd039a1d6658",
+          "reason": null
+        },
+        "0o750": {
+          "accepted": true,
+          "payload": "394232be327bd02a3f39cbd8b9e3966c1d811c46a574d18be95cbd039a1d6658",
+          "reason": null
+        },
+        "0o600": {
+          "accepted": false,
+          "payload": null,
+          "reason": "IMAGE_FILE_EXECUTABLE"
+        }
+      }
+    },
+    {
+      "id": "observer-not-executable-by-999",
+      "finding": "C0ARCH04-COR-004",
+      "observed": {
+        "0o755": {
+          "accepted": true,
+          "payload": "691e4b62780fa17ccabadd11486a8a9bb6dc2119750daefbebb6c9ff2e684651",
+          "reason": null
+        },
+        "0o700": {
+          "accepted": true,
+          "payload": "691e4b62780fa17ccabadd11486a8a9bb6dc2119750daefbebb6c9ff2e684651",
+          "reason": null
+        },
+        "0o750": {
+          "accepted": true,
+          "payload": "691e4b62780fa17ccabadd11486a8a9bb6dc2119750daefbebb6c9ff2e684651",
+          "reason": null
+        },
+        "0o600": {
+          "accepted": false,
+          "payload": null,
+          "reason": "IMAGE_FILE_EXECUTABLE"
+        }
+      }
+    },
+    {
+      "id": "inaccessible-oracle/worker.py",
+      "finding": "C0ARCH04-COR-004",
+      "accepted": true,
+      "mode": "0o600",
+      "owner": "0:0",
+      "runtime_user": "999:999"
+    },
+    {
+      "id": "inaccessible-oracle",
+      "finding": "C0ARCH04-COR-004",
+      "accepted": true,
+      "mode": "0o700",
+      "owner": "0:0",
+      "runtime_user": "999:999"
+    },
+    {
+      "id": "inaccessible-usr/local/lib/fixture.so",
+      "finding": "C0ARCH04-COR-004",
+      "accepted": true,
+      "mode": "0o600",
+      "owner": "0:0",
+      "runtime_user": "999:999"
+    },
+    {
+      "id": "runpath-symlink-directory-false-refusal",
+      "finding": "C0ARCH04-COR-005",
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "IMAGE_LIBRARY_MISSING"
+      },
+      "existing_resolved_dependency": "/real/libc0fixtureonly.so"
+    },
+    {
+      "id": "rpath-runpath-false-positive-closure",
+      "finding": "C0ARCH04-COR-005",
+      "observed": {
+        "accepted": true,
+        "value": {
+          "/app": {
+            "sha256": "547a522a73e5578838aee63ac3c995ae02350555e3e27964625dbd3040e13156",
+            "bytes": 4096,
+            "machine": 62,
+            "type": 3,
+            "interpreter": null,
+            "needed": [
+              "libc0fixtureonly.so"
+            ],
+            "search_paths": [
+              "/old-rpath",
+              "/new-runpath"
+            ],
+            "dependencies": {
+              "libc0fixtureonly.so": "/old-rpath/libc0fixtureonly.so"
+            },
+            "unresolved_dependencies": [],
+            "required_dependency_closure": true
+          },
+          "/old-rpath/libc0fixtureonly.so": {
+            "sha256": "1547333e8593321492c4d461a8aaeef1b3c90d5b8e90233cbf77d5b9247db34d",
+            "bytes": 4096,
+            "machine": 62,
+            "type": 3,
+            "interpreter": null,
+            "needed": [],
+            "search_paths": [],
+            "dependencies": {},
+            "unresolved_dependencies": [],
+            "required_dependency_closure": true
+          }
+        }
+      },
+      "correct_search": [
+        "/new-runpath",
+        "cache",
+        "default dirs"
+      ],
+      "fixture_has_dependency_only_in_ignored_rpath": true
+    },
+    {
+      "id": "lifecycle-create-timeout",
+      "observed": {
+        "accepted": false,
+        "exception": "TimeoutExpired",
+        "reason": "Command '['create', '--name', 'obs1-image-inspect-b8a18b67ea464ab6aed289715c3749d4', '--network', 'none', '--read-only', '--user', '999:999', '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges', '--no-healthcheck', '--entrypoint', '/__obs1_inspection_only__', 'sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa']' timed out after 60 seconds"
+      },
+      "cleanup": [
+        {
+          "id": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "name": "obs1-image-inspect-b8a18b67ea464ab6aed289715c3749d4",
+          "running": false,
+          "pid": 0,
+          "status": "created",
+          "removed": true
+        }
+      ],
+      "commands": [
+        [
+          "create",
+          "--name",
+          "obs1-image-inspect-b8a18b67ea464ab6aed289715c3749d4",
+          "--network",
+          "none",
+          "--read-only",
+          "--user",
+          "999:999",
+          "--cap-drop",
+          "ALL",
+          "--security-opt",
+          "no-new-privileges",
+          "--no-healthcheck",
+          "--entrypoint",
+          "/__obs1_inspection_only__",
+          "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ],
+        [
+          "ps",
+          "--all",
+          "--no-trunc",
+          "--filter",
+          "name=^obs1-image-inspect-b8a18b67ea464ab6aed289715c3749d4$",
+          "--format",
+          "{{.ID}}"
+        ],
+        [
+          "rm",
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        ],
+        [
+          "ps",
+          "--all",
+          "--no-trunc",
+          "--filter",
+          "id=bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "--format",
+          "{{.ID}}"
+        ]
+      ],
+      "control": "expected fail-closed"
+    },
+    {
+      "id": "lifecycle-malformed-create-output",
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "DIGEST"
+      },
+      "cleanup": [
+        {
+          "id": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "name": "obs1-image-inspect-274d9244c0034b24b1b725077ede9f53",
+          "running": false,
+          "pid": 0,
+          "status": "created",
+          "removed": true
+        }
+      ],
+      "commands": [
+        [
+          "create",
+          "--name",
+          "obs1-image-inspect-274d9244c0034b24b1b725077ede9f53",
+          "--network",
+          "none",
+          "--read-only",
+          "--user",
+          "999:999",
+          "--cap-drop",
+          "ALL",
+          "--security-opt",
+          "no-new-privileges",
+          "--no-healthcheck",
+          "--entrypoint",
+          "/__obs1_inspection_only__",
+          "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ],
+        [
+          "ps",
+          "--all",
+          "--no-trunc",
+          "--filter",
+          "name=^obs1-image-inspect-274d9244c0034b24b1b725077ede9f53$",
+          "--format",
+          "{{.ID}}"
+        ],
+        [
+          "rm",
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        ],
+        [
+          "ps",
+          "--all",
+          "--no-trunc",
+          "--filter",
+          "id=bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "--format",
+          "{{.ID}}"
+        ]
+      ],
+      "control": "expected fail-closed"
+    },
+    {
+      "id": "lifecycle-copy-failure",
+      "observed": {
+        "accepted": false,
+        "exception": "OSError",
+        "reason": "synthetic cp failure"
+      },
+      "cleanup": [
+        {
+          "id": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "name": "obs1-image-inspect-ccab2124bac246129ce325662d1cdb21",
+          "running": false,
+          "pid": 0,
+          "status": "created",
+          "removed": true
+        }
+      ],
+      "commands": [
+        [
+          "create",
+          "--name",
+          "obs1-image-inspect-ccab2124bac246129ce325662d1cdb21",
+          "--network",
+          "none",
+          "--read-only",
+          "--user",
+          "999:999",
+          "--cap-drop",
+          "ALL",
+          "--security-opt",
+          "no-new-privileges",
+          "--no-healthcheck",
+          "--entrypoint",
+          "/__obs1_inspection_only__",
+          "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ],
+        [
+          "cp",
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb:/out/.",
+          "/tmp/opencode/c0-runtime-images-2026-10-17/correctness/inert-fixtures/lifecycle-copy-failure"
+        ],
+        [
+          "rm",
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        ],
+        [
+          "ps",
+          "--all",
+          "--no-trunc",
+          "--filter",
+          "id=bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "--format",
+          "{{.ID}}"
+        ]
+      ],
+      "control": "expected fail-closed"
+    },
+    {
+      "id": "lifecycle-export-timeout",
+      "observed": {
+        "accepted": false,
+        "exception": "TimeoutExpired",
+        "reason": "Command '['export', '--output', '/tmp/opencode/c0-runtime-images-2026-10-17/correctness/inert-fixtures/lifecycle-export-timeout', 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb']' timed out after 120 seconds"
+      },
+      "cleanup": [
+        {
+          "id": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "name": "obs1-image-inspect-4b30a0e6378d4873b7cf90dec2586a5e",
+          "running": false,
+          "pid": 0,
+          "status": "created",
+          "removed": true
+        }
+      ],
+      "commands": [
+        [
+          "create",
+          "--name",
+          "obs1-image-inspect-4b30a0e6378d4873b7cf90dec2586a5e",
+          "--network",
+          "none",
+          "--read-only",
+          "--user",
+          "999:999",
+          "--cap-drop",
+          "ALL",
+          "--security-opt",
+          "no-new-privileges",
+          "--no-healthcheck",
+          "--entrypoint",
+          "/__obs1_inspection_only__",
+          "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ],
+        [
+          "export",
+          "--output",
+          "/tmp/opencode/c0-runtime-images-2026-10-17/correctness/inert-fixtures/lifecycle-export-timeout",
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        ],
+        [
+          "rm",
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        ],
+        [
+          "ps",
+          "--all",
+          "--no-trunc",
+          "--filter",
+          "id=bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "--format",
+          "{{.ID}}"
+        ]
+      ],
+      "control": "expected fail-closed"
+    },
+    {
+      "id": "lifecycle-remove-failure",
+      "observed": {
+        "accepted": false,
+        "exception": "OSError",
+        "reason": "synthetic rm failure"
+      },
+      "cleanup": [],
+      "commands": [
+        [
+          "create",
+          "--name",
+          "obs1-image-inspect-be1ec6fb35eb4840a47af1d602456f44",
+          "--network",
+          "none",
+          "--read-only",
+          "--user",
+          "999:999",
+          "--cap-drop",
+          "ALL",
+          "--security-opt",
+          "no-new-privileges",
+          "--no-healthcheck",
+          "--entrypoint",
+          "/__obs1_inspection_only__",
+          "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ],
+        [
+          "export",
+          "--output",
+          "/tmp/opencode/c0-runtime-images-2026-10-17/correctness/inert-fixtures/lifecycle-remove-failure",
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        ],
+        [
+          "rm",
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        ]
+      ],
+      "control": "expected fail-closed"
+    },
+    {
+      "id": "lifecycle-absence-failure",
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "BUILD_CONTAINER_CLEANUP"
+      },
+      "cleanup": [],
+      "commands": [
+        [
+          "create",
+          "--name",
+          "obs1-image-inspect-bf57fc0ec8a04334ad4cc4fad1508c97",
+          "--network",
+          "none",
+          "--read-only",
+          "--user",
+          "999:999",
+          "--cap-drop",
+          "ALL",
+          "--security-opt",
+          "no-new-privileges",
+          "--no-healthcheck",
+          "--entrypoint",
+          "/__obs1_inspection_only__",
+          "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ],
+        [
+          "export",
+          "--output",
+          "/tmp/opencode/c0-runtime-images-2026-10-17/correctness/inert-fixtures/lifecycle-absence-failure",
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        ],
+        [
+          "rm",
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        ],
+        [
+          "ps",
+          "--all",
+          "--no-trunc",
+          "--filter",
+          "id=bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "--format",
+          "{{.ID}}"
+        ]
+      ],
+      "control": "expected fail-closed"
+    },
+    {
+      "id": "lifecycle-foreign-during-cleanup",
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "BUILD_CONTAINER_IDENTITY"
+      },
+      "cleanup": [],
+      "commands": [
+        [
+          "create",
+          "--name",
+          "obs1-image-inspect-22112853f9b64be18bcde5f290e8ec1f",
+          "--network",
+          "none",
+          "--read-only",
+          "--user",
+          "999:999",
+          "--cap-drop",
+          "ALL",
+          "--security-opt",
+          "no-new-privileges",
+          "--no-healthcheck",
+          "--entrypoint",
+          "/__obs1_inspection_only__",
+          "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ],
+        [
+          "export",
+          "--output",
+          "/tmp/opencode/c0-runtime-images-2026-10-17/correctness/inert-fixtures/lifecycle-foreign-during-cleanup",
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        ]
+      ],
+      "control": "expected fail-closed"
+    },
+    {
+      "id": "lifecycle-started-after-export",
+      "observed": {
+        "accepted": false,
+        "exception": "Invalid",
+        "reason": "BUILD_CONTAINER_STARTED"
+      },
+      "cleanup": [],
+      "commands": [
+        [
+          "create",
+          "--name",
+          "obs1-image-inspect-3624f79cea4244ccba2dc39d81183e10",
+          "--network",
+          "none",
+          "--read-only",
+          "--user",
+          "999:999",
+          "--cap-drop",
+          "ALL",
+          "--security-opt",
+          "no-new-privileges",
+          "--no-healthcheck",
+          "--entrypoint",
+          "/__obs1_inspection_only__",
+          "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ],
+        [
+          "export",
+          "--output",
+          "/tmp/opencode/c0-runtime-images-2026-10-17/correctness/inert-fixtures/lifecycle-started-after-export",
+          "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        ]
+      ],
+      "control": "expected fail-closed"
+    }
+  ]
+}

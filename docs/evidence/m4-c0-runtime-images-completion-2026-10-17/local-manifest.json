@@ -1,0 +1,42 @@
+{
+  "execution_authorized": false,
+  "files": {
+    "artifact-revalidation.json": {
+      "bytes": 7260,
+      "private_source": "/tmp/opencode/c0-runtime-images-completion-2026-10-17/artifact-revalidation.json",
+      "sha256": "55a7c9f9738d942a745ab47626afe9ef157998039a2d2e8779bee24f992aa3fd"
+    },
+    "final-source.patch": {
+      "bytes": 93388,
+      "private_source": "/tmp/opencode/c0-runtime-images-completion-2026-10-17/final-source.patch",
+      "sha256": "f37565eaa1537bb2da8abae1f89768224c81fd73d0d5f737d1705e43d4fe4c9c"
+    },
+    "source-inventory.json": {
+      "bytes": 7898,
+      "private_source": "/tmp/opencode/c0-runtime-images-completion-2026-10-17/source-inventory.json",
+      "sha256": "2afe7326f090a3b8ba3ef882a8b3fa89d3e4dd73a9c8c074288d541364487043"
+    },
+    "tests-022.json": {
+      "bytes": 98064,
+      "private_source": "/tmp/opencode/c0-runtime-images-completion-2026-10-17/tests-022.json",
+      "sha256": "b9eebe803a46be33e0ea89e6d9c332fca5e7a6abede9eb5a9512ce9834023c8f"
+    },
+    "tests-022.log": {
+      "bytes": 48052,
+      "private_source": "/tmp/opencode/c0-runtime-images-completion-2026-10-17/tests-022.log",
+      "sha256": "3b49516cbdd6304ebdc286d57d197c2285e27f5f54a0fef9899ce2fbcee5f056"
+    },
+    "tests-077.json": {
+      "bytes": 98064,
+      "private_source": "/tmp/opencode/c0-runtime-images-completion-2026-10-17/tests-077.json",
+      "sha256": "b9eebe803a46be33e0ea89e6d9c332fca5e7a6abede9eb5a9512ce9834023c8f"
+    },
+    "tests-077.log": {
+      "bytes": 48052,
+      "private_source": "/tmp/opencode/c0-runtime-images-completion-2026-10-17/tests-077.log",
+      "sha256": "4328611a033bda4a7dc49918e564ec22cf0e518c750868ad34f22310b5e87f6d"
+    }
+  },
+  "kind": "c0_arch_04_final_validator_local_exports",
+  "version": 1
+}

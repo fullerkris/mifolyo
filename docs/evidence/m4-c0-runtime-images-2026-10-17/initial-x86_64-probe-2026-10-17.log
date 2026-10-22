@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/scripts/prepare-crawl-jobs-v2-observer-images.py", line 10, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/tests/crawl-jobs-v2-observer/image_build.py", line 195, in main
+    result = prepare(args.architecture, args.engine, args.output)
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/tests/crawl-jobs-v2-observer/image_build.py", line 168, in prepare
+    admitted = image_metadata(metadata, architecture, role, env)
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/tests/crawl-jobs-v2-observer/image_artifacts.py", line 41, in image_metadata
+    require((config.get("Env") or []) == environment and (role == "oracle" or environment == []), "IMAGE_ENVIRONMENT")
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/tests/crawl-jobs-v2-observer/contracts.py", line 27, in require
+    raise Invalid(code)
+contracts.Invalid: IMAGE_ENVIRONMENT

@@ -1,0 +1,118 @@
+{
+  "archive_extraction": false,
+  "engine_helper_native_worker_executions": 0,
+  "errors": [],
+  "failures": [],
+  "network_calls": 0,
+  "observations": {
+    "COR004": {
+      "executable_loader_positive": true,
+      "non_executable_loader_refused_in_both_visit_orders": true,
+      "read_only_library_positive": true,
+      "reserved_name_refused": true,
+      "similar_name_positive": true
+    },
+    "SEC01": {
+      "positive": true,
+      "refusal": "IMAGE_SAVE_DUPLICATE_PATH"
+    },
+    "SEC02": {
+      "matching_source_positive": true,
+      "refusal": "IMAGE_ORACLE_SOURCE",
+      "root_observation": {
+        "gid": 0,
+        "mode": 493,
+        "uid": 0
+      }
+    },
+    "SEC03": {
+      "duplicate_refusal": "IMAGE_ROOT_DUPLICATE",
+      "excess_refusal": "IMAGE_DUPLICATE_OR_COUNT",
+      "positive_count": 20000
+    },
+    "SEC04": {
+      "direct_hardlink_positive": true,
+      "refusal": "IMAGE_HARDLINK_LINK_TARGET",
+      "symbolic_source_positive": true
+    },
+    "SEC05": {
+      "conflict_refusal": "IMAGE_ROOT_CHANGED",
+      "duplicate_refusal": "IMAGE_ROOT_DUPLICATE",
+      "positive_with_and_without_observation": true
+    },
+    "SEC06_inode_metadata": {
+      "both_order_mismatch_refusals": [
+        {
+          "code": "IMAGE_HARDLINK_METADATA",
+          "fixture": "metadata-False-1.tar"
+        },
+        {
+          "code": "IMAGE_HARDLINK_METADATA",
+          "fixture": "metadata-False-2.tar"
+        },
+        {
+          "code": "IMAGE_HARDLINK_METADATA",
+          "fixture": "metadata-False-3.tar"
+        },
+        {
+          "code": "IMAGE_HARDLINK_METADATA",
+          "fixture": "metadata-True-1.tar"
+        },
+        {
+          "code": "IMAGE_HARDLINK_METADATA",
+          "fixture": "metadata-True-2.tar"
+        },
+        {
+          "code": "IMAGE_HARDLINK_METADATA",
+          "fixture": "metadata-True-3.tar"
+        }
+      ],
+      "matching_positive": true,
+      "original_refusal": "IMAGE_HARDLINK_METADATA"
+    },
+    "SEC06_parent_record": {
+      "forward_directory_and_target_positive": true,
+      "positive_content_sha256": {
+        "literal-parent-positive.tar": "1eb79db144f665aa85b730103f62364497af838d0903ac63622cdce4807ba1f2",
+        "metadata-False-0.tar": "18359ca24129e49759f738007a3d6fecf57cb782d5c8d999b4fadf09c8eb8136",
+        "metadata-True-0.tar": "18359ca24129e49759f738007a3d6fecf57cb782d5c8d999b4fadf09c8eb8136"
+      },
+      "refusals": {
+        "parent-redirect-conflict.tar": {
+          "code": "IMAGE_MEMBER_PARENT",
+          "sha256": "bff3872ac94c209349e1fcb237d4e93bed9f774e682282309009da0cc0c6e600"
+        },
+        "parent-redirect-positive.tar": {
+          "code": "IMAGE_MEMBER_PARENT",
+          "sha256": "8504e12c828770cd588cccd6f3a8d0ef64015071d44767ec5bdd93a70113141a"
+        }
+      },
+      "valid_root_observation": {
+        "gid": 0,
+        "mode": 493,
+        "uid": 0
+      }
+    },
+    "all_entry_parent_kinds": {
+      "negative_combinations": 16,
+      "refusal": "IMAGE_MEMBER_PARENT"
+    },
+    "all_hardlink_records": {
+      "each_individual_unused_mismatch_refuses": true,
+      "matching_forward_map_passes": true,
+      "names": [
+        "a/first",
+        "a/b/second",
+        "third"
+      ]
+    },
+    "ancestor_induction": {
+      "indirect_redirect_refused_in_both_orders": true,
+      "literal_multi_level_forward_and_backward_maps_pass": true
+    }
+  },
+  "pass": true,
+  "python": "3.14.8 (main, Oct  1 2026, 00:00:00) [GCC 16.2.1 20260819 (Red Hat 16.2.1-2)]",
+  "skipped": [],
+  "tests_run": 11
+}

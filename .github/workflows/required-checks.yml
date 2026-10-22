@@ -20,7 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     services:
       mongo:
-        image: mongo:8
+        # 9.0.4 recognizes patched Ubuntu 7.0 kernels (SERVER-131779).
+        image: mongo:9.0.4@sha256:dc28ed5a9d0fc616903c3f463bb1e53b92b49f441721b91926e87d90bf957ce8
         ports:
           - 127.0.0.1:27017:27017
         options: >-
@@ -46,6 +47,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Verify MongoDB CI runtime
+        env:
+          MONGO_CONTAINER_ID: ${{ job.services.mongo.id }}
+        run: bash "${GITHUB_WORKSPACE}/scripts/verify-ci-mongodb.sh" "${MONGO_CONTAINER_ID}"
 
       - name: Set up PHP
         uses: shivammathur/setup-php@b604ade2a87db23f8871b7182e69ec5e75effb45 # v2

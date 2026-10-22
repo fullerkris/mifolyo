@@ -1,0 +1,13 @@
+{
+  "base": "142334acbd72134536c42b2b1c2a34256b1227a3",
+  "branch": "feature/crawl-jobs-v2-c0-x64-runtime",
+  "c0_tests": 256,
+  "candidate_paths": 145,
+  "commit": "eba01379d38f82e8c126fff1d2b3fb2c629beb2f",
+  "committed": true,
+  "pushed": false,
+  "reviewed_base": "d8016469a5ffcceeb04329deec4e3dea2c72dd97",
+  "source_inventory_sha256": "7ed3b955be1fe4d2621a43896d1a3e4d49cf9edcf6e86a0c2dd567d105f14720",
+  "tree": "2d8be78fc7ff249efb562551a7971df122a5c62f",
+  "worktree_clean": true
+}

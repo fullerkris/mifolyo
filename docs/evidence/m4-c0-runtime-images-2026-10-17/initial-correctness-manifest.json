@@ -1,0 +1,142 @@
+{
+  "files": {
+    "initial-correctness-adversarial-probes-final.log": {
+      "bytes": 2164,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/correctness/adversarial-probes-final.log",
+      "sha256": "e4ca4d14dcda4440876519c093946c5519e5e7353b0e22e9397e21e385adac74"
+    },
+    "initial-correctness-adversarial-probes.log": {
+      "bytes": 2164,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/correctness/adversarial-probes.log",
+      "sha256": "e4ca4d14dcda4440876519c093946c5519e5e7353b0e22e9397e21e385adac74"
+    },
+    "initial-correctness-adversarial-results.json": {
+      "bytes": 19616,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/correctness/adversarial-results.json",
+      "sha256": "6e85703510b8c9097be3004b8e046fb07e5632010641872b430adbb5ea3a9c4f"
+    },
+    "initial-correctness-adversarial_probes.py": {
+      "bytes": 14153,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/correctness/adversarial_probes.py",
+      "sha256": "d6a995becd62061496ef2e55c9ac86a75d05ed58507fe31d6c01de4abf2395db"
+    },
+    "initial-correctness-buildkit-current-image.go": {
+      "bytes": 1671,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/correctness/buildkit-current-image.go",
+      "sha256": "5f6740c15351de8b7d842efdfd579ac22af0fcd06a67b39ff4cb71436d63df36"
+    },
+    "initial-correctness-buildkit-v0.20.2-image.go": {
+      "bytes": 1189,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/correctness/buildkit-v0.20.2-image.go",
+      "sha256": "cbcd0b08fac635fef173bfec481bd4ea08dbccbdad4cdc8a7348f8cffa089bcb"
+    },
+    "initial-correctness-buildkit-v0.20.2-path.go": {
+      "bytes": 7634,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/correctness/buildkit-v0.20.2-path.go",
+      "sha256": "74c1c104ce59e0cb5fb0ee6f4fb9461e3176587c200ef42787feb66de57d0fb8"
+    },
+    "initial-correctness-checkout-pinned-action.yml": {
+      "bytes": 5144,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/correctness/checkout-pinned-action.yml",
+      "sha256": "6188f6991491ed38977347cdaad0b0cd921a6d6232892363c91f433c22954f4f"
+    },
+    "initial-correctness-evidence-verification-final-pass2.log": {
+      "bytes": 1016,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/correctness/evidence-verification-final-pass2.log",
+      "sha256": "d5e6c4fa99e8eb99915d54ca463eb1e93807a2aa767d7c7c0e3a0e364772cf73"
+    },
+    "initial-correctness-evidence-verification-final.log": {
+      "bytes": 378,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/correctness/evidence-verification-final.log",
+      "sha256": "eccd6cea889b93640bd79aedd70055cc81d35d9fbbc95e916db2365758bc72ec"
+    },
+    "initial-correctness-evidence-verification-pass2.log": {
+      "bytes": 1016,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/correctness/evidence-verification-pass2.log",
+      "sha256": "d5e6c4fa99e8eb99915d54ca463eb1e93807a2aa767d7c7c0e3a0e364772cf73"
+    },
+    "initial-correctness-evidence-verification.json": {
+      "bytes": 46220,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/correctness/evidence-verification.json",
+      "sha256": "64510ff2721d7635ba8fb1ef1dd5e4b8d996831c5d8567ab8802fae5211aa10e"
+    },
+    "initial-correctness-evidence-verification.log": {
+      "bytes": 368,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/correctness/evidence-verification.log",
+      "sha256": "097899b143d6e329380c3c05ae8d6445f6c4a09b96bfef48a4bf179a939ac08d"
+    },
+    "initial-correctness-fetch_references.py": {
+      "bytes": 1874,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/correctness/fetch_references.py",
+      "sha256": "ee4d742989699d74bc727077c58b94abc6c2fb27735912868a7bf607987a4ca7"
+    },
+    "initial-correctness-image-unit-tests.log": {
+      "bytes": 2995,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/correctness/image-unit-tests.log",
+      "sha256": "7c240e1d694bc8d753500c91a7d9ee640c8165ca74f02f8b82caf465ffb0f94a"
+    },
+    "initial-correctness-integrity-final.log": {
+      "bytes": 398,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/correctness/integrity-final.log",
+      "sha256": "a02df2b4dc40733d6da2d5766ab6fa0a08aeeb2065fe82a9945d09699122f981"
+    },
+    "initial-correctness-inventory-after.json": {
+      "bytes": 19582,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/correctness/inventory-after.json",
+      "sha256": "bf16095f5503ca1e93e10ff5ad6844f21c4192abc737c393c9c747ec49c28c36"
+    },
+    "initial-correctness-inventory-before.json": {
+      "bytes": 19403,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/correctness/inventory-before.json",
+      "sha256": "26c3aef7bf80d7f9aead6c25e65968e2e92188831f77be12c49fd9e0f0a1007d"
+    },
+    "initial-correctness-references.json": {
+      "bytes": 2224,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/correctness/references.json",
+      "sha256": "56e163d7d114811d278a6584f171e73c8c5e94d1b24069d8dbf0731fc1238fef"
+    },
+    "initial-correctness-references.log": {
+      "bytes": 2224,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/correctness/references.log",
+      "sha256": "56e163d7d114811d278a6584f171e73c8c5e94d1b24069d8dbf0731fc1238fef"
+    },
+    "initial-correctness-review.json": {
+      "bytes": 71390,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/correctness/review.json",
+      "sha256": "0bb1530f8309b6159ccf12e7b86c891e936e48468ae3453a34b8cddb0141a471"
+    },
+    "initial-correctness-review.md": {
+      "bytes": 15232,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/correctness/review.md",
+      "sha256": "d1797be1beea2bb3e2c3bfd00209bc30613aba80f950ad070d82daa22785ae59"
+    },
+    "initial-correctness-setup-python-pinned-action.yml": {
+      "bytes": 2364,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/correctness/setup-python-pinned-action.yml",
+      "sha256": "0acca40eee6f548ea8269ece66fd625fe9deb1f61f31f0b58562068fc083eb37"
+    },
+    "initial-correctness-upload-artifact-pinned-action.yml": {
+      "bytes": 3159,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/correctness/upload-artifact-pinned-action.yml",
+      "sha256": "29b21270ff44638a165ea12abb4481796770c629e513217af7b4df1aa3821177"
+    },
+    "initial-correctness-verify_evidence.py": {
+      "bytes": 14652,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/correctness/verify_evidence.py",
+      "sha256": "01e54921f7f4f3942ea41fe99bb89c9292579c740f62e05363f531d6c7418a26"
+    },
+    "initial-correctness-verify_integrity.py": {
+      "bytes": 2514,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/correctness/verify_integrity.py",
+      "sha256": "d3866cdc6c5588b077e0ba0978a7c483fda5510b9f8296197abd6f4cfa88d1fa"
+    },
+    "initial-correctness-write_review.py": {
+      "bytes": 11988,
+      "private_source": "/tmp/opencode/c0-runtime-images-2026-10-17/correctness/write_review.py",
+      "sha256": "b7cd99797dd1f667f987dd8bf7e48da586be2a791a29ca3c4e4c0b515b9f644d"
+    }
+  },
+  "kind": "c0_arch_04_initial_correctness_exports",
+  "source_inventory_sha256": "f789846f36fd23c21cad7b7ef461ec1dbb5521e0ad6d8948ae5cace2fde9dec4",
+  "version": 1
+}

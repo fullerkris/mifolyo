@@ -1,0 +1,38 @@
+{
+  "bad_unused_alias_refusal": "IMAGE_HARDLINK_METADATA",
+  "candidate_module_sha256": "31970a99b1fd2fba1b3f107df00354ea848211937ee872764d0b0d6494cfab84",
+  "matching_unused_alias_content_sha256": "18359ca24129e49759f738007a3d6fecf57cb782d5c8d999b4fadf09c8eb8136",
+  "pass": true,
+  "readable_and_executable_matching_aliases_pass": true,
+  "real_hardlinks_validated": {
+    "aarch64": {
+      "observer": {},
+      "oracle": {
+        "/usr/bin/perl5.36.0": "/usr/bin/perl",
+        "/usr/bin/uncompress": "/usr/bin/gunzip"
+      },
+      "target": {}
+    },
+    "x86_64": {
+      "observer": {},
+      "oracle": {
+        "/usr/bin/perl5.36.0": "/usr/bin/perl",
+        "/usr/bin/uncompress": "/usr/bin/gunzip"
+      },
+      "target": {}
+    }
+  },
+  "repository_or_frozen_patch_applied": false,
+  "retained_content_records_unchanged": {
+    "aarch64": [
+      "observer",
+      "oracle",
+      "target"
+    ],
+    "x86_64": [
+      "observer",
+      "oracle",
+      "target"
+    ]
+  }
+}

@@ -1,0 +1,361 @@
+{
+  "COR004": {
+    "executable_loader_positive": true,
+    "execute_required_in_both_visit_orders": true,
+    "read_only_library_positive": true,
+    "reserved_key_refused": true,
+    "similar_name_positive": true
+  },
+  "SEC06": {
+    "both_member_order_matrix": [
+      {
+        "forward": false,
+        "metadata": {
+          "gid": 0,
+          "mode": 493,
+          "uid": 0
+        },
+        "result": "PASS"
+      },
+      {
+        "forward": false,
+        "metadata": {
+          "gid": 0,
+          "mode": 448,
+          "uid": 0
+        },
+        "result": "IMAGE_HARDLINK_METADATA"
+      },
+      {
+        "forward": false,
+        "metadata": {
+          "gid": 0,
+          "mode": 493,
+          "uid": 999
+        },
+        "result": "IMAGE_HARDLINK_METADATA"
+      },
+      {
+        "forward": false,
+        "metadata": {
+          "gid": 999,
+          "mode": 493,
+          "uid": 0
+        },
+        "result": "IMAGE_HARDLINK_METADATA"
+      },
+      {
+        "forward": true,
+        "metadata": {
+          "gid": 0,
+          "mode": 493,
+          "uid": 0
+        },
+        "result": "PASS"
+      },
+      {
+        "forward": true,
+        "metadata": {
+          "gid": 0,
+          "mode": 448,
+          "uid": 0
+        },
+        "result": "IMAGE_HARDLINK_METADATA"
+      },
+      {
+        "forward": true,
+        "metadata": {
+          "gid": 0,
+          "mode": 493,
+          "uid": 999
+        },
+        "result": "IMAGE_HARDLINK_METADATA"
+      },
+      {
+        "forward": true,
+        "metadata": {
+          "gid": 999,
+          "mode": 493,
+          "uid": 0
+        },
+        "result": "IMAGE_HARDLINK_METADATA"
+      }
+    ],
+    "forward_target_positive": {
+      "entry_count": 3,
+      "map_unchanged": true,
+      "resolved": "/future/data"
+    },
+    "original_reproducer": {
+      "constructor_refusal": "IMAGE_HARDLINK_METADATA",
+      "matching_positive_content_sha256": "18359ca24129e49759f738007a3d6fecf57cb782d5c8d999b4fadf09c8eb8136",
+      "negative_sha256": "a8926a206e90cb0618f18632db0671600eaebb98ef6df42fcdefc6883ccce070"
+    },
+    "status": "PARTIALLY_REMEDIATED_REMAINS_OPEN",
+    "unused_target_refusals": [
+      "IMAGE_DANGLING_LINK",
+      "IMAGE_HARDLINK_LINK_TARGET",
+      "IMAGE_HARDLINK_TARGET"
+    ]
+  },
+  "artifact_continuity": {
+    "construction_inputs_unchanged": true,
+    "content_records_byte_identical": true,
+    "current_inventory_sha256": "2afe7326f090a3b8ba3ef882a8b3fa89d3e4dd73a9c8c074288d541364487043",
+    "historical_inventory_sha256": "14ac223d10a72ff859d653c29bf721e35af320fc3dbfe823a4c8176180576670",
+    "images_revalidated": 6,
+    "logs_rehashed": 122,
+    "old_full_source_maps_not_relabelled": true,
+    "root_observations_rejoined": 12,
+    "supplied_record_sha256": "55a7c9f9738d942a745ab47626afe9ef157998039a2d2e8779bee24f992aa3fd",
+    "unchanged_cleanup_records": 10
+  },
+  "branch": "feature/crawl-jobs-v2-c0-runtime-images",
+  "closures": {
+    "C0-IMG-SEC-01": {
+      "evidence": {
+        "positive": true,
+        "refusal": "IMAGE_SAVE_DUPLICATE_PATH"
+      },
+      "status": "CLOSED_FOR_REPORTED_DEFECT"
+    },
+    "C0-IMG-SEC-02": {
+      "evidence": {
+        "positive": true,
+        "refusal": "IMAGE_ORACLE_SOURCE",
+        "valid_root_observation": {
+          "gid": 0,
+          "mode": 493,
+          "uid": 0
+        }
+      },
+      "status": "CLOSED_FOR_REPORTED_DEFECT"
+    },
+    "C0-IMG-SEC-03": {
+      "evidence": {
+        "duplicate_refusal": "IMAGE_ROOT_DUPLICATE",
+        "excess_refusal": "IMAGE_DUPLICATE_OR_COUNT",
+        "positive_count": 20000
+      },
+      "status": "CLOSED_FOR_REPORTED_DEFECT"
+    },
+    "C0-IMG-SEC-04": {
+      "evidence": {
+        "direct_hardlink_positive": true,
+        "refusal": "IMAGE_HARDLINK_LINK_TARGET",
+        "symbolic_source_positive": true
+      },
+      "status": "CLOSED_FOR_REPORTED_DEFECT"
+    },
+    "C0-IMG-SEC-05": {
+      "evidence": {
+        "conflict_refusal": "IMAGE_ROOT_CHANGED",
+        "duplicate_refusal": "IMAGE_ROOT_DUPLICATE",
+        "with_and_without_observation_positive": true
+      },
+      "status": "CLOSED_FOR_REPORTED_DEFECT"
+    }
+  },
+  "constraints": {
+    "archive_extraction": false,
+    "container_image_loading_or_execution": false,
+    "deployment": false,
+    "engine_commands": 0,
+    "execution_authorized": false,
+    "helper_executions": 0,
+    "native_review_or_execution": false,
+    "network_calls": 0,
+    "repository_or_frozen_source_edits": false,
+    "runtime_acceptance": false,
+    "system_policy_changes": false,
+    "worker_main_or_collector_execution": false
+  },
+  "date": "2026-10-17",
+  "delta_from_actual_build": {
+    "tests/crawl-jobs-v2-observer/image_artifacts.py": {
+      "after": "d13b720e62727d27a3d37c7cf2f2bc6726baf14d5d01025c6f0dd0437da5e64b",
+      "before": "61df24f28e9e4ef2c92e21503637e22863c1da4d9d47b112a2d97be6fb8c9683"
+    },
+    "tests/crawl-jobs-v2-observer/test_image_review.py": {
+      "after": "18b01b5f504e1359469e8d239564aa21ddb5e692d00c0c7b51acbaee807fec2b",
+      "before": "f74202962d08bf0509fba42bf3dc7af3ea0dae3dc987d378ac6a025cc816fe77"
+    }
+  },
+  "delta_from_previous_review": {
+    "tests/crawl-jobs-v2-observer/image_artifacts.py": {
+      "after": "d13b720e62727d27a3d37c7cf2f2bc6726baf14d5d01025c6f0dd0437da5e64b",
+      "before": "106a355ce8e9da11c0baad5ff2d37c0281ecf8b2bd49c90bf2ef5fc521132695"
+    },
+    "tests/crawl-jobs-v2-observer/test_image_review.py": {
+      "after": "18b01b5f504e1359469e8d239564aa21ddb5e692d00c0c7b51acbaee807fec2b",
+      "before": "1a7f078566072bd3347ed74a5ee7caec05a0a46ca5351e8341c844f2e66bf66a"
+    }
+  },
+  "evidence_sha256": {
+    "artifact-checks.json": "eb7c0f62d38dcc45874ecabe57b86a72d8e12bf2f807d22b9c1335896208a8a7",
+    "artifact-checks.log": "e677eb008944084b29395af8c871a8f6d429720cc866528f5cf89e094a611c08",
+    "candidate-fix-results.json": "e16041cfef3252b351d8f31f14c929c629e3c06fb065fda8353d1c16fa941174",
+    "candidate-fix-results.log": "8f52ebbd26bc47d770a6616525728de4210f907d1c323386d5f08ce0ac63d003",
+    "candidate-fix.patch": "9b8a5cb18c61852f82641344b5c73e26724452480120c8c3d882f5f251678bc9",
+    "check_artifacts.py": "7f15ed501ee63dee1807b19b3992aa2c6c1403b870db4f70799b398a6d855397",
+    "check_candidate_fix.py": "5de04e8f80bc625f27eaa7ae99cf6d9a49161356ba4a591b5dc589a10b1edea4",
+    "existing-image-tests.json": "60096bfefdb47b1880876c1b2e49634dc8f861a19d3eb8fef152a650de2e0bf2",
+    "existing-image-tests.log": "32c4c52110d280ac00534cafee47bfa4b848b2f624c2f4fb36bf8bca1de9880b",
+    "independent-tests-repeat.log": "d46890683f62a9fe3631732d7793096f5d47bc3b900e93477198bed96cd417c2",
+    "independent-tests.json": "d3785d73b7b004559aa86e9cb9ed252621f37acad61cc5d55125366bfd7c5d9c",
+    "independent-tests.log": "4a2e181f952eb811d202501b62994afab8a4bcb78033c1e056ca52c518f50d29",
+    "inputs-after.json": "b4427f3bf21533ec1d11e0fe380c361da2aa33d2c9cbe33ae5022b2cda7d06b7",
+    "inputs-before.json": "2f64e063d6803511ffb413a4ff7e1f6ccf6b78aa371ce2161b5d12c8e3ef7e4d",
+    "repeat-02/fixtures/direct-conflict-control.tar": "bdef9a755b97ee7e757c420b922e803fcd3861b9624531682abf536d3238d747",
+    "repeat-02/fixtures/forward-directory.tar": "6f455520b8e29c57032dc581c24b55e9e04d363c12907a8c56721200a9c234ea",
+    "repeat-02/fixtures/literal-parent-positive.tar": "46cf3d8a15051edd1ee4a156cff8c89103596b8d5b98f278619b411a6bc508d7",
+    "repeat-02/fixtures/parent-redirect-conflict.tar": "bff3872ac94c209349e1fcb237d4e93bed9f774e682282309009da0cc0c6e600",
+    "repeat-02/fixtures/parent-redirect-positive.tar": "8504e12c828770cd588cccd6f3a8d0ef64015071d44767ec5bdd93a70113141a",
+    "repeat-02/independent-tests.json": "9a83ce014ca9b7235622740e701318f8a556c8f452cd2cf1ede66e61f0bfe2f4",
+    "review.md": "9bff16a9a8fc05ca834406f4be10e051ac9adb78d47f9fa9b673e538f89af16d",
+    "run_existing_tests.py": "8af156ac0bbf7d3056d4fe9a52b0f762e1ba2e256b3b366eafdb4f851e3477fe",
+    "test_completion.py": "2152c11350d2ab2f74ffd41639a56a5ae9a66f09622f1069fa07d5db49169a45",
+    "verify_inputs.py": "d8e03621ca30c0ba4162edbdfc0236a5305f3249e3df55bf9cf322f6e6560cfa",
+    "write_reports.py": "2b4a01912f779567364a7c35de49a628143f74962c57eee6276ca16dde7545d9"
+  },
+  "finding_counts": {
+    "Critical": 0,
+    "High": 0,
+    "Low": 0,
+    "Medium": 1
+  },
+  "findings": [
+    {
+      "cwe": [
+        "CWE-20",
+        "CWE-59"
+      ],
+      "id": "C0-IMG-SEC-06",
+      "impact": "Required-inode metadata inconsistency is not checked; whole-content admission returns the same record as matching metadata.",
+      "limits": "No extraction or live loader behavior tested; no private-output compromise, remote route, host escape or execution-authorization bypass established.",
+      "location": "image_artifacts.py:125-129,131-163",
+      "prerequisite": "Malformed or substituted archive with a hardlink member beneath a symlinked parent reaches static admission.",
+      "proof": {
+        "content_sha256": "1eb79db144f665aa85b730103f62364497af838d0903ac63622cdce4807ba1f2",
+        "declared_hardlink_target": "/target",
+        "direct_unshadowed_control_refusal": "IMAGE_HARDLINK_METADATA",
+        "execution_authorized": false,
+        "fixture": "repeat-02/fixtures/parent-redirect-conflict.tar",
+        "hardlink_record_name": "/alias-parent/hosts",
+        "literal_directory_parent_positive": "repeat-02/fixtures/literal-parent-positive.tar",
+        "matching_metadata_fixture": "repeat-02/fixtures/parent-redirect-positive.tar",
+        "name_lookup_checks_instead": "/etc/hosts",
+        "runtime_acceptance": false,
+        "same_content_record_as_matching_metadata": true,
+        "sha256": "bff3872ac94c209349e1fcb237d4e93bed9f774e682282309009da0cc0c6e600",
+        "target_mode": 493,
+        "unchecked_hardlink_mode": 448,
+        "whole_content_admission_succeeded": true
+      },
+      "remediation": {
+        "all_six_retained_content_records_unchanged": true,
+        "applied_to_sources": false,
+        "code": "candidate-fix.patch",
+        "description": "Require the hardlink member parent to resolve to itself before resolving the member name.",
+        "direct_literal_parent_and_forward_positives_pass": true,
+        "tested_in_memory": true
+      },
+      "severity": "Medium",
+      "status": "OPEN_REMAINING_VARIANT",
+      "title": "Global hardlink validation can follow a parent alias and check a different entry"
+    }
+  ],
+  "head": "7ef2041e2844aa34bec54da61c2e8469c1382bac",
+  "limits": [
+    "No demonstrated out-of-directory mutation or host escape.",
+    "No allegation that retained images contain the malformed fixture pattern.",
+    "No live helper/engine races, extraction/loading, exhaustive archive proof or exhaustion testing.",
+    "Hosted image CI, native runtime/hardware/timing and publishing remain separate unexecuted gates.",
+    "Previous global-pass proposal was insufficient for parent-alias name shadowing; additional guard is tested but not applied."
+  ],
+  "prior_outputs_preserved": {
+    "final": {
+      "entries": 79,
+      "report_sha256": {
+        "review.json": "6ce9057ac233f69e36d66177123581b82d944596e5c381b63566d8ba7fa47485",
+        "review.md": "80318947a8b181289b3d844abeb47eafbd491665a3e8ea15b84c3eac83480d65"
+      }
+    },
+    "initial": {
+      "entries": 79,
+      "report_sha256": {
+        "review.json": "27e8242087612e0ada7eba888c1c3b27d5b5d00b5b5a985b11987e7b88090f5d",
+        "review.md": "7ad721556be8fb019fde0a74a00e306f8efbcf43ae53dafcf4b45753bd5c4ced"
+      }
+    },
+    "remediation": {
+      "entries": 68,
+      "report_sha256": {
+        "review.json": "6fe0049309b4d0b220b90743ee858f052ec9f5db7699065772bfea75c8526095",
+        "review.md": "d0b8a56c8b489648927bfd5fba85e5906da676ba12e8107c061fb77639109783"
+      }
+    }
+  },
+  "retained_image_set_entries_unchanged": {
+    "aarch64": 150,
+    "x86_64": 150
+  },
+  "reviewed_source_sha256": {
+    ".github/workflows/c0-runtime-images.yml": "47d0205d931100d096e8720d4bc6a21d3d542ab64db5eaefba4e46827e9c770c",
+    "scripts/prepare-crawl-jobs-v2-observer-images.py": "a97a270010e48dfee61c3c3317c4fcad7069bb70ba83ee0181d3c6d83b7e71cc",
+    "scripts/test-crawl-jobs-v2-observer.py": "9afb715125f734f5b905da63dde5c9787fc5997b2e5a73a0bf62d781b23aef84",
+    "tests/crawl-jobs-v2-observer/build_oracle.py": "cb702f624c986320e6f4c690dfc4eac1187104c711a52eb9e2bab28ec12e7ed6",
+    "tests/crawl-jobs-v2-observer/image_artifacts.py": "d13b720e62727d27a3d37c7cf2f2bc6726baf14d5d01025c6f0dd0437da5e64b",
+    "tests/crawl-jobs-v2-observer/image_build.py": "6926bdb5bf01c25b3c29ac5607e4602bf831772fe34e06c85bee7700baee0d85",
+    "tests/crawl-jobs-v2-observer/test_image_review.py": "18b01b5f504e1359469e8d239564aa21ddb5e692d00c0c7b51acbaee807fec2b"
+  },
+  "schema_version": 1,
+  "scope": "Bounded read-only SEC-06 constructor closure review; Python archives and inert fixtures only.",
+  "source_and_input_preservation_verified": true,
+  "source_file_counts": {
+    "auxiliary": 3,
+    "package": 55
+  },
+  "source_inventory_sha256": "2afe7326f090a3b8ba3ef882a8b3fa89d3e4dd73a9c8c074288d541364487043",
+  "tests": {
+    "distinct_unit_tests": 42,
+    "full_287_suite_independently_rerun": false,
+    "independent_tests": {
+      "defect_failures": 1,
+      "errors": 0,
+      "passed": 10,
+      "run": 11,
+      "skipped": 0
+    },
+    "python": "3.14.8 (main, Oct  1 2026, 00:00:00) [GCC 16.2.1 20260819 (Red Hat 16.2.1-2)]",
+    "recorded_full_suite_checks": {
+      "tests-022.json": {
+        "added_ids": [
+          "test_image_review.ImageReviewTests.test_unused_hardlinks_are_checked_after_the_complete_archive_map"
+        ],
+        "all_286_prior_ids_retained": true,
+        "independently_rerun": false,
+        "sha256": "b9eebe803a46be33e0ea89e6d9c332fca5e7a6abede9eb5a9512ce9834023c8f",
+        "source_bound": true,
+        "tests_run": 287
+      },
+      "tests-077.json": {
+        "added_ids": [
+          "test_image_review.ImageReviewTests.test_unused_hardlinks_are_checked_after_the_complete_archive_map"
+        ],
+        "all_286_prior_ids_retained": true,
+        "independently_rerun": false,
+        "sha256": "b9eebe803a46be33e0ea89e6d9c332fca5e7a6abede9eb5a9512ce9834023c8f",
+        "source_bound": true,
+        "tests_run": 287
+      }
+    },
+    "remaining_variant_reproduced_twice": true,
+    "repository_image_tests": {
+      "passed": 31,
+      "run": 31
+    }
+  },
+  "validator_delta_is_only_new_global_alias_pass": true,
+  "verdict": "NEEDS_REMEDIATION"
+}

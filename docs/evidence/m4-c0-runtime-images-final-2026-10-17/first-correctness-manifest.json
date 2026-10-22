@@ -1,0 +1,97 @@
+{
+  "execution_authorized": false,
+  "files": {
+    "first-correctness-common.py": {
+      "bytes": 3483,
+      "private_source": "/tmp/opencode/c0-runtime-images-final-2026-10-17/correctness/common.py",
+      "sha256": "599c6d4c7b3c407c8f4ff7cd4424d8b13630a71ad6eab98d3125e8c3c635ca7d"
+    },
+    "first-correctness-image-tests.log": {
+      "bytes": 5379,
+      "private_source": "/tmp/opencode/c0-runtime-images-final-2026-10-17/correctness/image-tests.log",
+      "sha256": "8c0c2a82a366a2360117ce67f9361a5fdb4e74748d1e8f665d3aeb66f1e37b66"
+    },
+    "first-correctness-integrity-after.log": {
+      "bytes": 269,
+      "private_source": "/tmp/opencode/c0-runtime-images-final-2026-10-17/correctness/integrity-after.log",
+      "sha256": "97459e9e1b7f8abd837cf66ae4235d35594b52da3e110a186754aaf48c37aca2"
+    },
+    "first-correctness-integrity-before.log": {
+      "bytes": 852,
+      "private_source": "/tmp/opencode/c0-runtime-images-final-2026-10-17/correctness/integrity-before.log",
+      "sha256": "d769bf5ea4ce23d40e1b143a11c4400ac03bfb9f5905cfe3d7afc2ef3f9ea0c1"
+    },
+    "first-correctness-integrity-difference.json": {
+      "bytes": 302,
+      "private_source": "/tmp/opencode/c0-runtime-images-final-2026-10-17/correctness/integrity-difference.json",
+      "sha256": "ba926b05fb92d55ba40c2d3801347e4318380624842c41dfa1392d414254db5d"
+    },
+    "first-correctness-integrity-final.log": {
+      "bytes": 851,
+      "private_source": "/tmp/opencode/c0-runtime-images-final-2026-10-17/correctness/integrity-final.log",
+      "sha256": "e280a39eb23710963c06192b1d2250f2668b9b189cc88acecf8670bd094f2e40"
+    },
+    "first-correctness-integrity.py": {
+      "bytes": 3107,
+      "private_source": "/tmp/opencode/c0-runtime-images-final-2026-10-17/correctness/integrity.py",
+      "sha256": "4eeb564104d6bd2ebf305863893b7657b2dbd4b9cd60bcf00765b77c498058be"
+    },
+    "first-correctness-inventory-after.json": {
+      "bytes": 132333,
+      "private_source": "/tmp/opencode/c0-runtime-images-final-2026-10-17/correctness/inventory-after.json",
+      "sha256": "37c4766c99813a99d4a379c40addecd93353581715b1443e0a30ca1a112adbf1"
+    },
+    "first-correctness-inventory-before.json": {
+      "bytes": 131887,
+      "private_source": "/tmp/opencode/c0-runtime-images-final-2026-10-17/correctness/inventory-before.json",
+      "sha256": "f826acea24972a5f6b16e7d48d5bafb0cb3d410c4cda6e7db428b00155db8c16"
+    },
+    "first-correctness-probes.json": {
+      "bytes": 52694,
+      "private_source": "/tmp/opencode/c0-runtime-images-final-2026-10-17/correctness/probes.json",
+      "sha256": "017a7158fa9fd809134fb08976ae5f4205fbbdf53a3825abcac777c2b12bcbe8"
+    },
+    "first-correctness-probes.log": {
+      "bytes": 55,
+      "private_source": "/tmp/opencode/c0-runtime-images-final-2026-10-17/correctness/probes.log",
+      "sha256": "73f14e019bad6b7d136ab374a802528f9b68df58b911744e3f3caacb0f43e4ef"
+    },
+    "first-correctness-probes.py": {
+      "bytes": 11136,
+      "private_source": "/tmp/opencode/c0-runtime-images-final-2026-10-17/correctness/probes.py",
+      "sha256": "d0e52b8c24b81bb7b4dddbad30c3247b9439992be017a7887ff3713da9661416"
+    },
+    "first-correctness-replay.json": {
+      "bytes": 18378,
+      "private_source": "/tmp/opencode/c0-runtime-images-final-2026-10-17/correctness/replay.json",
+      "sha256": "e7d2b4524d608c3a6f632fa21b1b13ff8f6329d386b6751a302e9c9ef9ae7dd6"
+    },
+    "first-correctness-replay.log": {
+      "bytes": 2565,
+      "private_source": "/tmp/opencode/c0-runtime-images-final-2026-10-17/correctness/replay.log",
+      "sha256": "d3e4aa2e24cb137630c0caec3224befa806fb82d813746dc3e4fcb92e3f16fa7"
+    },
+    "first-correctness-replay.py": {
+      "bytes": 17723,
+      "private_source": "/tmp/opencode/c0-runtime-images-final-2026-10-17/correctness/replay.py",
+      "sha256": "6dd158bbccecd5c9e87ba7bf19c27dd05c0490ed2de68aae4c5413e282131a9d"
+    },
+    "first-correctness-review.json": {
+      "bytes": 44642,
+      "private_source": "/tmp/opencode/c0-runtime-images-final-2026-10-17/correctness/review.json",
+      "sha256": "c245393c64a69cdc782b6a1a810c8d575b3aaf37c6f66a7b5bfe657fc5aef0fc"
+    },
+    "first-correctness-review.md": {
+      "bytes": 11265,
+      "private_source": "/tmp/opencode/c0-runtime-images-final-2026-10-17/correctness/review.md",
+      "sha256": "92a6252a192b290e0f7f497b5e3e519b1f1fc37a713ac7f028687e5053cb0eb7"
+    },
+    "first-correctness-write_review.py": {
+      "bytes": 8614,
+      "private_source": "/tmp/opencode/c0-runtime-images-final-2026-10-17/correctness/write_review.py",
+      "sha256": "aee8d8054b668a77767e7adb78f91724783d72d6a00f3920348a989acd1b3c9f"
+    }
+  },
+  "kind": "c0_arch_04_first_correctness_exports",
+  "version": 1
+}

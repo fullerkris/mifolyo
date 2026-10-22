@@ -1,0 +1,149 @@
+{
+  "engine_commands_executed": 0,
+  "errors": [],
+  "failures": [
+    {
+      "id": "__main__.RequiredRegressionGuards.test_required_link_dotdot_does_not_substitute_verified_source",
+      "traceback": "Traceback (most recent call last):\n  File \"/tmp/opencode/c0-runtime-images-2026-10-17/security/test_security_review.py\", line 290, in test_required_link_dotdot_does_not_substitute_verified_source\n    with self.assertRaises(c.Invalid):\n         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^\nAssertionError: Invalid not raised\n"
+    },
+    {
+      "id": "__main__.RequiredRegressionGuards.test_required_portable_normalized_aliases_are_rejected",
+      "traceback": "Traceback (most recent call last):\n  File \"/tmp/opencode/c0-runtime-images-2026-10-17/security/test_security_review.py\", line 252, in test_required_portable_normalized_aliases_are_rejected\n    with self.assertRaises(c.Invalid):\n         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^\nAssertionError: Invalid not raised\n"
+    },
+    {
+      "id": "__main__.RequiredRegressionGuards.test_required_root_headers_count_toward_archive_bound",
+      "traceback": "Traceback (most recent call last):\n  File \"/tmp/opencode/c0-runtime-images-2026-10-17/security/test_security_review.py\", line 303, in test_required_root_headers_count_toward_archive_bound\n    with self.assertRaises(c.Invalid):\n         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^\nAssertionError: Invalid not raised\n"
+    }
+  ],
+  "inventory": [
+    "__main__.RequiredRegressionGuards.test_required_link_dotdot_does_not_substitute_verified_source",
+    "__main__.RequiredRegressionGuards.test_required_portable_normalized_aliases_are_rejected",
+    "__main__.RequiredRegressionGuards.test_required_root_headers_count_toward_archive_bound",
+    "__main__.ScopeControls.test_correct_portable_config_layers_and_checksums",
+    "__main__.ScopeControls.test_foreign_started_or_incomplete_cleanup_cannot_report_success",
+    "__main__.ScopeControls.test_host_symlinks_and_multilink_files_refuse_without_target_changes",
+    "__main__.ScopeControls.test_interrupted_and_malformed_create_cleanup_remains_owned_and_stopped",
+    "__main__.ScopeControls.test_native_metadata_empty_env_and_hooks_fail_closed",
+    "__main__.ScopeControls.test_rootfs_traversal_duplicate_special_and_oversize_refuse",
+    "__main__.ScopeControls.test_run_timeout_and_oversize_output_do_not_report_success",
+    "__main__.ScopeControls.test_wrong_config_layer_platform_and_duplicate_json_refuse"
+  ],
+  "native_programs_executed": false,
+  "networking_performed": false,
+  "observations": {
+    "C0-IMG-SEC-01": {
+      "admitted_config_id": "sha256:c042848616c4d95ef39ed85d1fd9a9aabb0398dfa920ef335bce90db0a4ef8df",
+      "engine_load_performed": false,
+      "extraction_performed": false,
+      "fixture": "inert-fixtures/portable-config-alias.tar",
+      "fixture_sha256": "e3782df2e3d0ea994c355aad6e9b69b876873d29c69093ba7e1b1e710fb0a39c",
+      "normalized_path_config_id": "sha256:ede681586c7adba8a5f4d291e814de12a2a5eae25835a01212977b9ba383305b",
+      "normalized_path_entrypoint": [
+        "/inert-substitution-marker"
+      ]
+    },
+    "C0-IMG-SEC-02": {
+      "admitted_resolved_path": "/worker.py",
+      "admitted_source_sha256": "12ded7d07c41abaa6b8ee908a0c83e56ed386393ed6bdcad406628eb8d66b152",
+      "code_execution_performed": false,
+      "execution_authorized": false,
+      "extraction_performed": false,
+      "fixture": "inert-fixtures/oracle-link-dotdot.tar",
+      "fixture_sha256": "e23ae4760703348e2be46e99bb50064d818b30ef2d57f48b103e8f79d73f3577",
+      "posix_read_source_sha256": "67e533f08cb5cb33a5186578b153063464246023f5d03ba452f20237f2f3660a",
+      "posix_resolved_relative_path": "foreign/worker.py",
+      "runtime_acceptance": false
+    },
+    "C0-IMG-SEC-03": {
+      "exhaustion_attempted": false,
+      "fixture": "inert-fixtures/repeated-root-headers.tar",
+      "fixture_bytes": 10250240,
+      "fixture_sha256": "fa8488f36d040a8bb78e68904d2f1f337455c8c2767eac44e201dd0489c84dcb",
+      "physical_member_count": 20002,
+      "reported_archive_members": 1
+    },
+    "cleanup_remaining": {
+      "cleanup": [],
+      "command_kinds": [
+        "create",
+        "export",
+        "rm",
+        "ps"
+      ]
+    },
+    "create_timeout": {
+      "cleanup": [
+        {
+          "id": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "name": "obs1-image-inspect-0303d6934f244fd28fc8229312a34761",
+          "pid": 0,
+          "removed": true,
+          "running": false,
+          "status": "created"
+        }
+      ],
+      "command_kinds": [
+        "create",
+        "ps",
+        "rm",
+        "ps"
+      ]
+    },
+    "export_timeout": {
+      "cleanup": [
+        {
+          "id": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "name": "obs1-image-inspect-11d72928f1954cffa0f427d207eb0922",
+          "pid": 0,
+          "removed": true,
+          "running": false,
+          "status": "created"
+        }
+      ],
+      "command_kinds": [
+        "create",
+        "export",
+        "rm",
+        "ps"
+      ]
+    },
+    "foreign": {
+      "cleanup": [],
+      "command_kinds": [
+        "create"
+      ]
+    },
+    "malformed_create": {
+      "cleanup": [
+        {
+          "id": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "name": "obs1-image-inspect-92bad0016b4e484d90345d8b878af6ad",
+          "pid": 0,
+          "removed": true,
+          "running": false,
+          "status": "created"
+        }
+      ],
+      "command_kinds": [
+        "create",
+        "ps",
+        "rm",
+        "ps"
+      ]
+    },
+    "started": {
+      "cleanup": [],
+      "command_kinds": [
+        "create"
+      ]
+    }
+  },
+  "python": "3.14.8 (main, Oct  1 2026, 00:00:00) [GCC 16.2.1 20260819 (Red Hat 16.2.1-2)]",
+  "scope": "changed Python archive/config/file/cleanup logic only",
+  "skipped": [],
+  "tests_run": 11,
+  "worker_main_or_collector_executed": false
+}

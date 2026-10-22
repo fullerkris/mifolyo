@@ -1,0 +1,49 @@
+{
+  "status": "PASS",
+  "content_records_identical": 6,
+  "construction_inputs_unchanged": 21,
+  "delta_from_completion": {
+    "tests/crawl-jobs-v2-observer/image_artifacts.py": {
+      "before": "d13b720e62727d27a3d37c7cf2f2bc6726baf14d5d01025c6f0dd0437da5e64b",
+      "after": "d6104f24562ed1f605043314b2f505c9f3609ca599f040fc6a9feb8d863252e5"
+    },
+    "tests/crawl-jobs-v2-observer/test_image_review.py": {
+      "before": "18b01b5f504e1359469e8d239564aa21ddb5e692d00c0c7b51acbaee807fec2b",
+      "after": "605cabb8937c184d3caad088e1468af2cb5871a3f4f3e0f3ff150a173e6e83e4"
+    }
+  },
+  "literal_entries_checked": {
+    "aarch64": {
+      "observer": 1,
+      "oracle": 6581,
+      "target": 1
+    },
+    "x86_64": {
+      "observer": 1,
+      "oracle": 6586,
+      "target": 1
+    }
+  },
+  "tests": [
+    {
+      "umask": "022",
+      "count": 288,
+      "retained_ids": 287,
+      "new_ids": [
+        "test_image_review.ImageReviewTests.test_flat_archive_entries_require_literal_directory_ancestors"
+      ],
+      "report_sha256": "f609fb53cc8b9717da96cd9025a693591d9070b0d64538352e0826ded365d1c7",
+      "log_sha256": "3d8175afd235305d938ba405d0fd9356e4cdda57bb7dc9f8fc350ba60748df16"
+    },
+    {
+      "umask": "077",
+      "count": 288,
+      "retained_ids": 287,
+      "new_ids": [
+        "test_image_review.ImageReviewTests.test_flat_archive_entries_require_literal_directory_ancestors"
+      ],
+      "report_sha256": "f609fb53cc8b9717da96cd9025a693591d9070b0d64538352e0826ded365d1c7",
+      "log_sha256": "721ea41c9e948d107bfcdf0506a2e5f171be355bd7415621469579c289a30e77"
+    }
+  ]
+}

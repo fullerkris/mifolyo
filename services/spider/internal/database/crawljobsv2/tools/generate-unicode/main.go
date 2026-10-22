@@ -1,5 +1,5 @@
 // Command generate-unicode emits the dormant Lua URL validator's pinned data.
-// Run from services/spider with Go 1.26.9, GOPROXY=off and GOSUMDB=off:
+// Run from services/spider with Go 1.26.10, GOPROXY=off and GOSUMDB=off:
 //
 //	go run ./internal/database/crawljobsv2/tools/generate-unicode -work <private-temp-directory>
 //
@@ -102,7 +102,7 @@ func main() {
 	oracle := flag.String("oracle", "", "write exhaustive raw Go properties to this temporary file")
 	acquire := flag.Bool("acquire-licenses", false, "explicit network-only acquisition of the two authoritative notices")
 	flag.Parse()
-	if runtime.Version() != "go1.26.9" || unicode.Version != "15.0.0" || idna.UnicodeVersion != "15.0.0" || norm.Version != "15.0.0" || bidi.UnicodeVersion != "15.0.0" {
+	if runtime.Version() != "go1.26.10" || unicode.Version != "15.0.0" || idna.UnicodeVersion != "15.0.0" || norm.Version != "15.0.0" || bidi.UnicodeVersion != "15.0.0" {
 		panic("wrong compiler or Unicode tables")
 	}
 	info, ok := debug.ReadBuildInfo()

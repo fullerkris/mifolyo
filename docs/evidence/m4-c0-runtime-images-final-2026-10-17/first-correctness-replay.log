@@ -1,0 +1,67 @@
+{
+  "status": "PASS",
+  "construction_inputs": 21,
+  "source_delta": [
+    "tests/crawl-jobs-v2-observer/image_artifacts.py",
+    "tests/crawl-jobs-v2-observer/test_image_review.py"
+  ],
+  "six_content_records_byte_identical": true,
+  "overlay_differences": 0,
+  "loader_refusals": [
+    {
+      "architecture": "aarch64",
+      "loader": "/usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1",
+      "positive_mode": "0o755",
+      "negative_mode": "0o644",
+      "refusal": {
+        "exception": "Invalid",
+        "reason": "IMAGE_FILE_EXECUTABLE"
+      },
+      "restored_positive": true
+    },
+    {
+      "architecture": "x86_64",
+      "loader": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+      "positive_mode": "0o755",
+      "negative_mode": "0o644",
+      "refusal": {
+        "exception": "Invalid",
+        "reason": "IMAGE_FILE_EXECUTABLE"
+      },
+      "restored_positive": true
+    }
+  ],
+  "durable_retention": {
+    "directory": "/var/home/kfuller/Documents/Git_Projects/mifolyo/out/c0-runtime-images-2026-10-17/14ac223d10a72",
+    "retention_sha256": "c3efab7bda93edf2f1ffea91309bdb8b855fe75b6ffe7e942d6a9aeb2db39197",
+    "declared_files_verified": 103,
+    "copies_equal_retained_images": true,
+    "source_matches_retained_inventory": true
+  },
+  "tests": [
+    {
+      "umask": "022",
+      "tests_run": 286,
+      "retained_prior_ids": 283,
+      "report_sha256": "a603bf0354f48c030f16fc24a91f9a57b23df2597d697bb998edab9510d9c473",
+      "log_sha256": "106efb412deb359f25f3ea63c23015631863cc2ab2d10592baf5ead50c70892a",
+      "new_ids": [
+        "test_image_review.ImageReviewTests.test_hardlink_targets_cannot_traverse_symlink_inodes_or_prefixes",
+        "test_image_review.ImageReviewTests.test_normalized_root_aliases_share_observation_and_duplicate_checks",
+        "test_image_review.ImageReviewTests.test_required_loader_execute_intent_survives_an_earlier_library_visit"
+      ]
+    },
+    {
+      "umask": "077",
+      "tests_run": 286,
+      "retained_prior_ids": 283,
+      "report_sha256": "a603bf0354f48c030f16fc24a91f9a57b23df2597d697bb998edab9510d9c473",
+      "log_sha256": "e09d9d876a8c29ff6fe64ab9b5dceb00c23af3d7f12afc9894cdc41a91cc94ae",
+      "new_ids": [
+        "test_image_review.ImageReviewTests.test_hardlink_targets_cannot_traverse_symlink_inodes_or_prefixes",
+        "test_image_review.ImageReviewTests.test_normalized_root_aliases_share_observation_and_duplicate_checks",
+        "test_image_review.ImageReviewTests.test_required_loader_execute_intent_survives_an_earlier_library_visit"
+      ]
+    }
+  ]
+}

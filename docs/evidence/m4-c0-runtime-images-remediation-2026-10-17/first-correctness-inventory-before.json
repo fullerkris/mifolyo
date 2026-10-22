@@ -1,0 +1,407 @@
+{
+  "inventory_sha256": "14ac223d10a72ff859d653c29bf721e35af320fc3dbfe823a4c8176180576670",
+  "head": "7ef2041e2844aa34bec54da61c2e8469c1382bac",
+  "branch": "feature/crawl-jobs-v2-c0-runtime-images",
+  "files": [
+    {
+      "path": "tests/crawl-jobs-v2-observer/.dockerignore",
+      "expected": "25170fdb33082a47a01bdc344bfabe8ef4460eed2da175e6dd1159557fcaa13d",
+      "repository": "25170fdb33082a47a01bdc344bfabe8ef4460eed2da175e6dd1159557fcaa13d",
+      "snapshot": "25170fdb33082a47a01bdc344bfabe8ef4460eed2da175e6dd1159557fcaa13d"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/Dockerfile",
+      "expected": "6925c36fe1cd42800333b4c72c54143b0c706e26e0aa37a09fd8679a684fa06c",
+      "repository": "6925c36fe1cd42800333b4c72c54143b0c706e26e0aa37a09fd8679a684fa06c",
+      "snapshot": "6925c36fe1cd42800333b4c72c54143b0c706e26e0aa37a09fd8679a684fa06c"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/Dockerfile.oracle",
+      "expected": "61c196ddc98e522516fd1e36ce239f36f27f04e844be66752227c90de5897429",
+      "repository": "61c196ddc98e522516fd1e36ce239f36f27f04e844be66752227c90de5897429",
+      "snapshot": "61c196ddc98e522516fd1e36ce239f36f27f04e844be66752227c90de5897429"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/Dockerfile.oracle.dockerignore",
+      "expected": "679f3cd226874aa189596199b105352137171eed114a1393e478eafc43f330d3",
+      "repository": "679f3cd226874aa189596199b105352137171eed114a1393e478eafc43f330d3",
+      "snapshot": "679f3cd226874aa189596199b105352137171eed114a1393e478eafc43f330d3"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/README.md",
+      "expected": "bd2a7769032332fc79300c281ea9be01354e16906e23fe4c1ca27a44c8e3fd14",
+      "repository": "bd2a7769032332fc79300c281ea9be01354e16906e23fe4c1ca27a44c8e3fd14",
+      "snapshot": "bd2a7769032332fc79300c281ea9be01354e16906e23fe4c1ca27a44c8e3fd14"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/build_oracle.py",
+      "expected": "cb702f624c986320e6f4c690dfc4eac1187104c711a52eb9e2bab28ec12e7ed6",
+      "repository": "cb702f624c986320e6f4c690dfc4eac1187104c711a52eb9e2bab28ec12e7ed6",
+      "snapshot": "cb702f624c986320e6f4c690dfc4eac1187104c711a52eb9e2bab28ec12e7ed6"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/build_tools.py",
+      "expected": "a402d791a3cd1dc35ed709a985cbcd9b06a9af9b2f370616f44f2bcfe6519acb",
+      "repository": "a402d791a3cd1dc35ed709a985cbcd9b06a9af9b2f370616f44f2bcfe6519acb",
+      "snapshot": "a402d791a3cd1dc35ed709a985cbcd9b06a9af9b2f370616f44f2bcfe6519acb"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/context_files.py",
+      "expected": "956ce03c56e6df84006e9bf16775f1d3d83d2acbda5bec8d9d41b1de2e72d396",
+      "repository": "956ce03c56e6df84006e9bf16775f1d3d83d2acbda5bec8d9d41b1de2e72d396",
+      "snapshot": "956ce03c56e6df84006e9bf16775f1d3d83d2acbda5bec8d9d41b1de2e72d396"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/context_provision.py",
+      "expected": "d0869ab36372a1af94ce0ffd04f1e364b318519a7e1f3c4bb7fefa95e2df340e",
+      "repository": "d0869ab36372a1af94ce0ffd04f1e364b318519a7e1f3c4bb7fefa95e2df340e",
+      "snapshot": "d0869ab36372a1af94ce0ffd04f1e364b318519a7e1f3c4bb7fefa95e2df340e"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/context_ssh.py",
+      "expected": "94ededb449423cbc822282ab05cc725316caef186cdba227613631618b9f2a03",
+      "repository": "94ededb449423cbc822282ab05cc725316caef186cdba227613631618b9f2a03",
+      "snapshot": "94ededb449423cbc822282ab05cc725316caef186cdba227613631618b9f2a03"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/context_transport.py",
+      "expected": "43193118350d4d52d0f3901e4a93561fa7cd94dd4e81c2ce99337b5364404af0",
+      "repository": "43193118350d4d52d0f3901e4a93561fa7cd94dd4e81c2ce99337b5364404af0",
+      "snapshot": "43193118350d4d52d0f3901e4a93561fa7cd94dd4e81c2ce99337b5364404af0"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/context_worker.py",
+      "expected": "f01980f5b3322eabafd5b99c97b76f4313aa9a28ce90a5f3ce66c5175843e03f",
+      "repository": "f01980f5b3322eabafd5b99c97b76f4313aa9a28ce90a5f3ce66c5175843e03f",
+      "snapshot": "f01980f5b3322eabafd5b99c97b76f4313aa9a28ce90a5f3ce66c5175843e03f"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/contracts.py",
+      "expected": "6a3c4dfe7b6fb4524771b26fdcbcba39be2c5893d52e2e4caeebf762df27a7f4",
+      "repository": "6a3c4dfe7b6fb4524771b26fdcbcba39be2c5893d52e2e4caeebf762df27a7f4",
+      "snapshot": "6a3c4dfe7b6fb4524771b26fdcbcba39be2c5893d52e2e4caeebf762df27a7f4"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/controller.py",
+      "expected": "23b28206e550efbe408a970161ebed7ddbd3430c771baece6765a165fc2e2ec5",
+      "repository": "23b28206e550efbe408a970161ebed7ddbd3430c771baece6765a165fc2e2ec5",
+      "snapshot": "23b28206e550efbe408a970161ebed7ddbd3430c771baece6765a165fc2e2ec5"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/d02.py",
+      "expected": "d7df595daeefcc3f5a785a89c191c93b5b6724e42655222befa1b07c88be29f2",
+      "repository": "d7df595daeefcc3f5a785a89c191c93b5b6724e42655222befa1b07c88be29f2",
+      "snapshot": "d7df595daeefcc3f5a785a89c191c93b5b6724e42655222befa1b07c88be29f2"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/docker_backend.py",
+      "expected": "51cf4ad679a961d5b7631af1769216dc0300e740228ce8d7cf2423ed7373ebcf",
+      "repository": "51cf4ad679a961d5b7631af1769216dc0300e740228ce8d7cf2423ed7373ebcf",
+      "snapshot": "51cf4ad679a961d5b7631af1769216dc0300e740228ce8d7cf2423ed7373ebcf"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/image_artifacts.py",
+      "expected": "61df24f28e9e4ef2c92e21503637e22863c1da4d9d47b112a2d97be6fb8c9683",
+      "repository": "61df24f28e9e4ef2c92e21503637e22863c1da4d9d47b112a2d97be6fb8c9683",
+      "snapshot": "61df24f28e9e4ef2c92e21503637e22863c1da4d9d47b112a2d97be6fb8c9683"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/image_build.py",
+      "expected": "6926bdb5bf01c25b3c29ac5607e4602bf831772fe34e06c85bee7700baee0d85",
+      "repository": "6926bdb5bf01c25b3c29ac5607e4602bf831772fe34e06c85bee7700baee0d85",
+      "snapshot": "6926bdb5bf01c25b3c29ac5607e4602bf831772fe34e06c85bee7700baee0d85"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/linux_observation.py",
+      "expected": "58934a305a1c7bf5877c4e5f7ae5969181c61fed267b150d0ed1ed91c195282d",
+      "repository": "58934a305a1c7bf5877c4e5f7ae5969181c61fed267b150d0ed1ed91c195282d",
+      "snapshot": "58934a305a1c7bf5877c4e5f7ae5969181c61fed267b150d0ed1ed91c195282d"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/native/admission.h",
+      "expected": "b64f55c4f5184506bc442bf13405f282b92d4bc600d8958b5febda5108fe0a96",
+      "repository": "b64f55c4f5184506bc442bf13405f282b92d4bc600d8958b5febda5108fe0a96",
+      "snapshot": "b64f55c4f5184506bc442bf13405f282b92d4bc600d8958b5febda5108fe0a96"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/native/architecture.h",
+      "expected": "c0b078cd257852bc3cb57e1405e18c943bf2d0a48520523195846c8f58cfea2b",
+      "repository": "c0b078cd257852bc3cb57e1405e18c943bf2d0a48520523195846c8f58cfea2b",
+      "snapshot": "c0b078cd257852bc3cb57e1405e18c943bf2d0a48520523195846c8f58cfea2b"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/native/common.h",
+      "expected": "4b221886a774007a74ed68a44a6e5088bc7f2e4ccf4980ddb8815f85cfc27042",
+      "repository": "4b221886a774007a74ed68a44a6e5088bc7f2e4ccf4980ddb8815f85cfc27042",
+      "snapshot": "4b221886a774007a74ed68a44a6e5088bc7f2e4ccf4980ddb8815f85cfc27042"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/native/observer.c",
+      "expected": "a45816e40320c8560f439dfdd0b1ebef636dc74a0a101c19f0a726ae38098a5c",
+      "repository": "a45816e40320c8560f439dfdd0b1ebef636dc74a0a101c19f0a726ae38098a5c",
+      "snapshot": "a45816e40320c8560f439dfdd0b1ebef636dc74a0a101c19f0a726ae38098a5c"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/native/target.c",
+      "expected": "aedd6549923876d28b7d39748c6506dbad539459200b276a9f409500daf3f82d",
+      "repository": "aedd6549923876d28b7d39748c6506dbad539459200b276a9f409500daf3f82d",
+      "snapshot": "aedd6549923876d28b7d39748c6506dbad539459200b276a9f409500daf3f82d"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/native/test_x86_debug.c",
+      "expected": "ca8c49152d575c6b42e37914ea7dc5d805975e49fee4fa799137799ceaaa6f6f",
+      "repository": "ca8c49152d575c6b42e37914ea7dc5d805975e49fee4fa799137799ceaaa6f6f",
+      "snapshot": "ca8c49152d575c6b42e37914ea7dc5d805975e49fee4fa799137799ceaaa6f6f"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/native/x86_debug.h",
+      "expected": "42844fba32b39dfe752fe84f84b1748a872b93aed6c5810a9a30aeab2fbd1777",
+      "repository": "42844fba32b39dfe752fe84f84b1748a872b93aed6c5810a9a30aeab2fbd1777",
+      "snapshot": "42844fba32b39dfe752fe84f84b1748a872b93aed6c5810a9a30aeab2fbd1777"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/oracle.py",
+      "expected": "fa14b08caee86b65d9a01c16bb3e6ea236264275a48a3f32ad6694c57df23bc8",
+      "repository": "fa14b08caee86b65d9a01c16bb3e6ea236264275a48a3f32ad6694c57df23bc8",
+      "snapshot": "fa14b08caee86b65d9a01c16bb3e6ea236264275a48a3f32ad6694c57df23bc8"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/oracle_bridge.py",
+      "expected": "9d1efdbac6ea8b74585344884fb8264bed82f7413d32259146718872e4247f86",
+      "repository": "9d1efdbac6ea8b74585344884fb8264bed82f7413d32259146718872e4247f86",
+      "snapshot": "9d1efdbac6ea8b74585344884fb8264bed82f7413d32259146718872e4247f86"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/oracle_protocol.py",
+      "expected": "f867fdc33eb271385176ab25c09a573e9662f77b7f6a73e559dbf07fcb115f45",
+      "repository": "f867fdc33eb271385176ab25c09a573e9662f77b7f6a73e559dbf07fcb115f45",
+      "snapshot": "f867fdc33eb271385176ab25c09a573e9662f77b7f6a73e559dbf07fcb115f45"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/oracle_worker.py",
+      "expected": "91e84a5d3f47b043d6c12f9564604dba11f2ad9cc49e58a905ee714d2ece07d0",
+      "repository": "91e84a5d3f47b043d6c12f9564604dba11f2ad9cc49e58a905ee714d2ece07d0",
+      "snapshot": "91e84a5d3f47b043d6c12f9564604dba11f2ad9cc49e58a905ee714d2ece07d0"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/owned_resources.py",
+      "expected": "5e235811e610d51009c03ee8e70fe2c8fc0927708ddd2dba5a1173b3bcca5108",
+      "repository": "5e235811e610d51009c03ee8e70fe2c8fc0927708ddd2dba5a1173b3bcca5108",
+      "snapshot": "5e235811e610d51009c03ee8e70fe2c8fc0927708ddd2dba5a1173b3bcca5108"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/profiles.py",
+      "expected": "b149039b977bd78daf53a6ddb7635419b36338925c25d125a3d49fac8f60a539",
+      "repository": "b149039b977bd78daf53a6ddb7635419b36338925c25d125a3d49fac8f60a539",
+      "snapshot": "b149039b977bd78daf53a6ddb7635419b36338925c25d125a3d49fac8f60a539"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/runtime_admission.py",
+      "expected": "307e4486f4c23c426d543ddc3cee65d99dcee77c7c01087f4c8840cc81d3b076",
+      "repository": "307e4486f4c23c426d543ddc3cee65d99dcee77c7c01087f4c8840cc81d3b076",
+      "snapshot": "307e4486f4c23c426d543ddc3cee65d99dcee77c7c01087f4c8840cc81d3b076"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/runtime_context.py",
+      "expected": "85caefcf88973b0f78143d629dd8f3e46b16a0d987b680f48e875b9ed97739cd",
+      "repository": "85caefcf88973b0f78143d629dd8f3e46b16a0d987b680f48e875b9ed97739cd",
+      "snapshot": "85caefcf88973b0f78143d629dd8f3e46b16a0d987b680f48e875b9ed97739cd"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/streams.py",
+      "expected": "85f8d1b16a84462f1defe641cb2c75879fe356928c7497b06628f86d2f599cbd",
+      "repository": "85f8d1b16a84462f1defe641cb2c75879fe356928c7497b06628f86d2f599cbd",
+      "snapshot": "85f8d1b16a84462f1defe641cb2c75879fe356928c7497b06628f86d2f599cbd"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/test_admission_dispatch.py",
+      "expected": "f565e9c7672a6b2185ded0731c8481fc7cd3186e408ffad270e5a91a2792d5fa",
+      "repository": "f565e9c7672a6b2185ded0731c8481fc7cd3186e408ffad270e5a91a2792d5fa",
+      "snapshot": "f565e9c7672a6b2185ded0731c8481fc7cd3186e408ffad270e5a91a2792d5fa"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/test_architecture_contracts.py",
+      "expected": "3a68f407df26a17eccc3c3397a91b65ff604247bf43b3c0418f2dd2ede21b57d",
+      "repository": "3a68f407df26a17eccc3c3397a91b65ff604247bf43b3c0418f2dd2ede21b57d",
+      "snapshot": "3a68f407df26a17eccc3c3397a91b65ff604247bf43b3c0418f2dd2ede21b57d"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/test_architecture_review.py",
+      "expected": "89197d92221c854e92064965c1a6d73aa8cb52b8e22cda68773e095c44f4548a",
+      "repository": "89197d92221c854e92064965c1a6d73aa8cb52b8e22cda68773e095c44f4548a",
+      "snapshot": "89197d92221c854e92064965c1a6d73aa8cb52b8e22cda68773e095c44f4548a"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/test_context_oracle_review.py",
+      "expected": "2b7a342bd1ac25c912aebe7813d4f056ba1ebc29a96d0a2bdb0b38b02ce7c660",
+      "repository": "2b7a342bd1ac25c912aebe7813d4f056ba1ebc29a96d0a2bdb0b38b02ce7c660",
+      "snapshot": "2b7a342bd1ac25c912aebe7813d4f056ba1ebc29a96d0a2bdb0b38b02ce7c660"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/test_context_provisioning.py",
+      "expected": "47af7da18e75e311d280927b83cb64bf1b12b01562217f75bfd21b10255e83de",
+      "repository": "47af7da18e75e311d280927b83cb64bf1b12b01562217f75bfd21b10255e83de",
+      "snapshot": "47af7da18e75e311d280927b83cb64bf1b12b01562217f75bfd21b10255e83de"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/test_contracts.py",
+      "expected": "f95b6879e06055cb26b1ac80214a9708deda71561511862d7833e981ebdd0716",
+      "repository": "f95b6879e06055cb26b1ac80214a9708deda71561511862d7833e981ebdd0716",
+      "snapshot": "f95b6879e06055cb26b1ac80214a9708deda71561511862d7833e981ebdd0716"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/test_d02.py",
+      "expected": "f158944c10aa24dc397efdb1d03471a7a02f4b46cec46d2442e8bbe4eb772b72",
+      "repository": "f158944c10aa24dc397efdb1d03471a7a02f4b46cec46d2442e8bbe4eb772b72",
+      "snapshot": "f158944c10aa24dc397efdb1d03471a7a02f4b46cec46d2442e8bbe4eb772b72"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/test_filter.py",
+      "expected": "b434138a353c257b18f3262373a5fa226223d8f44b0414e3b6b2aaf40f7a7614",
+      "repository": "b434138a353c257b18f3262373a5fa226223d8f44b0414e3b6b2aaf40f7a7614",
+      "snapshot": "b434138a353c257b18f3262373a5fa226223d8f44b0414e3b6b2aaf40f7a7614"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/test_image_artifacts.py",
+      "expected": "81ea1082f3f4c7d38b37f4aeef0a84f215f546331d9c46d24f828d357a4835fa",
+      "repository": "81ea1082f3f4c7d38b37f4aeef0a84f215f546331d9c46d24f828d357a4835fa",
+      "snapshot": "81ea1082f3f4c7d38b37f4aeef0a84f215f546331d9c46d24f828d357a4835fa"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/test_image_review.py",
+      "expected": "f74202962d08bf0509fba42bf3dc7af3ea0dae3dc987d378ac6a025cc816fe77",
+      "repository": "f74202962d08bf0509fba42bf3dc7af3ea0dae3dc987d378ac6a025cc816fe77",
+      "snapshot": "f74202962d08bf0509fba42bf3dc7af3ea0dae3dc987d378ac6a025cc816fe77"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/test_oracle_bridge.py",
+      "expected": "e7ec3950202388b09014bd175e7668aa3375f93c4029e04910296975cdec52f1",
+      "repository": "e7ec3950202388b09014bd175e7668aa3375f93c4029e04910296975cdec52f1",
+      "snapshot": "e7ec3950202388b09014bd175e7668aa3375f93c4029e04910296975cdec52f1"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/test_oracle_worker.py",
+      "expected": "3c899ec2036f74167aa213cda6c42b8e71547f1e32f9c58df4e6f9cd1eca9d0a",
+      "repository": "3c899ec2036f74167aa213cda6c42b8e71547f1e32f9c58df4e6f9cd1eca9d0a",
+      "snapshot": "3c899ec2036f74167aa213cda6c42b8e71547f1e32f9c58df4e6f9cd1eca9d0a"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/test_owned_resources.py",
+      "expected": "e8b7d53c1c6081a095a116beca16680c85b35dca66249ef830f0146304cc41ab",
+      "repository": "e8b7d53c1c6081a095a116beca16680c85b35dca66249ef830f0146304cc41ab",
+      "snapshot": "e8b7d53c1c6081a095a116beca16680c85b35dca66249ef830f0146304cc41ab"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/test_runtime_admission.py",
+      "expected": "1e53248dbeacb1dae04f184ad844ae2d17dd7a338311ea5403e491cc373ac430",
+      "repository": "1e53248dbeacb1dae04f184ad844ae2d17dd7a338311ea5403e491cc373ac430",
+      "snapshot": "1e53248dbeacb1dae04f184ad844ae2d17dd7a338311ea5403e491cc373ac430"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/test_runtime_context.py",
+      "expected": "040f04d8bd9a120758e2d03c2052c666d6f88c32fc38f3ecb8f1c5614f487b7c",
+      "repository": "040f04d8bd9a120758e2d03c2052c666d6f88c32fc38f3ecb8f1c5614f487b7c",
+      "snapshot": "040f04d8bd9a120758e2d03c2052c666d6f88c32fc38f3ecb8f1c5614f487b7c"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/test_streams.py",
+      "expected": "0f5a4e23592bd7e849c7c90a49815704c7322f04c3804728f5ab1a3990fdd695",
+      "repository": "0f5a4e23592bd7e849c7c90a49815704c7322f04c3804728f5ab1a3990fdd695",
+      "snapshot": "0f5a4e23592bd7e849c7c90a49815704c7322f04c3804728f5ab1a3990fdd695"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/test_watchdog.py",
+      "expected": "271b8f611ec10b2d7ad523368aa6e98e3a66ebc0351beef32c94c75b3331b7da",
+      "repository": "271b8f611ec10b2d7ad523368aa6e98e3a66ebc0351beef32c94c75b3331b7da",
+      "snapshot": "271b8f611ec10b2d7ad523368aa6e98e3a66ebc0351beef32c94c75b3331b7da"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/test_x64_runtime.py",
+      "expected": "871dbc791fe792326b9f25516230c4e1fa2379be87cab000fd8896f950d21250",
+      "repository": "871dbc791fe792326b9f25516230c4e1fa2379be87cab000fd8896f950d21250",
+      "snapshot": "871dbc791fe792326b9f25516230c4e1fa2379be87cab000fd8896f950d21250"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/watchdog.py",
+      "expected": "cc2e7e1212caa6be74e2266ce3a4ab156064a3ae96f01281cfa3ba5660ba5813",
+      "repository": "cc2e7e1212caa6be74e2266ce3a4ab156064a3ae96f01281cfa3ba5660ba5813",
+      "snapshot": "cc2e7e1212caa6be74e2266ce3a4ab156064a3ae96f01281cfa3ba5660ba5813"
+    },
+    {
+      "path": "tests/crawl-jobs-v2-observer/worker.py",
+      "expected": "08c319e7ec3790f619e4bf4ba3160e0db3bdc34f8dd86256bf998639aa2ea273",
+      "repository": "08c319e7ec3790f619e4bf4ba3160e0db3bdc34f8dd86256bf998639aa2ea273",
+      "snapshot": "08c319e7ec3790f619e4bf4ba3160e0db3bdc34f8dd86256bf998639aa2ea273"
+    },
+    {
+      "path": ".github/workflows/c0-runtime-images.yml",
+      "expected": "47d0205d931100d096e8720d4bc6a21d3d542ab64db5eaefba4e46827e9c770c",
+      "repository": "47d0205d931100d096e8720d4bc6a21d3d542ab64db5eaefba4e46827e9c770c",
+      "snapshot": "47d0205d931100d096e8720d4bc6a21d3d542ab64db5eaefba4e46827e9c770c"
+    },
+    {
+      "path": "scripts/prepare-crawl-jobs-v2-observer-images.py",
+      "expected": "a97a270010e48dfee61c3c3317c4fcad7069bb70ba83ee0181d3c6d83b7e71cc",
+      "repository": "a97a270010e48dfee61c3c3317c4fcad7069bb70ba83ee0181d3c6d83b7e71cc",
+      "snapshot": "a97a270010e48dfee61c3c3317c4fcad7069bb70ba83ee0181d3c6d83b7e71cc"
+    },
+    {
+      "path": "scripts/test-crawl-jobs-v2-observer.py",
+      "expected": "9afb715125f734f5b905da63dde5c9787fc5997b2e5a73a0bf62d781b23aef84",
+      "repository": "9afb715125f734f5b905da63dde5c9787fc5997b2e5a73a0bf62d781b23aef84",
+      "snapshot": "9afb715125f734f5b905da63dde5c9787fc5997b2e5a73a0bf62d781b23aef84"
+    }
+  ],
+  "original_review_files": {
+    "adversarial-probes-final.log": "e4ca4d14dcda4440876519c093946c5519e5e7353b0e22e9397e21e385adac74",
+    "adversarial-probes.log": "e4ca4d14dcda4440876519c093946c5519e5e7353b0e22e9397e21e385adac74",
+    "adversarial-results.json": "6e85703510b8c9097be3004b8e046fb07e5632010641872b430adbb5ea3a9c4f",
+    "adversarial_probes.py": "d6a995becd62061496ef2e55c9ac86a75d05ed58507fe31d6c01de4abf2395db",
+    "buildkit-current-image.go": "5f6740c15351de8b7d842efdfd579ac22af0fcd06a67b39ff4cb71436d63df36",
+    "buildkit-v0.20.2-convert.go": "dca50b89e89c90e2a2944c8a0f37241b7d1948dd62974317202eb9b5aee22590",
+    "buildkit-v0.20.2-image.go": "cbcd0b08fac635fef173bfec481bd4ea08dbccbdad4cdc8a7348f8cffa089bcb",
+    "buildkit-v0.20.2-path.go": "74c1c104ce59e0cb5fb0ee6f4fb9461e3176587c200ef42787feb66de57d0fb8",
+    "checkout-pinned-action.yml": "6188f6991491ed38977347cdaad0b0cd921a6d6232892363c91f433c22954f4f",
+    "evidence-verification-final-pass2.log": "d5e6c4fa99e8eb99915d54ca463eb1e93807a2aa767d7c7c0e3a0e364772cf73",
+    "evidence-verification-final.log": "eccd6cea889b93640bd79aedd70055cc81d35d9fbbc95e916db2365758bc72ec",
+    "evidence-verification-pass2.log": "d5e6c4fa99e8eb99915d54ca463eb1e93807a2aa767d7c7c0e3a0e364772cf73",
+    "evidence-verification.json": "64510ff2721d7635ba8fb1ef1dd5e4b8d996831c5d8567ab8802fae5211aa10e",
+    "evidence-verification.log": "097899b143d6e329380c3c05ae8d6445f6c4a09b96bfef48a4bf179a939ac08d",
+    "fetch_references.py": "ee4d742989699d74bc727077c58b94abc6c2fb27735912868a7bf607987a4ca7",
+    "image-unit-tests.log": "7c240e1d694bc8d753500c91a7d9ee640c8165ca74f02f8b82caf465ffb0f94a",
+    "inert-fixtures/dependency-rpath-ignored.tar": "626e7d39154e801521a79e76888603be8bc450125bcbad4f9418234374976935",
+    "inert-fixtures/dependency-symlink-parent.tar": "9c9066c95509b45b0e55cf9bbb6838b93059763ec45be6f18f62e2ad1c96b543",
+    "inert-fixtures/docker-fake.iid": "9f447b1b473d359884f2b8541a1ad0b7d194ed59b79e8eee48047ec4830564fd",
+    "inert-fixtures/inert-aarch64-extension.so": "b55b7da9d163fde3d4e4cd0cc4a5e9af451606f819585d0126be1b337a66b97e",
+    "inert-fixtures/observer-mode-0o600.tar": "5821889fea31b3c1cb2a17abefec692badb842b73ba80c62f14154db072caba6",
+    "inert-fixtures/observer-mode-0o700.tar": "dbb90101706f944bfc79334545780494d5283b8763f6558f2deab04c17b01664",
+    "inert-fixtures/observer-mode-0o750.tar": "aef10ee7e6219cf4bd99de4402f44094b9d6c26998338b5446fa3d51c386d3a5",
+    "inert-fixtures/observer-mode-0o755.tar": "fb36e9919753041ae1c986f08f97481fa723df4f4043cb5a4c26d8e11338e1f5",
+    "inert-fixtures/oracle-unreadable-oracle-worker.py.tar": "77e041f67bd07ed291003f14d4deafc845585bd5969555729a7a03ac8b6f5505",
+    "inert-fixtures/oracle-unreadable-oracle.tar": "a3011bd1da12efa09c4c2ce14f94f891addc95196b053b6d3675ed71a90ccb57",
+    "inert-fixtures/oracle-unreadable-usr-local-lib-fixture.so.tar": "c97677447492addc42c40f969614f0c197421c83dab6530df0a6a37ed78d0c6d",
+    "inert-fixtures/portable-alias-config.tar": "5ccfea8286e2db2f8bf16dac62f3f199a8736f4dcf9bfc20003a77e19843437c",
+    "inert-fixtures/portable-alias-layer.tar": "c54ffd9e24370175cbee772a81c18ee2d4f53659805c18a733d451a1fd0d4a78",
+    "inert-fixtures/portable-control.tar": "68cfac91bdf944131340e8318d38cce0ae6f28856a72f99cbd5cf3c7ea7eec79",
+    "inert-fixtures/portable-exact-duplicate.tar": "b6f967b9860e9009c86e3232e700ab7af31e6f771ad2b2f42a08048e2d6eca26",
+    "inert-fixtures/target-mode-0o600.tar": "ed21144a063268e6f2376096523b2721442bf9cf991660d0a4deae6aa994016c",
+    "inert-fixtures/target-mode-0o700.tar": "98c4fcc2d8d3c7b94fac804a57674d0f97717ab92bdef650dc49dc6e1ab0edc3",
+    "inert-fixtures/target-mode-0o750.tar": "8becb9dfafe46eb32ac478e11387d97a1d53867cd8126e61a10a42d59147363c",
+    "inert-fixtures/target-mode-0o755.tar": "2b11f872769d026d800ae0d921a019175bb1b62faf46d86cb8b6e003f772129d",
+    "integrity-final.log": "a02df2b4dc40733d6da2d5766ab6fa0a08aeeb2065fe82a9945d09699122f981",
+    "inventory-after.json": "bf16095f5503ca1e93e10ff5ad6844f21c4192abc737c393c9c747ec49c28c36",
+    "inventory-before.json": "26c3aef7bf80d7f9aead6c25e65968e2e92188831f77be12c49fd9e0f0a1007d",
+    "ld-so-manual.html": "d9b7737e6c9a38f6c7ce11a4feec834704d6ad5139dc790afa9798faf0379f83",
+    "references.json": "56e163d7d114811d278a6584f171e73c8c5e94d1b24069d8dbf0731fc1238fef",
+    "references.log": "56e163d7d114811d278a6584f171e73c8c5e94d1b24069d8dbf0731fc1238fef",
+    "report-hashes.txt": "835c54bdb8dd7dbb184f7122601dd150b02b1a2a1651653ff2570ba5435eb534",
+    "review.json": "0bb1530f8309b6159ccf12e7b86c891e936e48468ae3453a34b8cddb0141a471",
+    "review.md": "d1797be1beea2bb3e2c3bfd00209bc30613aba80f950ad070d82daa22785ae59",
+    "setup-python-pinned-action.yml": "0acca40eee6f548ea8269ece66fd625fe9deb1f61f31f0b58562068fc083eb37",
+    "upload-artifact-pinned-action.yml": "29b21270ff44638a165ea12abb4481796770c629e513217af7b4df1aa3821177",
+    "verify_evidence.py": "01e54921f7f4f3942ea41fe99bb89c9292579c740f62e05363f531d6c7418a26",
+    "verify_integrity.py": "d3866cdc6c5588b077e0ba0978a7c483fda5510b9f8296197abd6f4cfa88d1fa",
+    "write_review.py": "b7cd99797dd1f667f987dd8bf7e48da586be2a791a29ca3c4e4c0b515b9f644d"
+  },
+  "match": true
+}

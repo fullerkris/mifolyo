@@ -2,7 +2,7 @@ module github.com/IonelPopJara/search-engine/services/page-rank
 
 go 1.26.0
 
-toolchain go1.26.9
+toolchain go1.26.10
 
 require (
 	go.mongodb.org/mongo-driver/v2 v2.4.2

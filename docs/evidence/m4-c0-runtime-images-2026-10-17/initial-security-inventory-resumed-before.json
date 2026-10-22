@@ -1,0 +1,585 @@
+{
+  "auxiliary_files": 3,
+  "branch": "feature/crawl-jobs-v2-c0-runtime-images",
+  "expected_inventory_sha256": "f789846f36fd23c21cad7b7ef461ec1dbb5521e0ad6d8948ae5cace2fde9dec4",
+  "head": "7ef2041e2844aa34bec54da61c2e8469c1382bac",
+  "inventory_sha256": "f789846f36fd23c21cad7b7ef461ec1dbb5521e0ad6d8948ae5cace2fde9dec4",
+  "package_files": 54,
+  "pass": true,
+  "roots": {
+    "frozen": {
+      ".github/workflows/c0-runtime-images.yml": {
+        "matches": true,
+        "sha256": "c00a7caad2592045a4162bb7fafa96afaeb456d0c2588311b276fe204313c81a",
+        "symlink": false
+      },
+      "scripts/prepare-crawl-jobs-v2-observer-images.py": {
+        "matches": true,
+        "sha256": "a97a270010e48dfee61c3c3317c4fcad7069bb70ba83ee0181d3c6d83b7e71cc",
+        "symlink": false
+      },
+      "scripts/test-crawl-jobs-v2-observer.py": {
+        "matches": true,
+        "sha256": "9afb715125f734f5b905da63dde5c9787fc5997b2e5a73a0bf62d781b23aef84",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/.dockerignore": {
+        "matches": true,
+        "sha256": "25170fdb33082a47a01bdc344bfabe8ef4460eed2da175e6dd1159557fcaa13d",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/Dockerfile": {
+        "matches": true,
+        "sha256": "6925c36fe1cd42800333b4c72c54143b0c706e26e0aa37a09fd8679a684fa06c",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/Dockerfile.oracle": {
+        "matches": true,
+        "sha256": "61c196ddc98e522516fd1e36ce239f36f27f04e844be66752227c90de5897429",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/Dockerfile.oracle.dockerignore": {
+        "matches": true,
+        "sha256": "679f3cd226874aa189596199b105352137171eed114a1393e478eafc43f330d3",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/README.md": {
+        "matches": true,
+        "sha256": "d212a756641ef5b0bca0655ae915ed68eacd1383a7b65f997cf9e6df3697d4c0",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/build_oracle.py": {
+        "matches": true,
+        "sha256": "c2e4fe3b1e82363348e344e95fd86275513e40879a756875ddfe3fed872a12da",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/build_tools.py": {
+        "matches": true,
+        "sha256": "a402d791a3cd1dc35ed709a985cbcd9b06a9af9b2f370616f44f2bcfe6519acb",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/context_files.py": {
+        "matches": true,
+        "sha256": "956ce03c56e6df84006e9bf16775f1d3d83d2acbda5bec8d9d41b1de2e72d396",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/context_provision.py": {
+        "matches": true,
+        "sha256": "d0869ab36372a1af94ce0ffd04f1e364b318519a7e1f3c4bb7fefa95e2df340e",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/context_ssh.py": {
+        "matches": true,
+        "sha256": "94ededb449423cbc822282ab05cc725316caef186cdba227613631618b9f2a03",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/context_transport.py": {
+        "matches": true,
+        "sha256": "43193118350d4d52d0f3901e4a93561fa7cd94dd4e81c2ce99337b5364404af0",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/context_worker.py": {
+        "matches": true,
+        "sha256": "f01980f5b3322eabafd5b99c97b76f4313aa9a28ce90a5f3ce66c5175843e03f",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/contracts.py": {
+        "matches": true,
+        "sha256": "6a3c4dfe7b6fb4524771b26fdcbcba39be2c5893d52e2e4caeebf762df27a7f4",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/controller.py": {
+        "matches": true,
+        "sha256": "23b28206e550efbe408a970161ebed7ddbd3430c771baece6765a165fc2e2ec5",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/d02.py": {
+        "matches": true,
+        "sha256": "d7df595daeefcc3f5a785a89c191c93b5b6724e42655222befa1b07c88be29f2",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/docker_backend.py": {
+        "matches": true,
+        "sha256": "51cf4ad679a961d5b7631af1769216dc0300e740228ce8d7cf2423ed7373ebcf",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/image_artifacts.py": {
+        "matches": true,
+        "sha256": "132b7d1c95cb6257e78dff9f2dc15f0d4ad339d7e6cfd25c45d9b577260eb487",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/image_build.py": {
+        "matches": true,
+        "sha256": "c2dea3f44ebee5b00782dd7dbbc79e1c290417be83859078b8c1a41fc98df1a0",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/linux_observation.py": {
+        "matches": true,
+        "sha256": "58934a305a1c7bf5877c4e5f7ae5969181c61fed267b150d0ed1ed91c195282d",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/native/admission.h": {
+        "matches": true,
+        "sha256": "b64f55c4f5184506bc442bf13405f282b92d4bc600d8958b5febda5108fe0a96",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/native/architecture.h": {
+        "matches": true,
+        "sha256": "c0b078cd257852bc3cb57e1405e18c943bf2d0a48520523195846c8f58cfea2b",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/native/common.h": {
+        "matches": true,
+        "sha256": "4b221886a774007a74ed68a44a6e5088bc7f2e4ccf4980ddb8815f85cfc27042",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/native/observer.c": {
+        "matches": true,
+        "sha256": "a45816e40320c8560f439dfdd0b1ebef636dc74a0a101c19f0a726ae38098a5c",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/native/target.c": {
+        "matches": true,
+        "sha256": "aedd6549923876d28b7d39748c6506dbad539459200b276a9f409500daf3f82d",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/native/test_x86_debug.c": {
+        "matches": true,
+        "sha256": "ca8c49152d575c6b42e37914ea7dc5d805975e49fee4fa799137799ceaaa6f6f",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/native/x86_debug.h": {
+        "matches": true,
+        "sha256": "42844fba32b39dfe752fe84f84b1748a872b93aed6c5810a9a30aeab2fbd1777",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/oracle.py": {
+        "matches": true,
+        "sha256": "fa14b08caee86b65d9a01c16bb3e6ea236264275a48a3f32ad6694c57df23bc8",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/oracle_bridge.py": {
+        "matches": true,
+        "sha256": "9d1efdbac6ea8b74585344884fb8264bed82f7413d32259146718872e4247f86",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/oracle_protocol.py": {
+        "matches": true,
+        "sha256": "f867fdc33eb271385176ab25c09a573e9662f77b7f6a73e559dbf07fcb115f45",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/oracle_worker.py": {
+        "matches": true,
+        "sha256": "91e84a5d3f47b043d6c12f9564604dba11f2ad9cc49e58a905ee714d2ece07d0",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/owned_resources.py": {
+        "matches": true,
+        "sha256": "5e235811e610d51009c03ee8e70fe2c8fc0927708ddd2dba5a1173b3bcca5108",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/profiles.py": {
+        "matches": true,
+        "sha256": "b149039b977bd78daf53a6ddb7635419b36338925c25d125a3d49fac8f60a539",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/runtime_admission.py": {
+        "matches": true,
+        "sha256": "307e4486f4c23c426d543ddc3cee65d99dcee77c7c01087f4c8840cc81d3b076",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/runtime_context.py": {
+        "matches": true,
+        "sha256": "85caefcf88973b0f78143d629dd8f3e46b16a0d987b680f48e875b9ed97739cd",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/streams.py": {
+        "matches": true,
+        "sha256": "85f8d1b16a84462f1defe641cb2c75879fe356928c7497b06628f86d2f599cbd",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/test_admission_dispatch.py": {
+        "matches": true,
+        "sha256": "f565e9c7672a6b2185ded0731c8481fc7cd3186e408ffad270e5a91a2792d5fa",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/test_architecture_contracts.py": {
+        "matches": true,
+        "sha256": "3a68f407df26a17eccc3c3397a91b65ff604247bf43b3c0418f2dd2ede21b57d",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/test_architecture_review.py": {
+        "matches": true,
+        "sha256": "89197d92221c854e92064965c1a6d73aa8cb52b8e22cda68773e095c44f4548a",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/test_context_oracle_review.py": {
+        "matches": true,
+        "sha256": "2b7a342bd1ac25c912aebe7813d4f056ba1ebc29a96d0a2bdb0b38b02ce7c660",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/test_context_provisioning.py": {
+        "matches": true,
+        "sha256": "47af7da18e75e311d280927b83cb64bf1b12b01562217f75bfd21b10255e83de",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/test_contracts.py": {
+        "matches": true,
+        "sha256": "f95b6879e06055cb26b1ac80214a9708deda71561511862d7833e981ebdd0716",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/test_d02.py": {
+        "matches": true,
+        "sha256": "f158944c10aa24dc397efdb1d03471a7a02f4b46cec46d2442e8bbe4eb772b72",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/test_filter.py": {
+        "matches": true,
+        "sha256": "b434138a353c257b18f3262373a5fa226223d8f44b0414e3b6b2aaf40f7a7614",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/test_image_artifacts.py": {
+        "matches": true,
+        "sha256": "9a0c50a185ceca43903d57ef2eb9e407d4e101a575a35694ccb9be674118bc56",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/test_oracle_bridge.py": {
+        "matches": true,
+        "sha256": "e7ec3950202388b09014bd175e7668aa3375f93c4029e04910296975cdec52f1",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/test_oracle_worker.py": {
+        "matches": true,
+        "sha256": "3c899ec2036f74167aa213cda6c42b8e71547f1e32f9c58df4e6f9cd1eca9d0a",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/test_owned_resources.py": {
+        "matches": true,
+        "sha256": "e8b7d53c1c6081a095a116beca16680c85b35dca66249ef830f0146304cc41ab",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/test_runtime_admission.py": {
+        "matches": true,
+        "sha256": "1e53248dbeacb1dae04f184ad844ae2d17dd7a338311ea5403e491cc373ac430",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/test_runtime_context.py": {
+        "matches": true,
+        "sha256": "040f04d8bd9a120758e2d03c2052c666d6f88c32fc38f3ecb8f1c5614f487b7c",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/test_streams.py": {
+        "matches": true,
+        "sha256": "0f5a4e23592bd7e849c7c90a49815704c7322f04c3804728f5ab1a3990fdd695",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/test_watchdog.py": {
+        "matches": true,
+        "sha256": "271b8f611ec10b2d7ad523368aa6e98e3a66ebc0351beef32c94c75b3331b7da",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/test_x64_runtime.py": {
+        "matches": true,
+        "sha256": "fd2241fa54be27793860451825a4a7bf648494f43a3083b8a20d8383f4b99a92",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/watchdog.py": {
+        "matches": true,
+        "sha256": "cc2e7e1212caa6be74e2266ce3a4ab156064a3ae96f01281cfa3ba5660ba5813",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/worker.py": {
+        "matches": true,
+        "sha256": "08c319e7ec3790f619e4bf4ba3160e0db3bdc34f8dd86256bf998639aa2ea273",
+        "symlink": false
+      }
+    },
+    "repository": {
+      ".github/workflows/c0-runtime-images.yml": {
+        "matches": true,
+        "sha256": "c00a7caad2592045a4162bb7fafa96afaeb456d0c2588311b276fe204313c81a",
+        "symlink": false
+      },
+      "scripts/prepare-crawl-jobs-v2-observer-images.py": {
+        "matches": true,
+        "sha256": "a97a270010e48dfee61c3c3317c4fcad7069bb70ba83ee0181d3c6d83b7e71cc",
+        "symlink": false
+      },
+      "scripts/test-crawl-jobs-v2-observer.py": {
+        "matches": true,
+        "sha256": "9afb715125f734f5b905da63dde5c9787fc5997b2e5a73a0bf62d781b23aef84",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/.dockerignore": {
+        "matches": true,
+        "sha256": "25170fdb33082a47a01bdc344bfabe8ef4460eed2da175e6dd1159557fcaa13d",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/Dockerfile": {
+        "matches": true,
+        "sha256": "6925c36fe1cd42800333b4c72c54143b0c706e26e0aa37a09fd8679a684fa06c",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/Dockerfile.oracle": {
+        "matches": true,
+        "sha256": "61c196ddc98e522516fd1e36ce239f36f27f04e844be66752227c90de5897429",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/Dockerfile.oracle.dockerignore": {
+        "matches": true,
+        "sha256": "679f3cd226874aa189596199b105352137171eed114a1393e478eafc43f330d3",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/README.md": {
+        "matches": true,
+        "sha256": "d212a756641ef5b0bca0655ae915ed68eacd1383a7b65f997cf9e6df3697d4c0",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/build_oracle.py": {
+        "matches": true,
+        "sha256": "c2e4fe3b1e82363348e344e95fd86275513e40879a756875ddfe3fed872a12da",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/build_tools.py": {
+        "matches": true,
+        "sha256": "a402d791a3cd1dc35ed709a985cbcd9b06a9af9b2f370616f44f2bcfe6519acb",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/context_files.py": {
+        "matches": true,
+        "sha256": "956ce03c56e6df84006e9bf16775f1d3d83d2acbda5bec8d9d41b1de2e72d396",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/context_provision.py": {
+        "matches": true,
+        "sha256": "d0869ab36372a1af94ce0ffd04f1e364b318519a7e1f3c4bb7fefa95e2df340e",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/context_ssh.py": {
+        "matches": true,
+        "sha256": "94ededb449423cbc822282ab05cc725316caef186cdba227613631618b9f2a03",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/context_transport.py": {
+        "matches": true,
+        "sha256": "43193118350d4d52d0f3901e4a93561fa7cd94dd4e81c2ce99337b5364404af0",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/context_worker.py": {
+        "matches": true,
+        "sha256": "f01980f5b3322eabafd5b99c97b76f4313aa9a28ce90a5f3ce66c5175843e03f",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/contracts.py": {
+        "matches": true,
+        "sha256": "6a3c4dfe7b6fb4524771b26fdcbcba39be2c5893d52e2e4caeebf762df27a7f4",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/controller.py": {
+        "matches": true,
+        "sha256": "23b28206e550efbe408a970161ebed7ddbd3430c771baece6765a165fc2e2ec5",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/d02.py": {
+        "matches": true,
+        "sha256": "d7df595daeefcc3f5a785a89c191c93b5b6724e42655222befa1b07c88be29f2",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/docker_backend.py": {
+        "matches": true,
+        "sha256": "51cf4ad679a961d5b7631af1769216dc0300e740228ce8d7cf2423ed7373ebcf",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/image_artifacts.py": {
+        "matches": true,
+        "sha256": "132b7d1c95cb6257e78dff9f2dc15f0d4ad339d7e6cfd25c45d9b577260eb487",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/image_build.py": {
+        "matches": true,
+        "sha256": "c2dea3f44ebee5b00782dd7dbbc79e1c290417be83859078b8c1a41fc98df1a0",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/linux_observation.py": {
+        "matches": true,
+        "sha256": "58934a305a1c7bf5877c4e5f7ae5969181c61fed267b150d0ed1ed91c195282d",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/native/admission.h": {
+        "matches": true,
+        "sha256": "b64f55c4f5184506bc442bf13405f282b92d4bc600d8958b5febda5108fe0a96",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/native/architecture.h": {
+        "matches": true,
+        "sha256": "c0b078cd257852bc3cb57e1405e18c943bf2d0a48520523195846c8f58cfea2b",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/native/common.h": {
+        "matches": true,
+        "sha256": "4b221886a774007a74ed68a44a6e5088bc7f2e4ccf4980ddb8815f85cfc27042",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/native/observer.c": {
+        "matches": true,
+        "sha256": "a45816e40320c8560f439dfdd0b1ebef636dc74a0a101c19f0a726ae38098a5c",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/native/target.c": {
+        "matches": true,
+        "sha256": "aedd6549923876d28b7d39748c6506dbad539459200b276a9f409500daf3f82d",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/native/test_x86_debug.c": {
+        "matches": true,
+        "sha256": "ca8c49152d575c6b42e37914ea7dc5d805975e49fee4fa799137799ceaaa6f6f",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/native/x86_debug.h": {
+        "matches": true,
+        "sha256": "42844fba32b39dfe752fe84f84b1748a872b93aed6c5810a9a30aeab2fbd1777",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/oracle.py": {
+        "matches": true,
+        "sha256": "fa14b08caee86b65d9a01c16bb3e6ea236264275a48a3f32ad6694c57df23bc8",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/oracle_bridge.py": {
+        "matches": true,
+        "sha256": "9d1efdbac6ea8b74585344884fb8264bed82f7413d32259146718872e4247f86",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/oracle_protocol.py": {
+        "matches": true,
+        "sha256": "f867fdc33eb271385176ab25c09a573e9662f77b7f6a73e559dbf07fcb115f45",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/oracle_worker.py": {
+        "matches": true,
+        "sha256": "91e84a5d3f47b043d6c12f9564604dba11f2ad9cc49e58a905ee714d2ece07d0",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/owned_resources.py": {
+        "matches": true,
+        "sha256": "5e235811e610d51009c03ee8e70fe2c8fc0927708ddd2dba5a1173b3bcca5108",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/profiles.py": {
+        "matches": true,
+        "sha256": "b149039b977bd78daf53a6ddb7635419b36338925c25d125a3d49fac8f60a539",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/runtime_admission.py": {
+        "matches": true,
+        "sha256": "307e4486f4c23c426d543ddc3cee65d99dcee77c7c01087f4c8840cc81d3b076",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/runtime_context.py": {
+        "matches": true,
+        "sha256": "85caefcf88973b0f78143d629dd8f3e46b16a0d987b680f48e875b9ed97739cd",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/streams.py": {
+        "matches": true,
+        "sha256": "85f8d1b16a84462f1defe641cb2c75879fe356928c7497b06628f86d2f599cbd",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/test_admission_dispatch.py": {
+        "matches": true,
+        "sha256": "f565e9c7672a6b2185ded0731c8481fc7cd3186e408ffad270e5a91a2792d5fa",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/test_architecture_contracts.py": {
+        "matches": true,
+        "sha256": "3a68f407df26a17eccc3c3397a91b65ff604247bf43b3c0418f2dd2ede21b57d",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/test_architecture_review.py": {
+        "matches": true,
+        "sha256": "89197d92221c854e92064965c1a6d73aa8cb52b8e22cda68773e095c44f4548a",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/test_context_oracle_review.py": {
+        "matches": true,
+        "sha256": "2b7a342bd1ac25c912aebe7813d4f056ba1ebc29a96d0a2bdb0b38b02ce7c660",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/test_context_provisioning.py": {
+        "matches": true,
+        "sha256": "47af7da18e75e311d280927b83cb64bf1b12b01562217f75bfd21b10255e83de",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/test_contracts.py": {
+        "matches": true,
+        "sha256": "f95b6879e06055cb26b1ac80214a9708deda71561511862d7833e981ebdd0716",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/test_d02.py": {
+        "matches": true,
+        "sha256": "f158944c10aa24dc397efdb1d03471a7a02f4b46cec46d2442e8bbe4eb772b72",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/test_filter.py": {
+        "matches": true,
+        "sha256": "b434138a353c257b18f3262373a5fa226223d8f44b0414e3b6b2aaf40f7a7614",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/test_image_artifacts.py": {
+        "matches": true,
+        "sha256": "9a0c50a185ceca43903d57ef2eb9e407d4e101a575a35694ccb9be674118bc56",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/test_oracle_bridge.py": {
+        "matches": true,
+        "sha256": "e7ec3950202388b09014bd175e7668aa3375f93c4029e04910296975cdec52f1",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/test_oracle_worker.py": {
+        "matches": true,
+        "sha256": "3c899ec2036f74167aa213cda6c42b8e71547f1e32f9c58df4e6f9cd1eca9d0a",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/test_owned_resources.py": {
+        "matches": true,
+        "sha256": "e8b7d53c1c6081a095a116beca16680c85b35dca66249ef830f0146304cc41ab",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/test_runtime_admission.py": {
+        "matches": true,
+        "sha256": "1e53248dbeacb1dae04f184ad844ae2d17dd7a338311ea5403e491cc373ac430",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/test_runtime_context.py": {
+        "matches": true,
+        "sha256": "040f04d8bd9a120758e2d03c2052c666d6f88c32fc38f3ecb8f1c5614f487b7c",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/test_streams.py": {
+        "matches": true,
+        "sha256": "0f5a4e23592bd7e849c7c90a49815704c7322f04c3804728f5ab1a3990fdd695",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/test_watchdog.py": {
+        "matches": true,
+        "sha256": "271b8f611ec10b2d7ad523368aa6e98e3a66ebc0351beef32c94c75b3331b7da",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/test_x64_runtime.py": {
+        "matches": true,
+        "sha256": "fd2241fa54be27793860451825a4a7bf648494f43a3083b8a20d8383f4b99a92",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/watchdog.py": {
+        "matches": true,
+        "sha256": "cc2e7e1212caa6be74e2266ce3a4ab156064a3ae96f01281cfa3ba5660ba5813",
+        "symlink": false
+      },
+      "tests/crawl-jobs-v2-observer/worker.py": {
+        "matches": true,
+        "sha256": "08c319e7ec3790f619e4bf4ba3160e0db3bdc34f8dd86256bf998639aa2ea273",
+        "symlink": false
+      }
+    }
+  }
+}

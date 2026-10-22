@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/tmp/opencode/c0-runtime-images-2026-10-17/correctness/verify_evidence.py", line 265, in <module>
+    main()
+    ~~~~^^
+  File "/tmp/opencode/c0-runtime-images-2026-10-17/correctness/verify_evidence.py", line 161, in main
+    assert value['Id'] == s['bases'][kind]['id']
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

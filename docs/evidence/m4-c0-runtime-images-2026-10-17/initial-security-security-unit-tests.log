@@ -1,0 +1,43 @@
+test_required_link_dotdot_does_not_substitute_verified_source (__main__.RequiredRegressionGuards.test_required_link_dotdot_does_not_substitute_verified_source) ... FAIL
+test_required_portable_normalized_aliases_are_rejected (__main__.RequiredRegressionGuards.test_required_portable_normalized_aliases_are_rejected) ... FAIL
+test_required_root_headers_count_toward_archive_bound (__main__.RequiredRegressionGuards.test_required_root_headers_count_toward_archive_bound) ... FAIL
+test_correct_portable_config_layers_and_checksums (__main__.ScopeControls.test_correct_portable_config_layers_and_checksums) ... ok
+test_foreign_started_or_incomplete_cleanup_cannot_report_success (__main__.ScopeControls.test_foreign_started_or_incomplete_cleanup_cannot_report_success) ... ok
+test_host_symlinks_and_multilink_files_refuse_without_target_changes (__main__.ScopeControls.test_host_symlinks_and_multilink_files_refuse_without_target_changes) ... ok
+test_interrupted_and_malformed_create_cleanup_remains_owned_and_stopped (__main__.ScopeControls.test_interrupted_and_malformed_create_cleanup_remains_owned_and_stopped) ... ok
+test_native_metadata_empty_env_and_hooks_fail_closed (__main__.ScopeControls.test_native_metadata_empty_env_and_hooks_fail_closed) ... ok
+test_rootfs_traversal_duplicate_special_and_oversize_refuse (__main__.ScopeControls.test_rootfs_traversal_duplicate_special_and_oversize_refuse) ... ok
+test_run_timeout_and_oversize_output_do_not_report_success (__main__.ScopeControls.test_run_timeout_and_oversize_output_do_not_report_success) ... ok
+test_wrong_config_layer_platform_and_duplicate_json_refuse (__main__.ScopeControls.test_wrong_config_layer_platform_and_duplicate_json_refuse) ... ok
+
+======================================================================
+FAIL: test_required_link_dotdot_does_not_substitute_verified_source (__main__.RequiredRegressionGuards.test_required_link_dotdot_does_not_substitute_verified_source)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/opencode/c0-runtime-images-2026-10-17/security/test_security_review.py", line 290, in test_required_link_dotdot_does_not_substitute_verified_source
+    with self.assertRaises(c.Invalid):
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+AssertionError: Invalid not raised
+
+======================================================================
+FAIL: test_required_portable_normalized_aliases_are_rejected (__main__.RequiredRegressionGuards.test_required_portable_normalized_aliases_are_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/opencode/c0-runtime-images-2026-10-17/security/test_security_review.py", line 252, in test_required_portable_normalized_aliases_are_rejected
+    with self.assertRaises(c.Invalid):
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+AssertionError: Invalid not raised
+
+======================================================================
+FAIL: test_required_root_headers_count_toward_archive_bound (__main__.RequiredRegressionGuards.test_required_root_headers_count_toward_archive_bound)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/opencode/c0-runtime-images-2026-10-17/security/test_security_review.py", line 303, in test_required_root_headers_count_toward_archive_bound
+    with self.assertRaises(c.Invalid):
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+AssertionError: Invalid not raised
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.678s
+
+FAILED (failures=3)

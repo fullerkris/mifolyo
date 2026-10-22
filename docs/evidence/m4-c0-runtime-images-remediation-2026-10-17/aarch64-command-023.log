@@ -1,0 +1,64 @@
+[
+     {
+          "Id": "50de9aac35fac6d4cada173cf06884c43b506e123cb923e851afae93bcb50273",
+          "Digest": "sha256:840e5f406d81eed85428effadc61f5a0aa287059d7aaf7afd7aa20d0676a6f77",
+          "RepoTags": [],
+          "RepoDigests": [],
+          "Parent": "",
+          "Comment": "",
+          "Created": "2026-10-17T13:39:39.152710973Z",
+          "Config": {
+               "User": "999:999",
+               "Entrypoint": [
+                    "/target"
+               ],
+               "WorkingDir": "/"
+          },
+          "Version": "",
+          "Author": "",
+          "Architecture": "arm64",
+          "Os": "linux",
+          "Size": 5452050,
+          "VirtualSize": 5452050,
+          "GraphDriver": {
+               "Name": "overlay",
+               "Data": {
+                    "UpperDir": "/var/home/kfuller/.local/share/containers/storage/overlay/6146b2f026ee894e27ae5a5a7957d7df52fe00c4397bab191db710796106a184/diff",
+                    "WorkDir": "/var/home/kfuller/.local/share/containers/storage/overlay/6146b2f026ee894e27ae5a5a7957d7df52fe00c4397bab191db710796106a184/work"
+               }
+          },
+          "RootFS": {
+               "Type": "layers",
+               "Layers": [
+                    "sha256:6146b2f026ee894e27ae5a5a7957d7df52fe00c4397bab191db710796106a184"
+               ]
+          },
+          "Labels": null,
+          "Annotations": {
+               "org.opencontainers.image.base.digest": "",
+               "org.opencontainers.image.base.name": "",
+               "org.opencontainers.image.created": "2026-10-17T13:39:39.152710973Z"
+          },
+          "ManifestType": "application/vnd.oci.image.manifest.v1+json",
+          "User": "999:999",
+          "History": [
+               {
+                    "created": "2026-10-17T13:39:39.130472751Z",
+                    "created_by": "/bin/sh -c #(nop) COPY file:ac97095224629c8dbe4136168cfd9f5bafc4a4597f6de6c9afee905dceaf665e in /target      ",
+                    "empty_layer": true
+               },
+               {
+                    "created": "2026-10-17T13:39:39.141573548Z",
+                    "created_by": "/bin/sh -c #(nop) USER 999:999",
+                    "empty_layer": true
+               },
+               {
+                    "created": "2026-10-17T13:39:39.156589921Z",
+                    "created_by": "/bin/sh -c #(nop) ENTRYPOINT [\"/target\"]"
+               }
+          ],
+          "NamesHistory": [
+               "docker.io/library/43d9cbc932a194cc629e1b643f8b6b32a0b0635ac42f5d5e072eceef1dca2f6f-tmp:latest"
+          ]
+     }
+]

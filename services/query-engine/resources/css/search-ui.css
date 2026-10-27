@@ -207,6 +207,16 @@ body:has(.mf-discussion-dialog[open]) { overflow: hidden; }
 .mf-thread-open { display: block; margin-top: 14px; }
 .mf-sign-in-prompt { margin-top: 26px; padding: 20px 0; border-top: 1px solid var(--mf-line); }
 .mf-notice { padding: 14px 24px; text-align: center; background: var(--mf-blue-soft); color: var(--mf-text); }
+.mf-onboarding-welcome { display: flex; align-items: center; gap: 24px; width: calc(100% - 64px); max-width: 1216px; margin: 24px auto 0; padding: 22px 26px; border: 1px solid var(--mf-line); border-left: 3px solid var(--mf-orange); border-radius: 12px; background: var(--mf-orange-soft); }
+.mf-onboarding-welcome > div { flex: 1; min-width: 0; }
+.mf-onboarding-welcome .mf-eyebrow { margin-bottom: 6px; }
+.mf-onboarding-welcome h2 { font-size: 21px; margin-bottom: 8px; }
+.mf-onboarding-welcome p:not(.mf-eyebrow):not(.mf-form-error) { font-size: 14px; max-width: 760px; }
+.mf-onboarding-welcome form { flex-shrink: 0; max-width: 240px; }
+.mf-onboarding-welcome .mf-form-error:empty { display: none; }
+.mf-onboarding-hint { display: flex; align-items: flex-start; gap: 10px; margin: 16px 0 12px; padding: 12px 14px; border-radius: 9px; background: var(--mf-blue-soft); color: var(--mf-text); font-size: 13px; line-height: 1.7; }
+.mf-onboarding-hint > .mf-icon { margin-top: 2px; color: var(--mf-blue); }
+.mf-onboarding-hint strong { font-weight: 650; }
 .mf-account-name { display: inline-flex; align-items: center; min-height: 44px; max-width: 150px; overflow-wrap: anywhere; font-size: 13px; }
 .mf-account-page { max-width: 620px; }
 .mf-account-card { background: var(--mf-surface); border: 1px solid var(--mf-line); border-radius: 18px; padding: clamp(22px, 4vw, 40px); }
@@ -332,6 +342,8 @@ body:has(.mf-discussion-dialog[open]) { overflow: hidden; }
     .mf-header-actions a { font-size: 12px; }
     .mf-header-search { order: 3; flex-basis: 100%; max-width: none; }
     .mf-home, .mf-page { padding-left: 20px; padding-right: 20px; }
+    .mf-onboarding-welcome { width: calc(100% - 40px); padding: 18px; align-items: flex-start; flex-direction: column; gap: 14px; }
+    .mf-onboarding-welcome form { max-width: 100%; }
     .mf-hero { padding: 36px 0 46px; }
     .mf-hero-brand { font-size: 42px; }
     .mf-hero-brand img { width: 240px; }

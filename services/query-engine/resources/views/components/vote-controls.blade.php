@@ -12,11 +12,15 @@
     $feedback = session('vote_feedback', []);
     $feedback = ($feedback['type'] ?? null) === $type && ($feedback['id'] ?? null) === $id ? $feedback : [];
     $label = $type === 'post' ? 'thread' : ($removed ? 'removed comment' : 'comment by '.(\App\Support\SearchResultPresenter::text(data_get($item, 'author.username'), 255) ?: 'Community member'));
+    $onboardingHint = $type === 'post' && ! $closed && $signedIn && $score !== null && \App\Services\Onboarding::state(request())['vote'];
 @endphp
-<div @if ($type === 'post') id="thread-votes" @endif class="mf-vote" role="group" aria-label="Votes for {{ $label }}" data-vote data-vote-type="{{ $type }}" data-vote-id="{{ $id }}" data-current-vote="{{ $current }}">
+<div @if ($type === 'post') id="thread-votes" @endif class="mf-vote" role="group" aria-label="Votes for {{ $label }}" @if ($onboardingHint) aria-describedby="onboarding-vote" @endif data-vote data-vote-type="{{ $type }}" data-vote-id="{{ $id }}" data-current-vote="{{ $current }}">
     @if ($removed)
         <p class="mf-vote-status">Voting unavailable for removed content.</p>
     @else
+        @if ($onboardingHint)
+            <p id="onboarding-vote" class="mf-onboarding-hint" data-onboarding-step="vote"><x-search-icon name="up" /><span><strong>Found a useful perspective?</strong> Upvote helpful threads and replies. You can change or remove your vote anytime.</span></p>
+        @endif
         <form method="POST" action="{{ route('threads.vote', $thread['id']) }}" data-vote-form>
             @csrf
             <input type="hidden" name="votable_type" value="{{ $type }}">

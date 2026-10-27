@@ -38,7 +38,7 @@ return Application::configure(basePath: dirname(__DIR__))
                         ->withHeaders($exception->getHeaders())->header('Cache-Control', 'private, no-store')->header('Referrer-Policy', 'no-referrer');
                 }
             }
-            if ($exception instanceof HttpExceptionInterface && $request->is('threads/*', 'community/*', 'sign-in', 'register', 'sign-out')) {
+            if ($exception instanceof HttpExceptionInterface && $request->is('threads/*', 'community/*', 'sign-in', 'register', 'sign-out', 'onboarding')) {
                 $status = $exception->getStatusCode();
                 if (in_array($status, [401, 403, 404, 419, 429, 503], true)) {
                     [$heading, $message] = match ($status) {

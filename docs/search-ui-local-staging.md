@@ -73,7 +73,10 @@ no-JavaScript forms and explicit retry after a real forum outage. Account checks
 exercise real SMTP reset links, single-use token consumption, password-confirmed
 deletion, revoked credentials, retained discussions/other-reader votes, and
 concurrent PostgreSQL reset/deletion/voting. The account forms run with and without
-JavaScript on desktop and mobile.
+JavaScript on desktop and mobile. Onboarding checks cover welcome dismissal,
+first search, Discuss and first-vote completion, failure/retry, account switching,
+cross-session persistence, both themes, and ordinary HTML forms. Lifecycle refresh
+events are delivered explicitly in headless Chromium, where all tabs stay visible.
 Recovery tests briefly stop/restart **this project's**
 forum, MongoDB and mail services and verify error/retry behavior. They restore the services in
 `finally` blocks. Run the suite when the local staging UI can be interrupted.
@@ -140,6 +143,20 @@ after completing their account journeys.
   transport. Staging uses the pinned Mailpit image, `MAIL_MAILER=smtp` and
   `SEARCH_UI_URL=http://127.0.0.1:18081`; `SEARCH_UI_STAGING_MAIL_PORT` can change
   the inbox's loopback port. The forum API contract is in its README.
+
+## Lightweight onboarding
+
+Create a new account to see the welcome banner; the seeded reader predates
+onboarding and stays unenrolled. **Got it** or a successful nonempty HTML search
+clears the welcome. The first usable web result carries an inline Discuss hint;
+opening its desktop discussion list or a discussion/thread page completes it.
+An eligible thread shows voting guidance until the first committed nonzero
+post/comment vote. Discuss/voting guidance expires after seven days, and completed
+steps stay complete across sign-out/sign-in. All state lives on the forum account.
+
+See [the onboarding behavior and verification record](search-ui-onboarding.md).
+The new migration runs automatically when this staging forum starts. The recovery
+vote scenario also checks retryable welcome/vote guidance during a real forum outage.
 
 ## Thread and comment voting
 

@@ -21,6 +21,12 @@ class SearchResultPresenter
         $this->pattern = $patterns === [] ? null : '~('.implode('|', $patterns).')~iu';
     }
 
+    public static function isSourceUrl(mixed $value): bool
+    {
+        return is_string($value) && strlen($value) <= 2048 && filter_var($value, FILTER_VALIDATE_URL)
+            && in_array(strtolower(parse_url($value, PHP_URL_SCHEME) ?? ''), ['http', 'https'], true);
+    }
+
     public static function text(mixed $value, int $limit = 12000): string
     {
         if (! is_string($value)) {

@@ -53,6 +53,11 @@ class VoteController extends Controller
                 ->first();
 
             $oldValue = $existingVote ? (int) $existingVote->value : 0;
+            // Only a valid, committed non-zero vote completes the hint. Removing
+            // a vote never reopens onboarding, and failed writes roll this back.
+            if ($value !== 0 && $actor->onboarding_started_at !== null && $actor->onboarding_vote_at === null) {
+                $actor->forceFill(['onboarding_vote_at' => now()])->save();
+            }
             if ($oldValue === $value) {
                 return [
                     'vote' => $existingVote,

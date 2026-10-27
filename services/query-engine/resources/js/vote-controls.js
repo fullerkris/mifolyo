@@ -98,6 +98,7 @@ export function initVoteControls(root) {
                 buttons.find(button => Number(button.dataset.voteDirection) === (value || 1))?.focus({ preventScroll: true });
             }
             retry.hidden = true;
+            document.dispatchEvent(new CustomEvent('mifolyo:vote-saved', { detail: { value } }));
             announce(`${value === 0 ? 'Vote removed.' : value === 1 ? 'Upvote saved.' : 'Downvote saved.'} Score ${data.score}.`);
         } catch (_) {
             if (!blocked) {

@@ -47,6 +47,7 @@ Route::middleware(['auth:api', 'auth.token.fresh', 'throttle:api-read'])->group(
 
 Route::middleware(['auth:api', 'auth.token.fresh', 'throttle:api-write'])->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
+    Route::post('/auth/onboarding', [AuthController::class, 'onboarding']);
     Route::post('/communities', [CommunityController::class, 'store']);
     Route::post('/communities/{community:slug}/join', [CommunityController::class, 'join']);
     Route::post('/threads', [ThreadController::class, 'store']);

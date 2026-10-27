@@ -100,6 +100,7 @@ Configured in `config/services.php` under `search` and backed by env vars:
 - `POST /api/auth/login`
 - `GET /api/auth/me` (Bearer token)
 - `POST /api/auth/logout` (Bearer token)
+- `POST /api/auth/onboarding` (Bearer token; complete `welcome` or `discuss`)
 - `POST /api/auth/forgot-password`
 - `POST /api/auth/reset-password`
 - `DELETE /api/auth/account` (Bearer token, current password, confirmation)
@@ -142,6 +143,37 @@ Configured in `config/services.php` under `search` and backed by env vars:
 Clients should retry an uncertain write with the **same explicit value** and
 apply only confirmed response totals. Authentication recovery requires a fresh
 user action to vote; it does not replay the failed request.
+
+## Account-backed onboarding
+
+New API and web registrations set `onboarding_started_at`. The migration
+`2026_10_27_000000_add_onboarding_progress_to_users` leaves existing accounts
+unenrolled. Registration/login/refresh responses include `data.user.onboarding`;
+`GET /api/auth/me` includes `data.onboarding`:
+
+```json
+{"welcome":true,"discuss":true,"vote":true}
+```
+
+Each boolean means **show this guidance**, not "step completed". Welcome remains
+eligible until dismissed or a successful Search UI search. Discuss/vote guidance
+also expires exactly seven days after enrollment. Completion timestamps are
+private account fields; progress survives logout, token rotation and new devices.
+
+`POST /api/auth/onboarding` accepts `{"step":"welcome"}` or
+`{"step":"discuss"}` and returns the three booleans in `data`. It is authenticated,
+write-rate-limited, idempotent and account-scoped. It rechecks the token under the
+account row lock, coordinating with password reset/deletion and voting. Unsupported
+steps (including `vote`) return 422. Existing unenrolled accounts remain unchanged.
+
+Only a successfully committed nonzero post/comment vote completes voting guidance,
+within the vote transaction. Failed/rejected votes and zero-value removals do not
+complete it; removing a previously saved vote never reopens guidance. Responses
+and the Search UI's `/onboarding` gateway are private and non-cacheable.
+
+Deploy the forum migration before serving this version. See
+[`docs/search-ui-onboarding.md`](../../docs/search-ui-onboarding.md) for browser
+behavior, rollout and local verification.
 
 ## Search UI account lifecycle
 

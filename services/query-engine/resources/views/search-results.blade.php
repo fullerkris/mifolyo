@@ -19,10 +19,12 @@
                 @if (count($results) > 0)
                     @php
                         $presenter = new \App\Support\SearchResultPresenter($displayQuery);
+                        $discussHintIndex = \App\Services\Onboarding::state(request())['discuss']
+                            ? collect($results)->search(fn ($res) => $presenter::isSourceUrl(data_get($res, '_id'))) : false;
                     @endphp
                     <ul class="mf-results-list">
-                        @foreach ($results as $res)
-                            <x-search-result :url="data_get($res, '_id')" :title="data_get($res, 'title')" :summary="data_get($res, 'summary_text')" :description="data_get($res, 'description')" :presenter="$presenter" />
+                        @foreach ($results as $index => $res)
+                            <x-search-result :url="data_get($res, '_id')" :title="data_get($res, 'title')" :summary="data_get($res, 'summary_text')" :description="data_get($res, 'description')" :presenter="$presenter" :onboarding-hint="$index === $discussHintIndex" />
                         @endforeach
                     </ul>
                 @else

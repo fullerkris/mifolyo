@@ -3,6 +3,7 @@ import { initSearchJourney } from './search-journey.js';
 import { initDiscussionCounts } from './discussion-counts.js';
 import { initConnectionMap } from './connection-map.js';
 import { initVoteControls } from './vote-controls.js';
+import { initOnboarding } from './onboarding.js';
 
 const themeButton = document.querySelector('[data-theme-toggle]');
 const updateThemeButton = () => {
@@ -49,6 +50,7 @@ window.addEventListener('pageshow', () => {
 });
 
 const dialog = document.querySelector('[data-discussion-dialog]');
+initOnboarding();
 const panelRoot = dialog?.querySelector('[data-thread-browser]');
 const panel = panelRoot ? new ThreadBrowser(panelRoot) : null;
 const results = document.querySelector('[data-search-context]');

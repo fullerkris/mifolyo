@@ -50,9 +50,10 @@ if ($mode === 'query') {
         $database->words->updateOne(['word' => 'ux05', 'url' => $url], ['$set' => ['weight' => 1.0 - $index / 100]], ['upsert' => true]);
     }
     // Image associations share artwork while preserving their individual source pages.
-    $artwork = ['http://127.0.0.1:18081/staging-media/connections.svg', 'http://127.0.0.1:18081/staging-media/reading.svg', 'http://127.0.0.1:18081/mifolyo-mark.svg'];
+    $searchUrl = rtrim((string) config('app.url'), '/');
+    $artwork = [$searchUrl.'/staging-media/connections.svg', $searchUrl.'/staging-media/reading.svg', $searchUrl.'/mifolyo-mark.svg'];
     foreach ($pages as $index => [$pageUrl, $title]) {
-        $imageUrl = $index === 23 ? 'http://127.0.0.1:18081/staging-media/missing.svg' : $artwork[$index % count($artwork)];
+        $imageUrl = $index === 23 ? $searchUrl.'/staging-media/missing.svg' : $artwork[$index % count($artwork)];
         $association = hash('sha256', $pageUrl."\0".$imageUrl);
         $database->images->updateOne(['_id' => $association], ['$set' => ['source_url' => $imageUrl, 'page_url' => $pageUrl, 'alt' => 'Synthetic staging artwork for '.$title, 'filename' => basename($imageUrl)]], ['upsert' => true]);
         foreach (['staging', 'ux06', 'gallery'] as $word) {

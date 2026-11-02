@@ -1,4 +1,4 @@
-name: mifolyo-search-ui-staging
+name: ${MIFOLYO_TEST_PROJECT:-mifolyo-search-ui-staging}
 
 services:
   mongo:
@@ -55,7 +55,7 @@ services:
       retries: 20
 
   query-assets:
-    image: mifolyo-search-ui-staging-query:local
+    image: ${MIFOLYO_TEST_PROJECT:-mifolyo-search-ui-staging}-query:local
     entrypoint: [/bin/sh, -ec]
     command: ["cp -R /var/www/public/. /assets/"]
     network_mode: none
@@ -63,7 +63,7 @@ services:
       - query-public:/assets
 
   query-engine:
-    image: mifolyo-search-ui-staging-query:local
+    image: ${MIFOLYO_TEST_PROJECT:-mifolyo-search-ui-staging}-query:local
     build:
       context: ../../services/query-engine
     entrypoint: [php-fpm]
@@ -72,7 +72,7 @@ services:
       APP_ENV: staging
       APP_KEY: base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
       APP_DEBUG: "false"
-      APP_URL: http://127.0.0.1:18081
+      APP_URL: http://127.0.0.1:${SEARCH_UI_STAGING_HTTP_PORT:-18081}
       LOG_CHANNEL: stderr
       SESSION_DRIVER: file
       SESSION_COOKIE: mifolyo_search_staging_session
@@ -108,7 +108,7 @@ services:
       retries: 20
 
   forum-engine:
-    image: mifolyo-search-ui-staging-forum:local
+    image: ${MIFOLYO_TEST_PROJECT:-mifolyo-search-ui-staging}-forum:local
     build:
       context: ../../services/forum-engine
     command: [/bin/sh, -ec, "php artisan migrate --force && exec php artisan serve --host=0.0.0.0 --port=8000"]
@@ -118,7 +118,7 @@ services:
       APP_ENV: staging
       APP_KEY: base64:BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=
       APP_DEBUG: "false"
-      APP_URL: http://127.0.0.1:18082
+      APP_URL: http://127.0.0.1:${SEARCH_UI_STAGING_FORUM_PORT:-18082}
       LOG_CHANNEL: stderr
       DB_CONNECTION: pgsql
       DB_HOST: postgres
@@ -135,7 +135,7 @@ services:
       MAIL_PORT: "1025"
       MAIL_FROM_ADDRESS: accounts@staging.mifolyo.test
       MAIL_FROM_NAME: MiFolyo Staging
-      SEARCH_UI_URL: http://127.0.0.1:18081
+      SEARCH_UI_URL: http://127.0.0.1:${SEARCH_UI_STAGING_HTTP_PORT:-18081}
       SEARCH_API_BASE_URL: http://caddy
       MIFOLYO_LOCAL_SEARCH_STAGING: "1"
     volumes:
@@ -157,8 +157,8 @@ services:
   caddy:
     image: caddy:2-alpine
     ports:
-      - "127.0.0.1:18081:80"
-      - "127.0.0.1:18082:8080"
+      - "127.0.0.1:${SEARCH_UI_STAGING_HTTP_PORT:-18081}:80"
+      - "127.0.0.1:${SEARCH_UI_STAGING_FORUM_PORT:-18082}:8080"
     volumes:
       - ./search-ui-staging.Caddyfile:/etc/caddy/Caddyfile:ro
       - query-public:/srv:ro

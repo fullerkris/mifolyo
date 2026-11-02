@@ -1,0 +1,23 @@
+{
+    auto_https off
+}
+
+# Tailscale Serve terminates HTTPS and forwards to this loopback-published port.
+:80 {
+    root * /srv/query
+    php_fastcgi query-engine:9000 {
+        root /var/www/public
+        env HTTPS on
+        env SERVER_PORT 443
+    }
+    file_server
+}
+
+# Internal API only; this listener is never published to the host.
+:8080 {
+    root * /srv/forum
+    php_fastcgi forum-engine:9000 {
+        root /var/www/public
+    }
+    file_server
+}

@@ -1,0 +1,216 @@
+name: mifolyo-production
+
+x-forum-environment: &forum-environment
+  APP_NAME: MiFolyo Forum
+  APP_ENV: production
+  APP_DEBUG: "false"
+  APP_KEY: ${FORUM_APP_KEY:?Set FORUM_APP_KEY}
+  APP_URL: ${MIFOLYO_PUBLIC_URL:?Set MIFOLYO_PUBLIC_URL}
+  SEARCH_UI_URL: ${MIFOLYO_PUBLIC_URL}
+  SEARCH_API_BASE_URL: http://caddy
+  LOG_CHANNEL: stderr
+  DB_CONNECTION: pgsql
+  DB_HOST: postgres
+  DB_PORT: "5432"
+  DB_DATABASE: mifolyo_forum
+  DB_USERNAME: mifolyo
+  DB_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+  SESSION_DRIVER: database
+  SESSION_SECURE_COOKIE: "true"
+  CACHE_STORE: database
+  QUEUE_CONNECTION: database
+  MAIL_MAILER: smtp
+  MAIL_SCHEME: ${MAIL_SCHEME:-smtp}
+  MAIL_HOST: ${MAIL_HOST:?Set MAIL_HOST}
+  MAIL_PORT: ${MAIL_PORT:-587}
+  MAIL_USERNAME: ${MAIL_USERNAME:-}
+  MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+  MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS:?Set MAIL_FROM_ADDRESS}
+  MAIL_FROM_NAME: MiFolyo
+
+services:
+  mongo:
+    image: mongo:8
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mifolyo_admin
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:?Set MONGO_ROOT_PASSWORD}
+      MONGO_QUERY_PASSWORD: ${MONGO_QUERY_PASSWORD:?Set MONGO_QUERY_PASSWORD}
+    volumes:
+      - mongo-data:/data/db
+      - mongo-config:/data/configdb
+      - ./production-mongo-init.js:/docker-entrypoint-initdb.d/query-user.js:ro
+    networks: [data]
+    healthcheck:
+      test: [CMD-SHELL, "mongosh --quiet --username mifolyo_admin --password \"$$MONGO_INITDB_ROOT_PASSWORD\" --authenticationDatabase admin --eval 'quit(db.adminCommand({ping: 1}).ok ? 0 : 1)'"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: mifolyo_forum
+      POSTGRES_USER: mifolyo
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks: [data]
+    healthcheck:
+      test: [CMD, pg_isready, -U, mifolyo, -d, mifolyo_forum]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?Set REDIS_PASSWORD}
+    command: [/bin/sh, -ec, 'exec redis-server --appendonly yes --requirepass "$$REDIS_PASSWORD"']
+    volumes:
+      - redis-data:/data
+    networks: [data]
+    healthcheck:
+      test: [CMD-SHELL, 'REDISCLI_AUTH="$$REDIS_PASSWORD" redis-cli ping | grep -qx PONG']
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  query-assets:
+    image: ${MIFOLYO_QUERY_IMAGE:?Set MIFOLYO_QUERY_IMAGE}
+    entrypoint: [/bin/sh, -ec]
+    command: ['find /assets -mindepth 1 -maxdepth 1 -exec rm -rf {} +; cp -R /var/www/public/. /assets/']
+    network_mode: none
+    volumes:
+      - query-public:/assets
+
+  forum-assets:
+    image: ${MIFOLYO_FORUM_IMAGE:?Set MIFOLYO_FORUM_IMAGE}
+    entrypoint: [/bin/sh, -ec]
+    command: ['find /assets -mindepth 1 -maxdepth 1 -exec rm -rf {} +; cp -R /var/www/public/. /assets/']
+    network_mode: none
+    volumes:
+      - forum-public:/assets
+
+  query-engine:
+    image: ${MIFOLYO_QUERY_IMAGE}
+    build:
+      context: ../../services/query-engine
+    restart: unless-stopped
+    # Do not run the generic entrypoint's cache:clear on persistent shared Redis.
+    entrypoint: [php-fpm]
+    environment:
+      APP_NAME: MiFolyo
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_KEY: ${QUERY_APP_KEY:?Set QUERY_APP_KEY}
+      APP_URL: ${MIFOLYO_PUBLIC_URL}
+      LOG_CHANNEL: stderr
+      MONGODB_URI: mongodb://mifolyo_query:${MONGO_QUERY_PASSWORD}@mongo:27017/?authSource=mifolyo_index&serverSelectionTimeoutMS=2000&serverSelectionTryOnce=false
+      MONGODB_DATABASE: mifolyo_index
+      FORUM_API_BASE_URL: http://caddy:8080
+      FORUM_API_TIMEOUT_SECONDS: "5"
+      FORUM_DEFAULT_COMMUNITY_SLUG: general
+      SESSION_DRIVER: redis
+      SESSION_SECURE_COOKIE: "true"
+      SESSION_COOKIE: mifolyo_session
+      CACHE_STORE: redis
+      QUEUE_CONNECTION: sync
+      REDIS_CLIENT: predis
+      REDIS_HOST: redis
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_PREFIX: mifolyo_production_
+    networks: [data, web]
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      query-assets:
+        condition: service_completed_successfully
+    healthcheck:
+      test: [CMD, php, -r, "exit(@fsockopen('127.0.0.1', 9000) ? 0 : 1);"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  forum-engine:
+    image: ${MIFOLYO_FORUM_IMAGE}
+    build:
+      context: ../../services/forum-engine
+      dockerfile: Dockerfile.production
+    restart: unless-stopped
+    environment: *forum-environment
+    # Only the forum needs outbound connectivity, for SMTP delivery.
+    networks: [data, web, mail-egress]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      forum-assets:
+        condition: service_completed_successfully
+    healthcheck:
+      test: [CMD, php, -r, "exit(@fsockopen('127.0.0.1', 9000) ? 0 : 1);"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  forum-worker:
+    image: ${MIFOLYO_FORUM_IMAGE}
+    restart: unless-stopped
+    command: [php, artisan, 'queue:work', database, '--queue=moderation,default', '--sleep=3', '--tries=3', '--timeout=60']
+    stop_grace_period: 75s
+    environment: *forum-environment
+    networks: [data, web, mail-egress]
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  forum-migrate:
+    image: ${MIFOLYO_FORUM_IMAGE}
+    profiles: [tools]
+    command: [php, artisan, migrate, '--force', '--no-interaction']
+    environment: *forum-environment
+    networks: [data]
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${MIFOLYO_HTTP_PORT:-18090}:80"
+    volumes:
+      - ./production.Caddyfile:/etc/caddy/Caddyfile:ro
+      - query-public:/srv/query:ro
+      - forum-public:/srv/forum:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    networks: [web, ingress]
+    depends_on:
+      query-engine:
+        condition: service_healthy
+      forum-engine:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD-SHELL, 'wget -q -O /dev/null http://127.0.0.1/api/health/ready && wget -q -O /dev/null http://127.0.0.1:8080/api/health/ready']
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+volumes:
+  mongo-data:
+  mongo-config:
+  postgres-data:
+  redis-data:
+  query-public:
+  forum-public:
+  caddy-data:
+  caddy-config:
+
+networks:
+  data:
+    internal: true
+  web:
+    internal: true
+  ingress:
+  mail-egress:

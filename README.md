@@ -202,6 +202,11 @@ Supporting scripts:
 Environment boundaries and production access policy are documented in
 `docs/environments.md`.
 
+Application startup scripts and setup instructions are in
+[`docs/environment-scripts.md`](docs/environment-scripts.md):
+`scripts/test-env.sh` starts a dedicated integrated local test stack, and
+`scripts/production-env.sh` manages the separate production application definition.
+
 ## Historical V1 Baseline Test Procedure (Blocked)
 
 > [!CAUTION]

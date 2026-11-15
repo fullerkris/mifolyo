@@ -1,0 +1,35 @@
+{
+  "exit_code": 0,
+  "in_memory_redirects": [
+    "preloaded final product modules",
+    "HERE output directory",
+    "SOURCE hash directory",
+    "fixture import path"
+  ],
+  "old_probe": "/var/home/kfuller/Documents/Git_Projects/mifolyo/out/c0-runtime-adapter-2026-10-24/correctness-review/independent_probes.py",
+  "old_probe_modified": false,
+  "old_probe_sha256": "f043f39f6a57a216405c5193dd8ff2ed6a864e8e3e86c7662e40e211591a571c",
+  "old_source_modules_loaded": {},
+  "output_directory": "/var/home/kfuller/Documents/Git_Projects/mifolyo/out/c0-runtime-adapter-2026-10-24/remediation/correctness-review",
+  "product_modules": {
+    "contracts": {
+      "path": "/var/home/kfuller/Documents/Git_Projects/mifolyo/out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/contracts.py",
+      "sha256": "6a3c4dfe7b6fb4524771b26fdcbcba39be2c5893d52e2e4caeebf762df27a7f4"
+    },
+    "docker_backend": {
+      "path": "/var/home/kfuller/Documents/Git_Projects/mifolyo/out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/docker_backend.py",
+      "sha256": "7a3aaaf2de8c3dd79f6b749dfbed00fcf35ed052d62dc20246bd66fe91d19e9c"
+    },
+    "local_process": {
+      "path": "/var/home/kfuller/Documents/Git_Projects/mifolyo/out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/local_process.py",
+      "sha256": "ad40d3fe4775bc2e01768b4a3c0d16b24776a74717d70e9e4e991ad29cb0700e"
+    },
+    "streams": {
+      "path": "/var/home/kfuller/Documents/Git_Projects/mifolyo/out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/streams.py",
+      "sha256": "5892e07eaf0fba21c99c873489527a32f687c44dbcc4838a8adfb6f36d9b693d"
+    }
+  },
+  "test_methods_modified": false,
+  "umask": "022",
+  "wrapper_sha256": "5b81e51bfbbab1c8b7e68158ce8b4bcac885e2c9a1d9dae93adc62a1f75849e3"
+}

@@ -1,0 +1,9 @@
+test_direct_timeout_translation_has_stable_value_free_error (__main__.FixBoundaries.test_direct_timeout_translation_has_stable_value_free_error) ... ok
+test_exact_nnp_token_acceptance_and_negative_variants_via_wire (__main__.FixBoundaries.test_exact_nnp_token_acceptance_and_negative_variants_via_wire) ... ok
+test_nnp_does_not_relax_duplicates_bounds_or_other_blockers (__main__.FixBoundaries.test_nnp_does_not_relax_duplicates_bounds_or_other_blockers) ... ok
+test_timeout_at_each_metadata_read_preserves_cli_json (__main__.FixBoundaries.test_timeout_at_each_metadata_read_preserves_cli_json) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.012s
+
+OK

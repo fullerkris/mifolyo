@@ -1,0 +1,21 @@
+{
+  "files": {
+    "SECURITY-REVIEW.md": "741ef45475dfd4d0faaebcb93c2cff7ba5901452aae3f383ba1da0a98cc3d7bc",
+    "baseline-original.exit": "bde294368bfed77c2cddf8cec271d398aee9cdbab3b26e1059281bd33adb0120",
+    "baseline-original.log": "fb36693f9ab1d2f5690a354dfc7f44e8f50c38533375a16e49d18dcc18443574",
+    "deep-json-original.exit": "bde294368bfed77c2cddf8cec271d398aee9cdbab3b26e1059281bd33adb0120",
+    "deep-json-original.json": "f9cad393b56569e7700f549243ad637af51fe70b6563ad15decf6b57ae028f9a",
+    "deep-json-original.log": "9cd142db26b0a570016d261a6d84f6baac4b210b35641fecf597cca145f9a001",
+    "deep_json_probe.py": "508515b2e3e31e698f326a168f84ec09a47f504bfe4e6cbaf16d34b6fea3438c",
+    "documentation-lookups.md": "973e4b8781813309737458f5da76003b1f412a622eb34023f8f6b3a3c597db6d",
+    "independent-original.exit": "bde294368bfed77c2cddf8cec271d398aee9cdbab3b26e1059281bd33adb0120",
+    "independent-original.json": "436d7adbbabfe7dafe9448d504cbfee9fdb78c93bf216ecb56f7179b43e89171",
+    "independent-original.log": "f9cb90831085573af21547143b978930e94ae656b44440657f7c89d87b969471",
+    "integrity-after.json": "c73e04f5f6fd3bd90ce8c77d93310dc45face2f8833f036fc5540e11f29e9d68",
+    "integrity-before.json": "4c5a7e4edfcbae780be6a1120dcdc9fcaf0c67f1d0aeab8ae7bca572b3aa89c0",
+    "review-summary.json": "cbd9ff8b61da256bf13ba03c530e13573ce65d821f20247cb464db718da2afc4",
+    "transport_security_tests.py": "698bd866da0b6aef849bef6b1f6e6b4c76185bcd4ba7015d10b0fb021e18bc59"
+  },
+  "kind": "preflight_transport_security_rereview_evidence_inventory",
+  "source_inventory_sha256": "faf8d794802f7a3b7603bea199689014cef21d415764571725ff9e3b66414baf"
+}

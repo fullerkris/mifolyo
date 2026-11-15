@@ -1,0 +1,670 @@
+diff --git a/docs/crawl-jobs-v2-m4-c0-native-preflight-2026-10-17.md b/docs/crawl-jobs-v2-m4-c0-native-preflight-2026-10-17.md
+new file mode 100644
+index 0000000..2f9ef49
+--- /dev/null
++++ b/docs/crawl-jobs-v2-m4-c0-native-preflight-2026-10-17.md
+@@ -0,0 +1,66 @@
++# C0-ARCH-05 native host preflight — 2026-10-17
++
++**Status:** implementation and host discovery in progress; native admission and
++calibration are blocked on compatible host selection and execution assembly.
++
++Working branch: `feature/crawl-jobs-v2-c0-native-calibration`, based on published
++C0-ARCH-04 `babb2180d05698e64b7d9baf37f9cab14b3c0f7f`. [PR #32](https://github.com/fullerkris/mifolyo/pull/32)
++is open. Both native image jobs in run `39065026017` report success; remaining CI,
++downloaded-artifact verification and owner merge/actual-main verification remain
++predecessor gates. Historical C0-ARCH-04 evidence retains its original state.
++
++## Owner-selected host discovery
++
++The owner selected read-only inspection of the configured `moogle-main` SSH host.
++The observations below came from that host, not the local Podman workstation.
++
++| Check | Observation | Consequence |
++|---|---|---|
++| Native ABI | Linux x86_64; Docker server linux/amd64 | x64 candidate only |
++| Engine | Docker 29.9.1 / API 1.56; kernel 6.8.0-110-generic | Fixed local socket accessible |
++| Resource metadata | cgroup v2, systemd; memory/swap/PID/CPU limits supported | Necessary metadata available |
++| Security metadata | AppArmor, builtin seccomp, cgroup namespaces | Live actor confinement remains unverified |
++| Yama | `ptrace_scope=1` | Blocks the unchanged capless sibling observer |
++| Context collector | Anchor and code directory absent | Installation/admission pending |
++| ARM64 | Host not selected | Native ARM64 admission pending |
++
++The [kernel Yama documentation](https://docs.kernel.org/admin-guide/LSM/Yama.html)
++explains the descendant/declared-tracer restriction in mode 1. C0's independently
++launched sibling observer has no capabilities, parentage change or `PR_SET_PTRACER`
++exception. This is a **preflight incompatibility**, not a failed native attach
++experiment: zero C0 actors/trials were started. C0's original
++[calibration contract](evidence/m4-design-gates-2026-10-05/d01/calibration-plan.md)
++retains its policy/privilege constraints.
++
++The local x64 workstation has rootless Podman, no Docker client and no local
++Docker socket. Its construction environment cannot satisfy the current runtime
++adapter's endpoint contract.
++
++## Repeatable implementation
++
++- `tests/crawl-jobs-v2-observer/host_preflight.py`: bounded, read-only observations
++  for either explicit native architecture, selected local Docker metadata,
++  before/after stability checks and value-free blockers.
++- `scripts/preflight-crawl-jobs-v2-native-host.py`: JSON/exit-status CLI.
++- `tests/crawl-jobs-v2-observer/test_host_preflight.py`: both-platform controls,
++  Yama/resource/namespace/collector failures, drift, bounds, typed parsing,
++  command allowlisting, deadlines and diagnostic leakage checks.
++
++The result is `BLOCKED` or `HOST_CANDIDATE`; neither is execution approval or
++runtime admission. A candidate retains explicit pending obligations. Public
++collector-path presence is not source/config/permission/SSH validation. No
++collector keys, Docker proxy configuration or arbitrary diagnostics are collected.
++No preflight observation populates a trusted context anchor or filter count.
++
++## Remaining C0-ARCH-05 work
++
++1. Select eligible native x64 and ARM64 hosts within the existing C0 contract.
++2. Independently establish daemon/kernel/namespace pairing; provision and admit
++   the pinned-SSH collector and exact images on those hosts.
++3. Complete closed trial dispatch, actual-end hold/aggregate-pause measurement,
++   whole-trial confinement/resource evidence and failure/cleanup handlers.
++4. Freeze and independently review the complete execution packet, then perform
++   the finite native calibration and retain all outcomes separately per platform.
++
++The host-discovery/preflight work is the first C0-ARCH-05 increment. It does not
++complete the 276-trial suite or C0-ARCH-06 accepted-image publication.
+diff --git a/docs/crawl-jobs-v2-plan.md b/docs/crawl-jobs-v2-plan.md
+index b8d782b..a552ee1 100644
+--- a/docs/crawl-jobs-v2-plan.md
++++ b/docs/crawl-jobs-v2-plan.md
+@@ -2,11 +2,11 @@
+ 
+ **Finding:** F3 - durable crawl-job leases and recovery
+ 
+-**Last updated:** 2026-10-17 (C0-ARCH-03 PR #30 merged as `82cd307` with exact main CI verified; C0-ARCH-04 local source/static-image preparation complete: 288 tests, six verified images, two independent GO verdicts and all findings closed; publication/native hosted image CI next)
++**Last updated:** 2026-10-17 (C0-ARCH-04 published as `babb218` / PR #32; both native image jobs report success, full CI/evidence and merge gates pending; C0-ARCH-05 host preflight started, selected x64 host blocked by Yama scope 1 and missing collector)
+ 
+-**Code baseline:** owner-merged PR #30 at `82cd307` preserves the published `7ef2041` tree and all 51 reviewed source files. Exact PR and actual main CI pass 14 contexts / 23 jobs and 256 C0 tests; main gate `fa674a60…`. The working C0-ARCH-04 branch retains the equivalent reviewed PR base
++**Code baseline:** published C0-ARCH-04 `babb218` / PR #32, parent owner-merged PR #30 at `82cd307`. PR #30 preserves the published `7ef2041` tree and all 51 reviewed source files. Exact PR #30 and actual main CI pass 14 contexts / 23 jobs and 256 C0 tests; main gate `fa674a60…`
+ 
+-**Working branch:** `feature/crawl-jobs-v2-c0-runtime-images`, based at `7ef2041`; C0-ARCH-04 image tooling and successor evidence are local/uncommitted
++**Working branch:** `feature/crawl-jobs-v2-c0-native-calibration`, based at `babb218`; C0-ARCH-05 host-preflight changes are local/uncommitted
+ 
+ **Initial checkpoint:** `e4372a66201b8767bcca4d7476c30c5b7999922c`
+ 
+@@ -17,8 +17,14 @@ All 43 canonical operations and the sealed, zero-argument
+ bounded real-Redis `ledger-smoke-v1` and `ledger-claim-release-v1` cases pass;
+ full M4 acceptance is open.
+ 
+-**Current next gate:** source publication and native hosted image CI for the reviewed
+-[C0-ARCH-04 runtime image sets](crawl-jobs-v2-m4-c0-runtime-images-2026-10-17.md).
++**Current next gate:** compatible native host selection and reviewed
++[C0-ARCH-05 preflight](crawl-jobs-v2-m4-c0-native-preflight-2026-10-17.md).
++Owner-selected read-only `moogle-main` discovery found native x64 / Docker 29.9.1 /
++cgroup v2, but Yama scope 1 blocks unchanged C0 sibling tracing and the collector
++is absent. ARM64 host selection and complete execution assembly remain open.
++The [C0-ARCH-04 runtime image sets](crawl-jobs-v2-m4-c0-runtime-images-2026-10-17.md)
++are published as `babb218` / PR #32. Both native image jobs report success;
++full CI/artifact verification and owner merge/actual main verification are pending.
+ All six retained role images pass final-code static inspection and portable-archive
+ checks with byte-identical content records; 55 package + 3 auxiliary files pass
+ 288 tests under both umasks. Both independent reviewers return GO, with all
+@@ -150,8 +156,8 @@ while binding architecture-specific code, profiles, images and evidence.
+ | C0-ARCH-01 | Reconstruct and review the existing ARM64 artifacts using rootless Podman/QEMU on the x64 workstation | Complete: 11/11 native outputs and oracle manifest/interpreter match; both reviewers verify actual joins. Transport-source follow-ups are independently closed on the corrected 202-test snapshot |
+ | C0-ARCH-02 | Define explicit architecture selection and artifact/admission identities | Complete: owner-merged PR #26 at `d801646`; exact reviewed tree and 47-file / 238-test source inventory preserved. Exact PR and actual main CI: 14 contexts / 23 jobs on attempt 1; main gate `e11f449a…` |
+ | C0-ARCH-03 | Implement the x64 native runtime and context/oracle support | Complete: PR #30 owner-merged as `82cd307`, published tree preserved, 51 reviewed files / 256 tests, exact 14-context / 23-job PR and merged-main CI verified; main gate `fa674a60…` |
+-| C0-ARCH-04 | Build target/observer/oracle runtime images for both architectures | Local source/static-image preparation complete: 55 package + 3 auxiliary files / 288 tests under both umasks, six verified portable images, two independent GO verdicts and all findings closed. Ten stopped inspections cleaned; final artifacts/tooling durably retained. Gate `8be6ba0d…`; source publication and native hosted matrix verification pending |
+-| C0-ARCH-05 | Perform native runtime admission and calibration for each architecture | Planned: admitted ARM64 and x64 Linux environments with verified context-source placement, engine/backend compatibility, tracing/breakpoint, confinement, timing and cleanup evidence for each variant |
++| C0-ARCH-04 | Build target/observer/oracle runtime images for both architectures | Reviewed source/static-image preparation published as `babb218` / PR #32: 55 package + 3 auxiliary files / 288 tests, six verified portable images, two GO verdicts and all findings closed. Gate `8be6ba0d…`; both native image jobs report success. Full CI/retained-artifact and owner merge/main verification pending |
++| C0-ARCH-05 | Perform native runtime admission and calibration for each architecture | In progress: dual-architecture read-only host preflight. Selected x64 `moogle-main` has Docker/cgroup v2 but is blocked by Yama scope 1 and absent collector. Compatible hosts, context/image admission, full dispatch/confinement/timing/cleanup assembly and native calibration remain open |
+ | C0-ARCH-06 | Publish the accepted dual-architecture runtime set | Planned: retain separate immutable platform digests and acceptance records; publish a multi-architecture image index only after both referenced variants pass their required gates |
+ 
+ QEMU-assisted builds establish artifact construction, not native ARM64 kernel,
+diff --git a/scripts/preflight-crawl-jobs-v2-native-host.py b/scripts/preflight-crawl-jobs-v2-native-host.py
+new file mode 100644
+index 0000000..366985f
+--- /dev/null
++++ b/scripts/preflight-crawl-jobs-v2-native-host.py
+@@ -0,0 +1,10 @@
++#!/usr/bin/env python3
++"""Inspect fixed local Linux/Docker prerequisites without starting C0 actors."""
++from pathlib import Path
++import sys
++
++sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tests/crawl-jobs-v2-observer"))
++from host_preflight import main
++
++if __name__ == "__main__":
++    raise SystemExit(main())
+diff --git a/tests/crawl-jobs-v2-observer/README.md b/tests/crawl-jobs-v2-observer/README.md
+index 10ea37f..bdc14bd 100644
+--- a/tests/crawl-jobs-v2-observer/README.md
++++ b/tests/crawl-jobs-v2-observer/README.md
+@@ -160,6 +160,43 @@ name collisions. The dependency model uses RUNPATH precedence, resolves director
+ links and refuses active legacy RPATH or ambiguous library candidates; dynamic
+ loader execution and broader loader search behavior remain native acceptance work.
+ 
++### Native host preflight (C0-ARCH-05)
++
++Run on each proposed **native** Linux host, with the same local Docker endpoint
++used by the runtime adapter:
++
++```sh
++python3 -B scripts/preflight-crawl-jobs-v2-native-host.py --architecture x86_64
++python3 -B scripts/preflight-crawl-jobs-v2-native-host.py --architecture aarch64
++```
++
++Choose the matching architecture; emulated construction cannot supply native
++acceptance. The preflight reads fixed Linux observations and public collector-path
++metadata, and queries only `/usr/bin/docker --host unix:///var/run/docker.sock`
++`info`/`version`. Docker output is projected to selected fields before collection;
++full info (which may include proxy credentials), credentials and raw error text
++are not exported. Kernel and selected daemon observations are sampled twice.
++
++The bounded JSON report retains unavailable observations and known blockers:
++non-native ABI, changed kernel/daemon identity, nonzero Yama scope, missing cgroup
++controllers/limits, unsupported confinement or namespace mapping, missing local
++Docker and absent collector paths. It never falls back to Podman or another
++endpoint. Collector-path presence is only `PRESENT_UNVERIFIED`; it does not prove
++installation, permissions, source integrity, service identity or authentication.
++
++Exit 1 means `BLOCKED`. Exit 0 means only `HOST_CANDIDATE`, with explicit pending
++obligations and `host_admitted=false`, `execution_authorized=false`,
++`runtime_evidence=false`. Matching architecture/kernel-release metadata does not
++prove daemon/collector kernel and namespace placement. Live image/actor admission,
++whole-trial confinement, hardware breakpoints, timing, failure cases and independent
++cleanup remain required. Injected probes are labelled simulated.
++
++The first owner-selected `moogle-main` discovery found native x64, Docker 29.9.1
++and cgroup v2, but Yama `ptrace_scope=1` and absent collector paths block the
++unchanged C0 profile. The existing design forbids changing policy or establishing
++`PR_SET_PTRACER`/parentage exceptions to manufacture C0 equivalence. See the
++[host checkpoint](../../docs/crawl-jobs-v2-m4-c0-native-preflight-2026-10-17.md).
++
+ ## Implemented artifact components
+ 
+ - `contracts.py`: fixed 276-trial C0 registry, immutable preparation identities,
+diff --git a/tests/crawl-jobs-v2-observer/host_preflight.py b/tests/crawl-jobs-v2-observer/host_preflight.py
+new file mode 100644
+index 0000000..46a2f5c
+--- /dev/null
++++ b/tests/crawl-jobs-v2-observer/host_preflight.py
+@@ -0,0 +1,243 @@
++"""Read-only native-host discovery. A candidate is never runtime admission.
++
++Only the fixed local Docker endpoint is queried, with info/version commands.
++Collector metadata is inspected without reading credentials or issuing anchors.
++"""
++import argparse
++import ctypes
++import json
++import os
++import re
++import stat
++
++from contracts import Invalid, canonical, digest, exact, integer, platform, platform_digest, require, sha
++from docker_backend import command
++from linux_observation import LinuxReader
++from runtime_admission import CONTEXT_HASHES, NAMESPACES
++from streams import Deadline
++
++PREFIX = ("/usr/bin/docker", "--host", "unix:///var/run/docker.sock")
++INFO_FIELDS = {"id": "ID", "os": "OSType", "architecture": "Architecture", "version": "ServerVersion",
++    "kernel": "KernelVersion", "cgroup_version": "CgroupVersion", "cgroup_driver": "CgroupDriver",
++    "security_options": "SecurityOptions", "memory": "MemoryLimit", "swap": "SwapLimit",
++    "pids": "PidsLimit", "cpu_period": "CPUCfsPeriod", "cpu_quota": "CPUCfsQuota"}
++VERSION_FIELDS = {"os": "Server.Os", "architecture": "Server.Arch", "version": "Server.Version", "kernel": "Server.KernelVersion"}
++PENDING = ("daemon_kernel_namespace_pairing", "collector_installation_and_pinned_ssh_admission",
++    "runtime_image_and_actor_admission", "trial_dispatch_and_whole_trial_confinement",
++    "native_breakpoint_timing_and_failure_calibration", "independent_cleanup_and_evidence_review")
++COLLECTOR_PATHS = {"anchor": ("/etc/obs1/context-source.json", "file"),
++    "code": ("/opt/obs1/context-source", "directory")}
++
++
++def template(fields):
++    # Do not collect all of `docker info`: it may contain proxy credentials.
++    return "{" + ",".join('"' + key + '":{{json .' + value + "}}" for key, value in fields.items()) + "}"
++
++
++def metadata(raw, fields):
++    require(type(raw) is bytes and 0 < len(raw) <= 16384, "PREFLIGHT_METADATA_BOUND")
++    def pairs(rows):
++        result = {}
++        for key, value in rows:
++            require(key not in result, "PREFLIGHT_DUPLICATE")
++            result[key] = value
++        return result
++    def forbidden(_):
++        raise Invalid("PREFLIGHT_NUMBER")
++    try:
++        value = json.loads(raw, object_pairs_hook=pairs, parse_float=forbidden, parse_constant=forbidden)
++    except (ValueError, UnicodeError, RecursionError):
++        raise Invalid("PREFLIGHT_JSON") from None
++    exact(value, fields)
++    return value
++
++
++class HostProbe:
++    def __init__(self, architecture):
++        self.reader = LinuxReader(architecture)
++
++    def native(self):
++        uname = os.uname()
++        return {"os": uname.sysname, "architecture": uname.machine, "pointer_bytes": ctypes.sizeof(ctypes.c_void_p)}
++
++    def kernel(self):
++        return self.reader.kernel()
++
++    def interpreter(self):
++        return self.reader.executable()
++
++    def controllers(self):
++        names = self.reader.read("/sys/fs/cgroup/cgroup.controllers", 1024).split()
++        require(all(re.fullmatch(rb"[a-z_]+", name) for name in names) and len(names) == len(set(names)), "PREFLIGHT_CONTROLLERS")
++        return {name: name.encode() in names for name in ("cpu", "memory", "pids")}
++
++    def endpoint(self):
++        try:
++            socket = stat.S_ISSOCK(os.stat("/var/run/docker.sock").st_mode)
++        except FileNotFoundError:
++            socket = False
++        try:
++            client = stat.S_ISREG(os.stat(PREFIX[0]).st_mode) and os.access(PREFIX[0], os.X_OK)
++        except FileNotFoundError:
++            client = False
++        return {"socket_present": socket, "client_present": client}
++
++    def docker(self, operation, deadline):
++        require(operation in ("info", "version"), "PREFLIGHT_OPERATION")
++        fields = INFO_FIELDS if operation == "info" else VERSION_FIELDS
++        code, out, err = command([*PREFIX, operation, "--format", template(fields)], deadline)
++        require(type(code) is int and code == 0 and err == b"", "PREFLIGHT_DOCKER_TRANSPORT")
++        deadline.check()
++        return metadata(out, fields)
++
++    def collector(self):
++        observed = {}
++        for key, (path, kind) in COLLECTOR_PATHS.items():
++            try:
++                info = os.lstat(path)
++                expected = stat.S_ISREG(info.st_mode) if kind == "file" else stat.S_ISDIR(info.st_mode)
++                observed[key] = "PRESENT_UNVERIFIED" if expected else "UNEXPECTED_TYPE"
++            except FileNotFoundError:
++                observed[key] = "MISSING"
++        return observed
++
++
++def checked_kernel(value, architecture):
++    exact(value, ("architecture", *CONTEXT_HASHES, "namespaces", "ns_device", "resolution_ns", "yama_scope"))
++    require(value["architecture"] == architecture, "PREFLIGHT_ARCHITECTURE")
++    for key in CONTEXT_HASHES:
++        digest(value[key])
++    exact(value["namespaces"], NAMESPACES)
++    for number in (*value["namespaces"].values(), value["ns_device"]):
++        integer(number, 1)
++    integer(value["resolution_ns"], 1, 1000000)
++    integer(value["yama_scope"], 0, 3)
++    return value
++
++
++def checked_docker(info, version, architecture):
++    exact(info, INFO_FIELDS)
++    exact(version, VERSION_FIELDS)
++    selected = platform(architecture)
++    require(info["os"] == version["os"] == "linux" and
++        info["architecture"] in (architecture, selected["image_architecture"]) and
++        version["architecture"] == selected["image_architecture"], "PREFLIGHT_DOCKER_PLATFORM")
++    require(type(info["id"]) is str and re.fullmatch(r"[A-Za-z0-9:-]{1,256}", info["id"]) is not None, "PREFLIGHT_DAEMON_ID")
++    require(type(info["version"]) is str and re.fullmatch(r"[0-9][A-Za-z0-9.+-]{0,63}", info["version"]) is not None and
++        info["version"] == version["version"], "PREFLIGHT_DOCKER_VERSION")
++    require(type(info["kernel"]) is str and 0 < len(info["kernel"].encode()) <= 256 and
++        info["kernel"] == version["kernel"], "PREFLIGHT_DOCKER_KERNEL")
++    require(type(info["cgroup_version"]) is str and info["cgroup_version"] in ("1", "2") and
++        info["cgroup_driver"] in ("systemd", "cgroupfs", "none"), "PREFLIGHT_DOCKER_CGROUP")
++    limits = {key: info[key] for key in ("memory", "swap", "pids", "cpu_period", "cpu_quota")}
++    require(all(type(value) is bool for value in limits.values()), "PREFLIGHT_DOCKER_LIMITS")
++    options = info["security_options"]
++    require(type(options) is list and len(options) <= 16 and all(type(item) is str and
++        re.fullmatch(r"name=[a-z]+(?:,profile=[A-Za-z0-9_.-]+)?", item) is not None for item in options), "PREFLIGHT_DOCKER_SECURITY")
++    names = [option.split(",", 1)[0] for option in options]
++    require(len(names) == len(set(names)), "PREFLIGHT_DOCKER_SECURITY")
++    return {"daemon_sha256": sha(info["id"].encode()), "os": "linux", "architecture": selected["image_architecture"],
++        "version": info["version"], "kernel_release_sha256": sha(info["kernel"].encode()),
++        "cgroup_version": info["cgroup_version"], "cgroup_driver": info["cgroup_driver"], "limits": limits,
++        "security_options_sha256": sha(canonical(options)), "seccomp": "name=seccomp,profile=builtin" in options,
++        "cgroupns": "name=cgroupns" in options, "rootless": "name=rootless" in names, "userns": "name=userns" in names}
++
++
++def inspect_host(architecture, *, probe=None, deadline=None):
++    """Retain blockers and pending obligations; never generate an execution packet."""
++    platform(architecture)
++    simulated = probe is not None or deadline is not None
++    probe = HostProbe(architecture) if probe is None else probe
++    deadline = Deadline(10) if deadline is None else deadline
++    observed, blockers = {}, []
++    def collect(name, action):
++        try:
++            deadline.check()
++            value = action()
++            deadline.check()
++            # Snapshot nested fixture/producer objects before a subsequent read.
++            observed[name] = json.loads(canonical(value))
++            return observed[name]
++        except (OSError, ValueError, TypeError, RecursionError):
++            blockers.append(name.upper() + "_UNAVAILABLE")
++            observed[name] = None
++            return None
++
++    native = collect("native", probe.native)
++    if native != {"os": "Linux", "architecture": architecture, "pointer_bytes": 8}:
++        # Unrecognized OS/architecture strings are not exported as diagnostics.
++        observed["native"] = None
++        blockers.append("NATIVE_PLATFORM_MISMATCH")
++    kernel = collect("kernel", lambda: checked_kernel(probe.kernel(), architecture))
++    if kernel is not None and kernel["yama_scope"] != 0:
++        blockers.append("YAMA_RESTRICTS_C0_SIBLING_PTRACE")
++    collect("interpreter_sha256", lambda: digest(probe.interpreter()))
++    def controllers():
++        value = probe.controllers()
++        exact(value, ("cpu", "memory", "pids"))
++        require(all(type(item) is bool for item in value.values()), "PREFLIGHT_CONTROLLERS")
++        return value
++    control = collect("cgroup_controllers", controllers)
++    if control is not None and not all(control.values()):
++        blockers.append("CGROUP_CONTROLLERS_MISSING")
++    def endpoint():
++        value = probe.endpoint()
++        exact(value, ("socket_present", "client_present"))
++        require(all(type(item) is bool for item in value.values()), "PREFLIGHT_ENDPOINT")
++        return value
++    local = collect("docker_endpoint", endpoint)
++    if local is not None and not all(local.values()):
++        blockers.append("LOCAL_DOCKER_ENDPOINT_MISSING")
++    if local is not None and all(local.values()) and observed["native"] is not None:
++        def docker():
++            before = probe.docker("info", deadline)
++            frozen = canonical(before)
++            version = probe.docker("version", deadline)
++            result = checked_docker(before, version, architecture)
++            require(frozen == canonical(before) == canonical(probe.docker("info", deadline)), "PREFLIGHT_DAEMON_CHANGED")
++            return result
++        engine = collect("docker", docker)
++        if engine is not None:
++            if kernel is not None and engine["kernel_release_sha256"] != kernel["kernel_release_sha256"]:
++                blockers.append("DOCKER_HOST_KERNEL_MISMATCH")
++            if engine["cgroup_version"] != "2" or engine["cgroup_driver"] == "none" or not all(engine["limits"].values()):
++                blockers.append("DOCKER_RESOURCE_LIMITS_UNSUPPORTED")
++            if not engine["seccomp"] or not engine["cgroupns"]:
++                blockers.append("DOCKER_CONFINEMENT_UNSUPPORTED")
++            if engine["rootless"] or engine["userns"]:
++                blockers.append("DOCKER_NAMESPACE_MAPPING_UNSUPPORTED")
++    else:
++        observed["docker"] = None
++    def collector():
++        value = probe.collector()
++        exact(value, COLLECTOR_PATHS)
++        require(all(item in ("PRESENT_UNVERIFIED", "MISSING", "UNEXPECTED_TYPE") for item in value.values()), "PREFLIGHT_COLLECTOR")
++        return value
++    installation = collect("collector", collector)
++    if installation is not None and any(item != "PRESENT_UNVERIFIED" for item in installation.values()):
++        blockers.append("COLLECTOR_NOT_PROVISIONED")
++    if kernel is not None:
++        after = collect("kernel_after", lambda: checked_kernel(probe.kernel(), architecture))
++        if after != kernel:
++            blockers.append("HOST_OBSERVATION_CHANGED")
++    result = {"version": 1, "kind": "c0_native_host_preflight", "architecture": architecture,
++        "platform_sha256": platform_digest(architecture), "backend": "docker-local", "read_only": True,
++        "evidence_kind": "simulated" if simulated else "host_metadata_only", "observations": observed,
++        "blockers": sorted(set(blockers)), "pending": list(PENDING),
++        "status": "BLOCKED" if blockers else "HOST_CANDIDATE", "host_admitted": False,
++        "runtime_evidence": False, "execution_authorized": False, "native_trials_run": 0}
++    require(len(canonical(result)) <= 8192, "PREFLIGHT_REPORT_BOUND")
++    return result
++
++
++def main(argv=None):
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--architecture", required=True, choices=("aarch64", "x86_64"))
++    args = parser.parse_args(argv)
++    result = inspect_host(args.architecture)
++    print(canonical(result).decode(), end="")
++    return 0 if result["status"] == "HOST_CANDIDATE" else 1
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())
+diff --git a/tests/crawl-jobs-v2-observer/test_host_preflight.py b/tests/crawl-jobs-v2-observer/test_host_preflight.py
+new file mode 100644
+index 0000000..11c0656
+--- /dev/null
++++ b/tests/crawl-jobs-v2-observer/test_host_preflight.py
+@@ -0,0 +1,232 @@
++"""Host selection controls: no Docker resources, ptrace or context provisioning."""
++import copy
++import io
++import json
++import unittest
++from unittest.mock import patch
++
++from contracts import Invalid, canonical, platform, sha
++from host_preflight import HostProbe, INFO_FIELDS, PREFIX, VERSION_FIELDS, inspect_host, main, metadata, template
++from runtime_admission import CONTEXT_HASHES, NAMESPACES
++from streams import Deadline
++
++
++class FixtureProbe:
++    def __init__(self, architecture="x86_64"):
++        self.architecture = architecture
++        self.calls = []
++        self.kernels = 0
++        self.context = {"architecture": architecture, **{key: sha(key.encode()) for key in CONTEXT_HASHES},
++            "namespaces": {name: index + 1 for index, name in enumerate(NAMESPACES)},
++            "ns_device": 4, "resolution_ns": 1, "yama_scope": 0}
++        self.context["kernel_release_sha256"] = sha(b"6.8.0-fixture")
++        self.info = {"id": "fixture-daemon", "os": "linux", "architecture": architecture, "version": "29.9.1",
++            "kernel": "6.8.0-fixture", "cgroup_version": "2", "cgroup_driver": "systemd",
++            "security_options": ["name=seccomp,profile=builtin", "name=apparmor,profile=default", "name=cgroupns"],
++            "memory": True, "swap": True, "pids": True, "cpu_period": True, "cpu_quota": True}
++        self.server = {"os": "linux", "architecture": platform(architecture)["image_architecture"],
++            "version": "29.9.1", "kernel": "6.8.0-fixture"}
++
++    def native(self):
++        return {"os": "Linux", "architecture": self.architecture, "pointer_bytes": 8}
++
++    def kernel(self):
++        self.kernels += 1
++        return copy.deepcopy(self.context)
++
++    def interpreter(self):
++        return sha(b"fixture-interpreter")
++
++    def controllers(self):
++        return {name: True for name in ("cpu", "memory", "pids")}
++
++    def endpoint(self):
++        return {"client_present": True, "socket_present": True}
++
++    def docker(self, operation, deadline):
++        self.calls.append(operation)
++        return copy.deepcopy(self.info if operation == "info" else self.server)
++
++    def collector(self):
++        return {"anchor": "PRESENT_UNVERIFIED", "code": "PRESENT_UNVERIFIED"}
++
++
++class HostPreflightTests(unittest.TestCase):
++    def test_both_architectures_are_candidates_never_admission(self):
++        for arch in ("x86_64", "aarch64"):
++            with self.subTest(architecture=arch):
++                probe = FixtureProbe(arch)
++                value = inspect_host(arch, probe=probe)
++                self.assertEqual(value["status"], "HOST_CANDIDATE")
++                self.assertEqual(value["blockers"], [])
++                self.assertEqual(probe.calls, ["info", "version", "info"])
++                self.assertEqual(probe.kernels, 2)
++                self.assertEqual(value["evidence_kind"], "simulated")
++                self.assertTrue(value["pending"])
++                self.assertFalse(value["host_admitted"] or value["runtime_evidence"] or value["execution_authorized"])
++                self.assertEqual(value["native_trials_run"], 0)
++                self.assertNotIn(b"fixture-daemon", canonical(value))
++
++    def test_yama_restrictions_are_blockers_for_both_architectures(self):
++        for arch in ("aarch64", "x86_64"):
++            for scope in (1, 2, 3):
++                probe = FixtureProbe(arch)
++                probe.context["yama_scope"] = scope
++                result = inspect_host(arch, probe=probe)
++                self.assertEqual(result["blockers"], ["YAMA_RESTRICTS_C0_SIBLING_PTRACE"])
++                self.assertEqual(result["status"], "BLOCKED")
++
++    def test_wrong_native_platform_prevents_docker_queries(self):
++        probe = FixtureProbe("x86_64")
++        result = inspect_host("aarch64", probe=probe)
++        self.assertIn("NATIVE_PLATFORM_MISMATCH", result["blockers"])
++        self.assertEqual(probe.calls, [])
++        for native in ({"os": "Linux", "architecture": "x86_64", "pointer_bytes": 4}, {"secret": "CANARY"}):
++            probe.native = lambda: native
++            result = inspect_host("x86_64", probe=probe)
++            self.assertIn("NATIVE_PLATFORM_MISMATCH", result["blockers"])
++            self.assertNotIn(b"CANARY", canonical(result))
++
++    def test_missing_docker_endpoint_is_not_a_podman_fallback(self):
++        probe = FixtureProbe()
++        for client, socket in ((False, False), (True, False), (False, True)):
++            probe.endpoint = lambda: {"client_present": client, "socket_present": socket}
++            result = inspect_host("x86_64", probe=probe)
++            self.assertIn("LOCAL_DOCKER_ENDPOINT_MISSING", result["blockers"])
++            self.assertEqual(probe.calls, [])
++
++    def test_changed_host_and_daemon_cannot_be_candidates(self):
++        for what in ("kernel", "daemon", "in_place_kernel", "in_place_daemon"):
++            with self.subTest(what=what):
++                probe = FixtureProbe()
++                original_kernel, original_docker = probe.kernel, probe.docker
++                def kernel():
++                    value = original_kernel()
++                    if probe.kernels == 2:
++                        probe.context["namespaces"]["user_ns"] += 100
++                        value["namespaces"]["user_ns"] += 100
++                    return probe.context if what == "in_place_kernel" else value
++                def docker(operation, deadline):
++                    value = original_docker(operation, deadline)
++                    if len(probe.calls) == 3:
++                        probe.info["id"] = value["id"] = "replacement"
++                    return probe.info if what == "in_place_daemon" and operation == "info" else value
++                if "kernel" in what:
++                    probe.kernel = kernel
++                else:
++                    probe.docker = docker
++                result = inspect_host("x86_64", probe=probe)
++                self.assertIn("HOST_OBSERVATION_CHANGED" if "kernel" in what else "DOCKER_UNAVAILABLE", result["blockers"])
++
++    def test_foreign_daemon_architecture_or_kernel_rejects(self):
++        for field, value in (("architecture", "arm64"), ("kernel", "foreign-kernel"), ("os", "windows")):
++            probe = FixtureProbe()
++            probe.server[field] = value
++            if field == "kernel":
++                probe.info[field] = value
++            result = inspect_host("x86_64", probe=probe)
++            self.assertEqual(result["status"], "BLOCKED")
++            self.assertIn("DOCKER_HOST_KERNEL_MISMATCH" if field == "kernel" else "DOCKER_UNAVAILABLE", result["blockers"])
++
++    def test_limits_confinement_and_namespace_mapping_blockers(self):
++        changes = [("cgroup_version", "1"), ("cgroup_driver", "none")]
++        changes += [(name, False) for name in ("memory", "swap", "pids", "cpu_period", "cpu_quota")]
++        for key, value in changes:
++            probe = FixtureProbe()
++            probe.info[key] = value
++            self.assertIn("DOCKER_RESOURCE_LIMITS_UNSUPPORTED", inspect_host("x86_64", probe=probe)["blockers"])
++        for option in ("name=rootless", "name=userns"):
++            probe = FixtureProbe()
++            probe.info["security_options"].append(option)
++            self.assertIn("DOCKER_NAMESPACE_MAPPING_UNSUPPORTED", inspect_host("x86_64", probe=probe)["blockers"])
++        probe = FixtureProbe()
++        probe.info["security_options"] = []
++        self.assertIn("DOCKER_CONFINEMENT_UNSUPPORTED", inspect_host("x86_64", probe=probe)["blockers"])
++        probe.controllers = lambda: {"cpu": True, "memory": False, "pids": True}
++        self.assertIn("CGROUP_CONTROLLERS_MISSING", inspect_host("x86_64", probe=probe)["blockers"])
++
++    def test_unavailable_observations_are_value_free_and_not_skipped(self):
++        for method in ("kernel", "interpreter", "controllers", "endpoint", "docker", "collector"):
++            with self.subTest(method=method):
++                probe = FixtureProbe()
++                def failure(*args):
++                    raise OSError("PRIVATE_CANARY")
++                setattr(probe, method, failure)
++                result = inspect_host("x86_64", probe=probe)
++                self.assertEqual(result["status"], "BLOCKED")
++                self.assertNotIn(b"PRIVATE_CANARY", canonical(result))
++
++    def test_missing_collector_does_not_issue_an_anchor(self):
++        for state in ("MISSING", "UNEXPECTED_TYPE"):
++            probe = FixtureProbe()
++            probe.collector = lambda: {"anchor": state, "code": "PRESENT_UNVERIFIED"}
++            result = inspect_host("x86_64", probe=probe)
++            self.assertIn("COLLECTOR_NOT_PROVISIONED", result["blockers"])
++            self.assertNotIn("seccomp_filters", result["observations"]["kernel"])
++            self.assertFalse(result["host_admitted"])
++
++    def test_typed_metadata_no_coercion_or_unknown_fields(self):
++        for key, value in (("memory", 1), ("pids", "true"), ("id", "PRIVATE\nCANARY"), ("version", "CANARY\n"),
++                ("cgroup_version", 2), ("security_options", ["name=seccomp,profile=builtin"] * 2), ("unexpected", True)):
++            probe = FixtureProbe()
++            probe.info[key] = value
++            result = inspect_host("x86_64", probe=probe)
++            self.assertIn("DOCKER_UNAVAILABLE", result["blockers"])
++            self.assertNotIn(b"CANARY", canonical(result))
++        probe = FixtureProbe()
++        probe.context["yama_scope"] = True
++        self.assertIn("KERNEL_UNAVAILABLE", inspect_host("x86_64", probe=probe)["blockers"])
++
++    def test_metadata_bound_duplicates_numbers_and_trailing_data(self):
++        for raw in (b'{"os":"linux","os":"linux"}', b'{"os":NaN}', b'{"os":1.0}',
++                b'{"os":"linux"} {}', b'x' * 16385, b'{"other":true}', b'[]', b'\xff'):
++            with self.assertRaises(Invalid):
++                metadata(raw, {"os": "OSType"})
++        self.assertEqual(metadata(b'{"os":"linux"}\n', {"os": "OSType"}), {"os": "linux"})
++
++    def test_fixed_docker_reads_exclude_unselected_metadata(self):
++        probe = HostProbe("x86_64")
++        fixture = FixtureProbe()
++        for operation, fields, value in (("info", INFO_FIELDS, fixture.info), ("version", VERSION_FIELDS, fixture.server)):
++            with patch("host_preflight.command", return_value=(0, canonical(value), b"")) as runner:
++                self.assertEqual(probe.docker(operation, Deadline(1)), value)
++                argv = runner.call_args.args[0]
++                self.assertEqual(argv, [*PREFIX, operation, "--format", template(fields)])
++                self.assertNotIn("Proxy", argv[-1])
++                self.assertNotIn("json .}}", argv[-1])
++        with patch("host_preflight.command") as runner, self.assertRaises(Invalid):
++            probe.docker("run", Deadline(1))
++        runner.assert_not_called()
++
++    def test_transport_errors_stderr_and_deadline_fail_closed(self):
++        fixture = FixtureProbe()
++        probe = HostProbe("x86_64")
++        for response in ((1, b"", b"PRIVATE_CANARY"), (0, canonical(fixture.info), b"warning")):
++            with patch("host_preflight.command", return_value=response), self.assertRaises(Invalid):
++                probe.docker("info", Deadline(1))
++        now = [0]
++        deadline = Deadline(1, clock=lambda: now[0])
++        original = fixture.docker
++        def expired(operation, deadline):
++            result = original(operation, deadline)
++            now[0] = 2
++            return result
++        fixture.docker = expired
++        result = inspect_host("x86_64", probe=fixture, deadline=deadline)
++        self.assertIn("DOCKER_UNAVAILABLE", result["blockers"])
++        self.assertEqual(result["status"], "BLOCKED")
++
++    def test_cli_refusal_is_structured_and_nonzero(self):
++        probe = FixtureProbe()
++        probe.context["yama_scope"] = 1
++        value = inspect_host("x86_64", probe=probe)
++        output = io.StringIO()
++        with patch("host_preflight.inspect_host", return_value=value), patch("sys.stdout", output):
++            self.assertEqual(main(["--architecture", "x86_64"]), 1)
++        self.assertEqual(json.loads(output.getvalue()), value)
++        with self.assertRaises(Invalid):
++            inspect_host("amd64", probe=probe)
++
++
++if __name__ == "__main__":
++    unittest.main()

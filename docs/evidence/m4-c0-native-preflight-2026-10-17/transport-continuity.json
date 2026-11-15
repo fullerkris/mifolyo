@@ -1,0 +1,15 @@
+{
+  "changed_predecessor_files": [
+    "tests/crawl-jobs-v2-observer/README.md"
+  ],
+  "current_matches_review_except_checkpoint_chronology": true,
+  "historical_manifest_entries_verified": 59,
+  "kind": "c0_native_preflight_transport_continuity",
+  "original_runtime_and_image_implementation_unchanged": true,
+  "prior_source_and_auxiliary_files": 58,
+  "real_index_empty": true,
+  "relative_links": "PASS",
+  "review_snapshot_paths_verified": 62,
+  "source_inventory_sha256": "faf8d794802f7a3b7603bea199689014cef21d415764571725ff9e3b66414baf",
+  "version": 1
+}

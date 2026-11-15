@@ -1,0 +1,127 @@
+{
+  "actual_docker_invoked": false,
+  "limits": "Only the Python adapter's dispatch is executed. Popen argv is replaced with an inert Python child; verify_cli is stubbed and temporary allocation redirected inside the review.",
+  "local_docker_path_present": false,
+  "rows": [
+    {
+      "executed_only": [
+        "/usr/bin/python3",
+        "-I",
+        "-B",
+        "-c",
+        "print(\"benign surrogate only\")"
+      ],
+      "flag": "-hh",
+      "original_argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "--config",
+        "/var/home/kfuller/Documents/Git_Projects/mifolyo/out/c0-runtime-adapter-2026-10-24/correctness-review/sandbox-dispatch/obs1-docker-dc7y36n6",
+        "container",
+        "inspect",
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "-hh"
+      ],
+      "passed_cli_guard": true,
+      "private_config_removed": true,
+      "reached_popen_wrapper": true
+    },
+    {
+      "executed_only": [
+        "/usr/bin/python3",
+        "-I",
+        "-B",
+        "-c",
+        "print(\"benign surrogate only\")"
+      ],
+      "flag": "-Dh",
+      "original_argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "--config",
+        "/var/home/kfuller/Documents/Git_Projects/mifolyo/out/c0-runtime-adapter-2026-10-24/correctness-review/sandbox-dispatch/obs1-docker-ftb89a2c",
+        "container",
+        "inspect",
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "-Dh"
+      ],
+      "passed_cli_guard": true,
+      "private_config_removed": true,
+      "reached_popen_wrapper": true
+    },
+    {
+      "executed_only": [
+        "/usr/bin/python3",
+        "-I",
+        "-B",
+        "-c",
+        "print(\"benign surrogate only\")"
+      ],
+      "flag": "-hD",
+      "original_argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "--config",
+        "/var/home/kfuller/Documents/Git_Projects/mifolyo/out/c0-runtime-adapter-2026-10-24/correctness-review/sandbox-dispatch/obs1-docker-izixnd24",
+        "container",
+        "inspect",
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "-hD"
+      ],
+      "passed_cli_guard": true,
+      "private_config_removed": true,
+      "reached_popen_wrapper": true
+    },
+    {
+      "executed_only": [
+        "/usr/bin/python3",
+        "-I",
+        "-B",
+        "-c",
+        "print(\"benign surrogate only\")"
+      ],
+      "flag": "-Hunix:///review-unused.sock",
+      "original_argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "--config",
+        "/var/home/kfuller/Documents/Git_Projects/mifolyo/out/c0-runtime-adapter-2026-10-24/correctness-review/sandbox-dispatch/obs1-docker-5gv1qs3p",
+        "container",
+        "inspect",
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "-Hunix:///review-unused.sock"
+      ],
+      "passed_cli_guard": true,
+      "private_config_removed": true,
+      "reached_popen_wrapper": true
+    },
+    {
+      "executed_only": [
+        "/usr/bin/python3",
+        "-I",
+        "-B",
+        "-c",
+        "print(\"benign surrogate only\")"
+      ],
+      "flag": "-creview-unused",
+      "original_argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "--config",
+        "/var/home/kfuller/Documents/Git_Projects/mifolyo/out/c0-runtime-adapter-2026-10-24/correctness-review/sandbox-dispatch/obs1-docker-vos1vyza",
+        "container",
+        "inspect",
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "-creview-unused"
+      ],
+      "passed_cli_guard": true,
+      "private_config_removed": true,
+      "reached_popen_wrapper": true
+    }
+  ]
+}

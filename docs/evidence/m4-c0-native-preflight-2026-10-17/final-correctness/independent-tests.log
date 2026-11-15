@@ -1,0 +1,20 @@
+test_api_body_and_projected_metadata_bounds (__main__.TransportControls.test_api_body_and_projected_metadata_bounds) ... ok
+test_api_json_schema_duplicates_encoding_and_wire_casing (__main__.TransportControls.test_api_json_schema_duplicates_encoding_and_wire_casing) ... ok
+test_api_metadata_both_architectures_and_all_framings (__main__.TransportControls.test_api_metadata_both_architectures_and_all_framings) ... ok
+test_endpoint_no_longer_requires_cli_installation (__main__.TransportControls.test_endpoint_no_longer_requires_cli_installation) ... ok
+test_every_split_preserves_each_framing (__main__.TransportControls.test_every_split_preserves_each_framing) ... ok
+test_every_truncation_of_framed_response_rejects (__main__.TransportControls.test_every_truncation_of_framed_response_rejects) ... ok
+test_expired_deadline_does_not_allocate_socket (__main__.TransportControls.test_expired_deadline_does_not_allocate_socket) ... ok
+test_expiry_at_connect_send_receive_or_eof_closes_socket (__main__.TransportControls.test_expiry_at_connect_send_receive_or_eof_closes_socket) ... ok
+test_framing_ambiguities_and_pipelined_responses_reject (__main__.TransportControls.test_framing_ambiguities_and_pipelined_responses_reject) ... ok
+test_header_count_and_wire_accounting_exact_boundaries (__main__.TransportControls.test_header_count_and_wire_accounting_exact_boundaries) ... ok
+test_nnp_exact_token_keeps_namespace_and_duplicate_checks (__main__.TransportControls.test_nnp_exact_token_keeps_namespace_and_duplicate_checks) ... ok
+test_private_unselected_metadata_does_not_change_exported_report (__main__.TransportControls.test_private_unselected_metadata_does_not_change_exported_report) ... ok
+test_real_socketpairs_full_cli_flow_and_late_eof (__main__.TransportControls.test_real_socketpairs_full_cli_flow_and_late_eof) ... ok
+test_selected_field_drift_still_blocks_after_projection (__main__.TransportControls.test_selected_field_drift_still_blocks_after_projection) ... ok
+test_three_requests_share_one_deadline (__main__.TransportControls.test_three_requests_share_one_deadline) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.496s
+
+OK

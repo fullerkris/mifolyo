@@ -1,0 +1,55 @@
+{
+  "discovery_note": "Context7 resolved /docker/cli and /python/cpython; current docs were supplemented with pinned v29.0.0 source, including its vendored Cobra 1.10.1 and pflag 1.0.10. Initial go.mod lookup was HTTP 404 because this repository uses vendor.mod.",
+  "references": [
+    {
+      "bytes": 4688,
+      "local_path": "references/vendor.mod",
+      "sha256": "413f01e06afb1fdaf9bf8d7d838b1683cf12a514921a556a3690e99565ac8c5a",
+      "url": "https://raw.githubusercontent.com/docker/cli/v29.0.0/vendor.mod"
+    },
+    {
+      "bytes": 21868,
+      "local_path": "references/cmd__docker__docker.go",
+      "sha256": "1c0fc026f2673545f2f7dea0019b0065034d96797683de46ef40898f09cb7220",
+      "url": "https://raw.githubusercontent.com/docker/cli/v29.0.0/cmd/docker/docker.go"
+    },
+    {
+      "bytes": 18941,
+      "local_path": "references/cli__command__cli.go",
+      "sha256": "ff7919416d77b4e04528d6341358063aea982ba5674e1a91b470c38ce54b321e",
+      "url": "https://raw.githubusercontent.com/docker/cli/v29.0.0/cli/command/cli.go"
+    },
+    {
+      "bytes": 7420,
+      "local_path": "references/cli-plugins__manager__manager.go",
+      "sha256": "7f013ffe26cc1a3dc895968af27d79d159039a8b109fe3e65dd16ac79279bf55",
+      "url": "https://raw.githubusercontent.com/docker/cli/v29.0.0/cli-plugins/manager/manager.go"
+    },
+    {
+      "bytes": 5925,
+      "local_path": "references/cli-plugins__manager__plugin.go",
+      "sha256": "8c38bdf7170a5978beb73edb3e71ccc578a9fc76b4bd65518286f3fdc3cff0c6",
+      "url": "https://raw.githubusercontent.com/docker/cli/v29.0.0/cli-plugins/manager/plugin.go"
+    },
+    {
+      "bytes": 37434,
+      "local_path": "references/vendor__github.com__spf13__pflag__flag.go",
+      "sha256": "65e9c5e5f763cb701a26873ce16584642d442d64277ed688956e8b560c30d3cd",
+      "url": "https://raw.githubusercontent.com/docker/cli/v29.0.0/vendor/github.com/spf13/pflag/flag.go"
+    },
+    {
+      "bytes": 61130,
+      "local_path": "references/vendor__github.com__spf13__cobra__command.go",
+      "sha256": "797ff14415e5fe31a22f7be52525cc0c809e1e8b6450e42d52afeb4f08389e61",
+      "url": "https://raw.githubusercontent.com/docker/cli/v29.0.0/vendor/github.com/spf13/cobra/command.go"
+    },
+    {
+      "bytes": 1731,
+      "local_path": "references/cli__command__container__inspect.go",
+      "sha256": "bcdf5bd044c428574e1474114ec50e6351567ddd98bbdfc1ced0710c6a5671e1",
+      "url": "https://raw.githubusercontent.com/docker/cli/v29.0.0/cli/command/container/inspect.go"
+    }
+  ],
+  "sources_executed": false,
+  "upstream_version": "Docker CLI v29.0.0"
+}

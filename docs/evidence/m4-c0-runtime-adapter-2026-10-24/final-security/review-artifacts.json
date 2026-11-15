@@ -1,0 +1,66 @@
+{
+  "excludes_self": true,
+  "files": {
+    "audit_inputs.py": {
+      "bytes": 5818,
+      "sha256": "ed610f4527a10e4cb12780288fc8ec2b9fc7edff58ec6e447964afbfef62bb8a"
+    },
+    "compatibility-calls-022.json": {
+      "bytes": 104362,
+      "sha256": "e2b595d93f4f04748936395bf7f087d2729a53d5225139fb343585463c3a6ad3"
+    },
+    "compatibility-calls-077.json": {
+      "bytes": 104362,
+      "sha256": "e2b595d93f4f04748936395bf7f087d2729a53d5225139fb343585463c3a6ad3"
+    },
+    "finalize_review.py": {
+      "bytes": 9180,
+      "sha256": "c6a54877b8ad91b98e79b2226f96affd0342d185866a49b6c6ee7329a9faeb73"
+    },
+    "integrity-after.json": {
+      "bytes": 124121,
+      "sha256": "fe7ff5d9bbd7aaf3cd8aa0594d1bdacc86688b38e702e90106b0a6471cf8ece8"
+    },
+    "integrity-before.json": {
+      "bytes": 123913,
+      "sha256": "f9c5336fd2f5aa5d97d3c26fe41e9a7d1b5fb2e7faca6a3843530c3a7482fb56"
+    },
+    "negative-control-022.log": {
+      "bytes": 1153,
+      "sha256": "962340fea035d326606f00998818963ba7eabfb86776395a004d7aff0915f629"
+    },
+    "negative-control-077.log": {
+      "bytes": 1153,
+      "sha256": "962340fea035d326606f00998818963ba7eabfb86776395a004d7aff0915f629"
+    },
+    "probes-022.json": {
+      "bytes": 5561,
+      "sha256": "d1ca7bb8549c9b302ba449823c5fa458dcf2f22b62607dd47972b2d92dc57c49"
+    },
+    "probes-022.log": {
+      "bytes": 2167,
+      "sha256": "2b5bbfd7db26a988777de72b70c9700652cb55412594b606fcd890c33e641dc5"
+    },
+    "probes-077.json": {
+      "bytes": 5561,
+      "sha256": "ca348e65f3afd143fc46079a447c132017cd5ad625b4ce994a3e0a3df1d60c4e"
+    },
+    "probes-077.log": {
+      "bytes": 2167,
+      "sha256": "3a54c0130b5a6800a06d20866226feac04861011e44c8a2518b6f0ea7031cf79"
+    },
+    "report.md": {
+      "bytes": 8194,
+      "sha256": "4fc16e9b5c5a2c737922674461a629ce148bbf34372a7ccbcdff48f2c5bd2342"
+    },
+    "rereview_probes.py": {
+      "bytes": 18878,
+      "sha256": "f997f771a3a8b0808c384c98f40dbc867582af23dca581b7db8c4c0e82f56548"
+    },
+    "result.json": {
+      "bytes": 13236,
+      "sha256": "a7fe04abb47a656173f650dcb4ded8b76b571fbf9ce3324f7e8b76bfe70569f5"
+    }
+  },
+  "kind": "SEC01_security_rereview_artifact_sha256"
+}

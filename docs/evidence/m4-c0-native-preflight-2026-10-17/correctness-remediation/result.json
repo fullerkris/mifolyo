@@ -1,0 +1,56 @@
+{
+  "kind": "c0_native_preflight_final_correctness_review",
+  "version": 1,
+  "scope": "C0-ARCH-05 first increment: COR-01/COR-02 read-only discovery/preflight remediation",
+  "disposition": "GO_FOR_CONTINUED_IMPLEMENTATION",
+  "base": "babb2180d05698e64b7d9baf37f9cab14b3c0f7f",
+  "source_inventory_sha256": "4046bd7f3604bdf51ddd50e159a41c394ec9c55e4715cbbfef69e54d2e743ba6",
+  "snapshot_files_verified_before_and_after": 60,
+  "files_unchanged_since_initial_snapshot": 57,
+  "context_files_byte_identical_to_base": 55,
+  "initial_correctness_artifacts_preserved": true,
+  "initial_correctness_archive_identical": true,
+  "closures": [
+    {
+      "id": "COR-01",
+      "status": "CLOSED",
+      "file": "tests/crawl-jobs-v2-observer/host_preflight.py",
+      "lines": "89-94",
+      "evidence": "Real benign open/closed-pipe CLI timeout controls on both architecture fixtures; both original closed-pipe regressions now pass; kill/reap, closed pipes, value-free refusal and all three metadata-read timeout positions verified."
+    },
+    {
+      "id": "COR-02",
+      "status": "CLOSED",
+      "file": "tests/crawl-jobs-v2-observer/host_preflight.py",
+      "lines": "140-144",
+      "evidence": "Both original NNP-positive regressions now pass; raw-JSON bridge, exact-token/duplicate/type/size controls and existing namespace/confinement/resource blockers remain effective."
+    }
+  ],
+  "remaining_findings_in_remediation_scope": [],
+  "independently_executed_tests": {
+    "focused": {"run": 16, "passed": 16},
+    "retained_initial_controls_and_regressions": {"run": 17, "passed": 17, "formerly_failing_architecture_subtests_now_passed": 4},
+    "additional_fix_boundary_controls": {"run": 4, "passed": 4}
+  },
+  "full_suite_artifact_validation": {
+    "independently_rerun": false,
+    "reported_passed": 304,
+    "original_ids_retained": 302,
+    "new_ids": 2,
+    "source_hashes_verified": 57,
+    "runner_hash_verified": true,
+    "all_log_test_ids_reconciled": true,
+    "failures_errors_skips_expected_failures_unexpected_successes": 0,
+    "json_sha256": "2843f2928627665fa059fb67be53536008435ed6a6b6259029a47274ba774683",
+    "log_sha256": "da20037bc56b4602fa7e7af73cc3835a24c0aa18b00509831ae1d5d4410b4e26"
+  },
+  "host_admitted": false,
+  "execution_authorized": false,
+  "native_calibration_claimed": false,
+  "docker_operations_run": 0,
+  "ssh_operations_run": 0,
+  "ptrace_operations_run": 0,
+  "native_trials_run": 0,
+  "repository_or_snapshot_mutations": false,
+  "report": "report.md"
+}

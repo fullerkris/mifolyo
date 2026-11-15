@@ -1,0 +1,13 @@
+test_01_short_flag_cluster_matrix_rejects_before_side_effects (__main__.GuardVariants.test_01_short_flag_cluster_matrix_rejects_before_side_effects) ... ok
+test_02_actor_path_refuses_clustered_and_attached_forms (__main__.GuardVariants.test_02_actor_path_refuses_clustered_and_attached_forms) ... ok
+test_03_previous_long_flag_and_operation_restrictions_remain (__main__.GuardVariants.test_03_previous_long_flag_and_operation_restrictions_remain) ... ok
+test_04_exact_oracle_tail_and_native_creates_remain_accepted (__main__.GuardVariants.test_04_exact_oracle_tail_and_native_creates_remain_accepted) ... ok
+test_05_oracle_exception_cannot_hide_other_short_tokens (__main__.GuardVariants.test_05_oracle_exception_cannot_hide_other_short_tokens) ... ok
+test_06_malformed_misplaced_and_noncanonical_tails_reject (__main__.GuardVariants.test_06_malformed_misplaced_and_noncanonical_tails_reject) ... ok
+test_07_guard_argument_bounds_and_types_still_fail_closed (__main__.GuardVariants.test_07_guard_argument_bounds_and_types_still_fail_closed) ... ok
+test_08_all_typed_lifecycle_operations_and_roles_for_both_architectures (__main__.GuardVariants.test_08_all_typed_lifecycle_operations_and_roles_for_both_architectures) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.091s
+
+OK

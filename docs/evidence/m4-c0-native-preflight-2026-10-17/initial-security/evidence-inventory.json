@@ -1,0 +1,21 @@
+{
+  "files": {
+    "SECURITY-REVIEW.md": "ebb837d373e4ebc72e7c788fda56e82cb74f117258d514d12c7eb04873efa645",
+    "adversarial-original.exit": "85acfd2e79dd47df07d214334642196301332f72d792b52068cdfd8898755409",
+    "adversarial-original.json": "67f300f5a843c54eda97a0206a3203c73353a3381a0dbec55bbcd2a86516a353",
+    "adversarial-original.log": "3d0e50719ca4df84390b77cf59d02d1fb41acc81921f32f05e334eef9226c1f5",
+    "baseline-original.exit": "bde294368bfed77c2cddf8cec271d398aee9cdbab3b26e1059281bd33adb0120",
+    "baseline-original.log": "5f6472cd9722a104f4cf7efc691bf4afdef6d6e097eac509e8203e4519706552",
+    "followup-original.exit": "bde294368bfed77c2cddf8cec271d398aee9cdbab3b26e1059281bd33adb0120",
+    "followup-original.json": "4bdb8f1908eaea2e5e9f36aa399d054e4517eb20eba5bc27dbbeb29cb03cbb0c",
+    "followup-original.log": "b387b415e5a2e47c7ad142bc3d175f4f1f8cc42bb3537ce5182661ce9ab77d5b",
+    "followup_tests.py": "8da79e1820731cf55b1037d0268752ac0b3c6de7d63d5349de733fb90bda6d91",
+    "integrity-after.json": "a01024f8d2c9e492fe2643ddf0683dae89d96beaa9010a8f947c83343d2269ed",
+    "integrity-before.json": "c84deb02eff39de03f09045805dd3567d5a7629cbfcd5ef59a25f7ce7679ff32",
+    "public-source-evidence.md": "79254b0c151b413dbf2435b929080abac14ad14ffe387b3581ce78a10246410a",
+    "review-summary.json": "25765ff1c4fc3e8665bc2e55b4644c543e76e989812fbf9608fb6a97b7165903",
+    "security_adversarial_tests.py": "9a9812737c13ad092016cf0e58d96201536c8729ab51ced8c5fd1feba1049773"
+  },
+  "kind": "security_review_evidence_inventory",
+  "source_inventory_sha256": "aa84e8b932141d6032a70e0f85a3fbc638dabec72992c6cb46a14c3cacc67414"
+}

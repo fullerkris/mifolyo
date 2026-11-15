@@ -1,0 +1,75 @@
+{
+  "kind": "c0_native_preflight_transport_independent_security_rereview",
+  "version": 1,
+  "date": "2026-10-17",
+  "decision": "GO_FOR_CONTINUED_IMPLEMENTATION",
+  "scope": "host_discovery_and_preflight_transport_only",
+  "source_inventory_sha256": "faf8d794802f7a3b7603bea199689014cef21d415764571725ff9e3b66414baf",
+  "inventory_declared_base": "babb2180d05698e64b7d9baf37f9cab14b3c0f7f",
+  "source_file_count": 62,
+  "snapshot": "/tmp/opencode/c0-native-preflight-2026-10-17/transport-snapshot",
+  "report": "SECURITY-REVIEW.md",
+  "new_actionable_findings": [],
+  "initial_finding_dispositions": [
+    {
+      "id": "S1",
+      "original_severity": "Medium",
+      "status": "CLOSED_FOR_PREFLIGHT",
+      "mechanism": "General Docker CLI/config/plugin invocation removed; fixed AF_UNIX GET metadata only",
+      "locations": ["tests/crawl-jobs-v2-observer/host_preflight.py:14,74-86", "tests/crawl-jobs-v2-observer/engine_metadata.py:112-127"],
+      "evidence": ["independent-original.json:both_arch_all_framings", "independent-original.json:unselected_projection"]
+    },
+    {
+      "id": "S2",
+      "original_severity": "Medium",
+      "status": "CLOSED_FOR_PREFLIGHT",
+      "mechanism": "No subprocess wait path; remaining-deadline socket IO and value-free errors preserve BLOCKED JSON",
+      "locations": ["tests/crawl-jobs-v2-observer/engine_metadata.py:24-31,112-127", "tests/crawl-jobs-v2-observer/host_preflight.py:148-159,228-234"],
+      "evidence": ["independent-original.json:transport_faults", "independent-original.json:aggregate_deadline", "independent-original.json:real_owned_socketpair"]
+    },
+    {
+      "id": "S3",
+      "original_severity": "Medium",
+      "status": "CLOSED_FOR_PREFLIGHT",
+      "mechanism": "No target-created subprocesses/descendants; context-managed socket lifecycle",
+      "locations": ["tests/crawl-jobs-v2-observer/engine_metadata.py:116-123"],
+      "evidence": ["independent-original.json:both_arch_all_framings", "independent-original.json:real_owned_socketpair", "independent-original.json:fd_repetition"]
+    }
+  ],
+  "runtime_adapter_status": "UNCHANGED_NOT_CERTIFIED: prior CLI environment/lifecycle issues remain a future execution-assembly review concern",
+  "COR02": "exact no-new-privileges token preserved; independent duplicate/hyphenated/rootless/userns regressions passed",
+  "test_runs": {
+    "focused_baseline": {"run": 30, "passed": 30, "failures": 0, "errors": 0, "skipped": 0},
+    "independent": {"run": 16, "passed": 16, "failures": 0, "errors": 0, "skipped": 0},
+    "deep_json_stress": {"cases": 8, "completed_safely": 8, "exit_code": 0},
+    "full_suite": "not independently run; owner reports separate run in progress"
+  },
+  "independent_controls": {
+    "both_arch_framing_fragment_cases": 18,
+    "transport_fault_cases": 32,
+    "malformed_http_cases": 40,
+    "malformed_json_cases": 13,
+    "selected_field_cases": 78,
+    "COR02_cases": 14,
+    "wire_mutations": 600,
+    "wire_mutations_http_rejected": 446,
+    "wire_mutations_http_accepted_without_semantic_claim": 154,
+    "owned_socketpair_deadline_framing_cases": 7,
+    "owned_socketpair_repetition_cycles": 80,
+    "repetition_fds_before": 5,
+    "repetition_fds_after": 5
+  },
+  "source_modified": false,
+  "initial_security_evidence_modified": false,
+  "initial_security_manifest_sha256": "01d349d9be23ac0f4ee0324ab6180a6f0aaf20bf96b8f75a7268c1bde1e14841",
+  "live_docker_calls": 0,
+  "ssh_calls": 0,
+  "ptrace_calls": 0,
+  "native_actors_run": 0,
+  "native_trials_run": 0,
+  "credential_files_read_by_reviewer": 0,
+  "host_policy_changes": 0,
+  "host_admitted": false,
+  "runtime_evidence": false,
+  "execution_authorized": false
+}

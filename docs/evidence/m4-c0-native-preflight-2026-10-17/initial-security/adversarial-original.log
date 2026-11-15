@@ -1,0 +1,95 @@
+test_01_ambient_config_and_secret_environment_are_not_forwarded (__main__.SecurityAdversarialTests.test_01_ambient_config_and_secret_environment_are_not_forwarded) ... FAIL
+test_02_closed_pipe_timeout_returns_structured_blocker (__main__.SecurityAdversarialTests.test_02_closed_pipe_timeout_returns_structured_blocker) ... ERROR
+test_03_success_does_not_leave_a_running_descendant (__main__.SecurityAdversarialTests.test_03_success_does_not_leave_a_running_descendant) ... FAIL
+test_04_open_pipe_stall_is_bounded_and_reaped (__main__.SecurityAdversarialTests.test_04_open_pipe_stall_is_bounded_and_reaped) ... ok
+test_05_stdout_flood_is_bounded_and_reaped (__main__.SecurityAdversarialTests.test_05_stdout_flood_is_bounded_and_reaped) ... ok
+test_06_stderr_flood_is_bounded_and_reaped (__main__.SecurityAdversarialTests.test_06_stderr_flood_is_bounded_and_reaped) ... ok
+test_07_error_bytes_are_never_exported (__main__.SecurityAdversarialTests.test_07_error_bytes_are_never_exported) ... ok
+test_08_malformed_docker_fields_never_admit_or_leak (__main__.SecurityAdversarialTests.test_08_malformed_docker_fields_never_admit_or_leak) ... ok
+test_09_json_bound_and_recursive_data_are_rejected (__main__.SecurityAdversarialTests.test_09_json_bound_and_recursive_data_are_rejected) ... 
+  test_09_json_bound_and_recursive_data_are_rejected (__main__.SecurityAdversarialTests.test_09_json_bound_and_recursive_data_are_rejected) (length=3008) ... FAIL
+test_10_all_missing_observations_block_without_raw_errors (__main__.SecurityAdversarialTests.test_10_all_missing_observations_block_without_raw_errors) ... ok
+test_11_collector_uses_lstat_only_and_refuses_symlinks (__main__.SecurityAdversarialTests.test_11_collector_uses_lstat_only_and_refuses_symlinks) ... ok
+test_12_runtime_provenance_is_never_promoted_to_admission (__main__.SecurityAdversarialTests.test_12_runtime_provenance_is_never_promoted_to_admission) ... ok
+
+======================================================================
+ERROR: test_02_closed_pipe_timeout_returns_structured_blocker (__main__.SecurityAdversarialTests.test_02_closed_pipe_timeout_returns_structured_blocker)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/opencode/c0-native-preflight-2026-10-17/security/security_adversarial_tests.py", line 100, in test_02_closed_pipe_timeout_returns_structured_blocker
+    result = hp.inspect_host('x86_64', probe=fixture, deadline=Deadline(0.3))
+  File "/tmp/opencode/c0-native-preflight-2026-10-17/snapshot/tests/crawl-jobs-v2-observer/host_preflight.py", line 199, in inspect_host
+    engine = collect("docker", docker)
+  File "/tmp/opencode/c0-native-preflight-2026-10-17/snapshot/tests/crawl-jobs-v2-observer/host_preflight.py", line 156, in collect
+    value = action()
+  File "/tmp/opencode/c0-native-preflight-2026-10-17/snapshot/tests/crawl-jobs-v2-observer/host_preflight.py", line 193, in docker
+    before = probe.docker("info", deadline)
+  File "/tmp/opencode/c0-native-preflight-2026-10-17/snapshot/tests/crawl-jobs-v2-observer/host_preflight.py", line 88, in docker
+    code, out, err = command([*PREFIX, operation, "--format", template(fields)], deadline)
+                     ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib64/python3.14/unittest/mock.py", line 1176, in __call__
+    return self._mock_call(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/usr/lib64/python3.14/unittest/mock.py", line 1180, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/usr/lib64/python3.14/unittest/mock.py", line 1247, in _execute_mock_call
+    result = effect(*args, **kwargs)
+  File "/tmp/opencode/c0-native-preflight-2026-10-17/security/security_adversarial_tests.py", line 94, in substituted_command
+    return backend.command([sys.executable, '-I', '-B', '-c',
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        'import os,time; os.close(1); os.close(2); time.sleep(30)'], deadline)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/opencode/c0-native-preflight-2026-10-17/snapshot/tests/crawl-jobs-v2-observer/docker_backend.py", line 52, in command
+    code = process.wait(timeout=deadline.remaining())
+  File "/usr/lib64/python3.14/subprocess.py", line 1279, in wait
+    return self._wait(timeout=timeout)
+           ~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/usr/lib64/python3.14/subprocess.py", line 2076, in _wait
+    raise TimeoutExpired(self.args, timeout)
+subprocess.TimeoutExpired: Command '['/usr/bin/python3', '-I', '-B', '-c', 'import os,time; os.close(1); os.close(2); time.sleep(30)']' timed out after 0.29242158800479956 seconds
+
+======================================================================
+FAIL: test_01_ambient_config_and_secret_environment_are_not_forwarded (__main__.SecurityAdversarialTests.test_01_ambient_config_and_secret_environment_are_not_forwarded)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/opencode/c0-native-preflight-2026-10-17/security/security_adversarial_tests.py", line 79, in test_01_ambient_config_and_secret_environment_are_not_forwarded
+    self.assertEqual(unexpected, [], 'Implicit CLI configuration/plugin/telemetry and secret environment still forwarded')
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: ['AWS_SECRET_ACCESS_KEY', 'DOCKER_CLI_HOOK[93 chars]INT'] != []
+
+First list contains 7 additional elements.
+First extra element 0:
+'AWS_SECRET_ACCESS_KEY'
+
++ []
+- ['AWS_SECRET_ACCESS_KEY',
+-  'DOCKER_CLI_HOOKS',
+-  'DOCKER_CONFIG',
+-  'DOCKER_CUSTOM_HEADERS',
+-  'HOME',
+-  'LD_PRELOAD',
+-  'OTEL_EXPORTER_OTLP_ENDPOINT'] : Implicit CLI configuration/plugin/telemetry and secret environment still forwarded
+
+======================================================================
+FAIL: test_03_success_does_not_leave_a_running_descendant (__main__.SecurityAdversarialTests.test_03_success_does_not_leave_a_running_descendant)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/opencode/c0-native-preflight-2026-10-17/security/security_adversarial_tests.py", line 131, in test_03_success_does_not_leave_a_running_descendant
+    self.assertFalse(running, 'Owned descendant is still running after command() returns successfully')
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True is not false : Owned descendant is still running after command() returns successfully
+
+======================================================================
+FAIL: test_09_json_bound_and_recursive_data_are_rejected (__main__.SecurityAdversarialTests.test_09_json_bound_and_recursive_data_are_rejected) (length=3008)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/opencode/c0-native-preflight-2026-10-17/security/security_adversarial_tests.py", line 198, in test_09_json_bound_and_recursive_data_are_rejected
+    with self.subTest(length=len(raw)), self.assertRaises(Invalid):
+                                        ~~~~~~~~~~~~~~~~~^^^^^^^^^
+AssertionError: Invalid not raised
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.574s
+
+FAILED (failures=3, errors=1)

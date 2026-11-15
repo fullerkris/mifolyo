@@ -1,0 +1,276 @@
+{
+  "R1_closed": true,
+  "actions": {
+    "benign_python_children_only_in_original_probe_replay": true,
+    "calibration_invoked": false,
+    "docker_invoked": false,
+    "git_state_edited": false,
+    "host_policy_changed": false,
+    "native_actors_invoked": false,
+    "new_variant_controls_subprocesses": 0,
+    "old_evidence_or_reviews_edited": false,
+    "other_agents_spawned": false,
+    "product_code_edited": false,
+    "real_daemon_socket_contacted": false,
+    "ssh_invoked": false,
+    "write_scope": "out/c0-runtime-adapter-2026-10-24/remediation/correctness-review"
+  },
+  "artifact_manifest": "review-artifact-sha256.json",
+  "broad_suite_evidence": {
+    "evidence": "coverage-crosscheck.json",
+    "fresh_discovery_and_all_source_hashes_match": true,
+    "historical_test_ids_retained": 318,
+    "initial_test_ids_retained": 335,
+    "new_since_initial": 3,
+    "reexecuted_by_reviewer": false,
+    "reported_tests_per_umask": 338,
+    "retained_status": "PASS",
+    "total_new_since_historical": 20,
+    "umasks": [
+      "022",
+      "077"
+    ]
+  },
+  "changes_since_initial_review": {
+    "tests/crawl-jobs-v2-observer/docker_backend.py": {
+      "after": "7a3aaaf2de8c3dd79f6b749dfbed00fcf35ed052d62dc20246bd66fe91d19e9c",
+      "before": "8ceef501710ab69609d349d072d377a83fea0cf5f2377f05076114ef7fc0c130"
+    },
+    "tests/crawl-jobs-v2-observer/test_live_adapter.py": {
+      "after": "6607d0879870d36b3b0573273896416aa9080a6523e6daefdd86f539f4c79e93",
+      "before": "cca3e563824e701e4e5b2e8548334c3aeee50c7b2d161f23a2a7fd9ea1690ea1"
+    }
+  },
+  "created_at_utc": "2026-10-24T20:17:26.360197+00:00",
+  "errors": 0,
+  "failures": 0,
+  "findings": [],
+  "host_assessment": {
+    "arm64_native_deferred": true,
+    "bytes": 2539,
+    "current_host_admitted": false,
+    "daemon_kernel_namespace_pairing_established": false,
+    "fresh_preflight_performed": false,
+    "native_x64_runtime_admitted": false,
+    "provider_or_hypervisor_details_awaited": true,
+    "replacement_vm_created": false,
+    "sha256": "c7bf91276ff829c74f2e1978841267b2ce60120c5bcd8133f0eabf5548fb52bd",
+    "source": "out/c0-runtime-adapter-2026-10-24/host-assessment.json"
+  },
+  "integrity": {
+    "after": {
+      "bytes": 18823,
+      "pass": true,
+      "sha256": "547bbef21db54298881e407331b3d092eccb957aa2f6860e9b71c150dd61b054"
+    },
+    "before": {
+      "bytes": 18823,
+      "pass": true,
+      "sha256": "d59f9ebd51171171b553a9e9d830014df320a65f125cf9c7c79d9caea3085925"
+    },
+    "final_frozen_source_files": 63,
+    "original_correctness_known_hashes_match": true,
+    "original_review_exports_exact": {
+      "correctness": {
+        "exact_match": true,
+        "files": 27
+      },
+      "security": {
+        "exact_match": true,
+        "files": 13
+      }
+    },
+    "packet_files": 444,
+    "reverified_at_assembly": true,
+    "working_source_mismatches": []
+  },
+  "kind": "c0_runtime_adapter_R1_independent_correctness_rereview",
+  "lifecycle_source_unchanged": {
+    "local_process.py": true,
+    "streams.py": true
+  },
+  "limits": [
+    "No full-runner, native-runtime, host or installed-CLI-version admission",
+    "Original replay config allocations redirected into this review after verifying explicit /tmp request",
+    "All typed operation compatibility uses simulated metadata/fake streams, not actual Docker or native execution",
+    "Original pinned Docker v29.0.0 parser/help references retained; no claim across every CLI version",
+    "No proof of all process-group members, escaped descendants or remote-container absence",
+    "Host management details awaited; no VM/collector provisioning or fresh daemon/kernel/namespace pairing",
+    "ARM64 native remains deferred despite simulated aarch64 argument compatibility"
+  ],
+  "packet": {
+    "bytes": 97900,
+    "path": "out/c0-runtime-adapter-2026-10-24/remediation/review-inputs.json",
+    "sha256": "b3e66f6bf5cc95194e04548b7cfb4df4978898d4cec1a48aaaa357a1d4be14e7"
+  },
+  "passed_test_method_executions": 62,
+  "product_changed_ast_nodes": [
+    "cli_arguments"
+  ],
+  "report": {
+    "bytes": 8808,
+    "path": "report.md",
+    "sha256": "29e3b0d595c732eb138582998457aeee35313c4e2ead0b444b779d6bb023a1ab"
+  },
+  "resolved_findings": [
+    {
+      "evidence": [
+        "independent-022.json",
+        "independent-077.json",
+        "variants-022.json",
+        "variants-077.json"
+      ],
+      "id": "R1",
+      "lines": [
+        39,
+        63
+      ],
+      "original_report": "out/c0-runtime-adapter-2026-10-24/correctness-review/report.md",
+      "original_report_sha256": "f0fdb199cac0cc03d70a0a7a08146a49148953492bc052e88b8f0f53bf8655e3",
+      "original_verdict_retained": "NEEDS_REMEDIATION",
+      "primary_lines": [
+        49,
+        55
+      ],
+      "related_security_finding": "SEC-01",
+      "resolution": "Reject all single-dash tokens except the exact last three fixed oracle interpreter arguments when the required complete container-create suffix and nonzero image digest match.",
+      "scope_limit": "Closes the correctness finding; not an independent security sign-off, remote-rerouting proof or installed CLI/native admission.",
+      "source_path": "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/docker_backend.py",
+      "status": "CLOSED"
+    }
+  ],
+  "runs": [
+    {
+      "independent_variants": {
+        "guard_acceptances": 12,
+        "guard_rejections": 6132,
+        "log": "variants-022.log",
+        "result": "variants-022.json",
+        "simulated_actor_argv_validated": 6,
+        "status": "PASS",
+        "test_methods": 8,
+        "typed_builtin_argv_validated": 218
+      },
+      "original_probes": {
+        "binding_evidence": "replay-binding-022.json",
+        "log": "independent-022.log",
+        "result": "independent-022.json",
+        "status": "PASS",
+        "test_methods_modified": false,
+        "tests": 23
+      },
+      "resourcewarning_as_error": true,
+      "umask": "022"
+    },
+    {
+      "independent_variants": {
+        "guard_acceptances": 12,
+        "guard_rejections": 6132,
+        "log": "variants-077.log",
+        "result": "variants-077.json",
+        "simulated_actor_argv_validated": 6,
+        "status": "PASS",
+        "test_methods": 8,
+        "typed_builtin_argv_validated": 218
+      },
+      "original_probes": {
+        "binding_evidence": "replay-binding-077.json",
+        "log": "independent-077.log",
+        "result": "independent-077.json",
+        "status": "PASS",
+        "test_methods_modified": false,
+        "tests": 23
+      },
+      "resourcewarning_as_error": true,
+      "umask": "077"
+    }
+  ],
+  "scope": "Correctness re-review of R1 remediation for the scoped adapter-hardening boundary only",
+  "skips": 0,
+  "source_inventory": {
+    "bytes": 11805,
+    "path": "out/c0-runtime-adapter-2026-10-24/remediation/source-inventory.json",
+    "sha256": "5a3bbce905d4e49d6b4a89e4492222e5aa8bf2b2d0fa1ad92333f189c585b7db"
+  },
+  "supporting_artifacts": {
+    "assemble_result.py": {
+      "bytes": 8370,
+      "sha256": "4de98e7efed7de4e7442e7f07bf721d2d4c450a203e732ccb5657dda0799f02c"
+    },
+    "coverage-crosscheck.json": {
+      "bytes": 1730,
+      "sha256": "ecdb0edb6a19b53fd6c778315522fbf7e6e6d61ace4cb3b898d4326279f816ae"
+    },
+    "coverage_crosscheck.py": {
+      "bytes": 4667,
+      "sha256": "53f29551eb376345a37443648b471824917ec50313097edfc8ca33cc43612c4f"
+    },
+    "independent-022.json": {
+      "bytes": 7356,
+      "sha256": "ee2062d11cc6b317a55c5c3923eab1144acef13af1fe181cc008d55376f14953"
+    },
+    "independent-022.log": {
+      "bytes": 4297,
+      "sha256": "7e098df693e6a91031a5910879ec134c118c9bafd5c1a2c98f566a4c40cd99a5"
+    },
+    "independent-077.json": {
+      "bytes": 7356,
+      "sha256": "2835e12d3a072a3456059b0185808c89526aa860ee7fb6913957f0c968b8f224"
+    },
+    "independent-077.log": {
+      "bytes": 4297,
+      "sha256": "d668bfeec5b429eaa95130de9ddcf8b117ac8db0768c21fd3ee6e6b010531718"
+    },
+    "integrity-after.json": {
+      "bytes": 18823,
+      "sha256": "547bbef21db54298881e407331b3d092eccb957aa2f6860e9b71c150dd61b054"
+    },
+    "integrity-before.json": {
+      "bytes": 18823,
+      "sha256": "d59f9ebd51171171b553a9e9d830014df320a65f125cf9c7c79d9caea3085925"
+    },
+    "replay-binding-022.json": {
+      "bytes": 1874,
+      "sha256": "563e97f2691f58afb136eb0f975055611200d51b615498d1c8083c36b850e403"
+    },
+    "replay-binding-077.json": {
+      "bytes": 1874,
+      "sha256": "d16a58c639fcdf6698f065801f057d1dc82b82bd28f8ea7f6e3537bee9f05e51"
+    },
+    "replay_original.py": {
+      "bytes": 2549,
+      "sha256": "5b81e51bfbbab1c8b7e68158ce8b4bcac885e2c9a1d9dae93adc62a1f75849e3"
+    },
+    "report.md": {
+      "bytes": 8808,
+      "sha256": "29e3b0d595c732eb138582998457aeee35313c4e2ead0b444b779d6bb023a1ab"
+    },
+    "variant_probes.py": {
+      "bytes": 16345,
+      "sha256": "3d3620fc6908fc40c24aa7e04076095463a31ca5e90148daa3034d57c6823975"
+    },
+    "variants-022.json": {
+      "bytes": 1945417,
+      "sha256": "8827ac62192778652b54e6bbf8b4a969b18012468936fb741cf37c9e71793914"
+    },
+    "variants-022.log": {
+      "bytes": 1322,
+      "sha256": "205e2cb9b330f9cf11e613ead075caae7948769163a7867871bab76178d7e463"
+    },
+    "variants-077.json": {
+      "bytes": 1945417,
+      "sha256": "d9400c39e09c20abb1cca9cfc3439ffda8bdbe835e51b3498189dd3568b02a0b"
+    },
+    "variants-077.log": {
+      "bytes": 1322,
+      "sha256": "62ff795fdba94f44cde5b37c779ee4b7c971677e5b6039902aa32c84ee76c979"
+    },
+    "verify_inputs.py": {
+      "bytes": 3898,
+      "sha256": "d3adbd39a571ee566d3df45d3e00b3fe65e2a257ded2ff9f3c369a1a4d52851b"
+    }
+  },
+  "total_test_method_executions": 62,
+  "verdict": "GO_FOR_CONTINUED_IMPLEMENTATION",
+  "version": 1
+}

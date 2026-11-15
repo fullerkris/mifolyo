@@ -1,0 +1,20 @@
+test_all_daemon_selected_field_drift_is_rejected (__main__.Controls.test_all_daemon_selected_field_drift_is_rejected) ... ok
+test_all_kernel_context_drift_is_rejected (__main__.Controls.test_all_kernel_context_drift_is_rejected) ... ok
+test_benign_command_output_flood_is_bounded_and_reaped (__main__.Controls.test_benign_command_output_flood_is_bounded_and_reaped) ... ok
+test_benign_open_pipe_timeout_is_structured_and_reaped (__main__.Controls.test_benign_open_pipe_timeout_is_structured_and_reaped) ... ok
+test_benign_stderr_is_not_exported (__main__.Controls.test_benign_stderr_is_not_exported) ... ok
+test_cli_candidate_is_json_not_admission (__main__.Controls.test_cli_candidate_is_json_not_admission) ... ok
+test_collector_lstats_only_fixed_paths (__main__.Controls.test_collector_lstats_only_fixed_paths) ... ok
+test_docker_wrong_type_matrix_is_structured (__main__.Controls.test_docker_wrong_type_matrix_is_structured) ... ok
+test_exact_metadata_bound_and_adversarial_json (__main__.Controls.test_exact_metadata_bound_and_adversarial_json) ... ok
+test_expired_deadline_skips_all_producer_actions (__main__.Controls.test_expired_deadline_skips_all_producer_actions) ... ok
+test_kernel_integers_reject_boolean_negative_and_oversize (__main__.Controls.test_kernel_integers_reject_boolean_negative_and_oversize) ... ok
+test_native_and_image_architecture_aliases (__main__.Controls.test_native_and_image_architecture_aliases) ... ok
+test_nested_snapshot_is_detached_after_return (__main__.Controls.test_nested_snapshot_is_detached_after_return) ... ok
+test_nested_wrong_type_rejected_at_validation_boundary (__main__.Controls.test_nested_wrong_type_rejected_at_validation_boundary) ... ok
+test_raw_json_docker_bridge_both_architectures (__main__.Controls.test_raw_json_docker_bridge_both_architectures) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.542s
+
+OK

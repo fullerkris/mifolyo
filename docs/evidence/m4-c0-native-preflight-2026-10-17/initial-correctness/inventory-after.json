@@ -1,0 +1,11 @@
+{
+  "inventory_sha256": "aa84e8b932141d6032a70e0f85a3fbc638dabec72992c6cb46a14c3cacc67414",
+  "base": "babb2180d05698e64b7d9baf37f9cab14b3c0f7f",
+  "verified_files": 60,
+  "all_snapshot_hashes_unchanged": true,
+  "context_base_byte_identical": true,
+  "context_files": 55,
+  "extra_snapshot_files": [],
+  "python": "3.14.8 (main, Oct  1 2026, 00:00:00) [GCC 16.2.1 20260819 (Red Hat 16.2.1-2)]",
+  "bytecode_written": false
+}

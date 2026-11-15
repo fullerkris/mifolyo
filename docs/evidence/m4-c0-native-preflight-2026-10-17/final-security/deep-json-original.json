@@ -1,0 +1,63 @@
+{
+  "cases": [
+    {
+      "depth": 3000,
+      "elapsed_seconds": 0.000563,
+      "input_bytes": 6342,
+      "outcome": "selected_metadata_valid",
+      "selected_field": false
+    },
+    {
+      "depth": 3000,
+      "elapsed_seconds": 0.000344,
+      "input_bytes": 6325,
+      "outcome": "invalid_value_free",
+      "selected_field": true
+    },
+    {
+      "depth": 10000,
+      "elapsed_seconds": 0.000849,
+      "input_bytes": 20342,
+      "outcome": "selected_metadata_valid",
+      "selected_field": false
+    },
+    {
+      "depth": 10000,
+      "elapsed_seconds": 0.00235,
+      "input_bytes": 20325,
+      "outcome": "invalid_value_free",
+      "selected_field": true
+    },
+    {
+      "depth": 60000,
+      "elapsed_seconds": 0.003572,
+      "input_bytes": 120342,
+      "outcome": "invalid_value_free",
+      "selected_field": false
+    },
+    {
+      "depth": 60000,
+      "elapsed_seconds": 0.001581,
+      "input_bytes": 120325,
+      "outcome": "invalid_value_free",
+      "selected_field": true
+    },
+    {
+      "depth": 120000,
+      "elapsed_seconds": 0.001384,
+      "input_bytes": 240342,
+      "outcome": "invalid_value_free",
+      "selected_field": false
+    },
+    {
+      "depth": 120000,
+      "elapsed_seconds": 0.001295,
+      "input_bytes": 240325,
+      "outcome": "invalid_value_free",
+      "selected_field": true
+    }
+  ],
+  "kind": "bounded_private_json_stress",
+  "live_socket_or_docker_access": false,
+  "status": "PASS"
+}

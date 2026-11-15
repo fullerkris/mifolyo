@@ -1,0 +1,24 @@
+{
+  "events": [
+    {
+      "blockers": [
+        "DOCKER_UNAVAILABLE"
+      ],
+      "depth": 1500,
+      "event": "deep_json_end_to_end",
+      "original_failure_disposition": "test overconstrained metadata() alone; typed preflight still rejects",
+      "raw_bytes": 3337,
+      "status": "BLOCKED"
+    },
+    {
+      "event": "main_closed_pipe_timeout",
+      "exception": "subprocess.TimeoutExpired",
+      "interpretation": "confirms S2, not a remediation",
+      "json_report_produced": false,
+      "leader_returncode": -9,
+      "stdout_bytes": 0
+    }
+  ],
+  "status": "PASS",
+  "tests_run": 2
+}

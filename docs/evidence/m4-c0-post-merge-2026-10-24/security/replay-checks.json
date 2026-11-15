@@ -1,0 +1,657 @@
+{
+  "architectures": {
+    "aarch64": {
+      "commands": {
+        "build": 5,
+        "container": 15,
+        "cp": 2,
+        "create": 5,
+        "export": 3,
+        "image": 8,
+        "info": 1,
+        "ps": 5,
+        "pull": 2,
+        "rm": 5,
+        "save": 3,
+        "unshare": 6,
+        "version": 1
+      },
+      "roles": {
+        "observer": {
+          "content_sha256": "d93a59cbc80ba05045cffd7fb14d1594ac956da1d0531700b88552435af50b7c",
+          "elf_count": 1,
+          "flat_sha256": "330a32d85093a32b5248159a9106fefca61a9465849853cd41128f76e9b8c37b",
+          "full_content_record_equal": true,
+          "full_member_map_sha256": "235d10a03cc61f1f526efefedfa65b8103fc851f5ff34ec3bbc852cfa63ff932",
+          "hardlinks": {},
+          "host_root": {
+            "gid": 0,
+            "mode": 365,
+            "uid": 0
+          },
+          "image_id": "sha256:5cc930fed0d6e394b7574585c8a4490b6dab50230cd7993da0020712399eba9c",
+          "layers": [
+            {
+              "entries": 1,
+              "member_types": {
+                "0": 1
+              },
+              "name": "cefa9463d8d3e27158bb31aa912742b25b4856c833760ba7cdd582b207f5e430.tar",
+              "pax_keys": {},
+              "replaced_paths": [],
+              "root_headers": [],
+              "whiteouts": 0
+            }
+          ],
+          "members_independently_compared": 1,
+          "payload_sha256": "948e94e91f84930729e7c2ad73c51a6cf105ee84e7333c261bf654f8526f2c63",
+          "portable_sha256": "3f839eb9350b3174c01cd957edefae7ea72fce86adbbb758762dffdf17d6f563",
+          "required_elf_count": 1
+        },
+        "oracle": {
+          "content_sha256": "8cca53eede43a3cc192e106b832590dd2c4535067f03b1df3625177a7a6d1a6a",
+          "elf_count": 790,
+          "flat_sha256": "756ddcbd45a30ff2861a84e7428f2fb7a8bedcd5bb0f30bea02cc9fb15e99632",
+          "full_content_record_equal": true,
+          "full_member_map_sha256": "d81b6721bccee8da82cd480590a24e1b040b0c355ed5e6285dc659e4522533c7",
+          "hardlinks": {
+            "usr/bin/perl5.36.0": "usr/bin/perl",
+            "usr/bin/uncompress": "usr/bin/gunzip"
+          },
+          "host_root": {
+            "gid": 0,
+            "mode": 365,
+            "uid": 0
+          },
+          "image_id": "sha256:8a956755a77e350ab56b9644ab8366786b0e7e97814fcec20b4bf0973ae784f2",
+          "layers": [
+            {
+              "entries": 4220,
+              "member_types": {
+                "0": 3262,
+                "1": 2,
+                "2": 505,
+                "5": 452
+              },
+              "name": "055ab12bd547e17a0630037f06a186cf405e3f61bb03a614562ca8f5ab52a8be.tar",
+              "pax_keys": {},
+              "replaced_paths": [],
+              "root_headers": [
+                {
+                  "gid": 0,
+                  "mode": 493,
+                  "uid": 0
+                }
+              ],
+              "whiteouts": 0
+            },
+            {
+              "entries": 565,
+              "member_types": {
+                "0": 214,
+                "2": 305,
+                "5": 46
+              },
+              "name": "095145779909c26a66c70376d4b6cde5c2958236c609348586252e0064186c9d.tar",
+              "pax_keys": {
+                "linkpath": 2,
+                "path": 2
+              },
+              "replaced_paths": [
+                "etc",
+                "etc/ld.so.cache",
+                "usr",
+                "usr/bin",
+                "usr/lib",
+                "usr/lib/aarch64-linux-gnu",
+                "usr/local",
+                "usr/local/share",
+                "usr/sbin",
+                "usr/share",
+                "usr/share/doc",
+                "var",
+                "var/cache",
+                "var/cache/apt",
+                "var/cache/debconf",
+                "var/cache/debconf/config.dat",
+                "var/cache/debconf/config.dat-old",
+                "var/cache/debconf/templates.dat",
+                "var/cache/debconf/templates.dat-old",
+                "var/cache/ldconfig",
+                "var/lib",
+                "var/lib/apt",
+                "var/lib/apt/extended_states",
+                "var/lib/dpkg",
+                "var/lib/dpkg/info",
+                "var/lib/dpkg/lock",
+                "var/lib/dpkg/status",
+                "var/lib/dpkg/status-old",
+                "var/lib/dpkg/triggers",
+                "var/lib/dpkg/triggers/Lock",
+                "var/lib/dpkg/triggers/Unincorp",
+                "var/log",
+                "var/log/apt",
+                "var/log/apt/eipp.log.xz"
+              ],
+              "root_headers": [],
+              "whiteouts": 0
+            },
+            {
+              "entries": 1856,
+              "member_types": {
+                "0": 1575,
+                "2": 17,
+                "5": 264
+              },
+              "name": "3ca71efe23192eaff23483924b9ec0bd7f396e2aaef46640128c3477379fcaa9.tar",
+              "pax_keys": {},
+              "replaced_paths": [
+                "etc",
+                "etc/ld.so.cache",
+                "root",
+                "usr",
+                "usr/lib",
+                "usr/lib/aarch64-linux-gnu",
+                "usr/local",
+                "usr/local/bin",
+                "usr/local/include",
+                "usr/local/lib",
+                "usr/local/share",
+                "usr/local/share/man",
+                "usr/share",
+                "usr/share/doc",
+                "var",
+                "var/cache",
+                "var/cache/debconf",
+                "var/cache/debconf/config.dat",
+                "var/cache/debconf/config.dat-old",
+                "var/cache/debconf/templates.dat",
+                "var/cache/debconf/templates.dat-old",
+                "var/cache/ldconfig",
+                "var/cache/ldconfig/aux-cache",
+                "var/lib",
+                "var/lib/apt",
+                "var/lib/apt/extended_states",
+                "var/lib/dpkg",
+                "var/lib/dpkg/info",
+                "var/lib/dpkg/info/perl-base.list",
+                "var/lib/dpkg/lock",
+                "var/lib/dpkg/status",
+                "var/lib/dpkg/status-old",
+                "var/lib/dpkg/triggers",
+                "var/lib/dpkg/triggers/Lock",
+                "var/log",
+                "var/log/apt",
+                "var/log/apt/eipp.log.xz",
+                "var/log/apt/history.log",
+                "var/log/apt/term.log",
+                "var/log/dpkg.log"
+              ],
+              "root_headers": [],
+              "whiteouts": 0
+            },
+            {
+              "entries": 8,
+              "member_types": {
+                "2": 5,
+                "5": 3
+              },
+              "name": "ff6b919c53481cfc2497fad042e7c6cf042d45097f19fd908d13fcb73b85adcf.tar",
+              "pax_keys": {},
+              "replaced_paths": [
+                "usr",
+                "usr/local",
+                "usr/local/bin"
+              ],
+              "root_headers": [],
+              "whiteouts": 0
+            },
+            {
+              "entries": 9,
+              "member_types": {
+                "0": 8,
+                "5": 1
+              },
+              "name": "116e8ea128d8cca67f4ca890c3c1841199003b1b9e647cc66670ca53c25f1ded.tar",
+              "pax_keys": {},
+              "replaced_paths": [],
+              "root_headers": [],
+              "whiteouts": 0
+            }
+          ],
+          "members_independently_compared": 6581,
+          "payload_sha256": "64d004592dc8299702d448f04436b6b7bd393d79963196e5c4ebcdce254e9354",
+          "portable_sha256": "a555707d698da4e995b84d1520e78ba18446cbf5c9d6f8738c101943c29b3183",
+          "required_elf_count": 18
+        },
+        "target": {
+          "content_sha256": "ab5fe73bbade66f04f7ed4aa6ff7311c967023fa702b5c2184d0631005ad873e",
+          "elf_count": 1,
+          "flat_sha256": "8baac0275b87d707869a90fa801471f9fb0c285b3f4940654ef00f164148c583",
+          "full_content_record_equal": true,
+          "full_member_map_sha256": "fc8d778b92ddb827e53a476446980dd91fd5e488602e2a861441c31ca54d9177",
+          "hardlinks": {},
+          "host_root": {
+            "gid": 0,
+            "mode": 365,
+            "uid": 0
+          },
+          "image_id": "sha256:d23f6c5623b569b558e66697f8d7d33843f1e378c78fcc5ef088649726687b14",
+          "layers": [
+            {
+              "entries": 1,
+              "member_types": {
+                "0": 1
+              },
+              "name": "cfd4225e126e00db6cd333c44f9a4523ff23b7d078f52c5143062dedf4aba02f.tar",
+              "pax_keys": {},
+              "replaced_paths": [],
+              "root_headers": [],
+              "whiteouts": 0
+            }
+          ],
+          "members_independently_compared": 1,
+          "payload_sha256": "7f9346b3a01d65dde54026b91b7e7cc7333442ea5d500fa9404bebfc7e2366e7",
+          "portable_sha256": "f1e8a358534a3e7aa657b33d588b3c96096de30ff66be047915dc612e9b10ab7",
+          "required_elf_count": 1
+        }
+      },
+      "root_observations": 6,
+      "stopped_lifecycles": 5
+    },
+    "x86_64": {
+      "commands": {
+        "build": 5,
+        "container": 15,
+        "cp": 2,
+        "create": 5,
+        "export": 3,
+        "image": 8,
+        "info": 1,
+        "ps": 5,
+        "pull": 2,
+        "rm": 5,
+        "save": 3,
+        "unshare": 6,
+        "version": 1
+      },
+      "roles": {
+        "observer": {
+          "content_sha256": "8e680fab8a46406c6e4cff7dd9a7214444db2abf00a14eb76bf7030fb76e8e46",
+          "elf_count": 1,
+          "flat_sha256": "5c710317ee47621336d063dc7c34d0287144a021afe5674800f19090dbb03310",
+          "full_content_record_equal": true,
+          "full_member_map_sha256": "416b2f2abdc75977189cb405b9b7ad7139eb8b84331d910caf20dc5daab498d4",
+          "hardlinks": {},
+          "host_root": {
+            "gid": 0,
+            "mode": 365,
+            "uid": 0
+          },
+          "image_id": "sha256:cfc1379264636507c4e2e969e2d10d9d577ca16173af43063a9dfaf635e0c3a2",
+          "layers": [
+            {
+              "entries": 1,
+              "member_types": {
+                "0": 1
+              },
+              "name": "55e885bfabfb45a0e1bd22e7622a3e1759e2b4aa53151be80cca28c88ff7a0d3.tar",
+              "pax_keys": {},
+              "replaced_paths": [],
+              "root_headers": [],
+              "whiteouts": 0
+            }
+          ],
+          "members_independently_compared": 1,
+          "payload_sha256": "117ca4c7220f2646ea6e3934581c52affd7b091d9513255b540295083db70901",
+          "portable_sha256": "38e7c76fc8d0bc7479ae9395e003ec0b072b65d618ee87212f9fba9d913ab9e8",
+          "required_elf_count": 1
+        },
+        "oracle": {
+          "content_sha256": "9755e98a7995e1352ffbb77d8c3220bb9362b14b1bdb6aefd71ff2fe3afa6836",
+          "elf_count": 791,
+          "flat_sha256": "bc8f7503d13d4f9ac7ddef77b44f9623df5cf307223e41cc873541d7399737a9",
+          "full_content_record_equal": true,
+          "full_member_map_sha256": "3ee4d052b074e95262b6d41863c3cac87ed0a45cd4a8f32391bdada17648bdb4",
+          "hardlinks": {
+            "usr/bin/perl5.36.0": "usr/bin/perl",
+            "usr/bin/uncompress": "usr/bin/gunzip"
+          },
+          "host_root": {
+            "gid": 0,
+            "mode": 365,
+            "uid": 0
+          },
+          "image_id": "sha256:6746d2ebdec450c27c57414cc09f1dba0ed408260e7c3d61789f2e2c46796a61",
+          "layers": [
+            {
+              "entries": 4225,
+              "member_types": {
+                "0": 3263,
+                "1": 2,
+                "2": 508,
+                "5": 453
+              },
+              "name": "34467cc93912af891dfee8a3902adf9b4f355a9bca4eaa46f658d1181a21de0d.tar",
+              "pax_keys": {},
+              "replaced_paths": [],
+              "root_headers": [
+                {
+                  "gid": 0,
+                  "mode": 493,
+                  "uid": 0
+                }
+              ],
+              "whiteouts": 0
+            },
+            {
+              "entries": 565,
+              "member_types": {
+                "0": 214,
+                "2": 305,
+                "5": 46
+              },
+              "name": "0229d3e3d668de7c1d42c1e23d30f4bc5c5e93d68c8fe897e94a6fe9b0262491.tar",
+              "pax_keys": {
+                "linkpath": 2,
+                "path": 2
+              },
+              "replaced_paths": [
+                "etc",
+                "etc/ld.so.cache",
+                "usr",
+                "usr/bin",
+                "usr/lib",
+                "usr/lib/x86_64-linux-gnu",
+                "usr/local",
+                "usr/local/share",
+                "usr/sbin",
+                "usr/share",
+                "usr/share/doc",
+                "var",
+                "var/cache",
+                "var/cache/apt",
+                "var/cache/debconf",
+                "var/cache/debconf/config.dat",
+                "var/cache/debconf/config.dat-old",
+                "var/cache/debconf/templates.dat",
+                "var/cache/debconf/templates.dat-old",
+                "var/cache/ldconfig",
+                "var/lib",
+                "var/lib/apt",
+                "var/lib/apt/extended_states",
+                "var/lib/dpkg",
+                "var/lib/dpkg/info",
+                "var/lib/dpkg/lock",
+                "var/lib/dpkg/status",
+                "var/lib/dpkg/status-old",
+                "var/lib/dpkg/triggers",
+                "var/lib/dpkg/triggers/Lock",
+                "var/lib/dpkg/triggers/Unincorp",
+                "var/log",
+                "var/log/apt",
+                "var/log/apt/eipp.log.xz"
+              ],
+              "root_headers": [],
+              "whiteouts": 0
+            },
+            {
+              "entries": 1856,
+              "member_types": {
+                "0": 1575,
+                "2": 17,
+                "5": 264
+              },
+              "name": "d119e31e71d7a4e8b81f78a0e11901e1a2b3252619eac69266aa157d943b4763.tar",
+              "pax_keys": {},
+              "replaced_paths": [
+                "etc",
+                "etc/ld.so.cache",
+                "root",
+                "usr",
+                "usr/lib",
+                "usr/lib/x86_64-linux-gnu",
+                "usr/local",
+                "usr/local/bin",
+                "usr/local/include",
+                "usr/local/lib",
+                "usr/local/share",
+                "usr/local/share/man",
+                "usr/share",
+                "usr/share/doc",
+                "var",
+                "var/cache",
+                "var/cache/debconf",
+                "var/cache/debconf/config.dat",
+                "var/cache/debconf/config.dat-old",
+                "var/cache/debconf/templates.dat",
+                "var/cache/debconf/templates.dat-old",
+                "var/cache/ldconfig",
+                "var/cache/ldconfig/aux-cache",
+                "var/lib",
+                "var/lib/apt",
+                "var/lib/apt/extended_states",
+                "var/lib/dpkg",
+                "var/lib/dpkg/info",
+                "var/lib/dpkg/info/perl-base.list",
+                "var/lib/dpkg/lock",
+                "var/lib/dpkg/status",
+                "var/lib/dpkg/status-old",
+                "var/lib/dpkg/triggers",
+                "var/lib/dpkg/triggers/Lock",
+                "var/log",
+                "var/log/apt",
+                "var/log/apt/eipp.log.xz",
+                "var/log/apt/history.log",
+                "var/log/apt/term.log",
+                "var/log/dpkg.log"
+              ],
+              "root_headers": [],
+              "whiteouts": 0
+            },
+            {
+              "entries": 8,
+              "member_types": {
+                "2": 5,
+                "5": 3
+              },
+              "name": "1095031acd1c984ad93c83dadab1d79a3b2fd93d5086537b16593c47a3e3ee06.tar",
+              "pax_keys": {},
+              "replaced_paths": [
+                "usr",
+                "usr/local",
+                "usr/local/bin"
+              ],
+              "root_headers": [],
+              "whiteouts": 0
+            },
+            {
+              "entries": 9,
+              "member_types": {
+                "0": 8,
+                "5": 1
+              },
+              "name": "3f64fe90e2a6f34ba27ffba52f74d7876538956d569325705f53c61b7ce69e15.tar",
+              "pax_keys": {},
+              "replaced_paths": [],
+              "root_headers": [],
+              "whiteouts": 0
+            }
+          ],
+          "members_independently_compared": 6586,
+          "payload_sha256": "f6a268986ce2e718f48c85a4dcd65d4ec01b6aff47af7aa57abf7aca7c8f07a4",
+          "portable_sha256": "73bc9b769c4e55dfc0d53aec98fc7a04fc324203ce0717be4a96673e11d4aba7",
+          "required_elf_count": 18
+        },
+        "target": {
+          "content_sha256": "0b591e3700cc349573d30c0c9d6025371d5da919a21863d7a077368801322b95",
+          "elf_count": 1,
+          "flat_sha256": "3122d52b795c119a1416ad300654f3225c902a94bfef4eff198346efc5035af1",
+          "full_content_record_equal": true,
+          "full_member_map_sha256": "8a2d374c5a8b7e3371e91e9c984498494522fc34cfbf79ba2e8c68a0dc9471d2",
+          "hardlinks": {},
+          "host_root": {
+            "gid": 0,
+            "mode": 365,
+            "uid": 0
+          },
+          "image_id": "sha256:9e71f92fc46e0344826113014a6e2f427fec7462376a258ac57e60336eb2d69b",
+          "layers": [
+            {
+              "entries": 1,
+              "member_types": {
+                "0": 1
+              },
+              "name": "e6e5e637bd325e2589b7a8bdf29ab395948afa86b4b29f0412957ebea9fda53b.tar",
+              "pax_keys": {},
+              "replaced_paths": [],
+              "root_headers": [],
+              "whiteouts": 0
+            }
+          ],
+          "members_independently_compared": 1,
+          "payload_sha256": "c9f5f201adfaa4d419f2154c2baeef5f64011a130b9443d3cf70c46e2a28eb52",
+          "portable_sha256": "4c78affed3f11a90e3f68b558be01dafd519a60c5286163965f39da91d9b5219",
+          "required_elf_count": 1
+        }
+      },
+      "root_observations": 6,
+      "stopped_lifecycles": 5
+    }
+  },
+  "assertions_enabled": true,
+  "control_count": 18,
+  "controls": [
+    {
+      "name": "valid_hardlink_static_replay",
+      "outcome": "accepted positive control",
+      "status": "PASS"
+    },
+    {
+      "exception": "AssertionError",
+      "name": "whiteout",
+      "outcome": "rejected",
+      "reason": "",
+      "status": "PASS"
+    },
+    {
+      "exception": "AssertionError",
+      "name": "parent_traversal",
+      "outcome": "rejected",
+      "reason": "",
+      "status": "PASS"
+    },
+    {
+      "exception": "AssertionError",
+      "name": "absolute_member",
+      "outcome": "rejected",
+      "reason": "",
+      "status": "PASS"
+    },
+    {
+      "exception": "AssertionError",
+      "name": "normalized_duplicate",
+      "outcome": "rejected",
+      "reason": "",
+      "status": "PASS"
+    },
+    {
+      "exception": "AssertionError",
+      "name": "type_changing_replacement",
+      "outcome": "rejected",
+      "reason": "",
+      "status": "PASS"
+    },
+    {
+      "exception": "AssertionError",
+      "name": "hardlink_target_replacement",
+      "outcome": "rejected",
+      "reason": "layer replaces an existing hardlink target",
+      "status": "PASS"
+    },
+    {
+      "exception": "AssertionError",
+      "name": "hardlink_to_symlink",
+      "outcome": "rejected",
+      "reason": "",
+      "status": "PASS"
+    },
+    {
+      "exception": "AssertionError",
+      "name": "hardlink_metadata_mismatch",
+      "outcome": "rejected",
+      "reason": "",
+      "status": "PASS"
+    },
+    {
+      "exception": "AssertionError",
+      "name": "special_device",
+      "outcome": "rejected",
+      "reason": "",
+      "status": "PASS"
+    },
+    {
+      "exception": "AssertionError",
+      "name": "duplicate_root",
+      "outcome": "rejected",
+      "reason": "",
+      "status": "PASS"
+    },
+    {
+      "exception": "AssertionError",
+      "name": "inspect_config_mismatch",
+      "outcome": "rejected",
+      "reason": "",
+      "status": "PASS"
+    },
+    {
+      "exception": "AssertionError",
+      "name": "config_identity_mismatch",
+      "outcome": "rejected",
+      "reason": "",
+      "status": "PASS"
+    },
+    {
+      "name": "valid_portable_layers",
+      "outcome": "accepted positive control",
+      "status": "PASS"
+    },
+    {
+      "exception": "Invalid",
+      "name": "tampered_layer_digest",
+      "outcome": "rejected",
+      "reason": "IMAGE_SAVE_LAYER_DIGEST",
+      "status": "PASS"
+    },
+    {
+      "exception": "Invalid",
+      "name": "wrong_portable_architecture",
+      "outcome": "rejected",
+      "reason": "IMAGE_SAVE_PLATFORM",
+      "status": "PASS"
+    },
+    {
+      "exception": "Invalid",
+      "name": "layer_root_not_host_root",
+      "outcome": "rejected",
+      "reason": "IMAGE_ROOT_CHANGED",
+      "status": "PASS"
+    },
+    {
+      "exception": "Invalid",
+      "name": "flattened_symlink_parent",
+      "outcome": "rejected",
+      "reason": "IMAGE_MEMBER_PARENT",
+      "status": "PASS"
+    }
+  ],
+  "image_execution": false,
+  "image_path_extraction": false,
+  "native_calibration_performed": false,
+  "negative_controls": 16,
+  "positive_controls": 2,
+  "process_network_audit_events_blocked": [],
+  "python_version": "3.14.8 (main, Oct  1 2026, 00:00:00) [GCC 16.2.1 20260819 (Red Hat 16.2.1-2)]",
+  "runtime_admission_certified": false,
+  "status": "PASS"
+}

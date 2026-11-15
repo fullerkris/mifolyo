@@ -1,0 +1,2436 @@
+{
+  "actual_changes_since_initial_review": {
+    "tests/crawl-jobs-v2-observer/docker_backend.py": {
+      "after": "7a3aaaf2de8c3dd79f6b749dfbed00fcf35ed052d62dc20246bd66fe91d19e9c",
+      "before": "8ceef501710ab69609d349d072d377a83fea0cf5f2377f05076114ef7fc0c130"
+    },
+    "tests/crawl-jobs-v2-observer/test_live_adapter.py": {
+      "after": "6607d0879870d36b3b0573273896416aa9080a6523e6daefdd86f539f4c79e93",
+      "before": "cca3e563824e701e4e5b2e8548334c3aeee50c7b2d161f23a2a7fd9ea1690ea1"
+    }
+  },
+  "all_original_329_bindings_carried_forward": true,
+  "bound_file_count": 444,
+  "bound_file_mismatches": [],
+  "bound_files_actual": {
+    "out/c0-runtime-adapter-2026-10-24/before.json": {
+      "bytes": 68716,
+      "sha256": "6606f702549b4f24ef83126d2502f47111b13bddcf834a58f2ad6cb7931bb180"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before.patch": {
+      "bytes": 13337,
+      "sha256": "cbdd5f56424e7f9064da27c1459ac34d921a4764d58d9bbced08419a49d6fb1a"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/crawl-jobs-v2-m4-c0-native-preflight-2026-10-17.md": {
+      "bytes": 12257,
+      "sha256": "a0c0c966efb9fc409a5384128a3c99c59a3ded3b486e81cf39e5fbe090db6c07"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/crawl-jobs-v2-m4-c0-runtime-images-2026-10-17.md": {
+      "bytes": 10779,
+      "sha256": "e44ee3215a4d4f5c06bc77913b624cbaf0d03f685895c32caf5fc97e4db763e7"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/crawl-jobs-v2-plan.md": {
+      "bytes": 308344,
+      "sha256": "3b64e8d4cc6f33ecf60f06aa1f19cdfd6660ba33c55f6c15931354ffab9b6429"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/.gitignore": {
+      "bytes": 7,
+      "sha256": "e027cf8ebf80d6dcdacced8a4dbd1c440e2436fb1868ec851db4061cb67bb787"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/README.md": {
+      "bytes": 5862,
+      "sha256": "5d5a80932f31ee306cfaaa8b7ea8f9ebe5de3830d5995a5cc46634ba0aef6ab8"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/correctness-remediation-manifest.json": {
+      "bytes": 2450,
+      "sha256": "b21ea130c166748db8a4518be17c26165701df480386dda4c4a236dc159492aa"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/correctness-remediation/audit-after.json": {
+      "bytes": 2705,
+      "sha256": "7be20512c4c03441881c4dcc19b68041e45f94fd7f968080bf080de74e9d3138"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/correctness-remediation/audit-after.log": {
+      "bytes": 1449,
+      "sha256": "3726803d8b29292b276e9f3713219cfb2cbe9e79917fa14b72a21ba8ff3fd75f"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/correctness-remediation/audit-before-final.log": {
+      "bytes": 1450,
+      "sha256": "df911b08e60155be7e36670c10ad0c7e8a86f924a8a1c3f02360a017f6870220"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/correctness-remediation/audit-before.json": {
+      "bytes": 2706,
+      "sha256": "64874bc1ee6de8a630bfe2713d9048f936172ae32f91f01ba3f5715d9b78e7c3"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/correctness-remediation/audit-before.log": {
+      "bytes": 413,
+      "sha256": "88239ad131a65285cf717b02cb59889079c7f954a1b699198f2cf19b3a972674"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/correctness-remediation/audit_snapshot.py": {
+      "bytes": 6493,
+      "sha256": "a9d614638f0548fb7514d172ba9509a08a0349bb9de483c8bf448659765938e6"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/correctness-remediation/fix-boundaries.log": {
+      "bytes": 700,
+      "sha256": "c3bd22b488be2dc2e69ba0e01c4aa562ed490a54c23a80ee372af422f041e57c"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/correctness-remediation/fix-boundary-evidence.json": {
+      "bytes": 8263,
+      "sha256": "e7ef94b53ce1b5ef60266ad7439a08301a33eae505dc1439de87f80f2b63a10a"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/correctness-remediation/focused-tests.log": {
+      "bytes": 2603,
+      "sha256": "d1809451400fcdc280fa90d9acb30cbe26bd08622aabe43166259c9b1bb67153"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/correctness-remediation/report.md": {
+      "bytes": 8566,
+      "sha256": "a6bf1b333929809dbb56a4a6427842aed3247e2a87475e082bf5260bb4acd004"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/correctness-remediation/rerun_initial_probes.py": {
+      "bytes": 2639,
+      "sha256": "c19b72c8cf4cdbd4168959b499c53602f4f8cb8299ba2b4699ae8dc1abdd6806"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/correctness-remediation/result.json": {
+      "bytes": 2507,
+      "sha256": "8dfb7de4fffbb60d4ed73c7572f5097c9c91ad3643466828e1e6e1564c7f6cb5"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/correctness-remediation/retained-probe-evidence.json": {
+      "bytes": 3433,
+      "sha256": "66cb4a2489fff3182fddfa8bc38e3174dbed0111d592e2558bfe14234a67eb12"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/correctness-remediation/retained-probes.log": {
+      "bytes": 2236,
+      "sha256": "281edfe79e043a9841776cac74b6c3c9aef56135c79f861aef999311befc0da9"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/correctness-remediation/review-artifact-sha256.json": {
+      "bytes": 1482,
+      "sha256": "56c01071f091ced97fd8e9b2399d167399e3583698caa0c1c549aef80423027f"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/correctness-remediation/snapshot-diff.patch": {
+      "bytes": 9443,
+      "sha256": "b7e9269a6693736b8a55e55142bf286e9a6378ba429ab9003cf6b4cb632c90ac"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/correctness-remediation/test_fix_boundaries.py": {
+      "bytes": 8765,
+      "sha256": "1e8ae01d0eea40f8af84ff3cda1643ae093703a9e925f3de0f667534d15b54d0"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/final-correctness-manifest.json": {
+      "bytes": 2035,
+      "sha256": "45b83f8000a991c0909a1f330b456d0ac4e707e1a0bc45524b7fac9cd7e3ed75"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/final-correctness/api-schema-notes.md": {
+      "bytes": 1596,
+      "sha256": "001128888121d0ea4751f65178d00a8d31a5d5cd1f529049530bc64cfce75462"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/final-correctness/audit-after.json": {
+      "bytes": 5598,
+      "sha256": "e1edd93f02108d548a9b048b7a53908d31d55d1cc0ee99668a86e1b4b3aa5164"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/final-correctness/audit-after.log": {
+      "bytes": 2615,
+      "sha256": "862f90368d3001a772870c0ad1e221844e29108ec708c969a06f0a75e6dc3417"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/final-correctness/audit-before.json": {
+      "bytes": 5599,
+      "sha256": "e15960039f44509ea7a3aaf89cd3eaddbdc14b62b1f1adc79006c87d5d8ab7c6"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/final-correctness/audit-before.log": {
+      "bytes": 2616,
+      "sha256": "eb6d14d373f2f72bd17af2ca5b1f98d5e6e7340c93d47abc960a7e754adbc78b"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/final-correctness/audit.py": {
+      "bytes": 6128,
+      "sha256": "3514bfeaf3215b71e333c27e522ca6ac02a2b1525cb49e68da03b994af1cc22e"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/final-correctness/focused-tests.log": {
+      "bytes": 4695,
+      "sha256": "a021a0668ec78e9ce1bfd59fe16c180e94242481145648dc45d4c4d4998e765f"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/final-correctness/independent-evidence.json": {
+      "bytes": 3511,
+      "sha256": "6714c305bb8cb49de8ed4b4e3667c7ffaa53b93410adeac6775f96766a11daf2"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/final-correctness/independent-tests.log": {
+      "bytes": 2191,
+      "sha256": "158d5527dae339259fcad6bd27419fa403e19b72c4b76cec39a3c2325211c822"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/final-correctness/independent_controls.py": {
+      "bytes": 21206,
+      "sha256": "f84ae44b881eaf44d593da1929fe8dee07ca673b989b52c91257ea2993b737a9"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/final-correctness/report.md": {
+      "bytes": 9962,
+      "sha256": "026b93f044e7bff8cc6d3c859d0a43aa2b5dba03c59c06a384d72b90a60fe4ef"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/final-correctness/result.json": {
+      "bytes": 2269,
+      "sha256": "71aec3c6668e7c80d5a169f191af769ed0ccb93f63c57f60c16dee0eb731afac"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/final-correctness/review-artifact-sha256.json": {
+      "bytes": 1182,
+      "sha256": "3862c8897004c7c8b9a0260821d4fbed2bd136d921d92f5da1ec55daaf3deadd"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/final-correctness/transport-diff.patch": {
+      "bytes": 39071,
+      "sha256": "b3a651c4d699e83dab34a0d9d2ce2d0f222c400a4482cbc03f9a874a40bb5dfb"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/final-gate.json": {
+      "bytes": 2238,
+      "sha256": "2e91337ea1d30d2d319c9b86019f36c7af75677e01a082d88660d37ad22fd7e8"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/final-security-manifest.json": {
+      "bytes": 2381,
+      "sha256": "ea3405afad97cbda736a920ca65caf9cca996443fb4d55103a504be120915585"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/final-security/SECURITY-REVIEW.md": {
+      "bytes": 17366,
+      "sha256": "741ef45475dfd4d0faaebcb93c2cff7ba5901452aae3f383ba1da0a98cc3d7bc"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/final-security/baseline-original.exit": {
+      "bytes": 12,
+      "sha256": "bde294368bfed77c2cddf8cec271d398aee9cdbab3b26e1059281bd33adb0120"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/final-security/baseline-original.log": {
+      "bytes": 4695,
+      "sha256": "fb36693f9ab1d2f5690a354dfc7f44e8f50c38533375a16e49d18dcc18443574"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/final-security/deep-json-original.exit": {
+      "bytes": 12,
+      "sha256": "bde294368bfed77c2cddf8cec271d398aee9cdbab3b26e1059281bd33adb0120"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/final-security/deep-json-original.json": {
+      "bytes": 1465,
+      "sha256": "f9cad393b56569e7700f549243ad637af51fe70b6563ad15decf6b57ae028f9a"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/final-security/deep-json-original.log": {
+      "bytes": 1015,
+      "sha256": "9cd142db26b0a570016d261a6d84f6baac4b210b35641fecf597cca145f9a001"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/final-security/deep_json_probe.py": {
+      "bytes": 2274,
+      "sha256": "508515b2e3e31e698f326a168f84ec09a47f504bfe4e6cbaf16d34b6fea3438c"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/final-security/documentation-lookups.md": {
+      "bytes": 1837,
+      "sha256": "973e4b8781813309737458f5da76003b1f412a622eb34023f8f6b3a3c597db6d"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/final-security/evidence-inventory.json": {
+      "bytes": 1659,
+      "sha256": "05efeb8ce3e571e2b304c5fce0abfa0c7ffb60f93a487eaaecfeedb0c6c13e6a"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/final-security/independent-original.exit": {
+      "bytes": 12,
+      "sha256": "bde294368bfed77c2cddf8cec271d398aee9cdbab3b26e1059281bd33adb0120"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/final-security/independent-original.json": {
+      "bytes": 4316,
+      "sha256": "436d7adbbabfe7dafe9448d504cbfee9fdb78c93bf216ecb56f7179b43e89171"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/final-security/independent-original.log": {
+      "bytes": 2743,
+      "sha256": "f9cb90831085573af21547143b978930e94ae656b44440657f7c89d87b969471"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/final-security/integrity-after.json": {
+      "bytes": 18997,
+      "sha256": "c73e04f5f6fd3bd90ce8c77d93310dc45face2f8833f036fc5540e11f29e9d68"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/final-security/integrity-before.json": {
+      "bytes": 19519,
+      "sha256": "4c5a7e4edfcbae780be6a1120dcdc9fcaf0c67f1d0aeab8ae7bca572b3aa89c0"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/final-security/review-summary.json": {
+      "bytes": 3685,
+      "sha256": "cbd9ff8b61da256bf13ba03c530e13573ce65d821f20247cb464db718da2afc4"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/final-security/transport_security_tests.py": {
+      "bytes": 29945,
+      "sha256": "698bd866da0b6aef849bef6b1f6e6b4c76185bcd4ba7015d10b0fb021e18bc59"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/final-source-inventory.json": {
+      "bytes": 7963,
+      "sha256": "ca38c05c22ad440a606a786806f3bd4ccbda7917d11e83633774505969e678ab"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/final-source.patch": {
+      "bytes": 68961,
+      "sha256": "4353ed3cd692f8e46422c61c97220f30f0a4a738e0757be1db4e914477a75f77"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/initial-correctness-manifest.json": {
+      "bytes": 1898,
+      "sha256": "7c0514df0a78d81a6828d76437ba23b9fd55199cd91a9c61a59874ba84560d01"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/initial-correctness/controls-final.log": {
+      "bytes": 1914,
+      "sha256": "5edd98b99d2418d2a686e63b2469dd8e32e4616cad7dab87f19f487958e92eb5"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/initial-correctness/controls.log": {
+      "bytes": 2532,
+      "sha256": "115b0c211f13f9ac12f8da6ea68d84e3553d2f8e7cc06fc58d75dd66e0a6b6d0"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/initial-correctness/controls.py": {
+      "bytes": 12860,
+      "sha256": "cebc32f967dc452cde97740ac89bab2f28ae23164f9d27d2e32c4c299b640775"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/initial-correctness/focused-tests.log": {
+      "bytes": 2251,
+      "sha256": "5f6472cd9722a104f4cf7efc691bf4afdef6d6e097eac509e8203e4519706552"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/initial-correctness/inventory-after.json": {
+      "bytes": 426,
+      "sha256": "c2b3e3f401ec50921a2b30c90d8ccf64c840d251c1094512f34e4ecc6345aa26"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/initial-correctness/inventory-before.json": {
+      "bytes": 13739,
+      "sha256": "4a1a3142565be6d9f02bd581537ba39c97ce73f2e8f3f1390aa1e6f49f3b9730"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/initial-correctness/regression-evidence.json": {
+      "bytes": 1380,
+      "sha256": "15198b778b6564db2f35592e3e436da988f2167733474d9faaf928c2a33931b3"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/initial-correctness/regressions.log": {
+      "bytes": 4259,
+      "sha256": "87c998689eb45aa9d033aab81a496280a7e3f353ec99e4bb881620e7db802063"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/initial-correctness/regressions.py": {
+      "bytes": 3706,
+      "sha256": "2591de20149ebf4fe5078796e57e86c766d98a0f12e74042f42fa8a144811ecc"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/initial-correctness/report.md": {
+      "bytes": 9738,
+      "sha256": "a60fcf36b52b382bc5b896884c2e370370a989c3add04796682a7762e60ed8d2"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/initial-correctness/result.json": {
+      "bytes": 1805,
+      "sha256": "bdbf3995200eb89eec734ce4de40c668b9193259c4c9fd55785101b73d2e9273"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/initial-correctness/review-artifact-sha256.json": {
+      "bytes": 1091,
+      "sha256": "43c014819aa97cc78d352106db652bcb349fc02fd69bffaf4d49a3f0861aaf9b"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/initial-correctness/upstream-security-options.md": {
+      "bytes": 1855,
+      "sha256": "03c356da005c371fa252780d66edf9f8b5acdf23e0509fc0331274aad6905d3a"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/initial-manifest.json": {
+      "bytes": 1907,
+      "sha256": "764d031b544ea4f80b22c6e6145da06b866593af6240c4644299b3f6b5d88149"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/initial-security-manifest.json": {
+      "bytes": 2352,
+      "sha256": "7fbbef11410854b89f0a73cd6b60dac96539bc6a35f57977307fd6e36c89b096"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/initial-security/SECURITY-REVIEW.md": {
+      "bytes": 18471,
+      "sha256": "ebb837d373e4ebc72e7c788fda56e82cb74f117258d514d12c7eb04873efa645"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/initial-security/adversarial-original.exit": {
+      "bytes": 12,
+      "sha256": "85acfd2e79dd47df07d214334642196301332f72d792b52068cdfd8898755409"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/initial-security/adversarial-original.json": {
+      "bytes": 2393,
+      "sha256": "67f300f5a843c54eda97a0206a3203c73353a3381a0dbec55bbcd2a86516a353"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/initial-security/adversarial-original.log": {
+      "bytes": 7576,
+      "sha256": "3d0e50719ca4df84390b77cf59d02d1fb41acc81921f32f05e334eef9226c1f5"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/initial-security/baseline-original.exit": {
+      "bytes": 12,
+      "sha256": "bde294368bfed77c2cddf8cec271d398aee9cdbab3b26e1059281bd33adb0120"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/initial-security/baseline-original.log": {
+      "bytes": 2251,
+      "sha256": "5f6472cd9722a104f4cf7efc691bf4afdef6d6e097eac509e8203e4519706552"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/initial-security/evidence-inventory.json": {
+      "bytes": 1636,
+      "sha256": "01d349d9be23ac0f4ee0324ab6180a6f0aaf20bf96b8f75a7268c1bde1e14841"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/initial-security/followup-original.exit": {
+      "bytes": 12,
+      "sha256": "bde294368bfed77c2cddf8cec271d398aee9cdbab3b26e1059281bd33adb0120"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/initial-security/followup-original.json": {
+      "bytes": 605,
+      "sha256": "4bdb8f1908eaea2e5e9f36aa399d054e4517eb20eba5bc27dbbeb29cb03cbb0c"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/initial-security/followup-original.log": {
+      "bytes": 378,
+      "sha256": "b387b415e5a2e47c7ad142bc3d175f4f1f8cc42bb3537ce5182661ce9ab77d5b"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/initial-security/followup_tests.py": {
+      "bytes": 4069,
+      "sha256": "8da79e1820731cf55b1037d0268752ac0b3c6de7d63d5349de733fb90bda6d91"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/initial-security/integrity-after.json": {
+      "bytes": 17717,
+      "sha256": "a01024f8d2c9e492fe2643ddf0683dae89d96beaa9010a8f947c83343d2269ed"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/initial-security/integrity-before.json": {
+      "bytes": 17810,
+      "sha256": "c84deb02eff39de03f09045805dd3567d5a7629cbfcd5ef59a25f7ce7679ff32"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/initial-security/public-source-evidence.md": {
+      "bytes": 4227,
+      "sha256": "79254b0c151b413dbf2435b929080abac14ad14ffe387b3581ce78a10246410a"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/initial-security/review-summary.json": {
+      "bytes": 2992,
+      "sha256": "25765ff1c4fc3e8665bc2e55b4644c543e76e989812fbf9608fb6a97b7165903"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/initial-security/security_adversarial_tests.py": {
+      "bytes": 13656,
+      "sha256": "9a9812737c13ad092016cf0e58d96201536c8729ab51ced8c5fd1feba1049773"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/initial-source.patch": {
+      "bytes": 38762,
+      "sha256": "00bd9b74a053d95719c6465d40d36a2fe062e9d1182b5b5cd32d2d134a38efb2"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/initial-ssh-discovery.json": {
+      "bytes": 4628,
+      "sha256": "509e0dc456ba12268bc8ee4448825d8f77de93a9e471e1d98b1041884c82a531"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/local-preflight.json": {
+      "bytes": 2579,
+      "sha256": "639d5682c10166d102fb89df9f9814d2a3e7f06e01e10bede7680d604f5dd4ed"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/local-preflight.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/manifest.json": {
+      "bytes": 17257,
+      "sha256": "93b0a078c3e89d7e3af566304a8bc04756b8a18c139aa24444cb38dbb2b11537"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/pr32-capture.json": {
+      "bytes": 589,
+      "sha256": "6057d91e98eb9e3bbe01bf674eaa8f0c8411e0958c7a21d8e80d7e3b3f0780c0"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/pr32-checks-capture.json": {
+      "bytes": 4751,
+      "sha256": "c9bb8b92a7be3ce8a1ef116809f5e0bcbcf833f7f953d5c63a838696a0ba981f"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/pr32-checks.json": {
+      "bytes": 4848,
+      "sha256": "622c82ad89093e11c427786d237d9fbebe892da687f9986cf189df42cec5c39d"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/pr32-images-run-capture.json": {
+      "bytes": 5657,
+      "sha256": "14eec4641299f27e48e9d419880a8484c1f1bb902012fa0706b9bac00f9f4e2d"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/pr32-images-run.json": {
+      "bytes": 6972,
+      "sha256": "96d57a0c4f53812c1198c7f3578c23cae982db490cb7f0df49b42cc7bef3c067"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/pr32.json": {
+      "bytes": 292,
+      "sha256": "ca78972be68f850581c4cd5571fc32fb61d9c464d6727eaa12e8a45cefa92fee"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/remediation-source-inventory.json": {
+      "bytes": 7508,
+      "sha256": "4046bd7f3604bdf51ddd50e159a41c394ec9c55e4715cbbfef69e54d2e743ba6"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/remediation-targeted.log": {
+      "bytes": 2603,
+      "sha256": "87c5020893a487f1092fd34aed517a4ee093406d40960fe73f9fc9438ace8bb7"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/remediation-tests-022.json": {
+      "bytes": 103437,
+      "sha256": "2843f2928627665fa059fb67be53536008435ed6a6b6259029a47274ba774683"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/remediation-tests-022.log": {
+      "bytes": 50724,
+      "sha256": "da20037bc56b4602fa7e7af73cc3835a24c0aa18b00509831ae1d5d4410b4e26"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/security-remediation-targeted.log": {
+      "bytes": 4695,
+      "sha256": "f682c9662b34f872d9fc9447742216b960b1eb4e81c5d95b74dda05237bbb229"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/source-inventory.json": {
+      "bytes": 7496,
+      "sha256": "aa84e8b932141d6032a70e0f85a3fbc638dabec72992c6cb46a14c3cacc67414"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/tests-022.json": {
+      "bytes": 102777,
+      "sha256": "dd21eb4d313a14d8532aded58b15b0de4ac148b25de0d5baf3fb7bf2f1575a69"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/tests-022.log": {
+      "bytes": 50372,
+      "sha256": "9c48b68a445f9917f04b8a96cd148af5cd65339edc0d0478286d85fd32b66f65"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/transport-continuity.json": {
+      "bytes": 563,
+      "sha256": "5921c47877d41cfc7317595742ad2b079593895ad8110ba8f0899f464c28f63f"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/transport-local-preflight.json": {
+      "bytes": 2556,
+      "sha256": "9ed3f5b278a3c1a29ddb116bea254e81b963ce17f0df71171a81aeca0f3d3907"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/transport-local-preflight.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/transport-source-inventory.json": {
+      "bytes": 7757,
+      "sha256": "faf8d794802f7a3b7603bea199689014cef21d415764571725ff9e3b66414baf"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/transport-tests-022.json": {
+      "bytes": 107792,
+      "sha256": "2113de12e8e359b884e9d1ac7e884866663d1bcced51f1680aa93c63f5dee6bf"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-native-preflight-2026-10-17/transport-tests-022.log": {
+      "bytes": 52816,
+      "sha256": "7bd62e246d4a7c1fdb793e11ecf9af761fc0632eafd441d8715c2cdfc450fe65"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/.gitignore": {
+      "bytes": 14,
+      "sha256": "2d88b49b18e27eff02ded907f3057387448c45d7979a0fda16248ab1d211f51c"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/README.md": {
+      "bytes": 6508,
+      "sha256": "c78534ffb087cb6f2adbd69c3152d64912529651260044ed0cc89588ad81ff50"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/correctness/audit-after.json": {
+      "bytes": 163201,
+      "sha256": "26ddc6395a28b45fe1f1ef59be12db6a8a93ac38d61e0b571778872fe70ec768"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/correctness/audit-after.log": {
+      "bytes": 294,
+      "sha256": "81fd58a2895550ebcca1fb44100bc873f4718cd463c41423bff56fdd4a96e5b6"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/correctness/audit-before.json": {
+      "bytes": 163111,
+      "sha256": "da0284d075befc56bc0c7f803c62d2b1b06faf9c98a67fe0bfde98e93f890074"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/correctness/audit-before.log": {
+      "bytes": 210,
+      "sha256": "4cf3da9427f6b21fbebd5344f2ecea921cdc73164c3b5aa8e9d4da60c0d0ca30"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/correctness/audit_inputs.py": {
+      "bytes": 1817,
+      "sha256": "bbe363e95829c8f8b865f6fd2a42504bd617e8554fb9914773d0e221a70af074"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/correctness/check_images.py": {
+      "bytes": 27518,
+      "sha256": "56ebe760349ef408743faefcb250e063bdc98056258796fe8007337bb19beb5b"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/correctness/check_source_sync.py": {
+      "bytes": 9041,
+      "sha256": "6729a0ba906efeac211bd512a77f216e8d50b1674ef5d9390d0dc48d8b7a9d8d"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/correctness/check_summary_bindings.py": {
+      "bytes": 4527,
+      "sha256": "91d0e6ee166a3f45f994917bc07b92be4e42897cdcc945111bb24066c79ce101"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/correctness/durable-fixtures.json": {
+      "bytes": 585,
+      "sha256": "58b41b3321fc1ea06a6bce13e65a5e12829a929832d5c6238ca39888de75ed53"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/correctness/image-checks-corrected.log": {
+      "bytes": 288,
+      "sha256": "3606c9c2f1d8534f1b6f2434861320a446230a49eef63cde5f4d6f2c9590929c"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/correctness/image-checks.json": {
+      "bytes": 32447,
+      "sha256": "20d80e3e062220d56385c9c7489b0f46b55ebe1a6dd01f067efed8ade8d9184b"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/correctness/image-checks.log": {
+      "bytes": 2693,
+      "sha256": "2fabb75b7337d8ad77eef556229e6a35393bff6696b025aa1c5d567a61908ba8"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/correctness/input-audit-before.json": {
+      "bytes": 85183,
+      "sha256": "d9dea71d7b38409ed674886a34317e12dc103815168b79445b6cc5647fc6b6e1"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/correctness/probe-adjustments.json": {
+      "bytes": 760,
+      "sha256": "2e25df6a80b2cb4d5905551d0f8196c1eaad89f9d017cfb94b9202b94ab411c6"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/correctness/report.md": {
+      "bytes": 11026,
+      "sha256": "7427494278b29b87ddaa68a3bf1b050126b149f0745c1ad9f9fd393fd96d5f7f"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/correctness/result.json": {
+      "bytes": 11291,
+      "sha256": "f0ebb25eeaa6c827f94ef4c5a9da3eccd11b0585d594ef73a86b643d4f717b74"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/correctness/review-artifact-sha256.json": {
+      "bytes": 3290,
+      "sha256": "e3920d7be8350b0276cd4e47b3a002285b2108249cd8e6f53812fccbfc5c2385"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/correctness/review_common.py": {
+      "bytes": 3320,
+      "sha256": "f0f45a0316355a3ac29f59ba5c5a590a9b5c86fe13df259989537d757e31dc0c"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/correctness/source-sync-checks.json": {
+      "bytes": 2364,
+      "sha256": "5d79c8cd1618db2eb7e364374734f7a30e980f536de74be0fdf1bb97b6864f57"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/correctness/source-sync-checks.log": {
+      "bytes": 2364,
+      "sha256": "2e294bf959c78d53f4689451504fb110f5f17c1d930c60cf88aea797a70f9859"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/correctness/summary-bindings.json": {
+      "bytes": 543,
+      "sha256": "472c086b1955ace548ba022274a95792a8d326ef5e160db26f461ef181908d31"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/correctness/summary-bindings.log": {
+      "bytes": 99,
+      "sha256": "98843671504da6baa50e0ea71819d03bb79ce14dcfde731f82c252ae342c2f51"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/correctness/write_result.py": {
+      "bytes": 7601,
+      "sha256": "ea85853355e2404d9e493222d688214a1270ac69d77fd0fd57b318047cbbc732"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/download-images.py": {
+      "bytes": 4716,
+      "sha256": "61ad001df8ef365069cc4b25689d224a41b37fe07bc7a7c6dbeb36a8475da651"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/download-integrity.json": {
+      "bytes": 28415,
+      "sha256": "fb21b32412681689f4da0999a88d17a0d56a971f7156e3a9d7b89409e9f0241f"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/final-gate.json": {
+      "bytes": 3192,
+      "sha256": "80a18b438747e0f51b687e5f3da1ccefb73a05e952cc7584e8aee7337536123b"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/hosted-tests-aarch64.json": {
+      "bytes": 98411,
+      "sha256": "b3c809ae4f4b3cdae1f093e9a0781753e0b410626215f8492590fdcb80a55608"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/hosted-tests-x86_64.json": {
+      "bytes": 98411,
+      "sha256": "b3c809ae4f4b3cdae1f093e9a0781753e0b410626215f8492590fdcb80a55608"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/image-artifacts.json": {
+      "bytes": 1414,
+      "sha256": "7fd235b5df20034fd535548e29feb3db90c064ddcf3101719791254d164ed5fb"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/image-jobs.json": {
+      "bytes": 5881,
+      "sha256": "a98d9c2e0b7c2ec9bd180a21307ed38e0e0c74c163ec639b88d69f5f10e3eab0"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/image-run.json": {
+      "bytes": 12651,
+      "sha256": "543a2c4d263b47cd650414700ebf4139e20c387795bd2b16159ff65f4b5f6ad7"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/image-verification.json": {
+      "bytes": 27126,
+      "sha256": "309ac683b4180bd3aa89b937f2216c13a62e2c79c6619697c9c5e6812751e698"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/integrated-tests-022.json": {
+      "bytes": 107792,
+      "sha256": "2113de12e8e359b884e9d1ac7e884866663d1bcced51f1680aa93c63f5dee6bf"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/integrated-tests-022.log": {
+      "bytes": 52816,
+      "sha256": "6e8ca2eeaa38aa2f85e2e98e9d6901ec0920b8b11b37c3e2819be9a1a4d96f37"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/integrated-tests-077.json": {
+      "bytes": 107792,
+      "sha256": "2113de12e8e359b884e9d1ac7e884866663d1bcced51f1680aa93c63f5dee6bf"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/integrated-tests-077.log": {
+      "bytes": 52816,
+      "sha256": "4e1026565614dce2dc6578c60ba6597f794d2c026ec710c46ff3f14520c6ef32"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/main-status-refresh.json": {
+      "bytes": 4209,
+      "sha256": "36ffb61b97e38ae39b3f6a3e64c71d51fdde7dff8243fb3078d0e0a794f03ee1"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/manifest.json": {
+      "bytes": 11599,
+      "sha256": "ee5ee3edf6c69865410bf3297447b92ca236263157d272fd773669e43c36fd3b"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/review-inputs.json": {
+      "bytes": 85317,
+      "sha256": "d63b6e8d9b9bab7d0a883d2cbdaa59eb7a8de8050e56dae28b447a2e638a315d"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/security/check_evidence.py": {
+      "bytes": 17236,
+      "sha256": "2a29ebc6572404b086d33970bd3dc73b7febe9010d271e3b3b8967d9fda45392"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/security/check_packet.py": {
+      "bytes": 2700,
+      "sha256": "1d946e73f3f2f249f6625c2f306ccd4346e38425b44c70fa500229a9286d0ba7"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/security/check_replay.py": {
+      "bytes": 21970,
+      "sha256": "d73cf5561e9d20ce539e45f4a74c6684f5a97b82e3269e69a4be4607e318fc12"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/security/evidence-checks.json": {
+      "bytes": 29068,
+      "sha256": "f1a6efd19b526d3781f34e9b97eca458dc9176ad8ee7872b1c69071c45fcf14a"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/security/final-boundaries.json": {
+      "bytes": 544,
+      "sha256": "37dd2774852e1f5387ca9ba412f6034e57bdc52287b04e3a9bd5d1590f0c641f"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/security/fixtures/absolute_member.tar": {
+      "bytes": 20480,
+      "sha256": "500df517d756b9d560c8e3d559c8d1e89e310a8d4ca010f6cba8f0d4e151a772"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/security/fixtures/corrupted-layer.tar": {
+      "bytes": 20480,
+      "sha256": "3ea4c21c0666be5b1f033b3e99b66e4eda1f99cac0fce2bab17ac62648ffee24"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/security/fixtures/duplicate_root.tar": {
+      "bytes": 20480,
+      "sha256": "84d566d5ff917152c2959c342226af98889caf76eda49007b2787ec7cb3e16b4"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/security/fixtures/hardlink_metadata_mismatch.tar": {
+      "bytes": 20480,
+      "sha256": "0547a03381be04cba0423d11e8c4f02535e5e91804ca0697483e589ea6cb1264"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/security/fixtures/hardlink_target_replacement.tar": {
+      "bytes": 30720,
+      "sha256": "12ccfab061e31466b1b5aa0a296411e4b0821966a1e82f078e2945ae87af4417"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/security/fixtures/hardlink_to_symlink.tar": {
+      "bytes": 20480,
+      "sha256": "e5deac74d05936684e6569af3a6e9ac1c1dcf653a5ccd9a06d190c5c834f3807"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/security/fixtures/normalized_duplicate.tar": {
+      "bytes": 20480,
+      "sha256": "ee529f8c0c2962502f89ea0052de17e44ad32e268d390619d76d94b8bc05e3c1"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/security/fixtures/parent_traversal.tar": {
+      "bytes": 20480,
+      "sha256": "c60b0a94cbf20cb8cd69c4694fe0c0c6b8259ea4d8d14ac5338f83e2204160bb"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/security/fixtures/root-mismatch.tar": {
+      "bytes": 10240,
+      "sha256": "f86d69f18178f452c4c86fe66d840209a7faa106f5eb0d054867b8c37331b98d"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/security/fixtures/special_device.tar": {
+      "bytes": 20480,
+      "sha256": "1eb6a029be900fb5ad56f11b24cbb2228f62b94c9b61b4e404f4ba9cd2df1d50"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/security/fixtures/symlink-parent.tar": {
+      "bytes": 10240,
+      "sha256": "24b08abce83d62c907c5da41c965a3241f97b043f7d8ca4765dc241910107850"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/security/fixtures/type_changing_replacement.tar": {
+      "bytes": 30720,
+      "sha256": "d6b32aefd8d654dc57507cfc995587c4ff3c4d9af41c4baf31fd8fb00b48623d"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/security/fixtures/valid-flat.tar": {
+      "bytes": 10240,
+      "sha256": "fd4932d590ab0def9abaf89a6909286d6968dcb586a004a48e8e29a183993f22"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/security/fixtures/valid-hardlink.tar": {
+      "bytes": 20480,
+      "sha256": "2f02d0b0b06427a64c227177c4655a3e1a41b8dcb275a8cb87f718dfa8256d32"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/security/fixtures/whiteout.tar": {
+      "bytes": 20480,
+      "sha256": "3f19881da273a17022234d1de76b91c9a6a3cea32a27d7c4482f6c946770c789"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/security/integrity-after.json": {
+      "bytes": 85332,
+      "sha256": "e930536ff43d8f6924233e5d8e813966c883c70adfd3b63acc203cd2fd352ca6"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/security/integrity-before.json": {
+      "bytes": 85333,
+      "sha256": "dc89e474279ddfd0bd072d5846029fea28a0c06899f184f5a31a8f1820bcfb81"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/security/replay-checks.json": {
+      "bytes": 21502,
+      "sha256": "440ca89358907c1bae512d0c33041d64f99b0e5bd88f82be18a0f7375b1bbf89"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/security/report.md": {
+      "bytes": 15106,
+      "sha256": "32a044d9902b425bc18c4dda9068e70949b4cef84bb52d1a3c4e7cc63d5db346"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/security/result.json": {
+      "bytes": 22734,
+      "sha256": "45635c09d058540e56187d087a11ee84e9e5eb8539bde03c9faca4c313b7d659"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/security/supplemental-integrity-after.json": {
+      "bytes": 45547,
+      "sha256": "2eaad2eb0bc313456b0df1874b33a07dfb0839d807e4259c9ceb2f452c7874fe"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/security/supplemental-integrity-before.json": {
+      "bytes": 45547,
+      "sha256": "2eaad2eb0bc313456b0df1874b33a07dfb0839d807e4259c9ceb2f452c7874fe"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/security/write_result.py": {
+      "bytes": 8075,
+      "sha256": "908211160da2b8814a25ba7f6759a3799cdf0aa4584f36f3386197aec16725f8"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/sync-before.json": {
+      "bytes": 26617,
+      "sha256": "28f2b3d1386d479708d7a47bb5dad9f9e2216bc05f0aaefdfeb81e423e456763"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/sync-before.patch": {
+      "bytes": 9820,
+      "sha256": "1d5ca5daa52747307946e3243db5e63cfec0543d33954f0707333a9ca07ca1f0"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/sync-capture-candidate.py": {
+      "bytes": 2201,
+      "sha256": "b821c1b5c621bbb7780633ecc401229e9d7653187a602bc7dfa6f57d25bf237b"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/sync-check.py": {
+      "bytes": 3993,
+      "sha256": "58e828de44af3f83b3f56c2513a798aca5a745a33d120055e4cfb964340066b6"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/sync-initial-check-failure.json": {
+      "bytes": 446,
+      "sha256": "ed3b47c611da622d6bc0f37ffd7dcb2e57363fcc321cb3ae23e1bb0955974e17"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/sync-initial-check.py": {
+      "bytes": 3897,
+      "sha256": "2a08eee9a609d0fb6c4bb5f6b2cb76c9af396479fbe1bde80fd5fa3265d85a61"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/sync-verification.json": {
+      "bytes": 8089,
+      "sha256": "2db1c726cc04fa2280fa22fb4ef0792f15457854e02511ca506bfc0e17844cae"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/test-continuity.json": {
+      "bytes": 888,
+      "sha256": "cbe7db52ada235b1a72e3b3906abd9ec7b90058015f39e1ac1067cb526a20146"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/docs/evidence/m4-c0-post-merge-2026-10-24/verify-images.py": {
+      "bytes": 17047,
+      "sha256": "e0a6a6ebe1b449c53baf55042c942a4f713c140712912d71b2438096153d7f07"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/scripts/preflight-crawl-jobs-v2-native-host.py": {
+      "bytes": 324,
+      "sha256": "5e7e1dff097bd816593197a446f5f7f846243c21c73034ffc536229250a1307b"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/scripts/test-crawl-jobs-v2-observer.py": {
+      "bytes": 3737,
+      "sha256": "9afb715125f734f5b905da63dde5c9787fc5997b2e5a73a0bf62d781b23aef84"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/.dockerignore": {
+      "bytes": 97,
+      "sha256": "25170fdb33082a47a01bdc344bfabe8ef4460eed2da175e6dd1159557fcaa13d"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/Dockerfile": {
+      "bytes": 1451,
+      "sha256": "6925c36fe1cd42800333b4c72c54143b0c706e26e0aa37a09fd8679a684fa06c"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/Dockerfile.oracle": {
+      "bytes": 886,
+      "sha256": "61c196ddc98e522516fd1e36ce239f36f27f04e844be66752227c90de5897429"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/Dockerfile.oracle.dockerignore": {
+      "bytes": 157,
+      "sha256": "679f3cd226874aa189596199b105352137171eed114a1393e478eafc43f330d3"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/README.md": {
+      "bytes": 42572,
+      "sha256": "42d82b6e9c2caccec173bae40a513c3dc46b43397aa813220c32d1d121f700c6"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/build_oracle.py": {
+      "bytes": 3204,
+      "sha256": "cb702f624c986320e6f4c690dfc4eac1187104c711a52eb9e2bab28ec12e7ed6"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/build_tools.py": {
+      "bytes": 11378,
+      "sha256": "a402d791a3cd1dc35ed709a985cbcd9b06a9af9b2f370616f44f2bcfe6519acb"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/context_files.py": {
+      "bytes": 1963,
+      "sha256": "956ce03c56e6df84006e9bf16775f1d3d83d2acbda5bec8d9d41b1de2e72d396"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/context_provision.py": {
+      "bytes": 11325,
+      "sha256": "d0869ab36372a1af94ce0ffd04f1e364b318519a7e1f3c4bb7fefa95e2df340e"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/context_ssh.py": {
+      "bytes": 1905,
+      "sha256": "94ededb449423cbc822282ab05cc725316caef186cdba227613631618b9f2a03"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/context_transport.py": {
+      "bytes": 10394,
+      "sha256": "43193118350d4d52d0f3901e4a93561fa7cd94dd4e81c2ce99337b5364404af0"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/context_worker.py": {
+      "bytes": 2408,
+      "sha256": "f01980f5b3322eabafd5b99c97b76f4313aa9a28ce90a5f3ce66c5175843e03f"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/contracts.py": {
+      "bytes": 10053,
+      "sha256": "6a3c4dfe7b6fb4524771b26fdcbcba39be2c5893d52e2e4caeebf762df27a7f4"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/controller.py": {
+      "bytes": 4850,
+      "sha256": "23b28206e550efbe408a970161ebed7ddbd3430c771baece6765a165fc2e2ec5"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/d02.py": {
+      "bytes": 22174,
+      "sha256": "d7df595daeefcc3f5a785a89c191c93b5b6724e42655222befa1b07c88be29f2"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/docker_backend.py": {
+      "bytes": 32482,
+      "sha256": "51cf4ad679a961d5b7631af1769216dc0300e740228ce8d7cf2423ed7373ebcf"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/engine_metadata.py": {
+      "bytes": 5515,
+      "sha256": "fe9d948893742d2a326372db709e8406760689371c6c7753e68c7b7f86d76977"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/host_preflight.py": {
+      "bytes": 12244,
+      "sha256": "90cdcdfafc2d220c3fcb19ad0ba0f5de26cf9f1e7739994747874359d0dee4b8"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/image_artifacts.py": {
+      "bytes": 24111,
+      "sha256": "d6104f24562ed1f605043314b2f505c9f3609ca599f040fc6a9feb8d863252e5"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/image_build.py": {
+      "bytes": 16606,
+      "sha256": "6926bdb5bf01c25b3c29ac5607e4602bf831772fe34e06c85bee7700baee0d85"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/linux_observation.py": {
+      "bytes": 10243,
+      "sha256": "58934a305a1c7bf5877c4e5f7ae5969181c61fed267b150d0ed1ed91c195282d"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/oracle.py": {
+      "bytes": 6792,
+      "sha256": "fa14b08caee86b65d9a01c16bb3e6ea236264275a48a3f32ad6694c57df23bc8"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/oracle_bridge.py": {
+      "bytes": 9559,
+      "sha256": "9d1efdbac6ea8b74585344884fb8264bed82f7413d32259146718872e4247f86"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/oracle_protocol.py": {
+      "bytes": 11008,
+      "sha256": "f867fdc33eb271385176ab25c09a573e9662f77b7f6a73e559dbf07fcb115f45"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/oracle_worker.py": {
+      "bytes": 10072,
+      "sha256": "91e84a5d3f47b043d6c12f9564604dba11f2ad9cc49e58a905ee714d2ece07d0"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/owned_resources.py": {
+      "bytes": 21875,
+      "sha256": "5e235811e610d51009c03ee8e70fe2c8fc0927708ddd2dba5a1173b3bcca5108"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/profiles.py": {
+      "bytes": 8855,
+      "sha256": "b149039b977bd78daf53a6ddb7635419b36338925c25d125a3d49fac8f60a539"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/runtime_admission.py": {
+      "bytes": 12128,
+      "sha256": "307e4486f4c23c426d543ddc3cee65d99dcee77c7c01087f4c8840cc81d3b076"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/runtime_context.py": {
+      "bytes": 11582,
+      "sha256": "85caefcf88973b0f78143d629dd8f3e46b16a0d987b680f48e875b9ed97739cd"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/streams.py": {
+      "bytes": 13170,
+      "sha256": "85f8d1b16a84462f1defe641cb2c75879fe356928c7497b06628f86d2f599cbd"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/test_admission_dispatch.py": {
+      "bytes": 15611,
+      "sha256": "f565e9c7672a6b2185ded0731c8481fc7cd3186e408ffad270e5a91a2792d5fa"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/test_architecture_contracts.py": {
+      "bytes": 20053,
+      "sha256": "3a68f407df26a17eccc3c3397a91b65ff604247bf43b3c0418f2dd2ede21b57d"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/test_architecture_review.py": {
+      "bytes": 10995,
+      "sha256": "89197d92221c854e92064965c1a6d73aa8cb52b8e22cda68773e095c44f4548a"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/test_context_oracle_review.py": {
+      "bytes": 16410,
+      "sha256": "2b7a342bd1ac25c912aebe7813d4f056ba1ebc29a96d0a2bdb0b38b02ce7c660"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/test_context_provisioning.py": {
+      "bytes": 36900,
+      "sha256": "47af7da18e75e311d280927b83cb64bf1b12b01562217f75bfd21b10255e83de"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/test_contracts.py": {
+      "bytes": 13626,
+      "sha256": "f95b6879e06055cb26b1ac80214a9708deda71561511862d7833e981ebdd0716"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/test_d02.py": {
+      "bytes": 21301,
+      "sha256": "f158944c10aa24dc397efdb1d03471a7a02f4b46cec46d2442e8bbe4eb772b72"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/test_engine_metadata.py": {
+      "bytes": 13394,
+      "sha256": "6d6eb911f62348d702c63c42cd2bcc5e24586eadefb8f14cc796bcfa3538efef"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/test_filter.py": {
+      "bytes": 2583,
+      "sha256": "b434138a353c257b18f3262373a5fa226223d8f44b0414e3b6b2aaf40f7a7614"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/test_host_preflight.py": {
+      "bytes": 14609,
+      "sha256": "9a82b01fe91c26164e5dceb53a8e73847f1ea5526405080e6a1f01c2d2776d5a"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/test_image_artifacts.py": {
+      "bytes": 17897,
+      "sha256": "81ea1082f3f4c7d38b37f4aeef0a84f215f546331d9c46d24f828d357a4835fa"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/test_image_review.py": {
+      "bytes": 17362,
+      "sha256": "605cabb8937c184d3caad088e1468af2cb5871a3f4f3e0f3ff150a173e6e83e4"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/test_oracle_bridge.py": {
+      "bytes": 12602,
+      "sha256": "e7ec3950202388b09014bd175e7668aa3375f93c4029e04910296975cdec52f1"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/test_oracle_worker.py": {
+      "bytes": 9645,
+      "sha256": "3c899ec2036f74167aa213cda6c42b8e71547f1e32f9c58df4e6f9cd1eca9d0a"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/test_owned_resources.py": {
+      "bytes": 23667,
+      "sha256": "e8b7d53c1c6081a095a116beca16680c85b35dca66249ef830f0146304cc41ab"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/test_runtime_admission.py": {
+      "bytes": 21094,
+      "sha256": "1e53248dbeacb1dae04f184ad844ae2d17dd7a338311ea5403e491cc373ac430"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/test_runtime_context.py": {
+      "bytes": 13627,
+      "sha256": "040f04d8bd9a120758e2d03c2052c666d6f88c32fc38f3ecb8f1c5614f487b7c"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/test_streams.py": {
+      "bytes": 10133,
+      "sha256": "0f5a4e23592bd7e849c7c90a49815704c7322f04c3804728f5ab1a3990fdd695"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/test_watchdog.py": {
+      "bytes": 10524,
+      "sha256": "271b8f611ec10b2d7ad523368aa6e98e3a66ebc0351beef32c94c75b3331b7da"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/test_x64_runtime.py": {
+      "bytes": 19662,
+      "sha256": "871dbc791fe792326b9f25516230c4e1fa2379be87cab000fd8896f950d21250"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/watchdog.py": {
+      "bytes": 19871,
+      "sha256": "cc2e7e1212caa6be74e2266ce3a4ab156064a3ae96f01281cfa3ba5660ba5813"
+    },
+    "out/c0-runtime-adapter-2026-10-24/before/tests/crawl-jobs-v2-observer/worker.py": {
+      "bytes": 264,
+      "sha256": "08c319e7ec3790f619e4bf4ba3160e0db3bdc34f8dd86256bf998639aa2ea273"
+    },
+    "out/c0-runtime-adapter-2026-10-24/capture-before.py": {
+      "bytes": 2251,
+      "sha256": "3e368fee3b9d598a7b5db6879774cd58be21ce6c8db35cd967feb88d1d563208"
+    },
+    "out/c0-runtime-adapter-2026-10-24/correct-freeze.py": {
+      "bytes": 2164,
+      "sha256": "3983d845cf79897330b333670d04c2da9ea8ec15e0c7422fe1dfd1cd66c30f0f"
+    },
+    "out/c0-runtime-adapter-2026-10-24/correctness-review/assemble_result.py": {
+      "bytes": 7623,
+      "sha256": "8bf34fe4e0c0e5b3b5386688254bf126da57c31f5cdea9d68cf9e448737ea93b"
+    },
+    "out/c0-runtime-adapter-2026-10-24/correctness-review/coverage-crosscheck.json": {
+      "bytes": 2735,
+      "sha256": "cda604b5a03c2863e5be9e454174f260753d81e65c4d7317ba34860f187c08e2"
+    },
+    "out/c0-runtime-adapter-2026-10-24/correctness-review/dispatch-path-evidence.json": {
+      "bytes": 3886,
+      "sha256": "5d1061618a262bcc5e9e5a239c3d827a8722ebe51435525adfff6ce1c19dbbf9"
+    },
+    "out/c0-runtime-adapter-2026-10-24/correctness-review/documentation-crosscheck.md": {
+      "bytes": 2557,
+      "sha256": "9c56d4b292240fc7e692e1903c7b2ccea953731b29320af144da66385dd50b16"
+    },
+    "out/c0-runtime-adapter-2026-10-24/correctness-review/independent-022.json": {
+      "bytes": 7567,
+      "sha256": "e0301dd3f52ea208d0f82c6710b3ef908881115c8f521020b0ada7aaf0e4ebd6"
+    },
+    "out/c0-runtime-adapter-2026-10-24/correctness-review/independent-022.log": {
+      "bytes": 5587,
+      "sha256": "f227cadadbf6f5c75eeba4c4ce7564a391f17f26b0dc978df3b981c7726cce00"
+    },
+    "out/c0-runtime-adapter-2026-10-24/correctness-review/independent-077.json": {
+      "bytes": 7567,
+      "sha256": "a6f5936e9b58cd8ffbb0254c3916c0dfdbd1f85ae4b8a87a4f8bbafb8c19ac83"
+    },
+    "out/c0-runtime-adapter-2026-10-24/correctness-review/independent-077.log": {
+      "bytes": 5587,
+      "sha256": "f227cadadbf6f5c75eeba4c4ce7564a391f17f26b0dc978df3b981c7726cce00"
+    },
+    "out/c0-runtime-adapter-2026-10-24/correctness-review/independent_probes.py": {
+      "bytes": 25485,
+      "sha256": "f043f39f6a57a216405c5193dd8ff2ed6a864e8e3e86c7662e40e211591a571c"
+    },
+    "out/c0-runtime-adapter-2026-10-24/correctness-review/integrity-after.json": {
+      "bytes": 12243,
+      "sha256": "3a367644573b00351d608a0acd20235f53b33034f20cb849a49708fa103184fe"
+    },
+    "out/c0-runtime-adapter-2026-10-24/correctness-review/integrity-before.json": {
+      "bytes": 12243,
+      "sha256": "b3092833698972b21c6f8b4afa7fb27b19587e4432477608de6620473255997a"
+    },
+    "out/c0-runtime-adapter-2026-10-24/correctness-review/reference-source-hashes.json": {
+      "bytes": 2592,
+      "sha256": "66f32638dc756f9fdee1ec3d97c13b9d910e5081e275c52791185f145cdf4c2e"
+    },
+    "out/c0-runtime-adapter-2026-10-24/correctness-review/references/cli-plugins__manager__candidate.go": {
+      "bytes": 398,
+      "sha256": "67e960b7b7fafdfa6332a1e867b136caec18951b6f94a61b095984975e36b998"
+    },
+    "out/c0-runtime-adapter-2026-10-24/correctness-review/references/cli-plugins__manager__cobra.go": {
+      "bytes": 2378,
+      "sha256": "4fc97f4466545c303f233931a2e08f47aed2b8400625b0abf63074e6c4888771"
+    },
+    "out/c0-runtime-adapter-2026-10-24/correctness-review/references/cli-plugins__manager__manager.go": {
+      "bytes": 7420,
+      "sha256": "7f013ffe26cc1a3dc895968af27d79d159039a8b109fe3e65dd16ac79279bf55"
+    },
+    "out/c0-runtime-adapter-2026-10-24/correctness-review/references/cli-plugins__manager__plugin.go": {
+      "bytes": 5925,
+      "sha256": "8c38bdf7170a5978beb73edb3e71ccc578a9fc76b4bd65518286f3fdc3cff0c6"
+    },
+    "out/c0-runtime-adapter-2026-10-24/correctness-review/references/cli__command__cli.go": {
+      "bytes": 18941,
+      "sha256": "ff7919416d77b4e04528d6341358063aea982ba5674e1a91b470c38ce54b321e"
+    },
+    "out/c0-runtime-adapter-2026-10-24/correctness-review/references/cli__command__container__inspect.go": {
+      "bytes": 1731,
+      "sha256": "bcdf5bd044c428574e1474114ec50e6351567ddd98bbdfc1ced0710c6a5671e1"
+    },
+    "out/c0-runtime-adapter-2026-10-24/correctness-review/references/cmd__docker__docker.go": {
+      "bytes": 21868,
+      "sha256": "1c0fc026f2673545f2f7dea0019b0065034d96797683de46ef40898f09cb7220"
+    },
+    "out/c0-runtime-adapter-2026-10-24/correctness-review/references/vendor.mod": {
+      "bytes": 4688,
+      "sha256": "413f01e06afb1fdaf9bf8d7d838b1683cf12a514921a556a3690e99565ac8c5a"
+    },
+    "out/c0-runtime-adapter-2026-10-24/correctness-review/references/vendor__github.com__spf13__cobra__command.go": {
+      "bytes": 61130,
+      "sha256": "797ff14415e5fe31a22f7be52525cc0c809e1e8b6450e42d52afeb4f08389e61"
+    },
+    "out/c0-runtime-adapter-2026-10-24/correctness-review/references/vendor__github.com__spf13__pflag__flag.go": {
+      "bytes": 37434,
+      "sha256": "65e9c5e5f763cb701a26873ce16584642d442d64277ed688956e8b560c30d3cd"
+    },
+    "out/c0-runtime-adapter-2026-10-24/correctness-review/report.md": {
+      "bytes": 9284,
+      "sha256": "f0fdb199cac0cc03d70a0a7a08146a49148953492bc052e88b8f0f53bf8655e3"
+    },
+    "out/c0-runtime-adapter-2026-10-24/correctness-review/result.json": {
+      "bytes": 11061,
+      "sha256": "0f0c3656f1308658c899a2a293c69c51da63b3b91b17eead1436b0147d909128"
+    },
+    "out/c0-runtime-adapter-2026-10-24/correctness-review/review-artifact-sha256.json": {
+      "bytes": 4012,
+      "sha256": "13346d4428f891fd81db632bd0bdcc54208c3cfd9f8452d8b2de7a957f7d33e3"
+    },
+    "out/c0-runtime-adapter-2026-10-24/correctness-review/supplemental_checks.py": {
+      "bytes": 5694,
+      "sha256": "7674d81d958a68269e974db992c276682cc65674cd49db4d857d82ead90cf7db"
+    },
+    "out/c0-runtime-adapter-2026-10-24/correctness-review/verify_inputs.py": {
+      "bytes": 2396,
+      "sha256": "c6dd137a65c7fb01351999e448358add536d36d8da8b7e6fab6d7926df237d0d"
+    },
+    "out/c0-runtime-adapter-2026-10-24/documentation-notes.md": {
+      "bytes": 1741,
+      "sha256": "3e7fcb7ad43ca87bc86a23df20d72f9034f99702e415948d5d96276822fecc09"
+    },
+    "out/c0-runtime-adapter-2026-10-24/freeze.py": {
+      "bytes": 3486,
+      "sha256": "a23e8b275fdb0057e8980d300f25d393d121de309e3c47ee42f332c7e23bd4e7"
+    },
+    "out/c0-runtime-adapter-2026-10-24/host-assessment.json": {
+      "bytes": 2539,
+      "sha256": "c7bf91276ff829c74f2e1978841267b2ce60120c5bcd8133f0eabf5548fb52bd"
+    },
+    "out/c0-runtime-adapter-2026-10-24/initial-export-map.json": {
+      "bytes": 2827,
+      "sha256": "be51087b8dddc59221264302049d1876c0e3e651d8c4154db723508308ba57fa"
+    },
+    "out/c0-runtime-adapter-2026-10-24/initial-review-exports.json": {
+      "bytes": 6645,
+      "sha256": "2ddc9987f8bd657c22bef7fe28d0f02b528fa705aaf2eb6fd81950b95a02a907"
+    },
+    "out/c0-runtime-adapter-2026-10-24/initial-test-correction.json": {
+      "bytes": 449,
+      "sha256": "bb5f06e1dca625b7106aac8eb493e1e1d238a07c3a1b2cff736dc7aa694f3d8c"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/README.md": {
+      "bytes": 738,
+      "sha256": "888698c149186cccaa7193f0a38310e8c44d96666c63f8c49c655a820188aaa0"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/freeze.py": {
+      "bytes": 3303,
+      "sha256": "05acc7fd01022de7653bc09aa4bb05a7d79ca16c5a60b572e87156fb1f23b29f"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source-inventory.json": {
+      "bytes": 11805,
+      "sha256": "5a3bbce905d4e49d6b4a89e4492222e5aa8bf2b2d0fa1ad92333f189c585b7db"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source.patch": {
+      "bytes": 5221,
+      "sha256": "40f8cb31cdfabdc93804cda34ef6c154752965b618a25c0e01c21feee7d54a72"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/scripts/preflight-crawl-jobs-v2-native-host.py": {
+      "bytes": 324,
+      "sha256": "5e7e1dff097bd816593197a446f5f7f846243c21c73034ffc536229250a1307b"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/scripts/test-crawl-jobs-v2-observer.py": {
+      "bytes": 3737,
+      "sha256": "9afb715125f734f5b905da63dde5c9787fc5997b2e5a73a0bf62d781b23aef84"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/.dockerignore": {
+      "bytes": 97,
+      "sha256": "25170fdb33082a47a01bdc344bfabe8ef4460eed2da175e6dd1159557fcaa13d"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/Dockerfile": {
+      "bytes": 1451,
+      "sha256": "6925c36fe1cd42800333b4c72c54143b0c706e26e0aa37a09fd8679a684fa06c"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/Dockerfile.oracle": {
+      "bytes": 886,
+      "sha256": "61c196ddc98e522516fd1e36ce239f36f27f04e844be66752227c90de5897429"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/Dockerfile.oracle.dockerignore": {
+      "bytes": 157,
+      "sha256": "679f3cd226874aa189596199b105352137171eed114a1393e478eafc43f330d3"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/README.md": {
+      "bytes": 42572,
+      "sha256": "42d82b6e9c2caccec173bae40a513c3dc46b43397aa813220c32d1d121f700c6"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/build_oracle.py": {
+      "bytes": 3204,
+      "sha256": "cb702f624c986320e6f4c690dfc4eac1187104c711a52eb9e2bab28ec12e7ed6"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/build_tools.py": {
+      "bytes": 11378,
+      "sha256": "a402d791a3cd1dc35ed709a985cbcd9b06a9af9b2f370616f44f2bcfe6519acb"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/context_files.py": {
+      "bytes": 1963,
+      "sha256": "956ce03c56e6df84006e9bf16775f1d3d83d2acbda5bec8d9d41b1de2e72d396"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/context_provision.py": {
+      "bytes": 11325,
+      "sha256": "d0869ab36372a1af94ce0ffd04f1e364b318519a7e1f3c4bb7fefa95e2df340e"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/context_ssh.py": {
+      "bytes": 1905,
+      "sha256": "94ededb449423cbc822282ab05cc725316caef186cdba227613631618b9f2a03"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/context_transport.py": {
+      "bytes": 10394,
+      "sha256": "43193118350d4d52d0f3901e4a93561fa7cd94dd4e81c2ce99337b5364404af0"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/context_worker.py": {
+      "bytes": 2408,
+      "sha256": "f01980f5b3322eabafd5b99c97b76f4313aa9a28ce90a5f3ce66c5175843e03f"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/contracts.py": {
+      "bytes": 10053,
+      "sha256": "6a3c4dfe7b6fb4524771b26fdcbcba39be2c5893d52e2e4caeebf762df27a7f4"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/controller.py": {
+      "bytes": 4850,
+      "sha256": "23b28206e550efbe408a970161ebed7ddbd3430c771baece6765a165fc2e2ec5"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/d02.py": {
+      "bytes": 22174,
+      "sha256": "d7df595daeefcc3f5a785a89c191c93b5b6724e42655222befa1b07c88be29f2"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/docker_backend.py": {
+      "bytes": 37345,
+      "sha256": "7a3aaaf2de8c3dd79f6b749dfbed00fcf35ed052d62dc20246bd66fe91d19e9c"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/engine_metadata.py": {
+      "bytes": 5515,
+      "sha256": "fe9d948893742d2a326372db709e8406760689371c6c7753e68c7b7f86d76977"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/host_preflight.py": {
+      "bytes": 12244,
+      "sha256": "90cdcdfafc2d220c3fcb19ad0ba0f5de26cf9f1e7739994747874359d0dee4b8"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/image_artifacts.py": {
+      "bytes": 24111,
+      "sha256": "d6104f24562ed1f605043314b2f505c9f3609ca599f040fc6a9feb8d863252e5"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/image_build.py": {
+      "bytes": 16606,
+      "sha256": "6926bdb5bf01c25b3c29ac5607e4602bf831772fe34e06c85bee7700baee0d85"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/linux_observation.py": {
+      "bytes": 10243,
+      "sha256": "58934a305a1c7bf5877c4e5f7ae5969181c61fed267b150d0ed1ed91c195282d"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/local_process.py": {
+      "bytes": 1590,
+      "sha256": "ad40d3fe4775bc2e01768b4a3c0d16b24776a74717d70e9e4e991ad29cb0700e"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/native/admission.h": {
+      "bytes": 13423,
+      "sha256": "b64f55c4f5184506bc442bf13405f282b92d4bc600d8958b5febda5108fe0a96"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/native/architecture.h": {
+      "bytes": 523,
+      "sha256": "c0b078cd257852bc3cb57e1405e18c943bf2d0a48520523195846c8f58cfea2b"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/native/common.h": {
+      "bytes": 4793,
+      "sha256": "4b221886a774007a74ed68a44a6e5088bc7f2e4ccf4980ddb8815f85cfc27042"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/native/observer.c": {
+      "bytes": 14134,
+      "sha256": "a45816e40320c8560f439dfdd0b1ebef636dc74a0a101c19f0a726ae38098a5c"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/native/target.c": {
+      "bytes": 6511,
+      "sha256": "aedd6549923876d28b7d39748c6506dbad539459200b276a9f409500daf3f82d"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/native/test_x86_debug.c": {
+      "bytes": 3159,
+      "sha256": "ca8c49152d575c6b42e37914ea7dc5d805975e49fee4fa799137799ceaaa6f6f"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/native/x86_debug.h": {
+      "bytes": 2406,
+      "sha256": "42844fba32b39dfe752fe84f84b1748a872b93aed6c5810a9a30aeab2fbd1777"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/oracle.py": {
+      "bytes": 6792,
+      "sha256": "fa14b08caee86b65d9a01c16bb3e6ea236264275a48a3f32ad6694c57df23bc8"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/oracle_bridge.py": {
+      "bytes": 9559,
+      "sha256": "9d1efdbac6ea8b74585344884fb8264bed82f7413d32259146718872e4247f86"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/oracle_protocol.py": {
+      "bytes": 11008,
+      "sha256": "f867fdc33eb271385176ab25c09a573e9662f77b7f6a73e559dbf07fcb115f45"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/oracle_worker.py": {
+      "bytes": 10072,
+      "sha256": "91e84a5d3f47b043d6c12f9564604dba11f2ad9cc49e58a905ee714d2ece07d0"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/owned_resources.py": {
+      "bytes": 21875,
+      "sha256": "5e235811e610d51009c03ee8e70fe2c8fc0927708ddd2dba5a1173b3bcca5108"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/profiles.py": {
+      "bytes": 8855,
+      "sha256": "b149039b977bd78daf53a6ddb7635419b36338925c25d125a3d49fac8f60a539"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/runtime_admission.py": {
+      "bytes": 12128,
+      "sha256": "307e4486f4c23c426d543ddc3cee65d99dcee77c7c01087f4c8840cc81d3b076"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/runtime_context.py": {
+      "bytes": 11582,
+      "sha256": "85caefcf88973b0f78143d629dd8f3e46b16a0d987b680f48e875b9ed97739cd"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/streams.py": {
+      "bytes": 12660,
+      "sha256": "5892e07eaf0fba21c99c873489527a32f687c44dbcc4838a8adfb6f36d9b693d"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/test_admission_dispatch.py": {
+      "bytes": 15611,
+      "sha256": "f565e9c7672a6b2185ded0731c8481fc7cd3186e408ffad270e5a91a2792d5fa"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/test_architecture_contracts.py": {
+      "bytes": 20053,
+      "sha256": "3a68f407df26a17eccc3c3397a91b65ff604247bf43b3c0418f2dd2ede21b57d"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/test_architecture_review.py": {
+      "bytes": 10995,
+      "sha256": "89197d92221c854e92064965c1a6d73aa8cb52b8e22cda68773e095c44f4548a"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/test_context_oracle_review.py": {
+      "bytes": 16410,
+      "sha256": "2b7a342bd1ac25c912aebe7813d4f056ba1ebc29a96d0a2bdb0b38b02ce7c660"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/test_context_provisioning.py": {
+      "bytes": 36900,
+      "sha256": "47af7da18e75e311d280927b83cb64bf1b12b01562217f75bfd21b10255e83de"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/test_contracts.py": {
+      "bytes": 13626,
+      "sha256": "f95b6879e06055cb26b1ac80214a9708deda71561511862d7833e981ebdd0716"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/test_d02.py": {
+      "bytes": 21301,
+      "sha256": "f158944c10aa24dc397efdb1d03471a7a02f4b46cec46d2442e8bbe4eb772b72"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/test_engine_metadata.py": {
+      "bytes": 13394,
+      "sha256": "6d6eb911f62348d702c63c42cd2bcc5e24586eadefb8f14cc796bcfa3538efef"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/test_filter.py": {
+      "bytes": 2583,
+      "sha256": "b434138a353c257b18f3262373a5fa226223d8f44b0414e3b6b2aaf40f7a7614"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/test_host_preflight.py": {
+      "bytes": 14609,
+      "sha256": "9a82b01fe91c26164e5dceb53a8e73847f1ea5526405080e6a1f01c2d2776d5a"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/test_image_artifacts.py": {
+      "bytes": 17897,
+      "sha256": "81ea1082f3f4c7d38b37f4aeef0a84f215f546331d9c46d24f828d357a4835fa"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/test_image_review.py": {
+      "bytes": 17362,
+      "sha256": "605cabb8937c184d3caad088e1468af2cb5871a3f4f3e0f3ff150a173e6e83e4"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/test_live_adapter.py": {
+      "bytes": 17165,
+      "sha256": "6607d0879870d36b3b0573273896416aa9080a6523e6daefdd86f539f4c79e93"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/test_oracle_bridge.py": {
+      "bytes": 12602,
+      "sha256": "e7ec3950202388b09014bd175e7668aa3375f93c4029e04910296975cdec52f1"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/test_oracle_worker.py": {
+      "bytes": 9645,
+      "sha256": "3c899ec2036f74167aa213cda6c42b8e71547f1e32f9c58df4e6f9cd1eca9d0a"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/test_owned_resources.py": {
+      "bytes": 23676,
+      "sha256": "9c956de3a0499a881efc007ab56fbe00870bfb215c137a3272514bda9c03a31a"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/test_runtime_admission.py": {
+      "bytes": 21094,
+      "sha256": "1e53248dbeacb1dae04f184ad844ae2d17dd7a338311ea5403e491cc373ac430"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/test_runtime_context.py": {
+      "bytes": 13627,
+      "sha256": "040f04d8bd9a120758e2d03c2052c666d6f88c32fc38f3ecb8f1c5614f487b7c"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/test_streams.py": {
+      "bytes": 10133,
+      "sha256": "0f5a4e23592bd7e849c7c90a49815704c7322f04c3804728f5ab1a3990fdd695"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/test_watchdog.py": {
+      "bytes": 10524,
+      "sha256": "271b8f611ec10b2d7ad523368aa6e98e3a66ebc0351beef32c94c75b3331b7da"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/test_x64_runtime.py": {
+      "bytes": 19662,
+      "sha256": "871dbc791fe792326b9f25516230c4e1fa2379be87cab000fd8896f950d21250"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/watchdog.py": {
+      "bytes": 19871,
+      "sha256": "cc2e7e1212caa6be74e2266ce3a4ab156064a3ae96f01281cfa3ba5660ba5813"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/worker.py": {
+      "bytes": 264,
+      "sha256": "08c319e7ec3790f619e4bf4ba3160e0db3bdc34f8dd86256bf998639aa2ea273"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/targeted.log": {
+      "bytes": 3505,
+      "sha256": "3db5ed2671ada5356b55a261f99dfa234534c2a1a7b152030dd501d83c454fb6"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/tests-022.json": {
+      "bytes": 114341,
+      "sha256": "609faeab7e54f9b543957aae8922b2442be6fa3234a111d6a6e1113fa72ba4b0"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/tests-022.log": {
+      "bytes": 56222,
+      "sha256": "11c9f6b6d45613d8d518b4c60f30a6520f4d042afe86d1aef598452a4402f596"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/tests-077.json": {
+      "bytes": 114341,
+      "sha256": "609faeab7e54f9b543957aae8922b2442be6fa3234a111d6a6e1113fa72ba4b0"
+    },
+    "out/c0-runtime-adapter-2026-10-24/remediation/tests-077.log": {
+      "bytes": 56222,
+      "sha256": "c1b2836f81d8c3a28c224af3212eb3b039261714d497bc7afc6ff7b9fe3e234a"
+    },
+    "out/c0-runtime-adapter-2026-10-24/review-inputs-corrected.json": {
+      "bytes": 73971,
+      "sha256": "ef5134712918c3b705b6076f6367ff044a669237a7d47632cc677093c3814ccf"
+    },
+    "out/c0-runtime-adapter-2026-10-24/review-inputs.json": {
+      "bytes": 73327,
+      "sha256": "d98c2c569b6c236e0b2e7c296349c00a1caedfae9acbabc35776d87cbfb31007"
+    },
+    "out/c0-runtime-adapter-2026-10-24/security-review/build_result.py": {
+      "bytes": 8423,
+      "sha256": "f4c3c1430698daa8651bb75549f3bca8f6c569ab7a7dcda1a753e485e98548f0"
+    },
+    "out/c0-runtime-adapter-2026-10-24/security-review/check_integrity.py": {
+      "bytes": 2642,
+      "sha256": "068a4fc859e86c1295353fbca93fdac94cbedebbf6cb555c45cc7a973df1eec1"
+    },
+    "out/c0-runtime-adapter-2026-10-24/security-review/integrity-after.json": {
+      "bytes": 86092,
+      "sha256": "5d9d89f2d5acc491ae80be9078af3ba75e4fd878bd90d8793bed84d4172d2f39"
+    },
+    "out/c0-runtime-adapter-2026-10-24/security-review/integrity-before.json": {
+      "bytes": 85996,
+      "sha256": "e7587b65425531816083db59d8740e2ff1cb5137e06e80db4e4833a6b45c9ecb"
+    },
+    "out/c0-runtime-adapter-2026-10-24/security-review/report.md": {
+      "bytes": 12074,
+      "sha256": "354da2ebc5ea696ff83127ea554a82a7e48d9784d44a96e640ddbc70381df19c"
+    },
+    "out/c0-runtime-adapter-2026-10-24/security-review/result.json": {
+      "bytes": 8461,
+      "sha256": "cb20fca48b551fd2b6be899541ef0af004da71feb02c32f5d4fe47fb2b0bcbcf"
+    },
+    "out/c0-runtime-adapter-2026-10-24/security-review/review-artifacts.json": {
+      "bytes": 1764,
+      "sha256": "f3371d9fc1ed6cbd443283e612cf4e16984183459f740eefcc5312b8dd057487"
+    },
+    "out/c0-runtime-adapter-2026-10-24/security-review/security-probes.json": {
+      "bytes": 3802,
+      "sha256": "59c5039a680395278878b7ad01a282d2233758bab3bf82468f1be9fe935fcbf1"
+    },
+    "out/c0-runtime-adapter-2026-10-24/security-review/security-probes.log": {
+      "bytes": 3231,
+      "sha256": "84936778de44a07cfc33340ea6be7847b329c90dd55e516deb67a559b8daa9a4"
+    },
+    "out/c0-runtime-adapter-2026-10-24/security-review/security_probes.py": {
+      "bytes": 27429,
+      "sha256": "7fd4d84ccb3a16efb1619452e2bae98d175f31dfcf477ab59b7cb21296c253a9"
+    },
+    "out/c0-runtime-adapter-2026-10-24/security-review/supplementary-probes.json": {
+      "bytes": 159122,
+      "sha256": "f64a446425fa6f39b09f7440b2ba2e7e25e11fde2014b2193f20ff9064062e2e"
+    },
+    "out/c0-runtime-adapter-2026-10-24/security-review/supplementary_probes.py": {
+      "bytes": 8038,
+      "sha256": "859ddd680469130369b61d696f50200e043e5b67465dccfe5e0a0b40fcb0b858"
+    },
+    "out/c0-runtime-adapter-2026-10-24/security-review/upstream-notes.md": {
+      "bytes": 4139,
+      "sha256": "a75e5733ebf9d3b398dfe340a725033a5f6390af3dd58a7951affcb8614df7b9"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source-inventory-corrected.json": {
+      "bytes": 13364,
+      "sha256": "86855b7d27994088cf3dd6f0c825017ff826f8e6f33948b31cecfc389f11d7b3"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source-inventory.json": {
+      "bytes": 13286,
+      "sha256": "2a858e8f51fa5b8e0336baccf85fc2d042dcaa2bd9e7c695b530a14bbf9f92c5"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source.patch": {
+      "bytes": 77797,
+      "sha256": "d33d9fb935befc9fa5305dc24aab0e65ec968295ff19e663cfce6be7241f78d7"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/scripts/preflight-crawl-jobs-v2-native-host.py": {
+      "bytes": 324,
+      "sha256": "5e7e1dff097bd816593197a446f5f7f846243c21c73034ffc536229250a1307b"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/scripts/test-crawl-jobs-v2-observer.py": {
+      "bytes": 3737,
+      "sha256": "9afb715125f734f5b905da63dde5c9787fc5997b2e5a73a0bf62d781b23aef84"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/.dockerignore": {
+      "bytes": 97,
+      "sha256": "25170fdb33082a47a01bdc344bfabe8ef4460eed2da175e6dd1159557fcaa13d"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/Dockerfile": {
+      "bytes": 1451,
+      "sha256": "6925c36fe1cd42800333b4c72c54143b0c706e26e0aa37a09fd8679a684fa06c"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/Dockerfile.oracle": {
+      "bytes": 886,
+      "sha256": "61c196ddc98e522516fd1e36ce239f36f27f04e844be66752227c90de5897429"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/Dockerfile.oracle.dockerignore": {
+      "bytes": 157,
+      "sha256": "679f3cd226874aa189596199b105352137171eed114a1393e478eafc43f330d3"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/README.md": {
+      "bytes": 42572,
+      "sha256": "42d82b6e9c2caccec173bae40a513c3dc46b43397aa813220c32d1d121f700c6"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/build_oracle.py": {
+      "bytes": 3204,
+      "sha256": "cb702f624c986320e6f4c690dfc4eac1187104c711a52eb9e2bab28ec12e7ed6"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/build_tools.py": {
+      "bytes": 11378,
+      "sha256": "a402d791a3cd1dc35ed709a985cbcd9b06a9af9b2f370616f44f2bcfe6519acb"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/context_files.py": {
+      "bytes": 1963,
+      "sha256": "956ce03c56e6df84006e9bf16775f1d3d83d2acbda5bec8d9d41b1de2e72d396"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/context_provision.py": {
+      "bytes": 11325,
+      "sha256": "d0869ab36372a1af94ce0ffd04f1e364b318519a7e1f3c4bb7fefa95e2df340e"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/context_ssh.py": {
+      "bytes": 1905,
+      "sha256": "94ededb449423cbc822282ab05cc725316caef186cdba227613631618b9f2a03"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/context_transport.py": {
+      "bytes": 10394,
+      "sha256": "43193118350d4d52d0f3901e4a93561fa7cd94dd4e81c2ce99337b5364404af0"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/context_worker.py": {
+      "bytes": 2408,
+      "sha256": "f01980f5b3322eabafd5b99c97b76f4313aa9a28ce90a5f3ce66c5175843e03f"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/contracts.py": {
+      "bytes": 10053,
+      "sha256": "6a3c4dfe7b6fb4524771b26fdcbcba39be2c5893d52e2e4caeebf762df27a7f4"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/controller.py": {
+      "bytes": 4850,
+      "sha256": "23b28206e550efbe408a970161ebed7ddbd3430c771baece6765a165fc2e2ec5"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/d02.py": {
+      "bytes": 22174,
+      "sha256": "d7df595daeefcc3f5a785a89c191c93b5b6724e42655222befa1b07c88be29f2"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/docker_backend.py": {
+      "bytes": 36662,
+      "sha256": "8ceef501710ab69609d349d072d377a83fea0cf5f2377f05076114ef7fc0c130"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/engine_metadata.py": {
+      "bytes": 5515,
+      "sha256": "fe9d948893742d2a326372db709e8406760689371c6c7753e68c7b7f86d76977"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/host_preflight.py": {
+      "bytes": 12244,
+      "sha256": "90cdcdfafc2d220c3fcb19ad0ba0f5de26cf9f1e7739994747874359d0dee4b8"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/image_artifacts.py": {
+      "bytes": 24111,
+      "sha256": "d6104f24562ed1f605043314b2f505c9f3609ca599f040fc6a9feb8d863252e5"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/image_build.py": {
+      "bytes": 16606,
+      "sha256": "6926bdb5bf01c25b3c29ac5607e4602bf831772fe34e06c85bee7700baee0d85"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/linux_observation.py": {
+      "bytes": 10243,
+      "sha256": "58934a305a1c7bf5877c4e5f7ae5969181c61fed267b150d0ed1ed91c195282d"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/local_process.py": {
+      "bytes": 1590,
+      "sha256": "ad40d3fe4775bc2e01768b4a3c0d16b24776a74717d70e9e4e991ad29cb0700e"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/native/admission.h": {
+      "bytes": 13423,
+      "sha256": "b64f55c4f5184506bc442bf13405f282b92d4bc600d8958b5febda5108fe0a96"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/native/architecture.h": {
+      "bytes": 523,
+      "sha256": "c0b078cd257852bc3cb57e1405e18c943bf2d0a48520523195846c8f58cfea2b"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/native/common.h": {
+      "bytes": 4793,
+      "sha256": "4b221886a774007a74ed68a44a6e5088bc7f2e4ccf4980ddb8815f85cfc27042"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/native/observer.c": {
+      "bytes": 14134,
+      "sha256": "a45816e40320c8560f439dfdd0b1ebef636dc74a0a101c19f0a726ae38098a5c"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/native/target.c": {
+      "bytes": 6511,
+      "sha256": "aedd6549923876d28b7d39748c6506dbad539459200b276a9f409500daf3f82d"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/native/test_x86_debug.c": {
+      "bytes": 3159,
+      "sha256": "ca8c49152d575c6b42e37914ea7dc5d805975e49fee4fa799137799ceaaa6f6f"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/native/x86_debug.h": {
+      "bytes": 2406,
+      "sha256": "42844fba32b39dfe752fe84f84b1748a872b93aed6c5810a9a30aeab2fbd1777"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/oracle.py": {
+      "bytes": 6792,
+      "sha256": "fa14b08caee86b65d9a01c16bb3e6ea236264275a48a3f32ad6694c57df23bc8"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/oracle_bridge.py": {
+      "bytes": 9559,
+      "sha256": "9d1efdbac6ea8b74585344884fb8264bed82f7413d32259146718872e4247f86"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/oracle_protocol.py": {
+      "bytes": 11008,
+      "sha256": "f867fdc33eb271385176ab25c09a573e9662f77b7f6a73e559dbf07fcb115f45"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/oracle_worker.py": {
+      "bytes": 10072,
+      "sha256": "91e84a5d3f47b043d6c12f9564604dba11f2ad9cc49e58a905ee714d2ece07d0"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/owned_resources.py": {
+      "bytes": 21875,
+      "sha256": "5e235811e610d51009c03ee8e70fe2c8fc0927708ddd2dba5a1173b3bcca5108"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/profiles.py": {
+      "bytes": 8855,
+      "sha256": "b149039b977bd78daf53a6ddb7635419b36338925c25d125a3d49fac8f60a539"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/runtime_admission.py": {
+      "bytes": 12128,
+      "sha256": "307e4486f4c23c426d543ddc3cee65d99dcee77c7c01087f4c8840cc81d3b076"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/runtime_context.py": {
+      "bytes": 11582,
+      "sha256": "85caefcf88973b0f78143d629dd8f3e46b16a0d987b680f48e875b9ed97739cd"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/streams.py": {
+      "bytes": 12660,
+      "sha256": "5892e07eaf0fba21c99c873489527a32f687c44dbcc4838a8adfb6f36d9b693d"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/test_admission_dispatch.py": {
+      "bytes": 15611,
+      "sha256": "f565e9c7672a6b2185ded0731c8481fc7cd3186e408ffad270e5a91a2792d5fa"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/test_architecture_contracts.py": {
+      "bytes": 20053,
+      "sha256": "3a68f407df26a17eccc3c3397a91b65ff604247bf43b3c0418f2dd2ede21b57d"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/test_architecture_review.py": {
+      "bytes": 10995,
+      "sha256": "89197d92221c854e92064965c1a6d73aa8cb52b8e22cda68773e095c44f4548a"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/test_context_oracle_review.py": {
+      "bytes": 16410,
+      "sha256": "2b7a342bd1ac25c912aebe7813d4f056ba1ebc29a96d0a2bdb0b38b02ce7c660"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/test_context_provisioning.py": {
+      "bytes": 36900,
+      "sha256": "47af7da18e75e311d280927b83cb64bf1b12b01562217f75bfd21b10255e83de"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/test_contracts.py": {
+      "bytes": 13626,
+      "sha256": "f95b6879e06055cb26b1ac80214a9708deda71561511862d7833e981ebdd0716"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/test_d02.py": {
+      "bytes": 21301,
+      "sha256": "f158944c10aa24dc397efdb1d03471a7a02f4b46cec46d2442e8bbe4eb772b72"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/test_engine_metadata.py": {
+      "bytes": 13394,
+      "sha256": "6d6eb911f62348d702c63c42cd2bcc5e24586eadefb8f14cc796bcfa3538efef"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/test_filter.py": {
+      "bytes": 2583,
+      "sha256": "b434138a353c257b18f3262373a5fa226223d8f44b0414e3b6b2aaf40f7a7614"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/test_host_preflight.py": {
+      "bytes": 14609,
+      "sha256": "9a82b01fe91c26164e5dceb53a8e73847f1ea5526405080e6a1f01c2d2776d5a"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/test_image_artifacts.py": {
+      "bytes": 17897,
+      "sha256": "81ea1082f3f4c7d38b37f4aeef0a84f215f546331d9c46d24f828d357a4835fa"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/test_image_review.py": {
+      "bytes": 17362,
+      "sha256": "605cabb8937c184d3caad088e1468af2cb5871a3f4f3e0f3ff150a173e6e83e4"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/test_live_adapter.py": {
+      "bytes": 13888,
+      "sha256": "cca3e563824e701e4e5b2e8548334c3aeee50c7b2d161f23a2a7fd9ea1690ea1"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/test_oracle_bridge.py": {
+      "bytes": 12602,
+      "sha256": "e7ec3950202388b09014bd175e7668aa3375f93c4029e04910296975cdec52f1"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/test_oracle_worker.py": {
+      "bytes": 9645,
+      "sha256": "3c899ec2036f74167aa213cda6c42b8e71547f1e32f9c58df4e6f9cd1eca9d0a"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/test_owned_resources.py": {
+      "bytes": 23676,
+      "sha256": "9c956de3a0499a881efc007ab56fbe00870bfb215c137a3272514bda9c03a31a"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/test_runtime_admission.py": {
+      "bytes": 21094,
+      "sha256": "1e53248dbeacb1dae04f184ad844ae2d17dd7a338311ea5403e491cc373ac430"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/test_runtime_context.py": {
+      "bytes": 13627,
+      "sha256": "040f04d8bd9a120758e2d03c2052c666d6f88c32fc38f3ecb8f1c5614f487b7c"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/test_streams.py": {
+      "bytes": 10133,
+      "sha256": "0f5a4e23592bd7e849c7c90a49815704c7322f04c3804728f5ab1a3990fdd695"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/test_watchdog.py": {
+      "bytes": 10524,
+      "sha256": "271b8f611ec10b2d7ad523368aa6e98e3a66ebc0351beef32c94c75b3331b7da"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/test_x64_runtime.py": {
+      "bytes": 19662,
+      "sha256": "871dbc791fe792326b9f25516230c4e1fa2379be87cab000fd8896f950d21250"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/watchdog.py": {
+      "bytes": 19871,
+      "sha256": "cc2e7e1212caa6be74e2266ce3a4ab156064a3ae96f01281cfa3ba5660ba5813"
+    },
+    "out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/worker.py": {
+      "bytes": 264,
+      "sha256": "08c319e7ec3790f619e4bf4ba3160e0db3bdc34f8dd86256bf998639aa2ea273"
+    },
+    "out/c0-runtime-adapter-2026-10-24/targeted-01.log": {
+      "bytes": 3647,
+      "sha256": "abcfbd3e2f386ed5a5284b700d55f176f229dfa33f55747a5fdfd2984866b644"
+    },
+    "out/c0-runtime-adapter-2026-10-24/targeted-02.log": {
+      "bytes": 2925,
+      "sha256": "68d12cf9340e8c059db114795a3448736c3b55dc00ba90e7508eb51ce1b79df9"
+    },
+    "out/c0-runtime-adapter-2026-10-24/test-live-adapter-initial.py": {
+      "bytes": 13865,
+      "sha256": "49ccf30651784de5cc8c1e829cce59d7dfe83bb497f0755b76acf622d6dc1967"
+    },
+    "out/c0-runtime-adapter-2026-10-24/tests-022.json": {
+      "bytes": 113282,
+      "sha256": "c2185791b1f948744171993e129a37633b7afc2c61c4e8f4683409cf1e849424"
+    },
+    "out/c0-runtime-adapter-2026-10-24/tests-022.log": {
+      "bytes": 55642,
+      "sha256": "c5b0111d94f7f266821eecda5d1c07cad217322c2c9b03a41e5beb07841557df"
+    },
+    "out/c0-runtime-adapter-2026-10-24/tests-077.json": {
+      "bytes": 113282,
+      "sha256": "c2185791b1f948744171993e129a37633b7afc2c61c4e8f4683409cf1e849424"
+    },
+    "out/c0-runtime-adapter-2026-10-24/tests-077.log": {
+      "bytes": 55642,
+      "sha256": "e2f62305fd0da7ddccd1ee368dfd05304686992067dd4cf7059a90015e6ab15f"
+    }
+  },
+  "changes_match_authoritative_inventory": true,
+  "current_source_actual": {
+    "scripts/preflight-crawl-jobs-v2-native-host.py": {
+      "bytes": 324,
+      "sha256": "5e7e1dff097bd816593197a446f5f7f846243c21c73034ffc536229250a1307b"
+    },
+    "scripts/test-crawl-jobs-v2-observer.py": {
+      "bytes": 3737,
+      "sha256": "9afb715125f734f5b905da63dde5c9787fc5997b2e5a73a0bf62d781b23aef84"
+    },
+    "tests/crawl-jobs-v2-observer/.dockerignore": {
+      "bytes": 97,
+      "sha256": "25170fdb33082a47a01bdc344bfabe8ef4460eed2da175e6dd1159557fcaa13d"
+    },
+    "tests/crawl-jobs-v2-observer/Dockerfile": {
+      "bytes": 1451,
+      "sha256": "6925c36fe1cd42800333b4c72c54143b0c706e26e0aa37a09fd8679a684fa06c"
+    },
+    "tests/crawl-jobs-v2-observer/Dockerfile.oracle": {
+      "bytes": 886,
+      "sha256": "61c196ddc98e522516fd1e36ce239f36f27f04e844be66752227c90de5897429"
+    },
+    "tests/crawl-jobs-v2-observer/Dockerfile.oracle.dockerignore": {
+      "bytes": 157,
+      "sha256": "679f3cd226874aa189596199b105352137171eed114a1393e478eafc43f330d3"
+    },
+    "tests/crawl-jobs-v2-observer/README.md": {
+      "bytes": 42572,
+      "sha256": "42d82b6e9c2caccec173bae40a513c3dc46b43397aa813220c32d1d121f700c6"
+    },
+    "tests/crawl-jobs-v2-observer/build_oracle.py": {
+      "bytes": 3204,
+      "sha256": "cb702f624c986320e6f4c690dfc4eac1187104c711a52eb9e2bab28ec12e7ed6"
+    },
+    "tests/crawl-jobs-v2-observer/build_tools.py": {
+      "bytes": 11378,
+      "sha256": "a402d791a3cd1dc35ed709a985cbcd9b06a9af9b2f370616f44f2bcfe6519acb"
+    },
+    "tests/crawl-jobs-v2-observer/context_files.py": {
+      "bytes": 1963,
+      "sha256": "956ce03c56e6df84006e9bf16775f1d3d83d2acbda5bec8d9d41b1de2e72d396"
+    },
+    "tests/crawl-jobs-v2-observer/context_provision.py": {
+      "bytes": 11325,
+      "sha256": "d0869ab36372a1af94ce0ffd04f1e364b318519a7e1f3c4bb7fefa95e2df340e"
+    },
+    "tests/crawl-jobs-v2-observer/context_ssh.py": {
+      "bytes": 1905,
+      "sha256": "94ededb449423cbc822282ab05cc725316caef186cdba227613631618b9f2a03"
+    },
+    "tests/crawl-jobs-v2-observer/context_transport.py": {
+      "bytes": 10394,
+      "sha256": "43193118350d4d52d0f3901e4a93561fa7cd94dd4e81c2ce99337b5364404af0"
+    },
+    "tests/crawl-jobs-v2-observer/context_worker.py": {
+      "bytes": 2408,
+      "sha256": "f01980f5b3322eabafd5b99c97b76f4313aa9a28ce90a5f3ce66c5175843e03f"
+    },
+    "tests/crawl-jobs-v2-observer/contracts.py": {
+      "bytes": 10053,
+      "sha256": "6a3c4dfe7b6fb4524771b26fdcbcba39be2c5893d52e2e4caeebf762df27a7f4"
+    },
+    "tests/crawl-jobs-v2-observer/controller.py": {
+      "bytes": 4850,
+      "sha256": "23b28206e550efbe408a970161ebed7ddbd3430c771baece6765a165fc2e2ec5"
+    },
+    "tests/crawl-jobs-v2-observer/d02.py": {
+      "bytes": 22174,
+      "sha256": "d7df595daeefcc3f5a785a89c191c93b5b6724e42655222befa1b07c88be29f2"
+    },
+    "tests/crawl-jobs-v2-observer/docker_backend.py": {
+      "bytes": 37345,
+      "sha256": "7a3aaaf2de8c3dd79f6b749dfbed00fcf35ed052d62dc20246bd66fe91d19e9c"
+    },
+    "tests/crawl-jobs-v2-observer/engine_metadata.py": {
+      "bytes": 5515,
+      "sha256": "fe9d948893742d2a326372db709e8406760689371c6c7753e68c7b7f86d76977"
+    },
+    "tests/crawl-jobs-v2-observer/host_preflight.py": {
+      "bytes": 12244,
+      "sha256": "90cdcdfafc2d220c3fcb19ad0ba0f5de26cf9f1e7739994747874359d0dee4b8"
+    },
+    "tests/crawl-jobs-v2-observer/image_artifacts.py": {
+      "bytes": 24111,
+      "sha256": "d6104f24562ed1f605043314b2f505c9f3609ca599f040fc6a9feb8d863252e5"
+    },
+    "tests/crawl-jobs-v2-observer/image_build.py": {
+      "bytes": 16606,
+      "sha256": "6926bdb5bf01c25b3c29ac5607e4602bf831772fe34e06c85bee7700baee0d85"
+    },
+    "tests/crawl-jobs-v2-observer/linux_observation.py": {
+      "bytes": 10243,
+      "sha256": "58934a305a1c7bf5877c4e5f7ae5969181c61fed267b150d0ed1ed91c195282d"
+    },
+    "tests/crawl-jobs-v2-observer/local_process.py": {
+      "bytes": 1590,
+      "sha256": "ad40d3fe4775bc2e01768b4a3c0d16b24776a74717d70e9e4e991ad29cb0700e"
+    },
+    "tests/crawl-jobs-v2-observer/native/admission.h": {
+      "bytes": 13423,
+      "sha256": "b64f55c4f5184506bc442bf13405f282b92d4bc600d8958b5febda5108fe0a96"
+    },
+    "tests/crawl-jobs-v2-observer/native/architecture.h": {
+      "bytes": 523,
+      "sha256": "c0b078cd257852bc3cb57e1405e18c943bf2d0a48520523195846c8f58cfea2b"
+    },
+    "tests/crawl-jobs-v2-observer/native/common.h": {
+      "bytes": 4793,
+      "sha256": "4b221886a774007a74ed68a44a6e5088bc7f2e4ccf4980ddb8815f85cfc27042"
+    },
+    "tests/crawl-jobs-v2-observer/native/observer.c": {
+      "bytes": 14134,
+      "sha256": "a45816e40320c8560f439dfdd0b1ebef636dc74a0a101c19f0a726ae38098a5c"
+    },
+    "tests/crawl-jobs-v2-observer/native/target.c": {
+      "bytes": 6511,
+      "sha256": "aedd6549923876d28b7d39748c6506dbad539459200b276a9f409500daf3f82d"
+    },
+    "tests/crawl-jobs-v2-observer/native/test_x86_debug.c": {
+      "bytes": 3159,
+      "sha256": "ca8c49152d575c6b42e37914ea7dc5d805975e49fee4fa799137799ceaaa6f6f"
+    },
+    "tests/crawl-jobs-v2-observer/native/x86_debug.h": {
+      "bytes": 2406,
+      "sha256": "42844fba32b39dfe752fe84f84b1748a872b93aed6c5810a9a30aeab2fbd1777"
+    },
+    "tests/crawl-jobs-v2-observer/oracle.py": {
+      "bytes": 6792,
+      "sha256": "fa14b08caee86b65d9a01c16bb3e6ea236264275a48a3f32ad6694c57df23bc8"
+    },
+    "tests/crawl-jobs-v2-observer/oracle_bridge.py": {
+      "bytes": 9559,
+      "sha256": "9d1efdbac6ea8b74585344884fb8264bed82f7413d32259146718872e4247f86"
+    },
+    "tests/crawl-jobs-v2-observer/oracle_protocol.py": {
+      "bytes": 11008,
+      "sha256": "f867fdc33eb271385176ab25c09a573e9662f77b7f6a73e559dbf07fcb115f45"
+    },
+    "tests/crawl-jobs-v2-observer/oracle_worker.py": {
+      "bytes": 10072,
+      "sha256": "91e84a5d3f47b043d6c12f9564604dba11f2ad9cc49e58a905ee714d2ece07d0"
+    },
+    "tests/crawl-jobs-v2-observer/owned_resources.py": {
+      "bytes": 21875,
+      "sha256": "5e235811e610d51009c03ee8e70fe2c8fc0927708ddd2dba5a1173b3bcca5108"
+    },
+    "tests/crawl-jobs-v2-observer/profiles.py": {
+      "bytes": 8855,
+      "sha256": "b149039b977bd78daf53a6ddb7635419b36338925c25d125a3d49fac8f60a539"
+    },
+    "tests/crawl-jobs-v2-observer/runtime_admission.py": {
+      "bytes": 12128,
+      "sha256": "307e4486f4c23c426d543ddc3cee65d99dcee77c7c01087f4c8840cc81d3b076"
+    },
+    "tests/crawl-jobs-v2-observer/runtime_context.py": {
+      "bytes": 11582,
+      "sha256": "85caefcf88973b0f78143d629dd8f3e46b16a0d987b680f48e875b9ed97739cd"
+    },
+    "tests/crawl-jobs-v2-observer/streams.py": {
+      "bytes": 12660,
+      "sha256": "5892e07eaf0fba21c99c873489527a32f687c44dbcc4838a8adfb6f36d9b693d"
+    },
+    "tests/crawl-jobs-v2-observer/test_admission_dispatch.py": {
+      "bytes": 15611,
+      "sha256": "f565e9c7672a6b2185ded0731c8481fc7cd3186e408ffad270e5a91a2792d5fa"
+    },
+    "tests/crawl-jobs-v2-observer/test_architecture_contracts.py": {
+      "bytes": 20053,
+      "sha256": "3a68f407df26a17eccc3c3397a91b65ff604247bf43b3c0418f2dd2ede21b57d"
+    },
+    "tests/crawl-jobs-v2-observer/test_architecture_review.py": {
+      "bytes": 10995,
+      "sha256": "89197d92221c854e92064965c1a6d73aa8cb52b8e22cda68773e095c44f4548a"
+    },
+    "tests/crawl-jobs-v2-observer/test_context_oracle_review.py": {
+      "bytes": 16410,
+      "sha256": "2b7a342bd1ac25c912aebe7813d4f056ba1ebc29a96d0a2bdb0b38b02ce7c660"
+    },
+    "tests/crawl-jobs-v2-observer/test_context_provisioning.py": {
+      "bytes": 36900,
+      "sha256": "47af7da18e75e311d280927b83cb64bf1b12b01562217f75bfd21b10255e83de"
+    },
+    "tests/crawl-jobs-v2-observer/test_contracts.py": {
+      "bytes": 13626,
+      "sha256": "f95b6879e06055cb26b1ac80214a9708deda71561511862d7833e981ebdd0716"
+    },
+    "tests/crawl-jobs-v2-observer/test_d02.py": {
+      "bytes": 21301,
+      "sha256": "f158944c10aa24dc397efdb1d03471a7a02f4b46cec46d2442e8bbe4eb772b72"
+    },
+    "tests/crawl-jobs-v2-observer/test_engine_metadata.py": {
+      "bytes": 13394,
+      "sha256": "6d6eb911f62348d702c63c42cd2bcc5e24586eadefb8f14cc796bcfa3538efef"
+    },
+    "tests/crawl-jobs-v2-observer/test_filter.py": {
+      "bytes": 2583,
+      "sha256": "b434138a353c257b18f3262373a5fa226223d8f44b0414e3b6b2aaf40f7a7614"
+    },
+    "tests/crawl-jobs-v2-observer/test_host_preflight.py": {
+      "bytes": 14609,
+      "sha256": "9a82b01fe91c26164e5dceb53a8e73847f1ea5526405080e6a1f01c2d2776d5a"
+    },
+    "tests/crawl-jobs-v2-observer/test_image_artifacts.py": {
+      "bytes": 17897,
+      "sha256": "81ea1082f3f4c7d38b37f4aeef0a84f215f546331d9c46d24f828d357a4835fa"
+    },
+    "tests/crawl-jobs-v2-observer/test_image_review.py": {
+      "bytes": 17362,
+      "sha256": "605cabb8937c184d3caad088e1468af2cb5871a3f4f3e0f3ff150a173e6e83e4"
+    },
+    "tests/crawl-jobs-v2-observer/test_live_adapter.py": {
+      "bytes": 17165,
+      "sha256": "6607d0879870d36b3b0573273896416aa9080a6523e6daefdd86f539f4c79e93"
+    },
+    "tests/crawl-jobs-v2-observer/test_oracle_bridge.py": {
+      "bytes": 12602,
+      "sha256": "e7ec3950202388b09014bd175e7668aa3375f93c4029e04910296975cdec52f1"
+    },
+    "tests/crawl-jobs-v2-observer/test_oracle_worker.py": {
+      "bytes": 9645,
+      "sha256": "3c899ec2036f74167aa213cda6c42b8e71547f1e32f9c58df4e6f9cd1eca9d0a"
+    },
+    "tests/crawl-jobs-v2-observer/test_owned_resources.py": {
+      "bytes": 23676,
+      "sha256": "9c956de3a0499a881efc007ab56fbe00870bfb215c137a3272514bda9c03a31a"
+    },
+    "tests/crawl-jobs-v2-observer/test_runtime_admission.py": {
+      "bytes": 21094,
+      "sha256": "1e53248dbeacb1dae04f184ad844ae2d17dd7a338311ea5403e491cc373ac430"
+    },
+    "tests/crawl-jobs-v2-observer/test_runtime_context.py": {
+      "bytes": 13627,
+      "sha256": "040f04d8bd9a120758e2d03c2052c666d6f88c32fc38f3ecb8f1c5614f487b7c"
+    },
+    "tests/crawl-jobs-v2-observer/test_streams.py": {
+      "bytes": 10133,
+      "sha256": "0f5a4e23592bd7e849c7c90a49815704c7322f04c3804728f5ab1a3990fdd695"
+    },
+    "tests/crawl-jobs-v2-observer/test_watchdog.py": {
+      "bytes": 10524,
+      "sha256": "271b8f611ec10b2d7ad523368aa6e98e3a66ebc0351beef32c94c75b3331b7da"
+    },
+    "tests/crawl-jobs-v2-observer/test_x64_runtime.py": {
+      "bytes": 19662,
+      "sha256": "871dbc791fe792326b9f25516230c4e1fa2379be87cab000fd8896f950d21250"
+    },
+    "tests/crawl-jobs-v2-observer/watchdog.py": {
+      "bytes": 19871,
+      "sha256": "cc2e7e1212caa6be74e2266ce3a4ab156064a3ae96f01281cfa3ba5660ba5813"
+    },
+    "tests/crawl-jobs-v2-observer/worker.py": {
+      "bytes": 264,
+      "sha256": "08c319e7ec3790f619e4bf4ba3160e0db3bdc34f8dd86256bf998639aa2ea273"
+    }
+  },
+  "current_source_mismatches": [],
+  "no_git_or_docker_or_ssh_invoked": true,
+  "original_packet": {
+    "bytes": 73971,
+    "sha256": "ef5134712918c3b705b6076f6367ff044a669237a7d47632cc677093c3814ccf"
+  },
+  "original_packet_hash_matches": true,
+  "original_reviews": {
+    "correctness": {
+      "assemble_result.py": {
+        "bytes": 7623,
+        "sha256": "8bf34fe4e0c0e5b3b5386688254bf126da57c31f5cdea9d68cf9e448737ea93b"
+      },
+      "coverage-crosscheck.json": {
+        "bytes": 2735,
+        "sha256": "cda604b5a03c2863e5be9e454174f260753d81e65c4d7317ba34860f187c08e2"
+      },
+      "dispatch-path-evidence.json": {
+        "bytes": 3886,
+        "sha256": "5d1061618a262bcc5e9e5a239c3d827a8722ebe51435525adfff6ce1c19dbbf9"
+      },
+      "documentation-crosscheck.md": {
+        "bytes": 2557,
+        "sha256": "9c56d4b292240fc7e692e1903c7b2ccea953731b29320af144da66385dd50b16"
+      },
+      "independent-022.json": {
+        "bytes": 7567,
+        "sha256": "e0301dd3f52ea208d0f82c6710b3ef908881115c8f521020b0ada7aaf0e4ebd6"
+      },
+      "independent-022.log": {
+        "bytes": 5587,
+        "sha256": "f227cadadbf6f5c75eeba4c4ce7564a391f17f26b0dc978df3b981c7726cce00"
+      },
+      "independent-077.json": {
+        "bytes": 7567,
+        "sha256": "a6f5936e9b58cd8ffbb0254c3916c0dfdbd1f85ae4b8a87a4f8bbafb8c19ac83"
+      },
+      "independent-077.log": {
+        "bytes": 5587,
+        "sha256": "f227cadadbf6f5c75eeba4c4ce7564a391f17f26b0dc978df3b981c7726cce00"
+      },
+      "independent_probes.py": {
+        "bytes": 25485,
+        "sha256": "f043f39f6a57a216405c5193dd8ff2ed6a864e8e3e86c7662e40e211591a571c"
+      },
+      "integrity-after.json": {
+        "bytes": 12243,
+        "sha256": "3a367644573b00351d608a0acd20235f53b33034f20cb849a49708fa103184fe"
+      },
+      "integrity-before.json": {
+        "bytes": 12243,
+        "sha256": "b3092833698972b21c6f8b4afa7fb27b19587e4432477608de6620473255997a"
+      },
+      "reference-source-hashes.json": {
+        "bytes": 2592,
+        "sha256": "66f32638dc756f9fdee1ec3d97c13b9d910e5081e275c52791185f145cdf4c2e"
+      },
+      "references/cli-plugins__manager__candidate.go": {
+        "bytes": 398,
+        "sha256": "67e960b7b7fafdfa6332a1e867b136caec18951b6f94a61b095984975e36b998"
+      },
+      "references/cli-plugins__manager__cobra.go": {
+        "bytes": 2378,
+        "sha256": "4fc97f4466545c303f233931a2e08f47aed2b8400625b0abf63074e6c4888771"
+      },
+      "references/cli-plugins__manager__manager.go": {
+        "bytes": 7420,
+        "sha256": "7f013ffe26cc1a3dc895968af27d79d159039a8b109fe3e65dd16ac79279bf55"
+      },
+      "references/cli-plugins__manager__plugin.go": {
+        "bytes": 5925,
+        "sha256": "8c38bdf7170a5978beb73edb3e71ccc578a9fc76b4bd65518286f3fdc3cff0c6"
+      },
+      "references/cli__command__cli.go": {
+        "bytes": 18941,
+        "sha256": "ff7919416d77b4e04528d6341358063aea982ba5674e1a91b470c38ce54b321e"
+      },
+      "references/cli__command__container__inspect.go": {
+        "bytes": 1731,
+        "sha256": "bcdf5bd044c428574e1474114ec50e6351567ddd98bbdfc1ced0710c6a5671e1"
+      },
+      "references/cmd__docker__docker.go": {
+        "bytes": 21868,
+        "sha256": "1c0fc026f2673545f2f7dea0019b0065034d96797683de46ef40898f09cb7220"
+      },
+      "references/vendor.mod": {
+        "bytes": 4688,
+        "sha256": "413f01e06afb1fdaf9bf8d7d838b1683cf12a514921a556a3690e99565ac8c5a"
+      },
+      "references/vendor__github.com__spf13__cobra__command.go": {
+        "bytes": 61130,
+        "sha256": "797ff14415e5fe31a22f7be52525cc0c809e1e8b6450e42d52afeb4f08389e61"
+      },
+      "references/vendor__github.com__spf13__pflag__flag.go": {
+        "bytes": 37434,
+        "sha256": "65e9c5e5f763cb701a26873ce16584642d442d64277ed688956e8b560c30d3cd"
+      },
+      "report.md": {
+        "bytes": 9284,
+        "sha256": "f0fdb199cac0cc03d70a0a7a08146a49148953492bc052e88b8f0f53bf8655e3"
+      },
+      "result.json": {
+        "bytes": 11061,
+        "sha256": "0f0c3656f1308658c899a2a293c69c51da63b3b91b17eead1436b0147d909128"
+      },
+      "review-artifact-sha256.json": {
+        "bytes": 4012,
+        "sha256": "13346d4428f891fd81db632bd0bdcc54208c3cfd9f8452d8b2de7a957f7d33e3"
+      },
+      "supplemental_checks.py": {
+        "bytes": 5694,
+        "sha256": "7674d81d958a68269e974db992c276682cc65674cd49db4d857d82ead90cf7db"
+      },
+      "verify_inputs.py": {
+        "bytes": 2396,
+        "sha256": "c6dd137a65c7fb01351999e448358add536d36d8da8b7e6fab6d7926df237d0d"
+      }
+    },
+    "security": {
+      "build_result.py": {
+        "bytes": 8423,
+        "sha256": "f4c3c1430698daa8651bb75549f3bca8f6c569ab7a7dcda1a753e485e98548f0"
+      },
+      "check_integrity.py": {
+        "bytes": 2642,
+        "sha256": "068a4fc859e86c1295353fbca93fdac94cbedebbf6cb555c45cc7a973df1eec1"
+      },
+      "integrity-after.json": {
+        "bytes": 86092,
+        "sha256": "5d9d89f2d5acc491ae80be9078af3ba75e4fd878bd90d8793bed84d4172d2f39"
+      },
+      "integrity-before.json": {
+        "bytes": 85996,
+        "sha256": "e7587b65425531816083db59d8740e2ff1cb5137e06e80db4e4833a6b45c9ecb"
+      },
+      "report.md": {
+        "bytes": 12074,
+        "sha256": "354da2ebc5ea696ff83127ea554a82a7e48d9784d44a96e640ddbc70381df19c"
+      },
+      "result.json": {
+        "bytes": 8461,
+        "sha256": "cb20fca48b551fd2b6be899541ef0af004da71feb02c32f5d4fe47fb2b0bcbcf"
+      },
+      "review-artifacts.json": {
+        "bytes": 1764,
+        "sha256": "f3371d9fc1ed6cbd443283e612cf4e16984183459f740eefcc5312b8dd057487"
+      },
+      "security-probes.json": {
+        "bytes": 3802,
+        "sha256": "59c5039a680395278878b7ad01a282d2233758bab3bf82468f1be9fe935fcbf1"
+      },
+      "security-probes.log": {
+        "bytes": 3231,
+        "sha256": "84936778de44a07cfc33340ea6be7847b329c90dd55e516deb67a559b8daa9a4"
+      },
+      "security_probes.py": {
+        "bytes": 27429,
+        "sha256": "7fd4d84ccb3a16efb1619452e2bae98d175f31dfcf477ab59b7cb21296c253a9"
+      },
+      "supplementary-probes.json": {
+        "bytes": 159122,
+        "sha256": "f64a446425fa6f39b09f7440b2ba2e7e25e11fde2014b2193f20ff9064062e2e"
+      },
+      "supplementary_probes.py": {
+        "bytes": 8038,
+        "sha256": "859ddd680469130369b61d696f50200e043e5b67465dccfe5e0a0b40fcb0b858"
+      },
+      "upstream-notes.md": {
+        "bytes": 4139,
+        "sha256": "a75e5733ebf9d3b398dfe340a725033a5f6390af3dd58a7951affcb8614df7b9"
+      }
+    }
+  },
+  "packet": {
+    "bytes": 97900,
+    "sha256": "b3e66f6bf5cc95194e04548b7cfb4df4978898d4cec1a48aaaa357a1d4be14e7"
+  },
+  "packet_expected_sha256": "b3e66f6bf5cc95194e04548b7cfb4df4978898d4cec1a48aaaa357a1d4be14e7",
+  "packet_hash_matches": true,
+  "phase": "before",
+  "review_exports": {
+    "correctness": {
+      "assemble_result.py": {
+        "bytes": 7623,
+        "sha256": "8bf34fe4e0c0e5b3b5386688254bf126da57c31f5cdea9d68cf9e448737ea93b"
+      },
+      "coverage-crosscheck.json": {
+        "bytes": 2735,
+        "sha256": "cda604b5a03c2863e5be9e454174f260753d81e65c4d7317ba34860f187c08e2"
+      },
+      "dispatch-path-evidence.json": {
+        "bytes": 3886,
+        "sha256": "5d1061618a262bcc5e9e5a239c3d827a8722ebe51435525adfff6ce1c19dbbf9"
+      },
+      "documentation-crosscheck.md": {
+        "bytes": 2557,
+        "sha256": "9c56d4b292240fc7e692e1903c7b2ccea953731b29320af144da66385dd50b16"
+      },
+      "independent-022.json": {
+        "bytes": 7567,
+        "sha256": "e0301dd3f52ea208d0f82c6710b3ef908881115c8f521020b0ada7aaf0e4ebd6"
+      },
+      "independent-022.log": {
+        "bytes": 5587,
+        "sha256": "f227cadadbf6f5c75eeba4c4ce7564a391f17f26b0dc978df3b981c7726cce00"
+      },
+      "independent-077.json": {
+        "bytes": 7567,
+        "sha256": "a6f5936e9b58cd8ffbb0254c3916c0dfdbd1f85ae4b8a87a4f8bbafb8c19ac83"
+      },
+      "independent-077.log": {
+        "bytes": 5587,
+        "sha256": "f227cadadbf6f5c75eeba4c4ce7564a391f17f26b0dc978df3b981c7726cce00"
+      },
+      "independent_probes.py": {
+        "bytes": 25485,
+        "sha256": "f043f39f6a57a216405c5193dd8ff2ed6a864e8e3e86c7662e40e211591a571c"
+      },
+      "integrity-after.json": {
+        "bytes": 12243,
+        "sha256": "3a367644573b00351d608a0acd20235f53b33034f20cb849a49708fa103184fe"
+      },
+      "integrity-before.json": {
+        "bytes": 12243,
+        "sha256": "b3092833698972b21c6f8b4afa7fb27b19587e4432477608de6620473255997a"
+      },
+      "reference-source-hashes.json": {
+        "bytes": 2592,
+        "sha256": "66f32638dc756f9fdee1ec3d97c13b9d910e5081e275c52791185f145cdf4c2e"
+      },
+      "references/cli-plugins__manager__candidate.go": {
+        "bytes": 398,
+        "sha256": "67e960b7b7fafdfa6332a1e867b136caec18951b6f94a61b095984975e36b998"
+      },
+      "references/cli-plugins__manager__cobra.go": {
+        "bytes": 2378,
+        "sha256": "4fc97f4466545c303f233931a2e08f47aed2b8400625b0abf63074e6c4888771"
+      },
+      "references/cli-plugins__manager__manager.go": {
+        "bytes": 7420,
+        "sha256": "7f013ffe26cc1a3dc895968af27d79d159039a8b109fe3e65dd16ac79279bf55"
+      },
+      "references/cli-plugins__manager__plugin.go": {
+        "bytes": 5925,
+        "sha256": "8c38bdf7170a5978beb73edb3e71ccc578a9fc76b4bd65518286f3fdc3cff0c6"
+      },
+      "references/cli__command__cli.go": {
+        "bytes": 18941,
+        "sha256": "ff7919416d77b4e04528d6341358063aea982ba5674e1a91b470c38ce54b321e"
+      },
+      "references/cli__command__container__inspect.go": {
+        "bytes": 1731,
+        "sha256": "bcdf5bd044c428574e1474114ec50e6351567ddd98bbdfc1ced0710c6a5671e1"
+      },
+      "references/cmd__docker__docker.go": {
+        "bytes": 21868,
+        "sha256": "1c0fc026f2673545f2f7dea0019b0065034d96797683de46ef40898f09cb7220"
+      },
+      "references/vendor.mod": {
+        "bytes": 4688,
+        "sha256": "413f01e06afb1fdaf9bf8d7d838b1683cf12a514921a556a3690e99565ac8c5a"
+      },
+      "references/vendor__github.com__spf13__cobra__command.go": {
+        "bytes": 61130,
+        "sha256": "797ff14415e5fe31a22f7be52525cc0c809e1e8b6450e42d52afeb4f08389e61"
+      },
+      "references/vendor__github.com__spf13__pflag__flag.go": {
+        "bytes": 37434,
+        "sha256": "65e9c5e5f763cb701a26873ce16584642d442d64277ed688956e8b560c30d3cd"
+      },
+      "report.md": {
+        "bytes": 9284,
+        "sha256": "f0fdb199cac0cc03d70a0a7a08146a49148953492bc052e88b8f0f53bf8655e3"
+      },
+      "result.json": {
+        "bytes": 11061,
+        "sha256": "0f0c3656f1308658c899a2a293c69c51da63b3b91b17eead1436b0147d909128"
+      },
+      "review-artifact-sha256.json": {
+        "bytes": 4012,
+        "sha256": "13346d4428f891fd81db632bd0bdcc54208c3cfd9f8452d8b2de7a957f7d33e3"
+      },
+      "supplemental_checks.py": {
+        "bytes": 5694,
+        "sha256": "7674d81d958a68269e974db992c276682cc65674cd49db4d857d82ead90cf7db"
+      },
+      "verify_inputs.py": {
+        "bytes": 2396,
+        "sha256": "c6dd137a65c7fb01351999e448358add536d36d8da8b7e6fab6d7926df237d0d"
+      }
+    },
+    "security": {
+      "build_result.py": {
+        "bytes": 8423,
+        "sha256": "f4c3c1430698daa8651bb75549f3bca8f6c569ab7a7dcda1a753e485e98548f0"
+      },
+      "check_integrity.py": {
+        "bytes": 2642,
+        "sha256": "068a4fc859e86c1295353fbca93fdac94cbedebbf6cb555c45cc7a973df1eec1"
+      },
+      "integrity-after.json": {
+        "bytes": 86092,
+        "sha256": "5d9d89f2d5acc491ae80be9078af3ba75e4fd878bd90d8793bed84d4172d2f39"
+      },
+      "integrity-before.json": {
+        "bytes": 85996,
+        "sha256": "e7587b65425531816083db59d8740e2ff1cb5137e06e80db4e4833a6b45c9ecb"
+      },
+      "report.md": {
+        "bytes": 12074,
+        "sha256": "354da2ebc5ea696ff83127ea554a82a7e48d9784d44a96e640ddbc70381df19c"
+      },
+      "result.json": {
+        "bytes": 8461,
+        "sha256": "cb20fca48b551fd2b6be899541ef0af004da71feb02c32f5d4fe47fb2b0bcbcf"
+      },
+      "review-artifacts.json": {
+        "bytes": 1764,
+        "sha256": "f3371d9fc1ed6cbd443283e612cf4e16984183459f740eefcc5312b8dd057487"
+      },
+      "security-probes.json": {
+        "bytes": 3802,
+        "sha256": "59c5039a680395278878b7ad01a282d2233758bab3bf82468f1be9fe935fcbf1"
+      },
+      "security-probes.log": {
+        "bytes": 3231,
+        "sha256": "84936778de44a07cfc33340ea6be7847b329c90dd55e516deb67a559b8daa9a4"
+      },
+      "security_probes.py": {
+        "bytes": 27429,
+        "sha256": "7fd4d84ccb3a16efb1619452e2bae98d175f31dfcf477ab59b7cb21296c253a9"
+      },
+      "supplementary-probes.json": {
+        "bytes": 159122,
+        "sha256": "f64a446425fa6f39b09f7440b2ba2e7e25e11fde2014b2193f20ff9064062e2e"
+      },
+      "supplementary_probes.py": {
+        "bytes": 8038,
+        "sha256": "859ddd680469130369b61d696f50200e043e5b67465dccfe5e0a0b40fcb0b858"
+      },
+      "upstream-notes.md": {
+        "bytes": 4139,
+        "sha256": "a75e5733ebf9d3b398dfe340a725033a5f6390af3dd58a7951affcb8614df7b9"
+      }
+    }
+  },
+  "review_exports_exact": true,
+  "source_file_count": 63,
+  "source_mismatches": [],
+  "supplemental_historical_report": {
+    "bytes": 107792,
+    "path": "out/c0-main-sync-2026-10-24/tests-022.json",
+    "sha256": "2113de12e8e359b884e9d1ac7e884866663d1bcced51f1680aa93c63f5dee6bf"
+  },
+  "supplied_test_reports": {
+    "022": {
+      "historical_retained": 318,
+      "new_since_historical": 20,
+      "new_since_initial_review": [
+        "test_live_adapter.ConfigurationTests.test_clustered_help_and_attached_short_overrides_refuse_before_side_effects",
+        "test_live_adapter.ConfigurationTests.test_generated_oracle_create_remains_accepted_for_both_architectures",
+        "test_live_adapter.ConfigurationTests.test_short_option_exception_requires_exact_oracle_entrypoint_image_and_tail"
+      ],
+      "prior_retained": 335,
+      "recorded_passes": 338,
+      "report": {
+        "bytes": 114341,
+        "sha256": "609faeab7e54f9b543957aae8922b2442be6fa3234a111d6a6e1113fa72ba4b0"
+      },
+      "source_hashes_matched": 61
+    },
+    "077": {
+      "historical_retained": 318,
+      "new_since_historical": 20,
+      "new_since_initial_review": [
+        "test_live_adapter.ConfigurationTests.test_clustered_help_and_attached_short_overrides_refuse_before_side_effects",
+        "test_live_adapter.ConfigurationTests.test_generated_oracle_create_remains_accepted_for_both_architectures",
+        "test_live_adapter.ConfigurationTests.test_short_option_exception_requires_exact_oracle_entrypoint_image_and_tail"
+      ],
+      "prior_retained": 335,
+      "recorded_passes": 338,
+      "report": {
+        "bytes": 114341,
+        "sha256": "609faeab7e54f9b543957aae8922b2442be6fa3234a111d6a6e1113fa72ba4b0"
+      },
+      "source_hashes_matched": 61
+    }
+  }
+}

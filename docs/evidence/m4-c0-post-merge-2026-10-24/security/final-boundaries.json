@@ -1,0 +1,15 @@
+{
+  "git_index_sha256_unchanged": "1516b692036491e65496c39bbb37c4dc89d3b7ba146daa096e60026b41118358",
+  "git_refs_unchanged": [
+    "e8a0a415ac2b370319cd57f4c5262ce616a536fb",
+    "e8a0a415ac2b370319cd57f4c5262ce616a536fb",
+    "babb2180d05698e64b7d9baf37f9cab14b3c0f7f",
+    "2475fda26223c43485b933089274476e497be3ab"
+  ],
+  "native_calibration_performed": false,
+  "packet_files_unchanged": 428,
+  "runtime_adapter_certified": false,
+  "source_and_retained_input_modifications": 0,
+  "status": "PASS",
+  "supplemental_files_unchanged": 213
+}

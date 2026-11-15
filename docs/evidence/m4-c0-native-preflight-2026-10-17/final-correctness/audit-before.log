@@ -1,0 +1,45 @@
+{
+  "phase": "before",
+  "source_inventory_sha256": "faf8d794802f7a3b7603bea199689014cef21d415764571725ff9e3b66414baf",
+  "base": "babb2180d05698e64b7d9baf37f9cab14b3c0f7f",
+  "transport_files_verified": 62,
+  "added": [
+    "tests/crawl-jobs-v2-observer/engine_metadata.py",
+    "tests/crawl-jobs-v2-observer/test_engine_metadata.py"
+  ],
+  "changed_since_intermediate": [
+    "docs/crawl-jobs-v2-m4-c0-native-preflight-2026-10-17.md",
+    "tests/crawl-jobs-v2-observer/README.md",
+    "tests/crawl-jobs-v2-observer/host_preflight.py",
+    "tests/crawl-jobs-v2-observer/test_host_preflight.py"
+  ],
+  "unchanged_since_intermediate": 56,
+  "context_files_byte_identical_to_base": 55,
+  "all_three_snapshots_match_inventories": true,
+  "supplied_full_suite": {
+    "independently_rerun": false,
+    "reported_passed": 318,
+    "prior_ids_retained": 304,
+    "new_ids": [
+      "test_engine_metadata.EngineMetadataTests.test_actual_api_cpu_field_names",
+      "test_engine_metadata.EngineMetadataTests.test_body_bound_in_each_framing",
+      "test_engine_metadata.EngineMetadataTests.test_chunk_syntax_extensions_trailers_and_count_are_bounded",
+      "test_engine_metadata.EngineMetadataTests.test_conflicting_duplicate_or_invalid_headers_reject",
+      "test_engine_metadata.EngineMetadataTests.test_fragmented_content_length_chunked_and_close_delimited",
+      "test_engine_metadata.EngineMetadataTests.test_header_byte_count_and_line_bounds",
+      "test_engine_metadata.EngineMetadataTests.test_missing_content_type_or_unsupported_transfer_rejects",
+      "test_engine_metadata.EngineMetadataTests.test_no_configuration_plugins_processes_or_proxy_environment",
+      "test_engine_metadata.EngineMetadataTests.test_non_success_redirect_upgrade_and_raw_error_bodies_reject",
+      "test_engine_metadata.EngineMetadataTests.test_only_fixed_read_only_operations_and_endpoint",
+      "test_engine_metadata.EngineMetadataTests.test_real_owned_socket_eof_and_stall_are_bounded",
+      "test_engine_metadata.EngineMetadataTests.test_shared_deadline_is_rechecked_after_receive",
+      "test_engine_metadata.EngineMetadataTests.test_socket_errors_are_value_free_and_always_close",
+      "test_engine_metadata.EngineMetadataTests.test_truncated_or_extra_data_never_passes"
+    ],
+    "source_hashes_verified": 59,
+    "runner_sha256": "9afb715125f734f5b905da63dde5c9787fc5997b2e5a73a0bf62d781b23aef84",
+    "json_sha256": "2113de12e8e359b884e9d1ac7e884866663d1bcced51f1680aa93c63f5dee6bf",
+    "log_sha256": "7bd62e246d4a7c1fdb793e11ecf9af761fc0632eafd441d8715c2cdfc450fe65",
+    "individual_log_ids_reconciled": true
+  }
+}

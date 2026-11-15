@@ -1,0 +1,113 @@
+{
+  "details": {
+    "binary_matrix": {
+      "installed_binary_executed": false,
+      "synthetic_cases": 10
+    },
+    "cleanup_faults": [
+      "reap timeout redacted",
+      "lost ownership not signalled",
+      "sticky subsequent close"
+    ],
+    "clustered_help": [
+      {
+        "flag": "-hh",
+        "reached_transport": true,
+        "rejected": false
+      },
+      {
+        "flag": "-hhh",
+        "reached_transport": true,
+        "rejected": false
+      },
+      {
+        "flag": "-hh=true",
+        "reached_transport": true,
+        "rejected": false
+      },
+      {
+        "flag": "-sh",
+        "reached_transport": true,
+        "rejected": false
+      }
+    ],
+    "documented_group_limit": {
+      "same_group": false,
+      "same_session": true,
+      "signal_disabled_control": false,
+      "terminated_by_adapter": false
+    },
+    "fd_and_byte_limits": {
+      "after_fds": 6,
+      "before_fds": 6,
+      "extra_byte_rejected": true,
+      "limit": 262144
+    },
+    "metadata_wire": {
+      "fake_connections": 4,
+      "real_connections": 0,
+      "x64_pass_arm64_rejected": true
+    },
+    "ownership_order": {
+      "events": [
+        "signal",
+        "reap"
+      ],
+      "nonreaping_observations": 32,
+      "reaped_pid_not_signalled": true
+    },
+    "pre_side_effect_rejections": 13,
+    "private_config": {
+      "explicit_requested_dir": "/tmp",
+      "physical_probe_dir": "/var/home/kfuller/Documents/Git_Projects/mifolyo/out/c0-runtime-adapter-2026-10-24/security-review/scratch",
+      "simultaneous_unique_configs": 2
+    },
+    "redacted_negatives": {
+      "exception_classes": 3,
+      "wire": 8
+    },
+    "review_only_remediation_control": {
+      "rejected_forms": 8,
+      "safe_forms": 5
+    },
+    "same_group_descendants": [
+      {
+        "same_group": true,
+        "same_session": true,
+        "signal_disabled_control": false,
+        "terminated_by_adapter": true
+      },
+      {
+        "same_group": true,
+        "same_session": true,
+        "signal_disabled_control": false,
+        "terminated_by_adapter": true
+      },
+      {
+        "same_group": true,
+        "same_session": true,
+        "signal_disabled_control": true,
+        "terminated_by_adapter": false
+      }
+    ],
+    "selector_failure": "child killed/reaped, pipes+selector+config closed, redacted",
+    "sticky_cleanup": "signal-denied then natural leader exit still fails on first and repeated close",
+    "typed_backend_injection": "9 malformed selectors and 2 unauthorized mutations rejected before runner"
+  },
+  "docker_executed": false,
+  "errors": [],
+  "failures": [
+    {
+      "test": "__main__.SecurityChecks.test_02_regression_clustered_help_must_be_rejected",
+      "traceback": "Traceback (most recent call last):\n  File \"/var/home/kfuller/Documents/Git_Projects/mifolyo/out/c0-runtime-adapter-2026-10-24/security-review/security_probes.py\", line 191, in test_02_regression_clustered_help_must_be_rejected\n    self.assertTrue(all(v[\"rejected\"] for v in observations), \"clustered help reaches transport; Docker v29 help discovers plugins\")\n    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: False is not true : clustered help reaches transport; Docker v29 help discovers plugins\n"
+    }
+  ],
+  "kind": "independent_inert_security_probes",
+  "native_actors_executed": false,
+  "process_local_subreaper": true,
+  "python": "3.14.8 (main, Oct  1 2026, 00:00:00) [GCC 16.2.1 20260819 (Red Hat 16.2.1-2)]",
+  "remote_connections": 0,
+  "source_snapshot": "/var/home/kfuller/Documents/Git_Projects/mifolyo/out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer",
+  "tempfiles_redirected_to_review": true,
+  "tests_run": 15
+}

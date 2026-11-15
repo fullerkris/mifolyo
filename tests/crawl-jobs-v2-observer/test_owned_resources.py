@@ -403,7 +403,7 @@ class DockerAdapterTests(unittest.TestCase):
             backend = db.DockerBackend(value, paths, authorize=lambda *_: True, runner=runner)
             self.assertEqual(backend.create_container(owned.container_spec(value, "target"), Deadline(2)), "a" * 64)
             argv = calls[-1]
-            self.assertEqual(argv[:3], ["docker", "--host", "unix:///var/run/docker.sock"])
+            self.assertEqual(argv[:3], ["/usr/bin/docker", "--host", "unix:///var/run/docker.sock"])
             self.assertIn("--read-only", argv)
             self.assertIn("core=0:0", argv)
             self.assertIn("--no-healthcheck", argv)

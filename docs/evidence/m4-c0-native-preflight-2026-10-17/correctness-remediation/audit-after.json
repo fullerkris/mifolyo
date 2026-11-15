@@ -1,0 +1,46 @@
+{
+  "phase": "after",
+  "base": "babb2180d05698e64b7d9baf37f9cab14b3c0f7f",
+  "initial_inventory_sha256": "aa84e8b932141d6032a70e0f85a3fbc638dabec72992c6cb46a14c3cacc67414",
+  "remediation_inventory_sha256": "4046bd7f3604bdf51ddd50e159a41c394ec9c55e4715cbbfef69e54d2e743ba6",
+  "verified_files_each_snapshot": 60,
+  "only_changed_files": [
+    "docs/crawl-jobs-v2-m4-c0-native-preflight-2026-10-17.md",
+    "tests/crawl-jobs-v2-observer/host_preflight.py",
+    "tests/crawl-jobs-v2-observer/test_host_preflight.py"
+  ],
+  "unchanged_since_initial": 57,
+  "context_files_byte_identical_to_base": 55,
+  "initial_correctness_artifacts": {
+    "controls-final.log": "5edd98b99d2418d2a686e63b2469dd8e32e4616cad7dab87f19f487958e92eb5",
+    "controls.log": "115b0c211f13f9ac12f8da6ea68d84e3553d2f8e7cc06fc58d75dd66e0a6b6d0",
+    "controls.py": "cebc32f967dc452cde97740ac89bab2f28ae23164f9d27d2e32c4c299b640775",
+    "focused-tests.log": "5f6472cd9722a104f4cf7efc691bf4afdef6d6e097eac509e8203e4519706552",
+    "inventory-after.json": "c2b3e3f401ec50921a2b30c90d8ccf64c840d251c1094512f34e4ecc6345aa26",
+    "inventory-before.json": "4a1a3142565be6d9f02bd581537ba39c97ce73f2e8f3f1390aa1e6f49f3b9730",
+    "regression-evidence.json": "15198b778b6564db2f35592e3e436da988f2167733474d9faaf928c2a33931b3",
+    "regressions.log": "87c998689eb45aa9d033aab81a496280a7e3f353ec99e4bb881620e7db802063",
+    "regressions.py": "2591de20149ebf4fe5078796e57e86c766d98a0f12e74042f42fa8a144811ecc",
+    "report.md": "a60fcf36b52b382bc5b896884c2e370370a989c3add04796682a7762e60ed8d2",
+    "result.json": "bdbf3995200eb89eec734ce4de40c668b9193259c4c9fd55785101b73d2e9273",
+    "review-artifact-sha256.json": "43c014819aa97cc78d352106db652bcb349fc02fd69bffaf4d49a3f0861aaf9b",
+    "upstream-security-options.md": "03c356da005c371fa252780d66edf9f8b5acdf23e0509fc0331274aad6905d3a"
+  },
+  "initial_correctness_archive_identical": true,
+  "full_suite_artifact": {
+    "independently_rerun": false,
+    "json_sha256": "2843f2928627665fa059fb67be53536008435ed6a6b6259029a47274ba774683",
+    "log_sha256": "da20037bc56b4602fa7e7af73cc3835a24c0aa18b00509831ae1d5d4410b4e26",
+    "runner_sha256": "9afb715125f734f5b905da63dde5c9787fc5997b2e5a73a0bf62d781b23aef84",
+    "source_files_bound": 57,
+    "source_binding_matches": true,
+    "passed": 304,
+    "all_log_ids_reconciled": true,
+    "original_ids_retained": 302,
+    "new_ids": [
+      "test_host_preflight.HostPreflightTests.test_documented_no_new_privileges_metadata_preserves_other_checks",
+      "test_host_preflight.HostPreflightTests.test_wait_timeouts_keep_json_refusal_and_reap_benign_children"
+    ],
+    "failures_errors_skips_expected_failures_unexpected_successes": 0
+  }
+}

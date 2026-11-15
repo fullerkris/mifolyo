@@ -1,0 +1,156 @@
+diff --git a/docs/crawl-jobs-v2-m4-c0-runtime-images-2026-10-17.md b/docs/crawl-jobs-v2-m4-c0-runtime-images-2026-10-17.md
+index 6015346..9281afd 100644
+--- a/docs/crawl-jobs-v2-m4-c0-runtime-images-2026-10-17.md
++++ b/docs/crawl-jobs-v2-m4-c0-runtime-images-2026-10-17.md
+@@ -1,6 +1,18 @@
+ # C0 ARM64 and x64 runtime image sets — 2026-10-17
+ 
+-**Status: local source/static-image preparation and independent review complete;
++**Current status — 2026-10-24:** PR #32 is owner-merged as
++`e8a0a415ac2b370319cd57f4c5262ce616a536fb`, preserving final PR head `1e65944`'s
++tree. Actual main CI passed **25/25 jobs on attempt 1**. Both downloaded image
++artifacts match GitHub's ZIP digests; both source-bound 288-test reports and all
++six portable image/config/layer/content records pass independent verification.
++Both post-merge reviewers return **GO_FOR_CONTINUED_IMPLEMENTATION**, with no
++findings; gate `80a18b43…`. Native runtime admission and
++calibration remain C0-ARCH-05 work, currently x64-first with ARM64 deferred.
++
++See the [post-merge verification checkpoint](evidence/m4-c0-post-merge-2026-10-24/README.md).
++The preparation/review chronology below retains its original recording-time scope.
++
++**Historical preparation status — 2026-10-17: local source/static-image preparation and independent review complete;
+ both reviewers return GO_FOR_CONTINUED_IMPLEMENTATION.** Work is local on `feature/crawl-jobs-v2-c0-runtime-images`, based on
+ published PR #30 head `7ef2041`. The [PR publication and exact CI](evidence/m4-c0-x64-publication-2026-10-17/README.md)
+ pass all 14 required contexts / 23 jobs.
+diff --git a/docs/crawl-jobs-v2-plan.md b/docs/crawl-jobs-v2-plan.md
+index a00071b..ea7d339 100644
+--- a/docs/crawl-jobs-v2-plan.md
++++ b/docs/crawl-jobs-v2-plan.md
+@@ -2,11 +2,11 @@
+ 
+ **Finding:** F3 - durable crawl-job leases and recovery
+ 
+-**Last updated:** 2026-10-17 (C0-ARCH-03 PR #30 merged as `82cd307` with exact main CI verified; C0-ARCH-04 local source/static-image preparation complete: 288 tests, six verified images, two independent GO verdicts and all findings closed; publication/native hosted image CI next)
++**Last updated:** 2026-10-24 (PR #32 merged as `e8a0a41`, 25/25 merged-main CI jobs passed; downloaded ARM64/x64 images independently verified with two GO verdicts; C0-ARCH-05 synchronized with main and 318 tests pass under both umasks; x64 prerequisites active, native ARM64 calibration deferred)
+ 
+-**Code baseline:** owner-merged PR #30 at `82cd307` preserves the published `7ef2041` tree and all 51 reviewed source files. Exact PR and actual main CI pass 14 contexts / 23 jobs and 256 C0 tests; main gate `fa674a60…`. The working C0-ARCH-04 branch retains the equivalent reviewed PR base
++**Code baseline:** owner-merged PR #32 at `e8a0a415ac2b370319cd57f4c5262ce616a536fb`, tree `aaf57fc74e5799d1b5d21f58cce18747623a7676`, matching final PR head `1e65944`. Actual main CI passes all 25 jobs on attempt 1. Its 55 C0 image-package files and three auxiliary files match the final reviewed image inventory. Original C0-ARCH-04 publication `babb218` and PR #30 merge `82cd307` retain their historical evidence.
+ 
+-**Working branch:** `feature/crawl-jobs-v2-c0-runtime-images`, based at `7ef2041`; C0-ARCH-04 image tooling and successor evidence are local/uncommitted
++**Working branch:** `feature/crawl-jobs-v2-c0-native-calibration`, synchronized to `e8a0a41`; C0-ARCH-05 host-preflight changes and updated evidence remain local/uncommitted. The original reviewed preflight checkpoint remains bound to `babb218`.
+ 
+ **Initial checkpoint:** `e4372a66201b8767bcca4d7476c30c5b7999922c`
+ 
+@@ -17,8 +17,29 @@ All 43 canonical operations and the sealed, zero-argument
+ bounded real-Redis `ledger-smoke-v1` and `ledger-claim-release-v1` cases pass;
+ full M4 acceptance is open.
+ 
+-**Current next gate:** source publication and native hosted image CI for the reviewed
+-[C0-ARCH-04 runtime image sets](crawl-jobs-v2-m4-c0-runtime-images-2026-10-17.md).
++**Current next gate:** resolve the selected x64 environment and complete
++C0-ARCH-05 execution assembly. Post-merge artifact verification and independent
++correctness/security review are complete, with both reviewers GO and no findings. The
++[plugin-free host preflight](crawl-jobs-v2-m4-c0-native-preflight-2026-10-17.md)
++passes **318 tests under umasks 022/077 after synchronization**, preserving its
++original reviewed source and both GO verdicts; COR-01/02 and S1/S2/S3 are
++closed for this increment. Final gate `2e91337e…`, reviewed inventory `faf8d794…`.
++Owner-selected read-only `moogle-main` discovery found native x64 / Docker 29.9.1 /
++cgroup v2, but Yama scope 1 blocks unchanged C0 sibling tracing and the collector
++is absent (last host observation: 2026-10-17). The owner selected the existing
++`moogle-main` SSH-MCP profile; its effective account is `moogleMain`.
++**Native ARM64 host selection/calibration is deferred by owner on 2026-10-22**;
++x64 preparation proceeds first. Collector/image admission, runtime CLI isolation and
++lifecycle boundary, full dispatch/confinement/timing/cleanup and calibration
++remain open.
++The [C0-ARCH-04 runtime image sets](crawl-jobs-v2-m4-c0-runtime-images-2026-10-17.md)
++are merged through PR #32 as `e8a0a41`. Exact merged-main CI passed 25/25 jobs;
++both downloaded artifact ZIPs match GitHub digests, both hosted 288-test reports
++match the exact source, and all six image contents replay successfully. Their
++stable build artifacts and payloads match the reviewed local images; 122 command
++logs and ten stopped-container cleanup records verify. Both independent reviewers
++return GO on this [post-merge verification](evidence/m4-c0-post-merge-2026-10-24/README.md),
++gate `80a18b438747e0f51b687e5f3da1ccefb73a05e952cc7584e8aee7337536123b`.
+ All six retained role images pass final-code static inspection and portable-archive
+ checks with byte-identical content records; 55 package + 3 auxiliary files pass
+ 288 tests under both umasks. Both independent reviewers return GO, with all
+@@ -150,8 +171,8 @@ while binding architecture-specific code, profiles, images and evidence.
+ | C0-ARCH-01 | Reconstruct and review the existing ARM64 artifacts using rootless Podman/QEMU on the x64 workstation | Complete: 11/11 native outputs and oracle manifest/interpreter match; both reviewers verify actual joins. Transport-source follow-ups are independently closed on the corrected 202-test snapshot |
+ | C0-ARCH-02 | Define explicit architecture selection and artifact/admission identities | Complete: owner-merged PR #26 at `d801646`; exact reviewed tree and 47-file / 238-test source inventory preserved. Exact PR and actual main CI: 14 contexts / 23 jobs on attempt 1; main gate `e11f449a…` |
+ | C0-ARCH-03 | Implement the x64 native runtime and context/oracle support | Complete: PR #30 owner-merged as `82cd307`, published tree preserved, 51 reviewed files / 256 tests, exact 14-context / 23-job PR and merged-main CI verified; main gate `fa674a60…` |
+-| C0-ARCH-04 | Build target/observer/oracle runtime images for both architectures | Local source/static-image preparation complete: 55 package + 3 auxiliary files / 288 tests under both umasks, six verified portable images, two independent GO verdicts and all findings closed. Ten stopped inspections cleaned; final artifacts/tooling durably retained. Gate `8be6ba0d…`; source publication and native hosted matrix verification pending |
+-| C0-ARCH-05 | Perform native runtime admission and calibration for each architecture | Planned: admitted ARM64 and x64 Linux environments with verified context-source placement, engine/backend compatibility, tracing/breakpoint, confinement, timing and cleanup evidence for each variant |
++| C0-ARCH-04 | Build target/observer/oracle runtime images for both architectures | Complete for source/static images and hosted evidence: PR #32 merged as `e8a0a41`; 25/25 actual main jobs passed. Original 55+3-file / 288-test source and gate `8be6ba0d…` preserved. Both downloaded ZIPs, source-bound reports and all six image/config/layer/content records independently verified; two post-merge GO verdicts, no findings, gate `80a18b43…` |
++| C0-ARCH-05 | Perform native runtime admission and calibration for each architecture | Reviewed plugin-free preflight synchronized to `e8a0a41`: 59 package files, 318 tests under both umasks, original 61 package/script hashes and two GO verdicts preserved; gate `2e91337e…`. Selected x64 `moogle-main` last observed with blocking Yama scope 1 and absent collector. Native ARM64 calibration deferred by owner 2026-10-22. X64 eligibility, live adapter isolation/lifecycle, context/image admission, execution assembly and native calibration remain open |
+ | C0-ARCH-06 | Publish the accepted dual-architecture runtime set | Planned: retain separate immutable platform digests and acceptance records; publish a multi-architecture image index only after both referenced variants pass their required gates |
+ 
+ QEMU-assisted builds establish artifact construction, not native ARM64 kernel,
+@@ -170,8 +191,8 @@ version bindings; the old cancellation inventory is not a new security-fix revie
+ The [October 22 certificate-validation follow-up](go-x509-security-2026-10-22.md)
+ advances the current Go toolchain and exact oracle pins to **1.26.10** for
+ GO-2026-6809. Offline regeneration preserves the sealed Unicode oracle/data
+-hashes; all six URL/Unicode race-test roots pass. Fresh exact-head hosted CI
+-verification remains pending.
++hashes; all six URL/Unicode race-test roots pass. Actual merged-main CI is now
++verified at `e8a0a41`: all 25 jobs passed on attempt 1, as recorded above.
+ 
+ PR #18 result publication `c8c5ee2`, squash merge `d3b241e` and exact merged-main CI
+ are **complete**. The merge has the same tree as the reviewed PR head. See the
+diff --git a/tests/crawl-jobs-v2-observer/README.md b/tests/crawl-jobs-v2-observer/README.md
+index 10ea37f..2f349e2 100644
+--- a/tests/crawl-jobs-v2-observer/README.md
++++ b/tests/crawl-jobs-v2-observer/README.md
+@@ -160,6 +160,54 @@ name collisions. The dependency model uses RUNPATH precedence, resolves director
+ links and refuses active legacy RPATH or ambiguous library candidates; dynamic
+ loader execution and broader loader search behavior remain native acceptance work.
+ 
++### Native host preflight (C0-ARCH-05)
++
++Run on each proposed **native** Linux host, with the same local Docker endpoint
++used by the runtime adapter:
++
++```sh
++python3 -B scripts/preflight-crawl-jobs-v2-native-host.py --architecture x86_64
++python3 -B scripts/preflight-crawl-jobs-v2-native-host.py --architecture aarch64
++```
++
++Choose the matching architecture; emulated construction cannot supply native
++acceptance. The preflight reads fixed Linux observations and public collector-path
++metadata. Its plugin-free `engine_metadata.py` transport permits only HTTP
++`GET /info` and `GET /version` through `/var/run/docker.sock`. It does not launch
++the Docker CLI, read client config/credential files, inherit proxy/header settings,
++resolve DNS or start subprocesses. Kernel and selected daemon observations are
++sampled twice.
++
++HTTP headers are capped at 8 KiB / 64 fields, the private response body at 256 KiB,
++and total wire data/chunk count are bounded under a shared deadline. Content-length,
++simple chunked and close-delimited JSON responses are supported. Ambiguous framing,
++redirects, compression, trailers, extra data and incomplete/late closure reject.
++Unselected API fields (including possible proxy configuration) are discarded in
++memory; only checked selected metadata is exported. No raw response/error body is
++logged. Socket closure covers successful and failed reads; no child/plugin process
++tree is created.
++
++The bounded JSON report retains unavailable observations and known blockers:
++non-native ABI, changed kernel/daemon identity, nonzero Yama scope, missing cgroup
++controllers/limits, unsupported confinement or namespace mapping, missing local
++Docker socket and absent collector paths. A Docker CLI installation is unnecessary
++for this metadata probe. It never falls back to Podman or another
++endpoint. Collector-path presence is only `PRESENT_UNVERIFIED`; it does not prove
++installation, permissions, source integrity, service identity or authentication.
++
++Exit 1 means `BLOCKED`. Exit 0 means only `HOST_CANDIDATE`, with explicit pending
++obligations and `host_admitted=false`, `execution_authorized=false`,
++`runtime_evidence=false`. Matching architecture/kernel-release metadata does not
++prove daemon/collector kernel and namespace placement. Live image/actor admission,
++whole-trial confinement, hardware breakpoints, timing, failure cases and independent
++cleanup remain required. Injected probes are labelled simulated.
++
++The first owner-selected `moogle-main` discovery found native x64, Docker 29.9.1
++and cgroup v2, but Yama `ptrace_scope=1` and absent collector paths block the
++unchanged C0 profile. The existing design forbids changing policy or establishing
++`PR_SET_PTRACER`/parentage exceptions to manufacture C0 equivalence. See the
++[host checkpoint](../../docs/crawl-jobs-v2-m4-c0-native-preflight-2026-10-17.md).
++
+ ## Implemented artifact components
+ 
+ - `contracts.py`: fixed 276-trial C0 registry, immutable preparation identities,

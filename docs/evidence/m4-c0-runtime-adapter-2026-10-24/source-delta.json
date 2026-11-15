@@ -1,0 +1,41 @@
+{
+  "base": "e8a0a415ac2b370319cd57f4c5262ce616a536fb",
+  "before_snapshot": {
+    "bytes": 68716,
+    "sha256": "6606f702549b4f24ef83126d2502f47111b13bddcf834a58f2ad6cb7931bb180"
+  },
+  "complete_patch": {
+    "bytes": 34923,
+    "sha256": "ee4a1ae1da342c41eefbc2a8085935f12cd00e567e80701d3a38618737230f61"
+  },
+  "files": {
+    "tests/crawl-jobs-v2-observer/docker_backend.py": {
+      "after_sha256": "7a3aaaf2de8c3dd79f6b749dfbed00fcf35ed052d62dc20246bd66fe91d19e9c",
+      "before_sha256": "51cf4ad679a961d5b7631af1769216dc0300e740228ce8d7cf2423ed7373ebcf"
+    },
+    "tests/crawl-jobs-v2-observer/local_process.py": {
+      "after_sha256": "ad40d3fe4775bc2e01768b4a3c0d16b24776a74717d70e9e4e991ad29cb0700e",
+      "before_sha256": null
+    },
+    "tests/crawl-jobs-v2-observer/streams.py": {
+      "after_sha256": "5892e07eaf0fba21c99c873489527a32f687c44dbcc4838a8adfb6f36d9b693d",
+      "before_sha256": "85f8d1b16a84462f1defe641cb2c75879fe356928c7497b06628f86d2f599cbd"
+    },
+    "tests/crawl-jobs-v2-observer/test_live_adapter.py": {
+      "after_sha256": "6607d0879870d36b3b0573273896416aa9080a6523e6daefdd86f539f4c79e93",
+      "before_sha256": null
+    },
+    "tests/crawl-jobs-v2-observer/test_owned_resources.py": {
+      "after_sha256": "9c956de3a0499a881efc007ab56fbe00870bfb215c137a3272514bda9c03a31a",
+      "before_sha256": "e8b7d53c1c6081a095a116beca16680c85b35dca66249ef830f0146304cc41ab"
+    }
+  },
+  "final_source_inventory": {
+    "bytes": 11805,
+    "sha256": "5a3bbce905d4e49d6b4a89e4492222e5aa8bf2b2d0fa1ad92333f189c585b7db"
+  },
+  "kind": "c0_adapter_complete_source_delta",
+  "original_shallow_comparison_preserved": true,
+  "unchanged_native_files": 7,
+  "version": 1
+}

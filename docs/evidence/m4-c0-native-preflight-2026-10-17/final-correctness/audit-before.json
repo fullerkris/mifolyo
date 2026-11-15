@@ -1,0 +1,81 @@
+{
+  "phase": "before",
+  "source_inventory_sha256": "faf8d794802f7a3b7603bea199689014cef21d415764571725ff9e3b66414baf",
+  "base": "babb2180d05698e64b7d9baf37f9cab14b3c0f7f",
+  "transport_files_verified": 62,
+  "added": [
+    "tests/crawl-jobs-v2-observer/engine_metadata.py",
+    "tests/crawl-jobs-v2-observer/test_engine_metadata.py"
+  ],
+  "changed_since_intermediate": [
+    "docs/crawl-jobs-v2-m4-c0-native-preflight-2026-10-17.md",
+    "tests/crawl-jobs-v2-observer/README.md",
+    "tests/crawl-jobs-v2-observer/host_preflight.py",
+    "tests/crawl-jobs-v2-observer/test_host_preflight.py"
+  ],
+  "unchanged_since_intermediate": 56,
+  "context_files_byte_identical_to_base": 55,
+  "prior_review_artifacts": {
+    "correctness": {
+      "controls-final.log": "5edd98b99d2418d2a686e63b2469dd8e32e4616cad7dab87f19f487958e92eb5",
+      "controls.log": "115b0c211f13f9ac12f8da6ea68d84e3553d2f8e7cc06fc58d75dd66e0a6b6d0",
+      "controls.py": "cebc32f967dc452cde97740ac89bab2f28ae23164f9d27d2e32c4c299b640775",
+      "focused-tests.log": "5f6472cd9722a104f4cf7efc691bf4afdef6d6e097eac509e8203e4519706552",
+      "inventory-after.json": "c2b3e3f401ec50921a2b30c90d8ccf64c840d251c1094512f34e4ecc6345aa26",
+      "inventory-before.json": "4a1a3142565be6d9f02bd581537ba39c97ce73f2e8f3f1390aa1e6f49f3b9730",
+      "regression-evidence.json": "15198b778b6564db2f35592e3e436da988f2167733474d9faaf928c2a33931b3",
+      "regressions.log": "87c998689eb45aa9d033aab81a496280a7e3f353ec99e4bb881620e7db802063",
+      "regressions.py": "2591de20149ebf4fe5078796e57e86c766d98a0f12e74042f42fa8a144811ecc",
+      "report.md": "a60fcf36b52b382bc5b896884c2e370370a989c3add04796682a7762e60ed8d2",
+      "result.json": "bdbf3995200eb89eec734ce4de40c668b9193259c4c9fd55785101b73d2e9273",
+      "review-artifact-sha256.json": "43c014819aa97cc78d352106db652bcb349fc02fd69bffaf4d49a3f0861aaf9b",
+      "upstream-security-options.md": "03c356da005c371fa252780d66edf9f8b5acdf23e0509fc0331274aad6905d3a"
+    },
+    "correctness-final": {
+      "audit-after.json": "7be20512c4c03441881c4dcc19b68041e45f94fd7f968080bf080de74e9d3138",
+      "audit-after.log": "3726803d8b29292b276e9f3713219cfb2cbe9e79917fa14b72a21ba8ff3fd75f",
+      "audit-before-final.log": "df911b08e60155be7e36670c10ad0c7e8a86f924a8a1c3f02360a017f6870220",
+      "audit-before.json": "64874bc1ee6de8a630bfe2713d9048f936172ae32f91f01ba3f5715d9b78e7c3",
+      "audit-before.log": "88239ad131a65285cf717b02cb59889079c7f954a1b699198f2cf19b3a972674",
+      "audit_snapshot.py": "a9d614638f0548fb7514d172ba9509a08a0349bb9de483c8bf448659765938e6",
+      "fix-boundaries.log": "c3bd22b488be2dc2e69ba0e01c4aa562ed490a54c23a80ee372af422f041e57c",
+      "fix-boundary-evidence.json": "e7ef94b53ce1b5ef60266ad7439a08301a33eae505dc1439de87f80f2b63a10a",
+      "focused-tests.log": "d1809451400fcdc280fa90d9acb30cbe26bd08622aabe43166259c9b1bb67153",
+      "report.md": "a6bf1b333929809dbb56a4a6427842aed3247e2a87475e082bf5260bb4acd004",
+      "rerun_initial_probes.py": "c19b72c8cf4cdbd4168959b499c53602f4f8cb8299ba2b4699ae8dc1abdd6806",
+      "result.json": "8dfb7de4fffbb60d4ed73c7572f5097c9c91ad3643466828e1e6e1564c7f6cb5",
+      "retained-probe-evidence.json": "66cb4a2489fff3182fddfa8bc38e3174dbed0111d592e2558bfe14234a67eb12",
+      "retained-probes.log": "281edfe79e043a9841776cac74b6c3c9aef56135c79f861aef999311befc0da9",
+      "review-artifact-sha256.json": "56c01071f091ced97fd8e9b2399d167399e3583698caa0c1c549aef80423027f",
+      "snapshot-diff.patch": "b7e9269a6693736b8a55e55142bf286e9a6378ba429ab9003cf6b4cb632c90ac",
+      "test_fix_boundaries.py": "1e8ae01d0eea40f8af84ff3cda1643ae093703a9e925f3de0f667534d15b54d0"
+    }
+  },
+  "all_three_snapshots_match_inventories": true,
+  "supplied_full_suite": {
+    "independently_rerun": false,
+    "reported_passed": 318,
+    "prior_ids_retained": 304,
+    "new_ids": [
+      "test_engine_metadata.EngineMetadataTests.test_actual_api_cpu_field_names",
+      "test_engine_metadata.EngineMetadataTests.test_body_bound_in_each_framing",
+      "test_engine_metadata.EngineMetadataTests.test_chunk_syntax_extensions_trailers_and_count_are_bounded",
+      "test_engine_metadata.EngineMetadataTests.test_conflicting_duplicate_or_invalid_headers_reject",
+      "test_engine_metadata.EngineMetadataTests.test_fragmented_content_length_chunked_and_close_delimited",
+      "test_engine_metadata.EngineMetadataTests.test_header_byte_count_and_line_bounds",
+      "test_engine_metadata.EngineMetadataTests.test_missing_content_type_or_unsupported_transfer_rejects",
+      "test_engine_metadata.EngineMetadataTests.test_no_configuration_plugins_processes_or_proxy_environment",
+      "test_engine_metadata.EngineMetadataTests.test_non_success_redirect_upgrade_and_raw_error_bodies_reject",
+      "test_engine_metadata.EngineMetadataTests.test_only_fixed_read_only_operations_and_endpoint",
+      "test_engine_metadata.EngineMetadataTests.test_real_owned_socket_eof_and_stall_are_bounded",
+      "test_engine_metadata.EngineMetadataTests.test_shared_deadline_is_rechecked_after_receive",
+      "test_engine_metadata.EngineMetadataTests.test_socket_errors_are_value_free_and_always_close",
+      "test_engine_metadata.EngineMetadataTests.test_truncated_or_extra_data_never_passes"
+    ],
+    "source_hashes_verified": 59,
+    "runner_sha256": "9afb715125f734f5b905da63dde5c9787fc5997b2e5a73a0bf62d781b23aef84",
+    "json_sha256": "2113de12e8e359b884e9d1ac7e884866663d1bcced51f1680aa93c63f5dee6bf",
+    "log_sha256": "7bd62e246d4a7c1fdb793e11ecf9af761fc0632eafd441d8715c2cdfc450fe65",
+    "individual_log_ids_reconciled": true
+  }
+}

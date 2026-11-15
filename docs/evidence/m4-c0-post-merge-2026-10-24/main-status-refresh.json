@@ -1,0 +1,95 @@
+{
+  "version": 1,
+  "kind": "c0_post_merge_status_refresh",
+  "verified_on": "2026-10-24",
+  "scope": "Read-only GitHub status, local source/evidence integrity and baseline comparison; remote main fetched without changing the working branch.",
+  "pr": {
+    "number": 32,
+    "url": "https://github.com/fullerkris/mifolyo/pull/32",
+    "state": "MERGED",
+    "merged_at": "2026-10-22T21:34:13Z",
+    "head": "1e659441270e7287e052554616cc8b64f5546657",
+    "merge_commit": "e8a0a415ac2b370319cd57f4c5262ce616a536fb",
+    "merge_tree": "aaf57fc74e5799d1b5d21f58cce18747623a7676",
+    "merge_tree_matches_pr_head": true,
+    "merge_parent": "1049b70bdfddd913e295a164d9870d2a1317f2dd",
+    "fetched_origin_main": "e8a0a415ac2b370319cd57f4c5262ce616a536fb"
+  },
+  "merged_main_ci": {
+    "head_sha": "e8a0a415ac2b370319cd57f4c5262ce616a536fb",
+    "event": "push",
+    "branch": "main",
+    "attempt": 1,
+    "status": "completed",
+    "conclusion": "success",
+    "passed_jobs": 25,
+    "runs": [
+      {"id": 39858333318, "name": "Unit Tests", "passed_jobs": 20},
+      {"id": 39858333367, "name": "Required Checks", "passed_jobs": 3},
+      {"id": 39858333396, "name": "C0 Runtime Images", "passed_jobs": 2}
+    ]
+  },
+  "hosted_image_artifacts": {
+    "metadata_only": true,
+    "downloaded_content_verification_pending": true,
+    "run_id": 39858333396,
+    "artifacts": [
+      {
+        "id": 12461066588,
+        "name": "c0-runtime-images-aarch64",
+        "size_in_bytes": 54045146,
+        "digest": "sha256:7cac65afbed201004f1417def2a5c2ea28f1e0e8766ef8c8e1cf4e6d158e22f8",
+        "expired": false,
+        "expires_at": "2027-01-20T21:34:16Z"
+      },
+      {
+        "id": 12459699018,
+        "name": "c0-runtime-images-x86_64",
+        "size_in_bytes": 55015916,
+        "digest": "sha256:6b30fdb8d9661fd08d9acd6eaecf0ecf81e45eff603a3e84c61778d8a28ee8e9",
+        "expired": false,
+        "expires_at": "2027-01-20T21:34:16Z"
+      }
+    ]
+  },
+  "local_preflight": {
+    "branch": "feature/crawl-jobs-v2-c0-native-calibration",
+    "head": "babb2180d05698e64b7d9baf37f9cab14b3c0f7f",
+    "uncommitted_candidate_paths": 120,
+    "real_index_empty": true,
+    "final_source_paths_verified": 63,
+    "reviewed_package_and_script_paths_verified": 61,
+    "evidence_exports_verified": 111,
+    "source_or_export_mismatches": [],
+    "review_inventory_sha256": "faf8d794802f7a3b7603bea199689014cef21d415764571725ff9e3b66414baf",
+    "final_gate_sha256": "2e91337ea1d30d2d319c9b86019f36c7af75677e01a082d88660d37ad22fd7e8",
+    "export_manifest_sha256": "93b0a078c3e89d7e3af566304a8bc04756b8a18c139aa24444cb38dbb2b11537",
+    "durable_delivery": "out/c0-native-preflight-2026-10-17/final-faf8d794802f/",
+    "durable_files_verified": 175,
+    "durable_bytes_verified": 2159738,
+    "durable_mismatches": [],
+    "retention_manifest_sha256": "b0faf6ba15cdc1a28871956cffdfe31a1d20f8702af228693b4a4d7252384a5e",
+    "tests_rerun": false,
+    "branch_reconciled_with_main": false
+  },
+  "baseline_comparison": {
+    "from": "babb2180d05698e64b7d9baf37f9cab14b3c0f7f",
+    "to": "e8a0a415ac2b370319cd57f4c5262ce616a536fb",
+    "unchanged_paths": [
+      "tests/crawl-jobs-v2-observer/",
+      "scripts/prepare-crawl-jobs-v2-observer.py",
+      "scripts/prepare-crawl-jobs-v2-observer-images.py",
+      "scripts/test-crawl-jobs-v2-observer.py",
+      ".github/workflows/c0-runtime-images.yml",
+      "docs/evidence/m4-c0-runtime-images-closure-2026-10-17/"
+    ],
+    "plan_delta": "Six upstream lines add the October 22 Go certificate-validation follow-up. Preserve these while reconciling the local preflight chronology."
+  },
+  "next_steps": [
+    "Verify downloaded hosted artifacts and their exact source bindings.",
+    "Reconcile the reviewed local preflight candidate with merged main while retaining original evidence and validate the integrated revision.",
+    "Recheck and resolve x64 execution eligibility, then harden the live runtime adapter.",
+    "Provision and admit the x64 collector and exact images; complete runner, timing, confinement and cleanup assembly.",
+    "Complete independent execution-packet review and native x64 calibration; native ARM64 calibration remains deferred."
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "files": {
+    "SECURITY-REVIEW.md": {
+      "bytes": 18471,
+      "sha256": "ebb837d373e4ebc72e7c788fda56e82cb74f117258d514d12c7eb04873efa645"
+    },
+    "adversarial-original.exit": {
+      "bytes": 12,
+      "sha256": "85acfd2e79dd47df07d214334642196301332f72d792b52068cdfd8898755409"
+    },
+    "adversarial-original.json": {
+      "bytes": 2393,
+      "sha256": "67f300f5a843c54eda97a0206a3203c73353a3381a0dbec55bbcd2a86516a353"
+    },
+    "adversarial-original.log": {
+      "bytes": 7576,
+      "sha256": "3d0e50719ca4df84390b77cf59d02d1fb41acc81921f32f05e334eef9226c1f5"
+    },
+    "baseline-original.exit": {
+      "bytes": 12,
+      "sha256": "bde294368bfed77c2cddf8cec271d398aee9cdbab3b26e1059281bd33adb0120"
+    },
+    "baseline-original.log": {
+      "bytes": 2251,
+      "sha256": "5f6472cd9722a104f4cf7efc691bf4afdef6d6e097eac509e8203e4519706552"
+    },
+    "evidence-inventory.json": {
+      "bytes": 1636,
+      "sha256": "01d349d9be23ac0f4ee0324ab6180a6f0aaf20bf96b8f75a7268c1bde1e14841"
+    },
+    "followup-original.exit": {
+      "bytes": 12,
+      "sha256": "bde294368bfed77c2cddf8cec271d398aee9cdbab3b26e1059281bd33adb0120"
+    },
+    "followup-original.json": {
+      "bytes": 605,
+      "sha256": "4bdb8f1908eaea2e5e9f36aa399d054e4517eb20eba5bc27dbbeb29cb03cbb0c"
+    },
+    "followup-original.log": {
+      "bytes": 378,
+      "sha256": "b387b415e5a2e47c7ad142bc3d175f4f1f8cc42bb3537ce5182661ce9ab77d5b"
+    },
+    "followup_tests.py": {
+      "bytes": 4069,
+      "sha256": "8da79e1820731cf55b1037d0268752ac0b3c6de7d63d5349de733fb90bda6d91"
+    },
+    "integrity-after.json": {
+      "bytes": 17717,
+      "sha256": "a01024f8d2c9e492fe2643ddf0683dae89d96beaa9010a8f947c83343d2269ed"
+    },
+    "integrity-before.json": {
+      "bytes": 17810,
+      "sha256": "c84deb02eff39de03f09045805dd3567d5a7629cbfcd5ef59a25f7ce7679ff32"
+    },
+    "public-source-evidence.md": {
+      "bytes": 4227,
+      "sha256": "79254b0c151b413dbf2435b929080abac14ad14ffe387b3581ce78a10246410a"
+    },
+    "review-summary.json": {
+      "bytes": 2992,
+      "sha256": "25765ff1c4fc3e8665bc2e55b4644c543e76e989812fbf9608fb6a97b7165903"
+    },
+    "security_adversarial_tests.py": {
+      "bytes": 13656,
+      "sha256": "9a9812737c13ad092016cf0e58d96201536c8729ab51ced8c5fd1feba1049773"
+    }
+  },
+  "kind": "initial-security",
+  "version": 1
+}

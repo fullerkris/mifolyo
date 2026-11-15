@@ -1,0 +1,73 @@
+{
+  "arm64_native_calibration_deferred": true,
+  "branch": "feature/crawl-jobs-v2-c0-native-calibration",
+  "commit": "e8a0a415ac2b370319cd57f4c5262ce616a536fb",
+  "correctness_negative_controls": 26,
+  "correctness_report_sha256": "7427494278b29b87ddaa68a3bf1b050126b149f0745c1ad9f9fd393fd96d5f7f",
+  "correctness_review_sha256": "f0ebb25eeaa6c827f94ef4c5a9da3eccd11b0585d594ef73a86b643d4f717b74",
+  "correctness_root_boundary_controls": 2,
+  "current_focus": "x86_64",
+  "downloaded_artifact_ids": [
+    12461066588,
+    12459699018
+  ],
+  "downloaded_files_verified": 169,
+  "downloaded_image_run": 39858333396,
+  "execution_authorized": false,
+  "findings": [],
+  "frozen_input_files_reverified": 428,
+  "host_admitted": false,
+  "hosted_root_observations_separate_from_layer_headers": true,
+  "hosted_tests_per_architecture": 288,
+  "image_verification_sha256": "309ac683b4180bd3aa89b937f2216c13a62e2c79c6619697c9c5e6812751e698",
+  "images_verified": 6,
+  "integrated_test_umasks": [
+    "022",
+    "077"
+  ],
+  "integrated_tests_per_umask": 318,
+  "kind": "c0_merged_main_artifact_and_preflight_sync_gate",
+  "main_ci_attempt": 1,
+  "main_ci_jobs_passed": 25,
+  "main_ci_runs": [
+    39858333318,
+    39858333367,
+    39858333396
+  ],
+  "merged_auxiliary_files": 3,
+  "merged_package_files": 55,
+  "native_calibration_performed": false,
+  "original_preflight_evidence_exports_unchanged": 111,
+  "pending": [
+    "Recheck and resolve selected x64 execution eligibility",
+    "Harden live runtime adapter configuration/plugin and subprocess-lifecycle boundaries",
+    "Provision and admit pinned collector/context and exact x64 images",
+    "Complete trial dispatch, timing, confinement, resource and cleanup evidence",
+    "Review the execution packet and perform native x64 calibration",
+    "Resume deferred native ARM64 acceptance before accepted dual-architecture publication"
+  ],
+  "preflight_committed": false,
+  "preflight_pushed": false,
+  "preserved_candidate_paths": 120,
+  "preserved_harness_failures": [
+    "initial sync snapshot-export auxiliary filename",
+    "initial correctness invalid zero-digest fixture"
+  ],
+  "real_index_empty": true,
+  "recorded_command_logs_verified": 122,
+  "recorded_on": "2026-10-24",
+  "review_packet_sha256": "d63b6e8d9b9bab7d0a883d2cbdaa59eb7a8de8050e56dae28b447a2e638a315d",
+  "reviewed_preflight_package_and_script_paths_unchanged": 61,
+  "runtime_acceptance": false,
+  "runtime_adapter_certified": false,
+  "scope": "Exact merged-main hosted static-image evidence and preservation of the reviewed C0-ARCH-05 candidate during baseline synchronization.",
+  "security_report_sha256": "32a044d9902b425bc18c4dda9068e70949b4cef84bb52d1a3c4e7cc63d5db346",
+  "security_review_sha256": "45635c09d058540e56187d087a11ee84e9e5eb8539bde03c9faca4c313b7d659",
+  "security_targeted_controls": 18,
+  "status": "GO_FOR_CONTINUED_IMPLEMENTATION",
+  "stopped_cleanup_records_verified": 10,
+  "sync_verification_sha256": "2db1c726cc04fa2280fa22fb4ef0792f15457854e02511ca506bfc0e17844cae",
+  "test_continuity_sha256": "cbe7db52ada235b1a72e3b3906abd9ec7b90058015f39e1ac1067cb526a20146",
+  "tree": "aaf57fc74e5799d1b5d21f58cce18747623a7676",
+  "version": 1
+}

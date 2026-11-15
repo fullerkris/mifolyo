@@ -1,0 +1,1638 @@
+--- before/tests/crawl-jobs-v2-observer/docker_backend.py
++++ after/tests/crawl-jobs-v2-observer/docker_backend.py
+@@ -8,9 +8,9 @@
+ import os
+ from pathlib import Path
+ import selectors
+-import signal
+ import stat
+ import subprocess
++import tempfile
+ import time
+ 
+ from contracts import LIMITS, Invalid, canonical, digest, exact, integer, require, runtime_architecture, sha, validate_preparation
+@@ -20,62 +20,143 @@
+ import runtime_admission
+ from runtime_context import ContextLease, ContextSource
+ from owned_resources import timestamp
++from engine_metadata import read_engine_metadata
++from host_preflight import INFO_FIELDS, VERSION_FIELDS, metadata
++from local_process import kill_and_reap, wait_unreaped
+ 
+ MAX_COMMAND_BYTES = 262144
+-
+-
+-def clean_environment():
+-    return {key: value for key, value in os.environ.items() if key not in
+-        ("DOCKER_HOST", "DOCKER_CONTEXT", "DOCKER_TLS", "DOCKER_TLS_VERIFY", "DOCKER_CERT_PATH")}
++DOCKER = "/usr/bin/docker"
++PREFIX = [DOCKER, "--host", "unix:///var/run/docker.sock"]
++
++
++def clean_environment(directory):
++    # An allowlist also excludes dynamic-loader injection, proxies, API/context
++    # overrides, credentials, telemetry endpoints and future ambient variables.
++    return {"PATH": "/usr/bin:/bin", "LC_ALL": "C", "HOME": directory, "DOCKER_CONFIG": directory,
++        "DOCKER_CLI_HINTS": "false", "DOCKER_CLI_HOOKS": "false", "OTEL_SDK_DISABLED": "true"}
++
++
++def cli_arguments(argv, *, actor=False):
++    require(type(argv) is list and 4 <= len(argv) <= 256 and
++        all(type(item) is str and item and "\x00" not in item and len(item) <= 4096 for item in argv) and
++        sum(map(len, argv)) <= 32768 and argv[:3] == PREFIX, "DOCKER_ARGV")
++    args = argv[3:]
++    forbidden = {"--help", "-h", "help", "__complete", "__completeNoDesc", "--config", "--context", "-c", "--host", "-H"}
++    require(not any(item.split("=", 1)[0] in forbidden for item in args), "DOCKER_ARGV")
++    if actor:
++        require(len(args) == 5 and args[:4] == ["container", "start", "--attach", "--interactive"], "DOCKER_ARGV")
++        hex_id(args[-1])
++    else:
++        require(len(args) >= 3 and tuple(args[:2]) in {
++            ("container", "inspect"), ("container", "create"), ("container", "ls"),
++            ("container", "kill"), ("container", "wait"), ("container", "rm"),
++            ("volume", "inspect"), ("volume", "create"), ("volume", "rm"), ("image", "inspect")}, "DOCKER_ARGV")
++
++
++def verify_cli():
++    # Fixed native binary in an administrator-controlled directory; never PATH,
++    # a shell wrapper, a symlink, or a writable/special executable.
++    for path in ("/", "/usr", "/usr/bin"):
++        info = os.lstat(path)
++        require(stat.S_ISDIR(info.st_mode) and info.st_uid == 0 and not info.st_mode & 0o022, "DOCKER_BINARY")
++    fd = os.open(DOCKER, os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW | os.O_NONBLOCK)
++    with os.fdopen(fd, "rb") as stream:
++        info = os.fstat(stream.fileno())
++        require(stat.S_ISREG(info.st_mode) and info.st_uid == 0 and not info.st_mode & 0o6022 and
++            info.st_mode & 0o111 and stream.read(4) == b"\x7fELF", "DOCKER_BINARY")
++
++
++class DockerProcessStream(ProcessStream):
++    """Keep the empty private CLI config alive until transport cleanup finishes."""
++    def __init__(self, argv, binding, budget, deadline, **kwargs):
++        deadline.check()
++        cli_arguments(argv, actor=True)
++        verify_cli()
++        # Explicit /tmp ignores TMPDIR/TEMP and gets a fresh mode-0700 directory.
++        self._configuration = tempfile.TemporaryDirectory(prefix="obs1-docker-", dir="/tmp")
++        try:
++            deadline.check()
++            super().__init__([*argv[:3], "--config", self._configuration.name, *argv[3:]],
++                binding, budget, deadline, env=clean_environment(self._configuration.name), cwd="/", **kwargs)
++        except BaseException:
++            self._configuration.cleanup()
++            raise
++
++    def close(self):
++        try:
++            super().close()
++        finally:
++            self._configuration.cleanup()
+ 
+ 
+ def command(argv, deadline):
+-    """Drain both pipes; no shell and no unbounded subprocess.run capture."""
++    """Plugin-free metadata; isolated, closed builtin CLI lifecycle operations."""
++    deadline.check()
++    if argv == [*PREFIX, "info", "--format", "{{.ID}}"]:
++        value = metadata(read_engine_metadata("info", deadline), INFO_FIELDS, engine_response=True)["id"]
++        require(type(value) is str and 0 < len(value) <= 256, "DAEMON_IDENTITY")
++        deadline.check()
++        return 0, value.encode(), b""
++    if argv == [*PREFIX, "version", "--format", "{{json .Server}}"]:
++        value = metadata(read_engine_metadata("version", deadline), VERSION_FIELDS, engine_response=True)
++        deadline.check()
++        return 0, canonical({field: value[key] for key, field in VERSION_FIELDS.items()}), b""
++    cli_arguments(argv)
++    verify_cli()
++    with tempfile.TemporaryDirectory(prefix="obs1-docker-", dir="/tmp") as directory:
++        return bounded_command([*argv[:3], "--config", directory, *argv[3:]], deadline, clean_environment(directory))
++
++
++def bounded_command(argv, deadline, env):
++    """Drain both pipes; kill the owned group on every path before reaping."""
+     deadline.check()
+     output = {"out": bytearray(), "err": bytearray()}
+-    process = subprocess.Popen(argv, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+-        env=clean_environment(), start_new_session=True, close_fds=True)
+-    reaped = False
++    mux = selectors.DefaultSelector()
++    process = None
+     try:
+-        with selectors.DefaultSelector() as mux:
+-            for stream, key in ((process.stdout, "out"), (process.stderr, "err")):
+-                os.set_blocking(stream.fileno(), False)
+-                mux.register(stream, selectors.EVENT_READ, key)
+-            while mux.get_map():
+-                for event, _ in mux.select(min(deadline.remaining(), 0.05)):
++        deadline.check()
++        process = subprocess.Popen(argv, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
++            env=env, cwd="/", start_new_session=True, close_fds=True)
++        for stream, key in ((process.stdout, "out"), (process.stderr, "err")):
++            os.set_blocking(stream.fileno(), False)
++            mux.register(stream, selectors.EVENT_READ, key)
++        while mux.get_map():
++            for event, _ in mux.select(min(deadline.remaining(), 0.05)):
++                deadline.check()
++                try:
+                     chunk = os.read(event.fd, 4096)
+-                    if not chunk:
+-                        mux.unregister(event.fileobj)
+-                        continue
+-                    require(sum(map(len, output.values())) + len(chunk) <= MAX_COMMAND_BYTES, "COMMAND_OUTPUT_BOUND")
+-                    output[event.data].extend(chunk)
+-        code = process.wait(timeout=deadline.remaining())
+-        reaped = True
+-        return code, bytes(output["out"]), bytes(output["err"])
+-    except BaseException:
+-        if not reaped:
+-            try:
+-                os.killpg(process.pid, signal.SIGKILL)
+-            except ProcessLookupError:
+-                pass
+-            process.wait(timeout=5)
+-        raise
++                except (BlockingIOError, InterruptedError):
++                    continue
++                if not chunk:
++                    mux.unregister(event.fileobj)
++                    continue
++                require(sum(map(len, output.values())) + len(chunk) <= MAX_COMMAND_BYTES, "COMMAND_OUTPUT_BOUND")
++                output[event.data].extend(chunk)
++        wait_unreaped(process, deadline)
+     finally:
+-        process.stdout.close()
+-        process.stderr.close()
++        try:
++            if process is not None:
++                kill_and_reap(process)
++        finally:
++            mux.close()
++            if process is not None:
++                process.stdout.close()
++                process.stderr.close()
++    deadline.check()
++    return process.returncode, bytes(output["out"]), bytes(output["err"])
+ 
+ 
+ class DockerBackend:
+     evidence_kind = "docker_metadata_only"
+ 
+-    def __init__(self, value, profile_files, *, authorize=None, runner=command, stream_factory=ProcessStream):
++    def __init__(self, value, profile_files, *, authorize=None, runner=command, stream_factory=DockerProcessStream):
+         self.scope = validate_scope(value)
+         self.scope_sha256 = sha(canonical(self.scope))
+         exact(profile_files, ACTORS)
+         self.profile_files = {role: Path(path) for role, path in profile_files.items()}
+         self.authorize, self.runner, self.stream_factory = authorize, runner, stream_factory
+-        self.evidence_kind = "docker_metadata_only" if runner is command and stream_factory is ProcessStream else "simulated"
+-        self.prefix = ["docker", "--host", "unix:///var/run/docker.sock"]
++        self.evidence_kind = "docker_metadata_only" if runner is command and stream_factory is DockerProcessStream else "simulated"
++        self.prefix = list(PREFIX)
+         self._actor_streams, self._native_admissions = {}, {}
+         self._runtime_starts = {}
+         self._context_lease, self._oracle_session = None, None
+@@ -334,8 +415,11 @@
+             deadline.check()
+             self._authorize("actor_input")
+             dispatch_guard()
+-        stream = self.stream_factory([*self.prefix, "container", "start", "--attach", "--interactive", ref["id"]],
+-            binding, budget, deadline, env=clean_environment(), before_input=before_input, before_write=dispatch_guard)
++        try:
++            stream = self.stream_factory([*self.prefix, "container", "start", "--attach", "--interactive", ref["id"]],
++                binding, budget, deadline, before_input=before_input, before_write=dispatch_guard)
++        except Exception:
++            raise Invalid("DOCKER_TRANSPORT") from None
+         holder.append(stream)
+         try:
+             if self._context_lease is not None:
+--- before/tests/crawl-jobs-v2-observer/local_process.py
++++ after/tests/crawl-jobs-v2-observer/local_process.py
+@@ -0,0 +1,51 @@
++"""Linux child ownership: signal the reserved process group before reaping.
++
++Callers exclusively own a Popen child created with start_new_session=True. They
++must not poll/wait/reap elsewhere. Group signalling is not descendant-absence or
++remote-container proof: a process that creates another session is outside it.
++"""
++import os
++import signal
++import subprocess
++import time
++
++from contracts import Invalid, require
++
++CLEANUP_SECONDS = 5
++
++
++def observe_exit(process):
++    require(process.returncode is None, "LOCAL_PROCESS_OWNERSHIP")
++    try:
++        return os.waitid(os.P_PID, process.pid, os.WEXITED | os.WNOHANG | os.WNOWAIT)
++    except (OSError, ChildProcessError):
++        raise Invalid("LOCAL_PROCESS_OWNERSHIP") from None
++
++
++def wait_unreaped(process, deadline):
++    """Bounded exit observation which keeps the leader's PID reserved."""
++    while True:
++        deadline.check()
++        exited = observe_exit(process)
++        deadline.check()
++        if exited is not None:
++            return
++        time.sleep(min(deadline.remaining(), 0.01))
++
++
++def kill_and_reap(process):
++    # Even an exited leader with closed stdout/stderr can have live children.
++    # WNOWAIT checks ownership without releasing the PID used by killpg.
++    observe_exit(process)
++    failed = False
++    try:
++        os.killpg(process.pid, signal.SIGKILL)
++    except ProcessLookupError:
++        pass
++    except OSError:
++        failed = True
++    try:
++        process.wait(timeout=CLEANUP_SECONDS)
++    except (OSError, subprocess.TimeoutExpired):
++        failed = True
++    require(not failed, "LOCAL_PROCESS_CLEANUP")
+--- before/tests/crawl-jobs-v2-observer/native/admission.h
++++ after/tests/crawl-jobs-v2-observer/native/admission.h
+@@ -0,0 +1,247 @@
++#ifndef OBS1_ADMISSION_H
++#define OBS1_ADMISSION_H
++#include "architecture.h"
++/* Fixed-path, read-only native observations. No caller PID/path or policy setters. */
++#include <dirent.h>
++#include <openssl/evp.h>
++#include <stdarg.h>
++#include <sys/syscall.h>
++#include <sys/utsname.h>
++
++static char admission_invocation[65];
++static uint64_t admission_until;
++
++static void admission_deadline(void) {
++    if (mono_ns() >= admission_until) invalid("deadline");
++}
++
++static void admission_nonce(void) {
++    admission_until = mono_ns() + UINT64_C(10000000000);
++    unsigned nonzero = 0;
++    for (unsigned i = 0; i < 64; i++) {
++        char byte = control_byte(admission_until);
++        if (!((byte >= '0' && byte <= '9') || (byte >= 'a' && byte <= 'f'))) invalid("admission");
++        nonzero |= byte != '0';
++        admission_invocation[i] = byte;
++    }
++    admission_invocation[64] = 0;
++    if (!nonzero || control_byte(admission_until) != '\n') invalid("admission");
++    /* The controller supplies the independently collected Linux window end.
++       A macOS timeout cannot extend this kernel-clock admission boundary. */
++    uint64_t expiry = 0;
++    unsigned digits = 0;
++    for (;;) {
++        char byte = control_byte(admission_until);
++        if (byte == '\n') break;
++        if (byte < '0' || byte > '9' || ++digits > 20 ||
++            expiry > (UINT64_MAX - (unsigned)(byte - '0')) / 10) invalid("admission");
++        expiry = expiry * 10 + (unsigned)(byte - '0');
++    }
++    if (!digits || expiry <= mono_ns() || expiry > admission_until) invalid("admission");
++    admission_until = expiry;
++}
++
++static size_t admission_read(const char *path, char *raw, size_t capacity) {
++    admission_deadline();
++    int fd = open(path, O_RDONLY | O_CLOEXEC | O_NOFOLLOW);
++    if (fd < 0) invalid("admission");
++    size_t used = 0;
++    for (;;) {
++        admission_deadline();
++        ssize_t count = read(fd, raw + used, capacity - 1 - used);
++        if (count < 0) invalid("admission");
++        if (!count) break;
++        used += (size_t)count;
++        if (used == capacity - 1) invalid("bounds");
++    }
++    if (close(fd) || !used || memchr(raw, 0, used)) invalid("admission");
++    raw[used] = 0;
++    return used;
++}
++
++static void admission_hash(const void *raw, size_t size, char output[65]) {
++    unsigned char result[32];
++    unsigned length = 0;
++    if (EVP_Digest(raw, size, result, &length, EVP_sha256(), NULL) != 1 || length != 32) invalid("admission");
++    for (unsigned i = 0; i < 32; i++) snprintf(output + 2 * i, 3, "%02x", result[i]);
++    output[64] = 0;
++}
++
++static void admission_file_hash(const char *path, char output[65]) {
++    char raw[4096];
++    size_t size = admission_read(path, raw, sizeof raw);
++    admission_hash(raw, size, output);
++}
++
++static uint64_t admission_number(const char *raw) {
++    unsigned long long value;
++    char extra;
++    if (raw[0] < '0' || raw[0] > '9' || sscanf(raw, "%llu %c", &value, &extra) != 1 || value > UINT64_C(9007199254740991)) invalid("admission");
++    return value;
++}
++
++static uint64_t admission_limit(const char *path) {
++    char raw[128];
++    admission_read(path, raw, sizeof raw);
++    return admission_number(raw);
++}
++
++static uint64_t admission_ticks(void) {
++    char raw[4096], *save;
++    admission_read("/proc/self/stat", raw, sizeof raw);
++    char *end = strrchr(raw, ')');
++    if (!end || end[1] != ' ') invalid("admission");
++    char *part = strtok_r(end + 2, " ", &save);
++    for (unsigned field = 3; field < 22 && part; field++) part = strtok_r(NULL, " ", &save);
++    if (!part) invalid("admission");
++    uint64_t ticks = admission_number(part);
++    if (!ticks) invalid("admission");
++    return ticks;
++}
++
++static void admission_namespaces(uint64_t values[7], uint64_t *device) {
++    const char *names[] = {"pid", "user", "time", "cgroup", "mnt", "net", "ipc"};
++    for (unsigned i = 0; i < 7; i++) {
++        char path[64];
++        struct stat info;
++        int length = snprintf(path, sizeof path, "/proc/self/ns/%s", names[i]);
++        if (length <= 0 || (size_t)length >= sizeof path || stat(path, &info) || !info.st_ino) invalid("admission");
++        if (!i) *device = info.st_dev;
++        else if (*device != (uint64_t)info.st_dev) invalid("admission");
++        values[i] = info.st_ino;
++    }
++}
++
++static void admission_executable(char output[65]) {
++    /* /proc/self/exe is deliberately followed; every other admission file is a fixed leaf. */
++    int fd = open("/proc/self/exe", O_RDONLY | O_CLOEXEC);
++    struct stat before, after;
++    if (fd < 0 || fstat(fd, &before) || !S_ISREG(before.st_mode) || before.st_size <= 0 || before.st_size > 32 * 1024 * 1024) invalid("admission");
++    EVP_MD_CTX *ctx = EVP_MD_CTX_new();
++    unsigned char raw[32768], result[32];
++    unsigned length;
++    size_t total = 0;
++    if (!ctx || EVP_DigestInit_ex(ctx, EVP_sha256(), NULL) != 1) invalid("admission");
++    for (;;) {
++        admission_deadline();
++        ssize_t count = read(fd, raw, sizeof raw);
++        if (count < 0) invalid("admission");
++        if (!count) break;
++        total += (size_t)count;
++        if (total > (size_t)before.st_size || EVP_DigestUpdate(ctx, raw, (size_t)count) != 1) invalid("admission");
++    }
++    if (total != (size_t)before.st_size || fstat(fd, &after) || before.st_dev != after.st_dev || before.st_ino != after.st_ino ||
++        before.st_size != after.st_size || before.st_mtim.tv_sec != after.st_mtim.tv_sec || before.st_mtim.tv_nsec != after.st_mtim.tv_nsec ||
++        EVP_DigestFinal_ex(ctx, result, &length) != 1 || length != 32 || close(fd)) invalid("admission");
++    EVP_MD_CTX_free(ctx);
++    for (unsigned i = 0; i < 32; i++) snprintf(output + 2 * i, 3, "%02x", result[i]);
++    output[64] = 0;
++}
++
++static unsigned admission_security(unsigned *groups) {
++    char raw[8192], *save;
++    admission_read("/proc/self/status", raw, sizeof raw);
++    unsigned found = 0, filters = 0;
++    const char *keys[] = {"Uid:", "Gid:", "Groups:", "NoNewPrivs:", "Seccomp:", "Seccomp_filters:", "Threads:", "TracerPid:"};
++    for (char *line = strtok_r(raw, "\n", &save); line; line = strtok_r(NULL, "\n", &save)) {
++        for (unsigned i = 0; i < 8; i++) {
++            if (strncmp(line, keys[i], strlen(keys[i]))) continue;
++            if (found & (1u << i)) invalid("admission");
++            found |= 1u << i;
++            char *value = line + strlen(keys[i]);
++            while (*value == ' ' || *value == '\t') value++;
++            if (i < 2) {
++                unsigned a, b, c, d; char extra;
++                if (sscanf(value, "%u %u %u %u %c", &a, &b, &c, &d, &extra) != 4 || a != 999 || b != 999 || c != 999 || d != 999) invalid("admission");
++            } else if (i == 2) {
++                *groups = *value ? 1 : 0;
++                if (*groups && admission_number(value) != 999) invalid("admission");
++            } else {
++                uint64_t number = admission_number(value);
++                if (i == 5) {
++                    if (!number || number > 16) invalid("admission");
++                    filters = (unsigned)number;
++                } else if (number != (i == 4 ? 2u : i == 7 ? 0u : 1u)) invalid("admission");
++            }
++        }
++    }
++    if (found != 255 || prctl(PR_GET_DUMPABLE, 0, 0, 0, 0) != 1 || prctl(PR_GET_SECCOMP, 0, 0, 0, 0) != 2) invalid("admission");
++    DIR *directory = opendir("/proc/self/task");
++    if (!directory) invalid("admission");
++    struct dirent *entry;
++    unsigned count = 0;
++    errno = 0;
++    while ((entry = readdir(directory))) {
++        if (!strcmp(entry->d_name, ".") || !strcmp(entry->d_name, "..")) continue;
++        if (++count != 1 || admission_number(entry->d_name) != (uint64_t)getpid()) invalid("admission");
++    }
++    if (errno || closedir(directory) || count != 1) invalid("admission");
++    return filters;
++}
++
++static void admission_emit(const char *format, ...) __attribute__((format(printf, 1, 2)));
++static void admission_emit(const char *format, ...) {
++    char raw[1025];
++    va_list args;
++    va_start(args, format);
++    int length = vsnprintf(raw, sizeof raw, format, args);
++    va_end(args);
++    if (length <= 0 || length > 1024) invalid("bounds");
++    admission_deadline();
++    emit(raw);
++}
++
++static void admission_collect(unsigned selected, const char *role) {
++    struct utsname kernel;
++    if (uname(&kernel) || strcmp(kernel.sysname, "Linux") || strcmp(kernel.machine, OBS_ARCHITECTURE)) invalid("admission");
++    caps_zero();
++    uint64_t pid = (uint64_t)getpid(), tid = (uint64_t)syscall(SYS_gettid), start = admission_ticks(), ns[7], device;
++    if (pid != tid) invalid("admission");
++    admission_namespaces(ns, &device);
++    char exe[65], boot[65], uid[65], gid[65], cgroup[65], release[65], lsm[65], offsets[65], raw[4096];
++    admission_executable(exe);
++    admission_file_hash("/proc/sys/kernel/random/boot_id", boot);
++    admission_file_hash("/proc/self/uid_map", uid);
++    admission_file_hash("/proc/self/gid_map", gid);
++    admission_file_hash("/proc/self/cgroup", cgroup);
++    admission_read("/proc/self/cgroup", raw, sizeof raw);
++    if (strcmp(raw, "0::/\n")) invalid("admission");
++    admission_hash(kernel.release, strlen(kernel.release), release);
++    admission_file_hash("/sys/kernel/security/lsm", lsm);
++    admission_file_hash("/proc/self/timens_offsets", offsets);
++    admission_read("/proc/self/timens_offsets", raw, sizeof raw);
++    long long mono_s, boot_s; unsigned mono_ns_part, boot_ns_part; char extra;
++    if (sscanf(raw, "monotonic %lld %u boottime %lld %u %c", &mono_s, &mono_ns_part, &boot_s, &boot_ns_part, &extra) != 4 ||
++        mono_s || boot_s || mono_ns_part || boot_ns_part) invalid("admission");
++    uint64_t yama = admission_limit("/proc/sys/kernel/yama/ptrace_scope");
++    if (yama > 3) invalid("admission");
++    unsigned groups = 0, filters = admission_security(&groups);
++    uint64_t memory = admission_limit("/sys/fs/cgroup/memory.max"), swap = admission_limit("/sys/fs/cgroup/memory.swap.max");
++    uint64_t current = admission_limit("/sys/fs/cgroup/memory.current"), peak = admission_limit("/sys/fs/cgroup/memory.peak");
++    uint64_t pids = admission_limit("/sys/fs/cgroup/pids.max"), pids_current = admission_limit("/sys/fs/cgroup/pids.current");
++    uint64_t process = admission_limit("/sys/fs/cgroup/cgroup.procs");
++    unsigned long long quota, period;
++    admission_read("/sys/fs/cgroup/cpu.max", raw, sizeof raw);
++    if (sscanf(raw, "%llu %llu %c", &quota, &period, &extra) != 2 || quota != period || period < 1000 || period > 1000000 ||
++        memory != 67108864 || swap || !current || current > peak || peak > memory || pids != 16 || pids_current != 1 || process != pid) invalid("admission");
++    struct timespec resolution;
++    if (clock_getres(CLOCK_MONOTONIC, &resolution) || resolution.tv_sec || resolution.tv_nsec <= 0 || resolution.tv_nsec > 1000000) invalid("admission");
++    uint64_t after[7], after_device;
++    admission_namespaces(after, &after_device);
++    if (memcmp(ns, after, sizeof ns) || device != after_device || admission_ticks() != start) invalid("identity");
++    unsigned after_groups = 0;
++    if (admission_security(&after_groups) != filters || after_groups != groups) invalid("identity");
++    char again[65];
++    admission_file_hash("/proc/self/uid_map", again);
++    if (strcmp(again, uid)) invalid("identity");
++    admission_file_hash("/proc/self/gid_map", again);
++    if (strcmp(again, gid)) invalid("identity");
++    caps_zero();
++    const char *case_id = OBS_CASES[selected];
++    admission_emit("{\"architecture\":\"" OBS_ARCHITECTURE "\",\"boot_sha256\":\"%s\",\"case_id\":\"%s\",\"cgroup_ns\":%" PRIu64 ",\"executable_sha256\":\"%s\",\"gid_map_sha256\":\"%s\",\"invocation_sha256\":\"%s\",\"ipc_ns\":%" PRIu64 ",\"mnt_ns\":%" PRIu64 ",\"net_ns\":%" PRIu64 ",\"ns_device\":%" PRIu64 ",\"phase\":\"IDENTITY\",\"pid\":%" PRIu64 ",\"pid_ns\":%" PRIu64 ",\"role\":\"%s\",\"start_ticks\":%" PRIu64 ",\"tid\":%" PRIu64 ",\"time_ns\":%" PRIu64 ",\"uid_map_sha256\":\"%s\",\"user_ns\":%" PRIu64 ",\"version\":2}\n",
++        boot, case_id, ns[3], exe, gid, admission_invocation, ns[6], ns[4], ns[5], device, pid, ns[0], role, start, tid, ns[2], uid, ns[1]);
++    admission_emit("{\"caps\":[0,0,0,0,0],\"case_id\":\"%s\",\"core_hard\":0,\"core_soft\":0,\"dumpable\":1,\"gids\":[999,999,999,999],\"groups\":[%s],\"invocation_sha256\":\"%s\",\"nnp\":1,\"phase\":\"CONFINEMENT\",\"role\":\"%s\",\"seccomp\":2,\"seccomp_filters\":%u,\"tasks\":[%" PRIu64 "],\"threads\":1,\"tracer_pid\":0,\"uids\":[999,999,999,999],\"version\":2}\n", case_id, groups ? "999" : "", admission_invocation, role, filters, pid);
++    admission_emit("{\"case_id\":\"%s\",\"cgroup_sha256\":\"%s\",\"cpu_period\":%llu,\"cpu_quota\":%llu,\"invocation_sha256\":\"%s\",\"memory_current\":%" PRIu64 ",\"memory_max\":%" PRIu64 ",\"memory_peak\":%" PRIu64 ",\"phase\":\"RESOURCES\",\"pids_current\":%" PRIu64 ",\"pids_max\":%" PRIu64 ",\"processes\":[%" PRIu64 "],\"role\":\"%s\",\"swap_max\":%" PRIu64 ",\"version\":2}\n", case_id, cgroup, period, quota, admission_invocation, current, memory, peak, pids_current, pids, process, role, swap);
++    admission_emit("{\"case_id\":\"%s\",\"invocation_sha256\":\"%s\",\"kernel_release_sha256\":\"%s\",\"lsm_sha256\":\"%s\",\"monotonic_ns\":%" PRIu64 ",\"phase\":\"CLOCK\",\"resolution_ns\":%" PRIu64 ",\"role\":\"%s\",\"time_offsets_sha256\":\"%s\",\"version\":2,\"yama_scope\":%" PRIu64 "}\n", case_id, admission_invocation, release, lsm, mono_ns(), (uint64_t)resolution.tv_nsec, role, offsets, yama);
++}
++#endif
+--- before/tests/crawl-jobs-v2-observer/native/architecture.h
++++ after/tests/crawl-jobs-v2-observer/native/architecture.h
+@@ -0,0 +1,16 @@
++#ifndef OBS1_ARCHITECTURE_H
++#define OBS1_ARCHITECTURE_H
++#if !defined(__linux__) || __BYTE_ORDER__ != __ORDER_LITTLE_ENDIAN__ || defined(__ILP32__)
++#error "C0 requires a little-endian Linux LP64 ABI"
++#endif
++_Static_assert(sizeof(void *) == 8 && sizeof(long) == 8, "C0 requires LP64");
++#if defined(__aarch64__)
++#define OBS_ARCHITECTURE "aarch64"
++#define OBS_ELF_MACHINE 183
++#elif defined(__x86_64__)
++#define OBS_ARCHITECTURE "x86_64"
++#define OBS_ELF_MACHINE 62
++#else
++#error "Unsupported C0 native architecture"
++#endif
++#endif
+--- before/tests/crawl-jobs-v2-observer/native/common.h
++++ after/tests/crawl-jobs-v2-observer/native/common.h
+@@ -0,0 +1,135 @@
++#ifndef OBS1_COMMON_H
++#define OBS1_COMMON_H
++#define _GNU_SOURCE
++#include "architecture.h"
++#include <errno.h>
++#include <fcntl.h>
++#include <inttypes.h>
++#include <stdatomic.h>
++#include <stdint.h>
++#include <signal.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++#include <sys/prctl.h>
++#include <sys/resource.h>
++#include <sys/stat.h>
++#include <time.h>
++#include <unistd.h>
++#include "cases.h"
++
++#define OBS_MAGIC UINT64_C(0x4f42533143303031)
++#define OBS_EFFECTS 1050
++#define OBS_EVENTS 8192
++#define OBS_READ_BYTES (4u * 1024u * 1024u)
++#define OBS_ACTIVE_NS UINT64_C(2000000000)
++#define OBS_HOLD_NS UINT64_C(20000000)
++
++struct witness {
++    uint64_t magic;
++    _Atomic uint64_t completed;
++    _Atomic uint64_t ordinal;
++    _Atomic uint64_t prototype;
++    _Atomic uint64_t bytecode_pc;
++    _Atomic uint64_t pre_ns;
++    _Atomic uint64_t post_ns;
++    _Atomic uint64_t heartbeat;
++    _Atomic uint64_t finished;
++    _Atomic uint64_t last_value;
++    uint64_t transcript[OBS_EFFECTS];
++};
++_Static_assert(sizeof(struct witness) == 8480, "closed witness ABI");
++
++static inline uint64_t mono_ns(void) {
++    struct timespec now;
++    if (clock_gettime(CLOCK_MONOTONIC, &now) != 0) _exit(70);
++    return (uint64_t)now.tv_sec * UINT64_C(1000000000) + (uint64_t)now.tv_nsec;
++}
++
++static inline void invalid(const char *reason) {
++    /* reason is always a source literal, never an errno/path/register/request. */
++    char output[192];
++    int length = snprintf(output, sizeof output,
++        "{\"cleanup_required\":true,\"reason\":\"%s\",\"status\":\"INVALID\",\"version\":1}\n", reason);
++    if (length > 0 && (size_t)length < sizeof output) {
++        int flags = fcntl(STDOUT_FILENO, F_GETFL);
++        if (flags < 0 || fcntl(STDOUT_FILENO, F_SETFL, flags | O_NONBLOCK) < 0) _exit(1);
++        if (write(STDOUT_FILENO, output, (size_t)length) != length) _exit(1);
++    }
++    _exit(1);
++}
++
++static inline void caps_zero(void) {
++    if (getuid() != 999 || geteuid() != 999 || getgid() != 999 || getegid() != 999 ||
++        prctl(PR_GET_NO_NEW_PRIVS, 0, 0, 0, 0) != 1) invalid("admission");
++    FILE *stream = fopen("/proc/self/status", "re");
++    if (!stream) invalid("admission");
++    char line[512];
++    unsigned found = 0;
++    const char *names[] = {"CapInh:", "CapPrm:", "CapEff:", "CapBnd:", "CapAmb:"};
++    while (fgets(line, sizeof line, stream)) {
++        for (unsigned i = 0; i < 5; i++) {
++            if (strncmp(line, names[i], strlen(names[i])) != 0) continue;
++            unsigned long long value;
++            char extra;
++            if (found & (1u << i) || sscanf(line + strlen(names[i]), "%llx %c", &value, &extra) != 1 || value != 0)
++                invalid("admission");
++            found |= 1u << i;
++        }
++    }
++    if (ferror(stream) || fclose(stream) != 0 || found != 31) invalid("admission");
++    struct rlimit limit;
++    if (getrlimit(RLIMIT_CORE, &limit) != 0 || limit.rlim_cur != 0 || limit.rlim_max != 0) invalid("admission");
++    int flags = fcntl(STDOUT_FILENO, F_GETFL);
++    if (flags < 0 || fcntl(STDOUT_FILENO, F_SETFL, flags | O_NONBLOCK) < 0 || signal(SIGPIPE, SIG_IGN) == SIG_ERR)
++        invalid("transport");
++}
++
++static inline unsigned selected_case(void) {
++    char line[80];
++    size_t used = 0;
++    uint64_t until = mono_ns() + UINT64_C(10000000000);
++    int flags = fcntl(STDIN_FILENO, F_GETFL);
++    if (flags < 0 || fcntl(STDIN_FILENO, F_SETFL, flags | O_NONBLOCK) < 0) invalid("transport");
++    while (used < sizeof line - 1 && mono_ns() < until) {
++        char value;
++        ssize_t count = read(STDIN_FILENO, &value, 1);
++        if (count == 1) {
++            if (value == '\n') {
++                line[used] = 0;
++                for (unsigned i = 0; i < 276; i++) if (strcmp(line, OBS_CASES[i]) == 0) return i;
++                invalid("case");
++            }
++            if (value < 32 || value > 126) invalid("case");
++            line[used++] = value;
++        } else if (count == 0 || (errno != EAGAIN && errno != EINTR)) {
++            invalid("transport");
++        }
++        struct timespec delay = {0, 100000};
++        nanosleep(&delay, NULL);
++    }
++    invalid("deadline");
++    return 0;
++}
++
++static inline char control_byte(uint64_t until) {
++    char value;
++    while (mono_ns() < until) {
++        ssize_t count = read(STDIN_FILENO, &value, 1);
++        if (count == 1) {
++            if (mono_ns() >= until) invalid("deadline");
++            return value;
++        }
++        if (count == 0 || (errno != EAGAIN && errno != EINTR)) invalid("transport");
++        struct timespec delay = {0, 100000};
++        nanosleep(&delay, NULL);
++    }
++    invalid("deadline");
++    return 0;
++}
++
++static inline void emit(const char *literal) {
++    size_t size = strlen(literal);
++    if (size > 1024 || write(STDOUT_FILENO, literal, size) != (ssize_t)size) invalid("transport");
++}
++#endif
+--- before/tests/crawl-jobs-v2-observer/native/observer.c
++++ after/tests/crawl-jobs-v2-observer/native/observer.c
+@@ -0,0 +1,319 @@
++/* C0-only sibling observer. This binary is built for review, never run by prepare. */
++#include "common.h"
++#include "admission.h"
++#include "target_manifest.h"
++#if defined(__aarch64__)
++#include <asm/ptrace.h>
++#endif
++#include <elf.h>
++#include <linux/audit.h>
++#include <linux/filter.h>
++#include <linux/seccomp.h>
++#include <openssl/evp.h>
++#include <stddef.h>
++#include <sys/ptrace.h>
++#include <sys/syscall.h>
++#include <sys/sysmacros.h>
++#include <sys/uio.h>
++#include <sys/wait.h>
++#include "target_filter.h"
++
++_Static_assert(OBS_TARGET_MACHINE == OBS_ELF_MACHINE, "target manifest architecture must match observer");
++#if defined(__aarch64__)
++_Static_assert(__NR_ptrace == 117 && __NR_execve == 221 && __NR_execveat == 281, "closed AArch64 syscall ABI");
++#else
++_Static_assert(__NR_ptrace == 101 && __NR_execve == 59 && __NR_execveat == 322, "closed x86-64 syscall ABI");
++#endif
++
++static uint64_t deadline, reads, events, start_ticks, load_bias;
++static struct stat executable, pid_namespace, user_namespace, time_namespace;
++#if defined(__aarch64__)
++static unsigned slots;
++static struct user_hwdebug_state saved_debug;
++#endif
++
++static void sha_file(int fd, char output[65]) {
++    EVP_MD_CTX *context = EVP_MD_CTX_new();
++    unsigned char bytes[32768], result[EVP_MAX_MD_SIZE];
++    unsigned length = 0;
++    size_t total = 0;
++    if (!context || EVP_DigestInit_ex(context, EVP_sha256(), NULL) != 1) invalid("identity");
++    for (;;) {
++        ssize_t count = read(fd, bytes, sizeof bytes);
++        if (count < 0) invalid("identity");
++        if (count == 0) break;
++        total += (size_t)count;
++        if (total > 32u * 1024u * 1024u || EVP_DigestUpdate(context, bytes, (size_t)count) != 1) invalid("bounds");
++    }
++    if (EVP_DigestFinal_ex(context, result, &length) != 1 || length != 32) invalid("identity");
++    EVP_MD_CTX_free(context);
++    for (unsigned i = 0; i < 32; i++) snprintf(output + 2 * i, 3, "%02x", result[i]);
++    output[64] = 0;
++}
++
++static uint64_t process_start(void) {
++    char raw[4096];
++    int fd = open("/proc/1/stat", O_RDONLY | O_CLOEXEC);
++    if (fd < 0) invalid("identity");
++    ssize_t size = read(fd, raw, sizeof raw - 1);
++    close(fd);
++    if (size <= 0 || size == (ssize_t)sizeof raw - 1) invalid("identity");
++    raw[size] = 0;
++    char *end = strrchr(raw, ')'), *state;
++    if (!end || end[1] != ' ') invalid("identity");
++    char *token = strtok_r(end + 2, " ", &state);
++    for (unsigned field = 3; field < 22 && token; field++) token = strtok_r(NULL, " ", &state);
++    if (!token) invalid("identity");
++    char *last;
++    errno = 0;
++    unsigned long long value = strtoull(token, &last, 10);
++    if (errno || !value || *last) invalid("identity");
++    return value;
++}
++
++static void namespace_check(const char *target, const char *self, struct stat *initial, int first) {
++    struct stat a, b;
++    if (stat(target, &a) || stat(self, &b) || a.st_ino != b.st_ino || a.st_dev != b.st_dev) invalid("identity");
++    if (first) *initial = a;
++    else if (a.st_ino != initial->st_ino || a.st_dev != initial->st_dev) invalid("identity");
++}
++
++static uint64_t mappings(int first) {
++    FILE *file = fopen("/proc/1/maps", "re");
++    if (!file) invalid("identity");
++    char line[1024];
++    unsigned matches = 0, lines = 0;
++    uint64_t bias = 0;
++    while (fgets(line, sizeof line, file)) {
++        unsigned long long begin, end, offset, inode;
++        unsigned major_number, minor_number;
++        char access[5];
++        if (++lines > 256 || !strchr(line, '\n') ||
++            sscanf(line, "%llx-%llx %4s %llx %x:%x %llu", &begin, &end, access, &offset, &major_number, &minor_number, &inode) != 7)
++            invalid("identity");
++        if (inode != executable.st_ino || major_number != major(executable.st_dev) || minor_number != minor(executable.st_dev)) continue;
++        if (access[2] != 'x') continue;
++        uint64_t candidate;
++        if (access[0] != 'r' || access[1] != '-' || offset != OBS_EXEC_OFFSET ||
++            __builtin_sub_overflow((uint64_t)begin, OBS_EXEC_VADDR, &candidate) || end <= begin) invalid("identity");
++        if (end - begin < OBS_EXEC_SIZE) invalid("identity");
++        bias = candidate;
++        matches++;
++    }
++    if (ferror(file) || fclose(file) || matches != 1 || (!first && bias != load_bias)) invalid("identity");
++    return bias;
++}
++
++static void identity_check(int first) {
++    caps_zero();
++    if (getpid() == 1 || process_start() != start_ticks) invalid("identity");
++    namespace_check("/proc/1/ns/pid", "/proc/self/ns/pid", &pid_namespace, first);
++    namespace_check("/proc/1/ns/user", "/proc/self/ns/user", &user_namespace, first);
++    namespace_check("/proc/1/ns/time", "/proc/self/ns/time", &time_namespace, first);
++    struct stat current;
++    if (stat("/proc/1/exe", &current) || current.st_ino != executable.st_ino || current.st_dev != executable.st_dev ||
++        current.st_size != executable.st_size) invalid("identity");
++    if (first) load_bias = mappings(1);
++    else (void)mappings(0);
++}
++
++static void install_target_filter(void) {
++    /* Additional filter; the separate default-deny OCI profile is also required.
++       PID 1 is observed as the owned namespace init, never caller-selected. */
++    struct sock_fprog filter = {.len = sizeof obs_filter / sizeof obs_filter[0], .filter = (struct sock_filter *)obs_filter};
++    if (prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &filter) != 0) invalid("admission");
++}
++
++static long request(unsigned operation, uintptr_t address, uintptr_t data) {
++    if (mono_ns() >= deadline) invalid("deadline");
++    errno = 0;
++    long result = ptrace(operation, 1, (void *)address, (void *)data);
++    if (result == -1 && errno) invalid("ptrace_denied");
++    return result;
++}
++
++static uint64_t peek(uintptr_t address) {
++    if (address % 8 || reads + 8 > OBS_READ_BYTES) invalid("bounds");
++    reads += 8;
++    return (uint64_t)request(PTRACE_PEEKDATA, address, 0);
++}
++
++static int wait_stop(void) {
++    int status;
++    while (mono_ns() < deadline) {
++        pid_t result = waitpid(1, &status, __WALL | WNOHANG);
++        if (result == 1) {
++            if (++events > OBS_EVENTS || !WIFSTOPPED(status)) invalid("stop_reason");
++            identity_check(0);
++            return status;
++        }
++        if (result < 0 && errno != EINTR) invalid("stop_reason");
++        struct timespec delay = {0, 100000};
++        nanosleep(&delay, NULL);
++    }
++    invalid("deadline");
++    return 0;
++}
++
++#if defined(__aarch64__)
++static void debug_state(struct user_hwdebug_state *value, int set) {
++    struct iovec io = {.iov_base = value, .iov_len = set ? 8 + 16 * slots : sizeof *value};
++    request(set ? PTRACE_SETREGSET : PTRACE_GETREGSET, NT_ARM_HW_BREAK, (uintptr_t)&io);
++    if (!set && io.iov_len != sizeof *value) invalid("regset");
++}
++
++static void breakpoint(uintptr_t pc, int enabled) {
++    struct user_hwdebug_state desired = saved_debug;
++    if (enabled) {
++        desired.dbg_regs[0].addr = pc;
++        desired.dbg_regs[0].ctrl = 0x1e5; /* enabled, EL0, execute, four instruction bytes */
++    }
++    debug_state(&desired, 1);
++}
++
++static void debug_capture(void) {
++    memset(&saved_debug, 0, sizeof saved_debug);
++    debug_state(&saved_debug, 0);
++    slots = saved_debug.dbg_info & 255;
++    if (slots < 1 || slots > 16) invalid("regset");
++    for (unsigned i = 0; i < 16; i++) if (saved_debug.dbg_regs[i].addr || saved_debug.dbg_regs[i].ctrl) invalid("debug_state");
++}
++#else
++#include "x86_debug.h"
++#endif
++
++static uintptr_t stopped_pc(void) {
++#if defined(__aarch64__)
++    struct user_pt_regs registers;
++#else
++    struct user_regs_struct registers;
++#endif
++    struct iovec regs = {.iov_base = &registers, .iov_len = sizeof registers};
++    request(PTRACE_GETREGSET, NT_PRSTATUS, (uintptr_t)&regs);
++    if (regs.iov_len != sizeof registers) invalid("regset");
++#if defined(__aarch64__)
++    return registers.pc;
++#else
++    if (registers.cs != 0x33) invalid("regset");  /* Linux native 64-bit code selector. */
++    return registers.rip;
++#endif
++}
++
++static void instruction_check(uintptr_t pc, uint64_t expected, unsigned size) {
++    if (!size || size > 8 || pc > UINTPTR_MAX - size) invalid("instruction");
++    uint64_t word = peek(pc & ~(uintptr_t)7), instruction = word >> ((pc & 7) * 8);
++    if ((pc & 7) + size > 8) instruction |= peek((pc & ~(uintptr_t)7) + 8) << ((8 - (pc & 7)) * 8);
++    if (size < 8) instruction &= (UINT64_C(1) << (size * 8)) - 1;
++    if (instruction != expected) invalid("instruction");
++}
++
++static uintptr_t witness_pointer(void) {
++    uintptr_t pointer = peek(load_bias + OBS_WITNESS_SYMBOL);
++    if (pointer % 8 || pointer > UINTPTR_MAX - sizeof(struct witness)) invalid("identity");
++    FILE *file = fopen("/proc/1/maps", "re");
++    if (!file) invalid("identity");
++    char line[1024], name[256], access[5];
++    unsigned count = 0, lines = 0;
++    while (fgets(line, sizeof line, file)) {
++        unsigned long long begin, end, offset, inode;
++        unsigned maj, min;
++        name[0] = 0;
++        if (++lines > 256 || !strchr(line, '\n')) invalid("bounds");
++        if (sscanf(line, "%llx-%llx %4s %llx %x:%x %llu %255s", &begin, &end, access, &offset, &maj, &min, &inode, name) == 8 &&
++            begin == pointer && end >= pointer + sizeof(struct witness) && offset == 0 && inode != 0 &&
++            strcmp(name, "/witness/state") == 0 && strcmp(access, "rw-s") == 0) count++;
++    }
++    if (ferror(file) || fclose(file) || count != 1 || peek(pointer) != OBS_MAGIC) invalid("identity");
++    return pointer;
++}
++
++int main(int argc, char **argv) {
++    (void)argv;
++    if (argc != 1 || getpid() == 1) invalid("admission");
++    caps_zero();
++    unsigned selected = selected_case();
++    if (selected >= 264) invalid("validator_control");
++    admission_nonce();
++    int fd = open("/proc/1/exe", O_RDONLY | O_CLOEXEC);
++    char executable_sha[65];
++    if (fd < 0 || fstat(fd, &executable) || !S_ISREG(executable.st_mode) || executable.st_size != OBS_TARGET_SIZE) invalid("identity");
++    sha_file(fd, executable_sha);
++    close(fd);
++    if (strcmp(executable_sha, OBS_TARGET_SHA256) != 0) invalid("identity");
++    start_ticks = process_start();
++    identity_check(1);
++    install_target_filter();
++    admission_collect(selected, "observer");
++    emit("{\"phase\":\"ADMISSION_READY\",\"version\":1}\n");
++    if (control_byte(admission_until) != 'A') invalid("transport");
++    identity_check(0);
++    deadline = mono_ns() + OBS_ACTIVE_NS;
++    /* TRACEEXEC adds a rejection stop, not an exec-following mode. Every exec
++       event is invalid; no re-seize or reattachment occurs. */
++    request(PTRACE_SEIZE, 0, PTRACE_O_EXITKILL | PTRACE_O_TRACEEXEC);
++    request(PTRACE_INTERRUPT, 0, 0);
++    int status = wait_stop();
++    if (WSTOPSIG(status) != SIGTRAP || (unsigned)status >> 16 != PTRACE_EVENT_STOP) invalid("stop_reason");
++    debug_capture();
++    const unsigned ordinals[] = {1, 2, 127, 128, 129, 1049, 1050};
++    unsigned wanted = selected < 140 ? ordinals[(selected % 70) / 10] : selected < 240 ? 1 : 129;
++    uintptr_t relative = selected < 140 ? (selected < 70 ? OBS_PRE_EFFECT : OBS_POST_EFFECT) :
++        selected < 200 ? OBS_VM_MARKER : selected >= 210 && selected < 240 ? OBS_SEND_MARKER : OBS_PRE_EFFECT;
++    uintptr_t pc = load_bias + relative;
++    uint64_t expected = relative == OBS_PRE_EFFECT ? OBS_PRE_INSTRUCTION : relative == OBS_POST_EFFECT ? OBS_POST_INSTRUCTION : OBS_NOP_INSTRUCTION;
++    unsigned instruction_bytes = relative == OBS_PRE_EFFECT ? OBS_PRE_BYTES : relative == OBS_POST_EFFECT ? OBS_POST_BYTES : OBS_NOP_BYTES;
++    instruction_check(pc, expected, instruction_bytes);
++    breakpoint(pc, 1);
++    emit("{\"phase\":\"ARMED\",\"version\":1}\n");
++    request(PTRACE_CONT, 0, 0);
++    for (;;) {
++        status = wait_stop();
++        siginfo_t signal;
++        if (WSTOPSIG(status) != SIGTRAP || (unsigned)status >> 16 != 0) invalid("stop_reason");
++        request(PTRACE_GETSIGINFO, 0, (uintptr_t)&signal);
++        if (signal.si_code != TRAP_HWBKPT || stopped_pc() != pc) invalid("stop_reason");
++#if defined(__x86_64__)
++        if ((uintptr_t)signal.si_addr != pc) invalid("stop_reason");
++        debug_hit(pc);
++#endif
++        uintptr_t pointer = witness_pointer();
++        uint64_t ordinal = peek(pointer + offsetof(struct witness, ordinal));
++        int match = ordinal == wanted;
++        if (selected >= 140 && selected < 200) {
++            const unsigned pcs[] = {0, 1, 7};
++            match = peek(pointer + offsetof(struct witness, prototype)) == 1 + (selected - 140) / 30 &&
++                peek(pointer + offsetof(struct witness, bytecode_pc)) == pcs[((selected - 140) % 30) / 10];
++        }
++        if (match) {
++            uint64_t pre = peek(pointer + offsetof(struct witness, pre_ns));
++            uint64_t acquired = mono_ns();
++            if (pre > acquired || acquired - pre >= OBS_HOLD_NS) invalid("deadline");
++            char output[256];
++            int length = snprintf(output, sizeof output,
++                "{\"events\":%" PRIu64 ",\"ordinal\":%" PRIu64 ",\"phase\":\"HELD\",\"read_bytes\":%" PRIu64 ",\"version\":1}\n",
++                events, ordinal, reads);
++            if (length < 1 || (size_t)length >= sizeof output) invalid("bounds");
++            emit(output);
++            char action = control_byte(pre + OBS_HOLD_NS);
++            if (action != 'R') invalid("controller_kill_required");
++            breakpoint(pc, 0);
++            request(PTRACE_DETACH, 0, 0);
++            emit("{\"phase\":\"CONTINUATION_DISPATCHED\",\"version\":1}\n");
++            /* No timing/cleanup PASS: independent post-continuation/actual-stop
++               and complete resource receipts are still mandatory. */
++            return 0;
++        }
++        breakpoint(pc, 0);
++        request(PTRACE_SINGLESTEP, 0, 0);
++        status = wait_stop();
++        if (WSTOPSIG(status) != SIGTRAP || (unsigned)status >> 16 != 0) invalid("stop_reason");
++        request(PTRACE_GETSIGINFO, 0, (uintptr_t)&signal);
++        if (signal.si_code != TRAP_TRACE) invalid("stop_reason");
++#if defined(__x86_64__)
++        debug_step();
++        if (relative != OBS_POST_EFFECT && stopped_pc() != pc + instruction_bytes) invalid("stop_reason");
++#endif
++        breakpoint(pc, 1);
++        request(PTRACE_CONT, 0, 0);
++    }
++}
+--- before/tests/crawl-jobs-v2-observer/native/target.c
++++ after/tests/crawl-jobs-v2-observer/native/target.c
+@@ -0,0 +1,139 @@
++/* Synthetic target only. No Redis, Lua, user expressions, or tracing workaround. */
++#include "common.h"
++#include "admission.h"
++#include <pthread.h>
++#include <sys/mman.h>
++#include <sys/socket.h>
++#include <sys/un.h>
++
++volatile uintptr_t obs_witness_address;
++extern void obs_effect(_Atomic uint64_t *, uint64_t *, uint64_t, _Atomic uint64_t *);
++extern void obs_vm_marker(void);
++extern void obs_send_marker(void);
++
++#if defined(__aarch64__)
++__asm__(".text\n.balign 4\n.global obs_effect\n.type obs_effect,%function\n"
++        "obs_effect:\n.global obs_pre_effect\nobs_pre_effect:\n"
++        "mov x4,#42\nstr x4,[x3]\nstr x2,[x1]\nstlr x2,[x0]\n.global obs_post_effect\nobs_post_effect:\nret\n"
++        ".size obs_effect,.-obs_effect\n"
++        ".global obs_vm_marker\n.type obs_vm_marker,%function\nobs_vm_marker:\nnop\nret\n"
++        ".size obs_vm_marker,.-obs_vm_marker\n"
++        ".global obs_send_marker\n.type obs_send_marker,%function\nobs_send_marker:\nnop\nret\n"
++        ".size obs_send_marker,.-obs_send_marker\n");
++#elif defined(__x86_64__)
++/* SysV: completed=rdi, transcript=rsi, ordinal=rdx, last_value=rcx.
++   Aligned 64-bit stores are atomic; x86 TSO supplies the release ordering.
++   The pre marker precedes every effect, the post marker follows all three. */
++__asm__(".text\n.balign 8\n.global obs_effect\n.type obs_effect,@function\n"
++        "obs_effect:\n.global obs_pre_effect\nobs_pre_effect:\n"
++        "movq $42,(%rcx)\nmovq %rdx,(%rsi)\nmovq %rdx,(%rdi)\n"
++        ".global obs_post_effect\nobs_post_effect:\nret\n"
++        ".size obs_effect,.-obs_effect\n"
++        ".balign 8\n.global obs_vm_marker\n.type obs_vm_marker,@function\nobs_vm_marker:\nnop\nret\n"
++        ".size obs_vm_marker,.-obs_vm_marker\n"
++        ".balign 8\n.global obs_send_marker\n.type obs_send_marker,@function\nobs_send_marker:\nnop\nret\n"
++        ".size obs_send_marker,.-obs_send_marker\n");
++#endif
++
++static void *heartbeat(void *context) {
++    struct witness *state = context;
++    while (!atomic_load_explicit(&state->finished, memory_order_acquire)) {
++        atomic_fetch_add_explicit(&state->heartbeat, 1, memory_order_release);
++        struct timespec delay = {0, 100000};
++        nanosleep(&delay, NULL);
++    }
++    return NULL;
++}
++
++static void fake_vm(struct witness *state, unsigned prototype, unsigned *ordinal) {
++    const unsigned pcs[] = {0, 1, 7};
++    for (unsigned i = 0; i < 3; i++) {
++        atomic_store(&state->prototype, prototype);
++        atomic_store(&state->bytecode_pc, pcs[i]);
++        atomic_store(&state->ordinal, ++*ordinal);
++        atomic_store(&state->pre_ns, mono_ns());
++        obs_vm_marker();
++        atomic_store(&state->post_ns, mono_ns());
++        if (prototype == 1 && i == 1) fake_vm(state, 2, ordinal);
++    }
++}
++
++static int stream_peer(void) {
++    int listener = socket(AF_UNIX, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, 0);
++    if (listener < 0) invalid("transport");
++    struct sockaddr_un address = {.sun_family = AF_UNIX};
++    memcpy(address.sun_path, "/control/frame.sock", sizeof "/control/frame.sock");
++    if (bind(listener, (struct sockaddr *)&address, sizeof address) != 0 || chmod(address.sun_path, 0600) != 0 || listen(listener, 1) != 0)
++        invalid("transport");
++    uint64_t until = mono_ns() + OBS_ACTIVE_NS;
++    int peer = -1;
++    while (mono_ns() < until) {
++        peer = accept4(listener, NULL, NULL, SOCK_NONBLOCK | SOCK_CLOEXEC);
++        if (peer >= 0) break;
++        if (errno != EAGAIN && errno != EINTR) invalid("transport");
++        struct timespec delay = {0, 100000};
++        nanosleep(&delay, NULL);
++    }
++    close(listener);
++    if (peer < 0) invalid("deadline");
++    return peer;
++}
++
++int main(int argc, char **argv) {
++    (void)argv;
++    if (argc != 1 || getpid() != 1) invalid("admission");
++    caps_zero();
++    unsigned selected = selected_case();
++    if (selected >= 264) invalid("validator_control");
++    admission_nonce();
++    admission_collect(selected, "target");
++    int fd = open("/witness/state", O_RDWR | O_CREAT | O_EXCL | O_NOFOLLOW | O_CLOEXEC, 0600);
++    struct stat metadata;
++    if (fd < 0 || fstat(fd, &metadata) != 0 || !S_ISREG(metadata.st_mode) || metadata.st_nlink != 1 ||
++        metadata.st_uid != 999 || metadata.st_gid != 999 || (metadata.st_mode & 0777) != 0600 ||
++        ftruncate(fd, sizeof(struct witness)) != 0) invalid("witness");
++    struct witness *state = mmap(NULL, sizeof *state, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
++    if (state == MAP_FAILED) invalid("witness");
++    close(fd);
++    memset(state, 0, sizeof *state);
++    state->magic = OBS_MAGIC;
++    obs_witness_address = (uintptr_t)state;
++    emit("{\"phase\":\"READY\",\"version\":1}\n");
++    if (control_byte(admission_until) != 'G') invalid("transport");
++    uint64_t until = mono_ns() + OBS_ACTIVE_NS;
++    pthread_t helper;
++    int has_helper = selected >= 200 && selected < 210;
++    if (has_helper && pthread_create(&helper, NULL, heartbeat, state) != 0) invalid("helper");
++    if (selected >= 140 && selected < 200) {
++        unsigned ordinal = 0;
++        fake_vm(state, 1, &ordinal);
++    } else if (selected >= 210 && selected < 240) {
++        int peer = stream_peer();
++        unsigned char frame[1024];
++        memset(frame, 0x43, sizeof frame);
++        if (selected >= 220) {
++            size_t before = selected < 230 ? sizeof frame : sizeof frame - 1;
++            if (send(peer, frame, before, MSG_NOSIGNAL) != (ssize_t)before) invalid("transport");
++        }
++        atomic_store(&state->ordinal, 1);
++        atomic_store(&state->pre_ns, mono_ns());
++        obs_send_marker();
++        atomic_store(&state->post_ns, mono_ns());
++        if (selected < 220 && send(peer, frame, sizeof frame, MSG_NOSIGNAL) != (ssize_t)sizeof frame) invalid("transport");
++        if (selected >= 230 && send(peer, frame, 1, MSG_NOSIGNAL) != 1) invalid("transport");
++        close(peer);
++    } else {
++        for (unsigned i = 1; i <= OBS_EFFECTS; i++) {
++            if (mono_ns() >= until) invalid("deadline");
++            atomic_store(&state->ordinal, i);
++            atomic_store(&state->pre_ns, mono_ns());
++            obs_effect(&state->completed, &state->transcript[i - 1], i, &state->last_value);
++            atomic_store(&state->post_ns, mono_ns());
++        }
++    }
++    atomic_store_explicit(&state->finished, 1, memory_order_release);
++    if (has_helper && pthread_join(helper, NULL) != 0) invalid("helper");
++    emit("{\"phase\":\"FINISHED\",\"version\":1}\n");
++    if (munmap(state, sizeof *state) != 0) invalid("witness");
++    return 0;
++}
+--- before/tests/crawl-jobs-v2-observer/native/test_x86_debug.c
++++ after/tests/crawl-jobs-v2-observer/native/test_x86_debug.c
+@@ -0,0 +1,86 @@
++/* Offline unit probe for the production debug-register helpers. All ptrace
++   requests are simulated in memory. No native actor or tracing call executes. */
++#include <assert.h>
++#include <setjmp.h>
++#include <stddef.h>
++#include <stdint.h>
++#include <stdio.h>
++#include <string.h>
++#include <sys/ptrace.h>
++
++static jmp_buf refusal;
++static uint64_t registers[8];
++static unsigned written[32], writes, checks;
++static int corrupt_readback;
++
++static void invalid(const char *reason) __attribute__((noreturn));
++static void invalid(const char *reason) {
++    assert(strcmp(reason, "debug_state") == 0);
++    longjmp(refusal, 1);
++}
++
++static long request(unsigned operation, uintptr_t address, uintptr_t data) {
++    assert(address >= 848 && address <= 904 && (address - 848) % 8 == 0);
++    unsigned index = (unsigned)(address - 848) / 8;
++    assert(index != 4 && index != 5);
++    if (operation == PTRACE_PEEKUSER) return (long)(registers[index] ^ (corrupt_readback && index == 0 ? 1 : 0));
++    assert(operation == PTRACE_POKEUSER && (index == 0 || index == 6 || index == 7));
++    assert(writes < 32);
++    written[writes++] = index;
++    registers[index] = data;
++    return 0;
++}
++
++#include "x86_debug.h"
++
++static void reset(void) {
++    memset(registers, 0, sizeof registers);
++    registers[6] = 0xffff0ff0;
++    writes = 0;
++    corrupt_readback = 0;
++}
++
++static void rejected(void (*operation)(void)) {
++    if (setjmp(refusal) == 0) {
++        operation();
++        assert(!"unexpected acceptance");
++    }
++    checks++;
++}
++
++static void arm(void) { breakpoint(0x401003, 1); }
++static void hit(void) { debug_hit(0x401003); }
++static void bad_write(void) { debug_write(1, 0x401003); }
++
++int main(void) {
++    const unsigned indices[] = {0, 1, 2, 3, 6, 7};
++    for (unsigned i = 0; i < sizeof indices / sizeof indices[0]; i++) {
++        reset(); registers[indices[i]] ^= 1;
++        rejected(debug_capture);
++    }
++    reset(); debug_capture(); checks++;
++    arm();
++    assert(writes == 4 && written[0] == 7 && written[1] == 0 && written[2] == 6 && written[3] == 7);
++    assert(registers[0] == 0x401003 && registers[6] == 0xffff0ff0 && registers[7] == 1);
++    checks++;
++    registers[6] |= 1; hit(); checks++;
++    const uint64_t bad_status[] = {0, 0xffff0ff0, 0xffff0ff2, 0xffff2ff1, 0xffff4ff1, 0xffff8ff1, 0xfffe0ff1, 0xffff07f1, UINT64_C(0x1ffff0ff1)};
++    for (unsigned i = 0; i < sizeof bad_status / sizeof bad_status[0]; i++) {
++        registers[6] = bad_status[i]; rejected(hit);
++    }
++    registers[6] = 0xffff0ff1;
++    for (unsigned i = 0; i < 4; i++) {
++        registers[i] ^= 1; rejected(hit); registers[i] ^= 1;
++    }
++    registers[7] = 3; rejected(hit); registers[7] = 1;
++    breakpoint(0x401003, 0);
++    assert(registers[0] == 0 && registers[6] == 0xffff0ff0 && registers[7] == 0); checks++;
++    registers[6] |= 0x4000; debug_step(); checks++;
++    registers[6] |= 1; rejected(debug_step);
++    breakpoint(0x401003, 0);
++    assert(memcmp(registers, saved_debug, sizeof registers) == 0); checks++;
++    corrupt_readback = 1; rejected(arm);
++    corrupt_readback = 0; rejected(bad_write);
++    printf("PASS: %u offline x86 debug-state controls; ptrace simulated\n", checks);
++    return 0;
++}
+--- before/tests/crawl-jobs-v2-observer/native/x86_debug.h
++++ after/tests/crawl-jobs-v2-observer/native/x86_debug.h
+@@ -0,0 +1,56 @@
++#ifndef OBS1_X86_DEBUG_H
++#define OBS1_X86_DEBUG_H
++/* Included after the bounded request() wrapper. This interface never writes GP
++   registers, target memory or DR1..5; all requests address the owned TID 1. */
++#include <asm/debugreg.h>
++#include <sys/user.h>
++_Static_assert(offsetof(struct user, u_debugreg[0]) == 848 &&
++    offsetof(struct user, u_debugreg[3]) == 872 &&
++    offsetof(struct user, u_debugreg[6]) == 896 &&
++    offsetof(struct user, u_debugreg[7]) == 904 && sizeof(((struct user *)0)->u_debugreg[0]) == 8,
++    "closed x86-64 debug-register offsets (must match profiles.py)");
++_Static_assert(sizeof(struct user_regs_struct) == 216 && DR6_RESERVED == 0xffff0ff0 && DR_LOCAL_ENABLE == 1,
++    "closed x86-64 register ABI");
++
++static uint64_t saved_debug[8];
++
++static uint64_t debug_read(unsigned index) {
++    return (uint64_t)request(PTRACE_PEEKUSER, offsetof(struct user, u_debugreg) + 8 * index, 0);
++}
++
++static void debug_write(unsigned index, uint64_t value) {
++    if (index != 0 && index != 6 && index != 7) invalid("debug_state");
++    request(PTRACE_POKEUSER, offsetof(struct user, u_debugreg) + 8 * index, value);
++}
++
++static void debug_verify(uintptr_t pc, uint64_t status, uint64_t control) {
++    if (debug_read(0) != pc || debug_read(6) != status || debug_read(7) != control) invalid("debug_state");
++    for (unsigned i = 1; i < 4; i++) if (debug_read(i)) invalid("debug_state");
++}
++
++static void debug_capture(void) {
++    for (unsigned i = 0; i < 8; i++) {
++        if (i == 4 || i == 5) continue;  /* Reserved aliases are never accessed. */
++        saved_debug[i] = debug_read(i);
++        if (saved_debug[i] != (i == 6 ? DR6_RESERVED : 0)) invalid("debug_state");
++    }
++}
++
++static void breakpoint(uintptr_t pc, int enabled) {
++    /* Disable before changing address/status, then verify the kernel readback.
++       Restore the exact admitted inactive state before single-step or detach. */
++    debug_write(7, 0);
++    debug_write(0, enabled ? pc : saved_debug[0]);
++    debug_write(6, saved_debug[6]);
++    debug_write(7, enabled ? DR_LOCAL_ENABLE : saved_debug[7]);
++    debug_verify(enabled ? pc : saved_debug[0], saved_debug[6], enabled ? DR_LOCAL_ENABLE : saved_debug[7]);
++}
++
++static void debug_hit(uintptr_t pc) {
++    debug_verify(pc, DR6_RESERVED | DR_TRAP0, DR_LOCAL_ENABLE);
++}
++
++static void debug_step(void) {
++    debug_verify(saved_debug[0], DR6_RESERVED | DR_STEP, saved_debug[7]);
++}
++#endif
+--- before/tests/crawl-jobs-v2-observer/streams.py
++++ after/tests/crawl-jobs-v2-observer/streams.py
+@@ -1,13 +1,13 @@
+ """Bounded owned-process streams. No Docker or native actor starts at import."""
+ import os
+ import selectors
+-import signal
+ import subprocess
+ import time
+ 
+ from contracts import LIMITS, TRIALS, Invalid, clock_ns, decode, digest, exact, integer, require, runtime_architecture, sha
+ from controller import native_message
+ from runtime_admission import PHASES
++from local_process import kill_and_reap
+ 
+ NATIVE_ERRORS = frozenset(("admission", "transport", "case", "deadline", "validator_control", "identity", "bounds",
+     "ptrace_denied", "regset", "debug_state", "instruction", "stop_reason", "controller_kill_required", "helper", "witness", "oracle"))
+@@ -73,7 +73,7 @@
+     adapter supplies its fixed argv only after the outer authorization callback.
+     Killing this CLI group never counts as stopping a remote container.
+     """
+-    def __init__(self, argv, binding, budget, deadline, *, env=None, before_input=None, before_write=None):
++    def __init__(self, argv, binding, budget, deadline, *, env=None, before_input=None, before_write=None, cwd=None):
+         exact(binding, ("architecture", "case_id", "invocation_sha256", "container_id", "image", "role"))
+         runtime_architecture(binding["architecture"])
+         require(type(binding["case_id"]) is str and binding["case_id"] in TRIALS, "CASE")
+@@ -91,6 +91,7 @@
+         self.budget, self.deadline = budget, deadline
+         self.decoder, self.frames = FrameBuffer(budget), []
+         self.sent, self.phase, self.closed, self.stdout_eof = False, None, False, False
++        self._cleanup_failed = False
+         self.admission_frames = []
+         self.last_message_sha256 = None
+         self.last_message = None
+@@ -99,7 +100,7 @@
+         self._process = None
+         try:
+             self._process = subprocess.Popen(argv, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+-                env=env, start_new_session=True, close_fds=True)
++                env=env, cwd=cwd, start_new_session=True, close_fds=True)
+             for stream, key in ((self._process.stdout, "stdout"), (self._process.stderr, "stderr")):
+                 os.set_blocking(stream.fileno(), False)
+                 self.selector.register(stream, selectors.EVENT_READ, key)
+@@ -254,35 +255,21 @@
+ 
+     def close(self):
+         if self.closed:
++            require(not self._cleanup_failed, "LOCAL_PROCESS_CLEANUP")
+             return
+         self.closed = True
+         if self._process is None:
+             self.selector.close()
+             return
+-        # Normal EOF permits reaping the leader; it is not group-absence proof.
+-        # With any pipe still open, never reap first: a departed leader can have
+-        # left a child holding that pipe, and its reserved PID prevents reuse.
+-        reaped = False
+-        if not self.selector.get_map():
+-            try:
+-                self._process.wait(timeout=0)
+-                reaped = True
+-            except subprocess.TimeoutExpired:
+-                pass
+-        try:
+-            if not reaped:
+-                os.killpg(self._process.pid, signal.SIGKILL)
+-        except ProcessLookupError:
+-            pass
+-        except PermissionError:
+-            raise Invalid("LOCAL_PROCESS_CLEANUP") from None
++        try:
++            kill_and_reap(self._process)
++        except BaseException:
++            self._cleanup_failed = True
++            raise
+         finally:
+-            try:
+-                self._process.wait(timeout=5)
+-            finally:
+-                self.selector.close()
+-                for stream in (self._process.stdin, self._process.stdout, self._process.stderr):
+-                    stream.close()
++            self.selector.close()
++            for stream in (self._process.stdin, self._process.stdout, self._process.stderr):
++                stream.close()
+ 
+     def __enter__(self):
+         return self
+--- before/tests/crawl-jobs-v2-observer/test_live_adapter.py
++++ after/tests/crawl-jobs-v2-observer/test_live_adapter.py
+@@ -0,0 +1,256 @@
++"""Live transport boundary controls using inert Python children, never Docker."""
++from contextlib import contextmanager
++import errno
++import json
++import os
++from pathlib import Path
++import select
++import signal
++import subprocess
++import sys
++import tempfile
++import time
++from types import SimpleNamespace
++import unittest
++from unittest.mock import patch
++
++import contracts as c
++import docker_backend as db
++import local_process
++from streams import Deadline, ProcessStream, WireBudget
++from test_host_preflight import FixtureProbe
++from test_streams import binding
++
++PYTHON = [sys.executable, "-I", "-B", "-c"]
++
++
++@contextmanager
++def children(script=None, *, inherited=()):
++    owned, calls = [], []
++    spawn = subprocess.Popen
++    def start(argv, **kwargs):
++        calls.append((list(argv), dict(kwargs)))
++        if inherited:
++            kwargs["pass_fds"] = inherited
++        child = spawn(PYTHON + [script] if script is not None else argv, **kwargs)
++        owned.append(child)
++        return child
++    try:
++        with patch.object(db.subprocess, "Popen", side_effect=start):
++            yield owned, calls
++    finally:
++        for child in owned:
++            # Tests also clean up the intentionally broken implementation when
++            # run as regression controls. Never signal after releasing its PID.
++            if child.returncode is None:
++                try:
++                    os.killpg(child.pid, signal.SIGKILL)
++                except ProcessLookupError:
++                    pass
++                child.wait(timeout=3)
++            for pipe in (child.stdin, child.stdout, child.stderr):
++                if pipe is not None:
++                    pipe.close()
++
++
++class ConfigurationTests(unittest.TestCase):
++    def test_metadata_never_spawns_cli_or_reads_ambient_configuration(self):
++        fixture = FixtureProbe()
++        values = {"info": {field: fixture.info[key] for key, field in db.INFO_FIELDS.items()},
++                  "version": {field: fixture.server[key] for key, field in db.VERSION_FIELDS.items()}}
++        # The private proxy body must not survive selected-field projection.
++        values["info"]["HTTPProxy"] = "private-proxy-credential"
++        with patch.dict(os.environ, {"DOCKER_CONFIG": "/hostile", "HOME": "/hostile", "DOCKER_HOST": "ssh://hostile"}), \
++                patch.object(db, "read_engine_metadata", side_effect=lambda op, _: c.canonical(values[op])) as reader, \
++                patch.object(db.subprocess, "Popen", side_effect=AssertionError("plugin spawned")), \
++                patch.object(db, "verify_cli", side_effect=AssertionError("CLI touched")):
++            self.assertEqual(db.command([*db.PREFIX, "info", "--format", "{{.ID}}"], Deadline(1)), (0, fixture.info["id"].encode(), b""))
++            code, raw, err = db.command([*db.PREFIX, "version", "--format", "{{json .Server}}"], Deadline(1))
++            self.assertEqual((code, err), (0, b""))
++            self.assertEqual(json.loads(raw)["Arch"], fixture.server["architecture"])
++            self.assertNotIn(b"private", raw)
++            self.assertEqual([call.args[0] for call in reader.call_args_list], ["info", "version"])
++
++    def test_private_config_fixed_binary_cwd_and_environment_reach_real_child(self):
++        script = 'import json,os; print(json.dumps({"env":dict(os.environ),"cwd":os.getcwd(),"config":os.listdir(os.environ["DOCKER_CONFIG"]),"mode":os.stat(os.environ["DOCKER_CONFIG"]).st_mode & 511}))'
++        hostile = {key: "private-canary" for key in ("DOCKER_HOST", "DOCKER_CONTEXT", "DOCKER_TLS", "DOCKER_TLS_VERIFY",
++            "DOCKER_CONFIG", "DOCKER_CERT_PATH", "DOCKER_API_VERSION", "DOCKER_CUSTOM_HEADERS", "DOCKER_CLI_PLUGIN_EXTRA_DIRS",
++            "DOCKER_CLI_PLUGIN_ORIGINAL_CLI_COMMAND", "HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "SSL_CERT_FILE",
++            "LD_PRELOAD", "LD_LIBRARY_PATH", "PYTHONPATH", "GODEBUG", "OTEL_EXPORTER_OTLP_ENDPOINT", "SSH_AUTH_SOCK", "HOME", "TMPDIR", "PATH")}
++        with patch.dict(os.environ, hostile), patch.object(db, "verify_cli"), children(script) as (owned, calls):
++            code, raw, err = db.command([*db.PREFIX, "container", "inspect", "a" * 64], Deadline(3))
++            self.assertEqual((code, err), (0, b""))
++            value = json.loads(raw)
++            self.assertEqual((value["cwd"], value["config"], value["mode"]), ("/", [], 0o700))
++            config = value["env"]["DOCKER_CONFIG"]
++            self.assertEqual(value["env"], db.clean_environment(config))
++            self.assertNotIn("private-canary", raw.decode())
++            self.assertFalse(Path(config).exists())
++            argv, options = calls[0]
++            self.assertEqual(argv, [*db.PREFIX, "--config", config, "container", "inspect", "a" * 64])
++            self.assertTrue(options["start_new_session"] and options["close_fds"])
++            self.assertEqual(owned[0].returncode, 0)
++
++    def test_actor_owns_configuration_until_close_and_uses_same_isolation(self):
++        with patch.dict(os.environ, {"DOCKER_CONFIG": "/hostile", "HOME": "/hostile"}), \
++                patch.object(db, "verify_cli"), children('import sys; sys.stdin.read()') as (owned, calls):
++            stream = db.DockerProcessStream([*db.PREFIX, "container", "start", "--attach", "--interactive", "a" * 64],
++                binding(), WireBudget(), Deadline(2))
++            try:
++                config = calls[0][1]["env"]["DOCKER_CONFIG"]
++                self.assertTrue(Path(config).is_dir())
++                self.assertEqual(list(Path(config).iterdir()), [])
++                self.assertEqual(calls[0][1]["env"], db.clean_environment(config))
++                self.assertEqual(calls[0][1]["cwd"], "/")
++                self.assertIn("--config", calls[0][0])
++            finally:
++                stream.close()
++            self.assertFalse(Path(config).exists())
++            self.assertIsNotNone(owned[0].returncode)
++            stream.close()
++
++    def test_plugin_help_completion_and_endpoint_overrides_refuse_before_spawn(self):
++        for args in (["info"], ["version"], ["buildx", "version"], ["container"],
++                     ["container", "inspect", "--help"], ["container", "inspect", "__complete"],
++                     ["container", "inspect", "__completeNoDesc"], ["container", "inspect", "--config=/hostile"],
++                     ["container", "inspect", "--host=ssh://hostile"], ["container", "inspect", "--context=hostile"]):
++            with self.subTest(args=args), patch.object(db.subprocess, "Popen") as spawn, \
++                    self.assertRaisesRegex(c.Invalid, "DOCKER_ARGV"):
++                db.command([*db.PREFIX, *args], Deadline(1))
++            spawn.assert_not_called()
++        with patch.object(db.subprocess, "Popen") as spawn, self.assertRaisesRegex(c.Invalid, "DOCKER_ARGV"):
++            db.command(["docker", *db.PREFIX[1:], "container", "inspect", "a" * 64], Deadline(1))
++        spawn.assert_not_called()
++
++    def test_actor_setup_failure_removes_configuration_and_reaps_child(self):
++        with patch.object(db, "verify_cli"), children('import time; time.sleep(20)') as (owned, calls), \
++                patch("streams.os.set_blocking", side_effect=OSError(errno.EIO, "private-canary")), self.assertRaises(OSError):
++            db.DockerProcessStream([*db.PREFIX, "container", "start", "--attach", "--interactive", "a" * 64],
++                binding(), WireBudget(), Deadline(2))
++        self.assertFalse(Path(calls[0][1]["env"]["DOCKER_CONFIG"]).exists())
++        self.assertIsNotNone(owned[0].returncode)
++
++    def test_binary_requires_root_owned_native_nonwritable_regular_file(self):
++        with tempfile.TemporaryDirectory() as folder:
++            binary = Path(folder) / "docker"
++            binary.write_bytes(b"#!/bin/sh\n")
++            binary.chmod(0o755)
++            with patch.object(db, "DOCKER", str(binary)), self.assertRaisesRegex(c.Invalid, "DOCKER_BINARY"):
++                db.verify_cli()
++            link = Path(folder) / "link"
++            link.symlink_to(binary)
++            with patch.object(db, "DOCKER", str(link)), self.assertRaises(OSError):
++                db.verify_cli()
++
++
++class LifecycleTests(unittest.TestCase):
++    def test_normal_nonzero_exit_status_and_both_pipes_are_preserved(self):
++        with children() as (owned, _):
++            result = db.bounded_command(PYTHON + ['import os; os.write(1,b"out"); os.write(2,b"err"); os._exit(42)'], Deadline(2), {})
++        self.assertEqual(result, (42, b"out", b"err"))
++        self.assertTrue(owned[0].stdout.closed and owned[0].stderr.closed)
++
++    def descendant_control(self, stream_mode, hold_output):
++        reader, writer = os.pipe()
++        script = f'''import os,time
++child = os.fork()
++if child == 0:
++    if not {hold_output!r}:
++        os.close(1); os.close(2)
++    os.write({writer}, b"R")
++    time.sleep(20)
++    os._exit(0)
++os._exit(0)
++'''
++        signals, owned = [], []
++        real_killpg = os.killpg
++        def killpg(pid, sig):
++            self.assertIsNone(owned[0].returncode, "leader reaped before group signal")
++            signals.append((pid, sig))
++            return real_killpg(pid, sig)
++        try:
++            with children(script, inherited=(writer,)) as (owned, _), patch.object(local_process.os, "killpg", side_effect=killpg):
++                if stream_mode:
++                    stream = ProcessStream(PYTHON + [script], binding(), WireBudget(), Deadline(0.5))
++                    stream.phase = "FINISHED"
++                    if hold_output:
++                        with self.assertRaisesRegex(c.Invalid, "DEADLINE"):
++                            stream.finish_transport()
++                    else:
++                        result = stream.finish_transport()
++                        self.assertFalse(result["remote_exit_proven"] or result["local_process_group_absence_proven"])
++                elif hold_output:
++                    with self.assertRaisesRegex(c.Invalid, "DEADLINE"):
++                        db.bounded_command(PYTHON + [script], Deadline(0.5), {})
++                else:
++                    self.assertEqual(db.bounded_command(PYTHON + [script], Deadline(2), {}), (0, b"", b""))
++                os.close(writer)
++                writer = None
++                self.assertEqual(signals, [(owned[0].pid, signal.SIGKILL)])
++                self.assertTrue(select.select([reader], [], [], 1)[0])
++                self.assertEqual(os.read(reader, 1), b"R")
++                self.assertTrue(select.select([reader], [], [], 1)[0], "descendant survived cleanup")
++                self.assertEqual(os.read(reader, 1), b"")
++        finally:
++            if writer is not None:
++                os.close(writer)
++            os.close(reader)
++
++    def test_command_success_kills_closed_pipe_descendant_before_reaping(self):
++        self.descendant_control(False, False)
++
++    def test_command_timeout_kills_pipe_holding_descendant_before_reaping(self):
++        self.descendant_control(False, True)
++
++    def test_stream_normal_eof_kills_closed_pipe_descendant_before_reaping(self):
++        self.descendant_control(True, False)
++
++    def test_stream_timeout_kills_pipe_holding_descendant_before_reaping(self):
++        self.descendant_control(True, True)
++
++    def test_closed_pipes_with_live_leader_obey_deadline_without_timeout_leak(self):
++        start = time.monotonic()
++        with children() as (owned, _), self.assertRaisesRegex(c.Invalid, "^DEADLINE$"):
++            db.bounded_command(PYTHON + ['import os,time; os.close(1); os.close(2); time.sleep(20)'], Deadline(0.15), {})
++        self.assertLess(time.monotonic() - start, 2)
++        self.assertEqual(owned[0].returncode, -signal.SIGKILL)
++
++    def test_floods_are_bounded_and_cleanup_closes_descriptors(self):
++        for fd in (1, 2):
++            with self.subTest(fd=fd), children() as (owned, _), self.assertRaisesRegex(c.Invalid, "COMMAND_OUTPUT_BOUND"):
++                db.bounded_command(PYTHON + [f'import os;\nwhile True: os.write({fd}, b"x"*8192)'], Deadline(2), {})
++            self.assertIsNotNone(owned[0].returncode)
++            self.assertTrue(owned[0].stdout.closed and owned[0].stderr.closed)
++
++    def test_selector_failure_occurs_before_command_spawn(self):
++        with patch.object(db.selectors, "DefaultSelector", side_effect=OSError(errno.ENFILE, "selector")), \
++                patch.object(db.subprocess, "Popen") as spawn, self.assertRaises(OSError):
++            db.bounded_command(PYTHON + ["pass"], Deadline(1), {})
++        spawn.assert_not_called()
++
++    def test_pipe_setup_failure_kills_group_and_closes_selector(self):
++        mux = db.selectors.DefaultSelector()
++        with patch.object(db.selectors, "DefaultSelector", return_value=mux), \
++                children('import time; time.sleep(20)') as (owned, _), \
++                patch.object(db.os, "set_blocking", side_effect=OSError(errno.EIO, "setup")), self.assertRaises(OSError):
++            db.bounded_command(PYTHON + ["pass"], Deadline(1), {})
++        self.assertIsNone(mux.get_map())
++        self.assertIsNotNone(owned[0].returncode)
++        self.assertTrue(owned[0].stdout.closed and owned[0].stderr.closed)
++
++    def test_reaped_leader_can_never_trigger_numeric_group_signal(self):
++        process = SimpleNamespace(pid=12345, returncode=0)
++        with patch.object(local_process.os, "killpg") as signal_group, self.assertRaisesRegex(c.Invalid, "LOCAL_PROCESS_OWNERSHIP"):
++            local_process.kill_and_reap(process)
++        signal_group.assert_not_called()
++
++    def test_cleanup_timeout_is_value_free(self):
++        process = SimpleNamespace(pid=12345, returncode=None)
++        process.wait = lambda **kwargs: (_ for _ in ()).throw(subprocess.TimeoutExpired(["private-canary"], 5))
++        with patch.object(local_process, "observe_exit"), patch.object(local_process.os, "killpg"), \
++                self.assertRaisesRegex(c.Invalid, "^LOCAL_PROCESS_CLEANUP$"):
++            local_process.kill_and_reap(process)
++
++
++if __name__ == "__main__":
++    unittest.main()
+--- before/tests/crawl-jobs-v2-observer/test_owned_resources.py
++++ after/tests/crawl-jobs-v2-observer/test_owned_resources.py
+@@ -403,7 +403,7 @@
+             backend = db.DockerBackend(value, paths, authorize=lambda *_: True, runner=runner)
+             self.assertEqual(backend.create_container(owned.container_spec(value, "target"), Deadline(2)), "a" * 64)
+             argv = calls[-1]
+-            self.assertEqual(argv[:3], ["docker", "--host", "unix:///var/run/docker.sock"])
++            self.assertEqual(argv[:3], ["/usr/bin/docker", "--host", "unix:///var/run/docker.sock"])
+             self.assertIn("--read-only", argv)
+             self.assertIn("core=0:0", argv)
+             self.assertIn("--no-healthcheck", argv)

@@ -1,0 +1,111 @@
+{
+  "excluded_self": "review-artifact-sha256.json",
+  "files": {
+    "assemble_result.py": {
+      "bytes": 7623,
+      "sha256": "8bf34fe4e0c0e5b3b5386688254bf126da57c31f5cdea9d68cf9e448737ea93b"
+    },
+    "coverage-crosscheck.json": {
+      "bytes": 2735,
+      "sha256": "cda604b5a03c2863e5be9e454174f260753d81e65c4d7317ba34860f187c08e2"
+    },
+    "dispatch-path-evidence.json": {
+      "bytes": 3886,
+      "sha256": "5d1061618a262bcc5e9e5a239c3d827a8722ebe51435525adfff6ce1c19dbbf9"
+    },
+    "documentation-crosscheck.md": {
+      "bytes": 2557,
+      "sha256": "9c56d4b292240fc7e692e1903c7b2ccea953731b29320af144da66385dd50b16"
+    },
+    "independent-022.json": {
+      "bytes": 7567,
+      "sha256": "e0301dd3f52ea208d0f82c6710b3ef908881115c8f521020b0ada7aaf0e4ebd6"
+    },
+    "independent-022.log": {
+      "bytes": 5587,
+      "sha256": "f227cadadbf6f5c75eeba4c4ce7564a391f17f26b0dc978df3b981c7726cce00"
+    },
+    "independent-077.json": {
+      "bytes": 7567,
+      "sha256": "a6f5936e9b58cd8ffbb0254c3916c0dfdbd1f85ae4b8a87a4f8bbafb8c19ac83"
+    },
+    "independent-077.log": {
+      "bytes": 5587,
+      "sha256": "f227cadadbf6f5c75eeba4c4ce7564a391f17f26b0dc978df3b981c7726cce00"
+    },
+    "independent_probes.py": {
+      "bytes": 25485,
+      "sha256": "f043f39f6a57a216405c5193dd8ff2ed6a864e8e3e86c7662e40e211591a571c"
+    },
+    "integrity-after.json": {
+      "bytes": 12243,
+      "sha256": "3a367644573b00351d608a0acd20235f53b33034f20cb849a49708fa103184fe"
+    },
+    "integrity-before.json": {
+      "bytes": 12243,
+      "sha256": "b3092833698972b21c6f8b4afa7fb27b19587e4432477608de6620473255997a"
+    },
+    "reference-source-hashes.json": {
+      "bytes": 2592,
+      "sha256": "66f32638dc756f9fdee1ec3d97c13b9d910e5081e275c52791185f145cdf4c2e"
+    },
+    "references/cli-plugins__manager__candidate.go": {
+      "bytes": 398,
+      "sha256": "67e960b7b7fafdfa6332a1e867b136caec18951b6f94a61b095984975e36b998"
+    },
+    "references/cli-plugins__manager__cobra.go": {
+      "bytes": 2378,
+      "sha256": "4fc97f4466545c303f233931a2e08f47aed2b8400625b0abf63074e6c4888771"
+    },
+    "references/cli-plugins__manager__manager.go": {
+      "bytes": 7420,
+      "sha256": "7f013ffe26cc1a3dc895968af27d79d159039a8b109fe3e65dd16ac79279bf55"
+    },
+    "references/cli-plugins__manager__plugin.go": {
+      "bytes": 5925,
+      "sha256": "8c38bdf7170a5978beb73edb3e71ccc578a9fc76b4bd65518286f3fdc3cff0c6"
+    },
+    "references/cli__command__cli.go": {
+      "bytes": 18941,
+      "sha256": "ff7919416d77b4e04528d6341358063aea982ba5674e1a91b470c38ce54b321e"
+    },
+    "references/cli__command__container__inspect.go": {
+      "bytes": 1731,
+      "sha256": "bcdf5bd044c428574e1474114ec50e6351567ddd98bbdfc1ced0710c6a5671e1"
+    },
+    "references/cmd__docker__docker.go": {
+      "bytes": 21868,
+      "sha256": "1c0fc026f2673545f2f7dea0019b0065034d96797683de46ef40898f09cb7220"
+    },
+    "references/vendor.mod": {
+      "bytes": 4688,
+      "sha256": "413f01e06afb1fdaf9bf8d7d838b1683cf12a514921a556a3690e99565ac8c5a"
+    },
+    "references/vendor__github.com__spf13__cobra__command.go": {
+      "bytes": 61130,
+      "sha256": "797ff14415e5fe31a22f7be52525cc0c809e1e8b6450e42d52afeb4f08389e61"
+    },
+    "references/vendor__github.com__spf13__pflag__flag.go": {
+      "bytes": 37434,
+      "sha256": "65e9c5e5f763cb701a26873ce16584642d442d64277ed688956e8b560c30d3cd"
+    },
+    "report.md": {
+      "bytes": 9284,
+      "sha256": "f0fdb199cac0cc03d70a0a7a08146a49148953492bc052e88b8f0f53bf8655e3"
+    },
+    "result.json": {
+      "bytes": 11061,
+      "sha256": "0f0c3656f1308658c899a2a293c69c51da63b3b91b17eead1436b0147d909128"
+    },
+    "supplemental_checks.py": {
+      "bytes": 5694,
+      "sha256": "7674d81d958a68269e974db992c276682cc65674cd49db4d857d82ead90cf7db"
+    },
+    "verify_inputs.py": {
+      "bytes": 2396,
+      "sha256": "c6dd137a65c7fb01351999e448358add536d36d8da8b7e6fab6d7926df237d0d"
+    }
+  },
+  "kind": "independent_review_artifacts",
+  "version": 1
+}

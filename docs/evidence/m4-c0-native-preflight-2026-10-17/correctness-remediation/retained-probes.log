@@ -1,0 +1,22 @@
+test_all_daemon_selected_field_drift_is_rejected (controls.Controls.test_all_daemon_selected_field_drift_is_rejected) ... ok
+test_all_kernel_context_drift_is_rejected (controls.Controls.test_all_kernel_context_drift_is_rejected) ... ok
+test_benign_command_output_flood_is_bounded_and_reaped (controls.Controls.test_benign_command_output_flood_is_bounded_and_reaped) ... ok
+test_benign_open_pipe_timeout_is_structured_and_reaped (controls.Controls.test_benign_open_pipe_timeout_is_structured_and_reaped) ... ok
+test_benign_stderr_is_not_exported (controls.Controls.test_benign_stderr_is_not_exported) ... ok
+test_cli_candidate_is_json_not_admission (controls.Controls.test_cli_candidate_is_json_not_admission) ... ok
+test_collector_lstats_only_fixed_paths (controls.Controls.test_collector_lstats_only_fixed_paths) ... ok
+test_docker_wrong_type_matrix_is_structured (controls.Controls.test_docker_wrong_type_matrix_is_structured) ... ok
+test_exact_metadata_bound_and_adversarial_json (controls.Controls.test_exact_metadata_bound_and_adversarial_json) ... ok
+test_expired_deadline_skips_all_producer_actions (controls.Controls.test_expired_deadline_skips_all_producer_actions) ... ok
+test_kernel_integers_reject_boolean_negative_and_oversize (controls.Controls.test_kernel_integers_reject_boolean_negative_and_oversize) ... ok
+test_native_and_image_architecture_aliases (controls.Controls.test_native_and_image_architecture_aliases) ... ok
+test_nested_snapshot_is_detached_after_return (controls.Controls.test_nested_snapshot_is_detached_after_return) ... ok
+test_nested_wrong_type_rejected_at_validation_boundary (controls.Controls.test_nested_wrong_type_rejected_at_validation_boundary) ... ok
+test_raw_json_docker_bridge_both_architectures (controls.Controls.test_raw_json_docker_bridge_both_architectures) ... ok
+test_closed_output_pipes_timeout_returns_structured_blocker (retained_regressions.Regressions.test_closed_output_pipes_timeout_returns_structured_blocker) ... ok
+test_supported_no_new_privileges_metadata_is_not_malformed (retained_regressions.Regressions.test_supported_no_new_privileges_metadata_is_not_malformed) ... ok
+
+----------------------------------------------------------------------
+Ran 17 tests in 1.552s
+
+OK

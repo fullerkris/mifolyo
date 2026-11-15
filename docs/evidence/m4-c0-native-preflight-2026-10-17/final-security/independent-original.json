@@ -1,0 +1,154 @@
+{
+  "errors": [],
+  "events": [
+    {
+      "cases": 18,
+      "subprocess_file_sensitive_env_dns_canaries": "no accesses",
+      "test": "both_arch_all_framings"
+    },
+    {
+      "large_private_field_bytes": 100000,
+      "same_report_despite_private_body_changes": true,
+      "test": "unselected_projection"
+    },
+    {
+      "all_json_blocked_no_stderr": true,
+      "cases": 32,
+      "test": "transport_faults"
+    },
+    {
+      "budget": 0.5,
+      "connections_attempted": 2,
+      "simulated_elapsed": 0.5,
+      "test": "aggregate_deadline"
+    },
+    {
+      "all_blocked": true,
+      "cases": 40,
+      "test": "malformed_http_corpus"
+    },
+    {
+      "all_blocked": true,
+      "cases": 13,
+      "test": "malformed_json"
+    },
+    {
+      "all_blocked": true,
+      "cases": 78,
+      "test": "selected_field_matrix"
+    },
+    {
+      "body": 262144,
+      "chunk_iterations": 4096,
+      "test": "byte_bounds",
+      "wire": 335872
+    },
+    {
+      "cases": 14,
+      "test": "COR02_regressions"
+    },
+    {
+      "cases": 600,
+      "note": "Accepted wire mutations may be legal headers/body changes; semantic validity is separately enforced.",
+      "seed": 20261017,
+      "test": "seeded_wire_mutation",
+      "transport_accepted": 154,
+      "transport_rejected": 446
+    },
+    {
+      "client_fd_closed": true,
+      "elapsed_seconds": 0.1515,
+      "mode": "partial-status",
+      "peer_thread_joined": true,
+      "request": "GET /info HTTP/1.1\r\nHost: localhost\r\nAccept: application/json\r\nConnection: close\r\n\r\n",
+      "server_error": null,
+      "status": "BLOCKED",
+      "test": "real_owned_socketpair"
+    },
+    {
+      "client_fd_closed": true,
+      "elapsed_seconds": 0.151,
+      "mode": "trickle-headers",
+      "peer_thread_joined": true,
+      "request": "GET /info HTTP/1.1\r\nHost: localhost\r\nAccept: application/json\r\nConnection: close\r\n\r\n",
+      "server_error": null,
+      "status": "BLOCKED",
+      "test": "real_owned_socketpair"
+    },
+    {
+      "client_fd_closed": true,
+      "elapsed_seconds": 0.1505,
+      "mode": "trickle-body",
+      "peer_thread_joined": true,
+      "request": "GET /info HTTP/1.1\r\nHost: localhost\r\nAccept: application/json\r\nConnection: close\r\n\r\n",
+      "server_error": null,
+      "status": "BLOCKED",
+      "test": "real_owned_socketpair"
+    },
+    {
+      "client_fd_closed": true,
+      "elapsed_seconds": 0.1512,
+      "mode": "keep-open",
+      "peer_thread_joined": true,
+      "request": "GET /info HTTP/1.1\r\nHost: localhost\r\nAccept: application/json\r\nConnection: close\r\n\r\n",
+      "server_error": null,
+      "status": "BLOCKED",
+      "test": "real_owned_socketpair"
+    },
+    {
+      "client_fd_closed": true,
+      "elapsed_seconds": 0.0018,
+      "mode": "truncated",
+      "peer_thread_joined": true,
+      "request": "GET /info HTTP/1.1\r\nHost: localhost\r\nAccept: application/json\r\nConnection: close\r\n\r\n",
+      "server_error": null,
+      "status": "BLOCKED",
+      "test": "real_owned_socketpair"
+    },
+    {
+      "client_fd_closed": true,
+      "elapsed_seconds": 0.002,
+      "mode": "extra-after-body",
+      "peer_thread_joined": true,
+      "request": "GET /info HTTP/1.1\r\nHost: localhost\r\nAccept: application/json\r\nConnection: close\r\n\r\n",
+      "server_error": null,
+      "status": "BLOCKED",
+      "test": "real_owned_socketpair"
+    },
+    {
+      "client_fd_closed": true,
+      "elapsed_seconds": 0.0013,
+      "mode": "chunk-no-zero",
+      "peer_thread_joined": true,
+      "request": "GET /info HTTP/1.1\r\nHost: localhost\r\nAccept: application/json\r\nConnection: close\r\n\r\n",
+      "server_error": null,
+      "status": "BLOCKED",
+      "test": "real_owned_socketpair"
+    },
+    {
+      "fds_after": 5,
+      "fds_before": 5,
+      "socketpairs": 80,
+      "test": "fd_repetition"
+    }
+  ],
+  "failures": [],
+  "harmless_cli_locale_color_environment_keys_consulted": [
+    "COLUMNS",
+    "FORCE_COLOR",
+    "LANG",
+    "LANGUAGE",
+    "LC_ALL",
+    "LC_MESSAGES",
+    "LINES",
+    "NO_COLOR",
+    "PYTHON_COLORS",
+    "TERM"
+  ],
+  "kind": "independent_preflight_transport_security_controls",
+  "real_docker_ssh_ptrace_native_actors_run": false,
+  "skipped": [],
+  "source_modified": false,
+  "status": "PASS",
+  "tests_run": 16
+}

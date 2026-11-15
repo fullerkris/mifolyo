@@ -1,0 +1,18 @@
+test_02_regression_clustered_help_must_be_rejected (__main__.OriginalSEC01Replay.test_02_regression_clustered_help_must_be_rejected) ... ok
+test_01_regression_detects_original_guard_negative_control (__main__.FocusedControls.test_01_regression_detects_original_guard_negative_control) ... ok
+test_02_all_short_clusters_reject_for_every_allowed_operation (__main__.FocusedControls.test_02_all_short_clusters_reject_for_every_allowed_operation) ... ok
+test_03_attached_control_and_value_positions_reject (__main__.FocusedControls.test_03_attached_control_and_value_positions_reject) ... ok
+test_04_oracle_exception_requires_each_exact_sentinel (__main__.FocusedControls.test_04_oracle_exception_requires_each_exact_sentinel) ... ok
+test_05_only_final_tail_is_exempt_and_actor_never_is (__main__.FocusedControls.test_05_only_final_tail_is_exempt_and_actor_never_is) ... ok
+test_06_original_long_prefix_operation_and_bounds_gates_still_reject (__main__.FocusedControls.test_06_original_long_prefix_operation_and_bounds_gates_still_reject) ... ok
+test_07_valid_oracle_tail_reaches_only_stubbed_transport (__main__.FocusedControls.test_07_valid_oracle_tail_reaches_only_stubbed_transport) ... ok
+test_08_original_398_call_compatibility_uses_actual_final_guard (__main__.FocusedControls.test_08_original_398_call_compatibility_uses_actual_final_guard) ... ok
+test_09_no_lifecycle_or_other_backend_body_changed (__main__.FocusedControls.test_09_no_lifecycle_or_other_backend_body_changed) ... ok
+test_clustered_help_and_attached_short_overrides_refuse_before_side_effects (test_live_adapter.ConfigurationTests.test_clustered_help_and_attached_short_overrides_refuse_before_side_effects) ... ok
+test_short_option_exception_requires_exact_oracle_entrypoint_image_and_tail (test_live_adapter.ConfigurationTests.test_short_option_exception_requires_exact_oracle_entrypoint_image_and_tail) ... ok
+test_generated_oracle_create_remains_accepted_for_both_architectures (test_live_adapter.ConfigurationTests.test_generated_oracle_create_remains_accepted_for_both_architectures) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.117s
+
+OK

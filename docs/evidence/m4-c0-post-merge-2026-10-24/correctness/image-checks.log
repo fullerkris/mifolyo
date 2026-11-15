@@ -1,0 +1,32 @@
+Traceback (most recent call last):
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/out/c0-hosted-images-2026-10-24/correctness-review/check_images.py", line 31, in rejected
+    function()
+    ~~~~~~~~^^
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/out/c0-hosted-images-2026-10-24/correctness-review/check_images.py", line 353, in <lambda>
+    rejected(arch + "/" + role + "/wrong-config-id", lambda: archive_record(portable, "sha256:" + "0" * 64, arch), "IMAGE_SAVE_CONFIG")
+                                                             ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/out/c0-main-sync-2026-10-24/verified-merged-source/tests/crawl-jobs-v2-observer/image_artifacts.py", line 335, in archive_record
+    identity = image_id(identity)
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/out/c0-main-sync-2026-10-24/verified-merged-source/tests/crawl-jobs-v2-observer/image_artifacts.py", line 27, in image_id
+    digest(value)
+    ~~~~~~^^^^^^^
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/out/c0-main-sync-2026-10-24/verified-merged-source/tests/crawl-jobs-v2-observer/contracts.py", line 50, in digest
+    require(type(value) is str and re.fullmatch(r"[0-9a-f]{64}", value) is not None and value != "0" * 64, "DIGEST")
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/out/c0-main-sync-2026-10-24/verified-merged-source/tests/crawl-jobs-v2-observer/contracts.py", line 27, in require
+    raise Invalid(code)
+contracts.Invalid: DIGEST
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/out/c0-hosted-images-2026-10-24/correctness-review/check_images.py", line 406, in <module>
+    main()
+    ~~~~^^
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/out/c0-hosted-images-2026-10-24/correctness-review/check_images.py", line 353, in main
+    rejected(arch + "/" + role + "/wrong-config-id", lambda: archive_record(portable, "sha256:" + "0" * 64, arch), "IMAGE_SAVE_CONFIG")
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/out/c0-hosted-images-2026-10-24/correctness-review/check_images.py", line 33, in rejected
+    assert str(error) == expected, (label, str(error), expected)
+           ^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('aarch64/observer/wrong-config-id', 'DIGEST', 'IMAGE_SAVE_CONFIG')

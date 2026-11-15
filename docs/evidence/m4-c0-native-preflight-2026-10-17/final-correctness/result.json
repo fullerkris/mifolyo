@@ -1,0 +1,48 @@
+{
+  "kind": "c0_native_preflight_transport_correctness_review",
+  "version": 1,
+  "scope": "Fresh read-only correctness review of fixed Unix-socket metadata transport, bounds/deadlines, metadata integration and non-authorizing preflight semantics",
+  "disposition": "GO_FOR_CONTINUED_IMPLEMENTATION",
+  "findings": [],
+  "base": "babb2180d05698e64b7d9baf37f9cab14b3c0f7f",
+  "source_inventory_sha256": "faf8d794802f7a3b7603bea199689014cef21d415764571725ff9e3b66414baf",
+  "snapshot_paths_verified_before_and_after": 62,
+  "package_paths": 59,
+  "context_paths_byte_identical_to_base": 55,
+  "previous_review_artifacts_unchanged": true,
+  "previous_snapshots_unchanged": true,
+  "independently_executed_tests": {
+    "focused": {"run": 30, "passed": 30},
+    "independent_controls": {"run": 15, "passed": 15}
+  },
+  "full_suite_artifact_verification": {
+    "independently_rerun": false,
+    "reported_passed": 318,
+    "prior_test_ids_retained": 304,
+    "new_transport_test_ids": 14,
+    "package_source_hashes_verified": 59,
+    "runner_hash_verified": true,
+    "individual_log_ids_reconciled": true,
+    "failures_errors_skips_expected_failures_unexpected_successes": 0,
+    "json_sha256": "2113de12e8e359b884e9d1ac7e884866663d1bcced51f1680aa93c63f5dee6bf",
+    "log_sha256": "7bd62e246d4a7c1fdb793e11ecf9af761fc0632eafd441d8715c2cdfc450fe65",
+    "runner_sha256": "9afb715125f734f5b905da63dde5c9787fc5997b2e5a73a0bf62d781b23aef84"
+  },
+  "prior_findings_relationship": {
+    "COR-01": "Subprocess timeout path removed from preflight; socket timeout/refusal/closure semantics independently verified",
+    "COR-02": "Exact NNP token support and negative controls remain effective through the API path",
+    "S1_S3": "CLI/plugin/config and descendant path removed from preflight; unchanged runtime adapter/shared runner are not certified fixed",
+    "security_review_separate": true
+  },
+  "live_docker_operations_run": 0,
+  "ssh_operations_run": 0,
+  "ptrace_operations_run": 0,
+  "native_trials_run": 0,
+  "host_admitted": false,
+  "execution_authorized": false,
+  "native_calibration_claimed": false,
+  "runtime_adapter_approved": false,
+  "repository_or_snapshot_mutations": false,
+  "report": "report.md",
+  "independent_evidence": "independent-evidence.json"
+}

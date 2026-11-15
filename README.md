@@ -5,6 +5,26 @@ MiFolyo is a community-first search and discussion platform. This repository cur
 - Built off of IonelPopJara's Moogle search engine stack for crawling, indexing, ranking, and querying web pages.
 - A Laravel based forum/community service scaffold for posts, comments, voting, reports, moderation, and search integration.
 
+## Current checkpoint — 2026-11-15
+
+Main remains at PR #32 merge `e8a0a41`. The exact reviewed **322-path C0
+preflight/runtime-adapter candidate** is now committed locally as `358173c`;
+fresh offline verification passes **338/338 tests under umasks 022 and 077**.
+C0 runtime remains owner-paused since October 27, native ARM64 calibration
+is deferred, and full M4 acceptance and V2 application integration remain open.
+
+The nine-file November 1 production preparation is preserved locally as
+`6adde2c` on `feature/production-deploy-2026-11-01`. Onboarding hints remain
+in open PR #33; the separately documented onboarding-basics work still needs
+locating in its original development environment. The published environment
+startup scripts and the production preparation have different deployment
+topologies.
+
+See the [repository reconciliation record](docs/repository-reconciliation-2026-11-15.md)
+for the verified full backup, branch audit, exact checkpoint identities,
+production comparison and remaining recovery work. New checkpoints are local;
+remote publication awaits owner approval.
+
 ## Search Engine Foundation
 
 The search stack is based on Moogle, an educational search engine inspired by early web architecture. It uses Redis for crawl queues and temporary pipeline data, MongoDB for indexed search data, PostgreSQL for MiFolyo application/community data, and Laravel for the query engine.
@@ -144,12 +164,14 @@ authorized one 14,130-ms run. Independent correctness/security reviews accept th
 result; six-role revocation, the original 28-action journal and exact six-resource
 absence pass. The renewed approval is consumed. See the
 [cancellation run/evidence](docs/crawl-jobs-v2-m4-cancellation-run-2026-10-06.md).
-The owner-selected C0 worktree now includes the
-owned-resource, bounded-stream and watchdog layer. Its 22-file package passes
-78 tests, with final correctness/security GO for continued implementation after
-remediation. Native runtime admission, oracle/client integration and full trial
-dispatch remain next; observer feasibility and D02 owner decisions remain open.
-Full M4 acceptance and application integration remain pending. The
+C0 source/tooling, context/oracle support, architecture contracts, x64 static
+runtime and ARM64/x64 image sets are merged through PRs #23–#26, #30 and #32.
+The later host-preflight and runtime-adapter hardening is preserved at local
+checkpoint `358173c`, with **338/338 offline tests under both umasks** and the
+original two final GO reviews retained. Runtime work is owner-paused;
+installed-CLI/collector/image admission, full trial assembly and native
+calibration remain open. Full M4 acceptance and application integration remain
+pending. The
 [Crawl Jobs V2 plan](docs/crawl-jobs-v2-plan.md) owns current progress. Historical
 V1 commands below do not authorize another crawl.
 

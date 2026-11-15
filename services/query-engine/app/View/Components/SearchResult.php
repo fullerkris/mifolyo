@@ -22,7 +22,7 @@ class SearchResult extends Component
     /**
      * Create a new component instance.
      */
-    public function __construct($url, $title, $summary, $description, SearchResultPresenter $presenter)
+    public function __construct($url, $title, $summary, $description, SearchResultPresenter $presenter, public bool $onboardingHint = false)
     {
         $this->url = $url;
         $this->title = $title;

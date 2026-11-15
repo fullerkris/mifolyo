@@ -7,6 +7,9 @@
             <p>{{ $message }}</p>
             @if (request()->routeIs('threads.vote'))
                 <a class="mf-button mf-primary" href="{{ \App\Support\ThreadContext::url(request(), (int) request()->route('thread'), request('votable_type') === 'comment' ? (filter_var(request('votable_id'), FILTER_VALIDATE_INT) ?: null) : null) }}">Return to conversation</a>
+            @elseif (request()->is('onboarding'))
+                @php($back = \App\Services\ForumApi::returnTo(request()->input('return_to')))
+                <a class="mf-button mf-primary" href="{{ $status === 401 ? route('account.sign-in', ['return_to' => $back]) : $back }}">{{ $status === 401 ? 'Sign in' : 'Return to page' }}</a>
             @elseif ($status === 401)
                 <a class="mf-button mf-primary" href="{{ route('account.sign-in', ['return_to' => request()->getRequestUri()]) }}">Sign in</a>
             @elseif (in_array($status, [429, 503]))

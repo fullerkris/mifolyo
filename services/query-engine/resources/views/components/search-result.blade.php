@@ -1,6 +1,6 @@
 @php
     $source = is_string($url) ? $url : '';
-    $validUrl = strlen($source) <= 2048 && filter_var($source, FILTER_VALIDATE_URL) && in_array(strtolower(parse_url($source, PHP_URL_SCHEME) ?? ''), ['http', 'https'], true);
+    $validUrl = \App\Support\SearchResultPresenter::isSourceUrl($source);
     $parts = $validUrl ? parse_url($source) : [];
     $domain = ($parts['host'] ?? '').(isset($parts['port']) ? ':'.$parts['port'] : '');
     $path = ($parts['path'] ?? '/').(isset($parts['query']) ? '?'.$parts['query'] : '').(isset($parts['fragment']) ? '#'.$parts['fragment'] : '');
@@ -32,9 +32,12 @@
         @if ($validUrl)
             <div class="mf-result-actions">
                 <a href="{{ $source }}" class="mf-button mf-primary">View page <x-search-icon name="external" /></a>
-                <a href="{{ $discussionPage }}" class="mf-button mf-secondary" data-discuss-url="{{ $source }}" data-discuss-title="{{ $label }}"><x-search-icon name="chat" /> Discuss<span class="mf-discussion-count" data-discussion-count hidden></span><span class="mf-sr-only"> {{ $label }}</span></a>
+                <a href="{{ $discussionPage }}" class="mf-button mf-secondary" data-discuss-url="{{ $source }}" data-discuss-title="{{ $label }}" @if ($onboardingHint) aria-describedby="onboarding-discuss" @endif><x-search-icon name="chat" /> Discuss<span class="mf-discussion-count" data-discussion-count hidden></span><span class="mf-sr-only"> {{ $label }}</span></a>
                 <a href="{{ route('page.links', array_filter(['url' => $source, 'from' => $searchReturn])) }}" class="mf-text-link">Page links</a>
             </div>
+            @if ($onboardingHint)
+                <p id="onboarding-discuss" class="mf-onboarding-hint" data-onboarding-step="discuss"><x-search-icon name="chat" /><span><strong>Go beyond the link.</strong> Choose Discuss to see community threads about this page, or start one.</span></p>
+            @endif
         @endif
     </article>
 </li>

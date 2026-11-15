@@ -12,7 +12,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 #[Fillable(['name', 'username', 'email', 'password', 'level', 'standing'])]
-#[Hidden(['password', 'remember_token', 'api_token'])]
+#[Hidden(['password', 'remember_token', 'api_token', 'onboarding_started_at', 'onboarding_welcome_at', 'onboarding_discuss_at', 'onboarding_vote_at'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
@@ -31,6 +31,23 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'level' => 'integer',
             'password' => 'hashed',
+            'onboarding_started_at' => 'immutable_datetime',
+            'onboarding_welcome_at' => 'immutable_datetime',
+            'onboarding_discuss_at' => 'immutable_datetime',
+            'onboarding_vote_at' => 'immutable_datetime',
+        ];
+    }
+
+    public function onboardingState(): array
+    {
+        $started = $this->onboarding_started_at;
+        $enrolled = $started !== null && $started->lessThanOrEqualTo(now());
+        $firstWeek = $enrolled && now()->lessThan($started->addDays(7));
+
+        return [
+            'welcome' => $enrolled && $this->onboarding_welcome_at === null,
+            'discuss' => $firstWeek && $this->onboarding_discuss_at === null,
+            'vote' => $firstWeek && $this->onboarding_vote_at === null,
         ];
     }
 

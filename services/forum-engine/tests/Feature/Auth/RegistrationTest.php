@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Auth;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -35,5 +36,6 @@ class RegistrationTest extends TestCase
             'level' => 1,
             'standing' => 'healthy',
         ]);
+        $this->assertSame(['welcome' => true, 'discuss' => true, 'vote' => true], User::where('email', 'test@example.com')->firstOrFail()->onboardingState());
     }
 }

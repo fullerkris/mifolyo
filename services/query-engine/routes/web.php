@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccountSettingsController;
 use App\Http\Controllers\BrowserForumController;
 use App\Http\Controllers\ForumAccountController;
+use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\PasswordRecoveryController;
 use App\Http\Controllers\QuerySearchController;
 use App\Http\Controllers\ThreadPageController;
@@ -23,6 +24,8 @@ Route::post('/sign-in', [ForumAccountController::class, 'authenticate'])->middle
 Route::get('/register', [ForumAccountController::class, 'form'])->name('account.register');
 Route::post('/register', [ForumAccountController::class, 'authenticate'])->middleware('throttle:10,1,forum-auth')->name('account.register.submit');
 Route::post('/sign-out', [ForumAccountController::class, 'logout'])->name('account.sign-out');
+Route::get('/onboarding', [OnboardingController::class, 'show'])->middleware('throttle:60,1,onboarding-read')->name('onboarding.show');
+Route::post('/onboarding', [OnboardingController::class, 'update'])->middleware('throttle:30,1,onboarding-write')->name('onboarding.update');
 Route::get('/forgot-password', [PasswordRecoveryController::class, 'requestForm'])->name('account.password.request');
 Route::post('/forgot-password', [PasswordRecoveryController::class, 'send'])->middleware('throttle:5,1,account-recovery')->name('account.password.email');
 Route::get('/reset-password', [PasswordRecoveryController::class, 'form'])->name('account.password.reset');

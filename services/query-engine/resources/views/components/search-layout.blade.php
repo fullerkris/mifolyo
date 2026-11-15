@@ -18,7 +18,7 @@
     </script>
     @vite(['resources/css/search-ui.css', 'resources/js/search-ui.js'])
 </head>
-<body class="mf-app">
+<body class="mf-app" @if (session()->has('forum.user')) data-onboarding-user="{{ session('forum.user.id') }}" data-onboarding-endpoint="{{ route('onboarding.show', [], false) }}" @endif>
     <a href="#main" class="mf-skip-link">Skip to content</a>
     <header class="mf-header {{ $home ? 'mf-home-header' : '' }}">
         <a href="{{ route('home') }}" class="mf-brand" aria-label="MiFolyo home">
@@ -40,6 +40,7 @@
     </header>
     <div class="mf-navigation-status" role="status" data-navigation-status hidden>{{ $searchMode === 'images' ? 'Searching indexed images…' : 'Searching indexed pages…' }}</div>
     @if (session('notice'))<div class="mf-notice" role="status">{{ session('notice') }}</div>@endif
+    <x-onboarding-welcome />
     {{ $slot }}
     <footer class="mf-footer">
         <span>Made for curious people.</span>

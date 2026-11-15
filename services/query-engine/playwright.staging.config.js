@@ -14,8 +14,8 @@ export default defineConfig({
         screenshot: 'only-on-failure',
     },
     projects: [
-        { name: 'desktop', testMatch: ['search-ui.spec.js', 'discovery.spec.js', 'voting.spec.js', 'accounts.spec.js', 'account-concurrency.spec.js'], use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 1000 } } },
-        { name: 'mobile', testMatch: ['search-ui.spec.js', 'discovery.spec.js', 'voting.spec.js', 'accounts.spec.js'], use: { ...devices['Pixel 7'] } },
+        { name: 'desktop', testMatch: ['search-ui.spec.js', 'discovery.spec.js', 'voting.spec.js', 'accounts.spec.js', 'account-concurrency.spec.js', 'onboarding.spec.js'], use: { ...devices['Desktop Chrome'], viewport: { width: 1440, height: 1000 } } },
+        { name: 'mobile', testMatch: ['search-ui.spec.js', 'discovery.spec.js', 'voting.spec.js', 'accounts.spec.js', 'onboarding.spec.js'], use: { ...devices['Pixel 7'] } },
         { name: 'recovery', testMatch: 'recovery.spec.js', dependencies: ['desktop', 'mobile'], use: { ...devices['Desktop Chrome'] } },
     ],
 });

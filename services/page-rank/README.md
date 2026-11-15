@@ -4,8 +4,8 @@
 > **Status — current V1 offline ranking job; outside F3.** PageRank is not a
 > Crawl Jobs V2 producer or consumer and is not in the F3 implementation path.
 > Its commands and image do not authorize a V2 run. See the
-> [parent remediation plan](../../docs/spider-render-remediation-plan-2026-09-01.md)
-> and [F3 implementation plan](../../docs/crawl-jobs-v2-plan.md).
+> [archived parent remediation plan](../../docs/README.md#archives)
+> and [archived F3 implementation plan](../../docs/README.md#archives).
 
 The PageRank service computes authority scores for searchable pages in MongoDB.
 It is a one-shot batch job, not a long-running or horizontally scaled service.
@@ -80,7 +80,7 @@ on internal networks.
 The service-level Compose file is a current V1 deployment artifact. The
 PageRank image remains digest-pinned, but its validation alongside the legacy
 page/image pipeline does not make PageRank a Crawl Jobs V2 participant. The
-[legacy cutover runbook](../../docs/immutable-pipeline-release-cutover.md)
+[archived legacy cutover runbook](../../docs/README.md#archives)
 records the retired V1 procedure for historical interpretation only; it is not
 current deployment or publication authorization.
 

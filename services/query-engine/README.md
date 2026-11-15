@@ -5,8 +5,8 @@
 > not a Crawl Jobs V2 producer or consumer and is not in the F3 implementation
 > path. F6 API/UI provenance work has not started. The procedures below do not
 > authorize V2 operation. See the
-> [parent remediation plan](../../docs/spider-render-remediation-plan-2026-09-01.md)
-> and [F3 implementation plan](../../docs/crawl-jobs-v2-plan.md).
+> [archived parent remediation plan](../../docs/README.md#archives)
+> and [archived F3 implementation plan](../../docs/README.md#archives).
 
 The Query Engine is the main API and web interface for the Moogle search engine. It provides endpoints and web pages for searching web pages and images, retrieving page metadata, exploring page connections (outlinks and backlinks), and viewing search statistics. The Query Engine is built with Laravel and serves as the bridge between users and the indexed data stored in MongoDB.
 
@@ -122,7 +122,7 @@ php artisan security:purge-legacy-search-terms
 ```
 
 The command is retained only to interpret the
-[legacy release checklist](../../docs/immutable-pipeline-release-cutover.md),
+[archived legacy release checklist](../../docs/README.md#archives),
 which is not executable current guidance. Any future cleanup needs a new,
 reviewed operator plan; startup, migrations, scheduling, and deployment never
 run it automatically. That checklist does not define Crawl Jobs V2 release

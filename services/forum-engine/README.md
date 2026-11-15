@@ -172,7 +172,7 @@ complete it; removing a previously saved vote never reopens guidance. Responses
 and the Search UI's `/onboarding` gateway are private and non-cacheable.
 
 Deploy the forum migration before serving this version. See
-[`docs/search-ui-onboarding.md`](../../docs/search-ui-onboarding.md) for browser
+[the archived onboarding record](../../docs/README.md#archives) for browser
 behavior, rollout and local verification.
 
 ## Search UI account lifecycle

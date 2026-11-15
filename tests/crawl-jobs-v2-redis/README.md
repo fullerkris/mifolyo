@@ -1,5 +1,9 @@
 # Crawl Jobs V2 M4 fixture harness
 
+Historical plan and review documents are in the
+[Obsidian archive](../../docs/README.md#archives). Their local links below refer
+to the original snapshots; use the recorded revision for full evidence replay.
+
 This non-shipped harness has an offline compiler (`harness.py`) and a bounded
 closed-case execution controller (`controller.py`). The compiler starts nothing.
 The controller can create disposable infrastructure only through its explicit

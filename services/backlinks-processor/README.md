@@ -7,8 +7,8 @@
 > integration, or unrelated current worktree changes. F3 runtime/consumer
 > integration has not started; these procedures are not V2 wiring or
 > authorization. See the
-> [parent remediation plan](../../docs/spider-render-remediation-plan-2026-09-01.md)
-> and [F3 implementation plan](../../docs/crawl-jobs-v2-plan.md).
+> [archived parent remediation plan](../../docs/README.md#archives)
+> and [archived F3 implementation plan](../../docs/README.md#archives).
 
 > [!CAUTION]
 > Do not start the processor or apply reconciliation under the current F3 gates.

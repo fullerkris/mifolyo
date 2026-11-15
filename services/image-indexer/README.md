@@ -4,8 +4,8 @@
 > **Status — current V1 downstream consumer.** The publication and deployment
 > procedures below describe V1 only. F3 runtime/consumer integration has not
 > started, and this README does not authorize Crawl Jobs V2 operation. See the
-> [parent remediation plan](../../docs/spider-render-remediation-plan-2026-09-01.md)
-> and [F3 implementation plan](../../docs/crawl-jobs-v2-plan.md).
+> [archived parent remediation plan](../../docs/README.md#archives)
+> and [archived F3 implementation plan](../../docs/README.md#archives).
 
 The image indexer reconciles image-search state from spider-authorized metadata.
 It performs **no HTTP requests and no image-byte decoding**. Each Mongo image
@@ -61,7 +61,7 @@ so standalone Mongo is supported.
 The service-level Compose file is a current V1 deployment artifact and requires
 the exact `MIFOLYO_IMAGE_INDEXER_IMAGE` GHCR digest reference from the reviewed
 release artifact. The
-[legacy stop/drain/backup procedure](../../docs/immutable-pipeline-release-cutover.md)
+[archived legacy stop/drain/backup procedure](../../docs/README.md#archives)
 is retained for historical V1 interpretation only and is not current cutover
 authorization. Use root Compose for local source builds; never mix old and new
 queue consumers.

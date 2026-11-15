@@ -5,8 +5,8 @@
 > are implemented; Stage 3 is not approved. The crawl runtime remains V1, and
 > `IPC V2` below names only the renderer transport. It is not Crawl Jobs V2
 > wiring or authorization. See the
-> [parent remediation plan](../../docs/spider-render-remediation-plan-2026-09-01.md)
-> and [F3 implementation plan](../../docs/crawl-jobs-v2-plan.md).
+> [archived parent remediation plan](../../docs/README.md#archives)
+> and [archived F3 implementation plan](../../docs/README.md#archives).
 
 The render worker executes policy-approved JavaScript in Headless Chromium and
 returns the frozen DOM to the Go spider over a Unix socket. The worker remains a
@@ -141,7 +141,7 @@ deployment-host sandbox validation, and a fresh crawl approval. Enabling the
 Compose `render` profile alone does not authorize any page or resource.
 
 The
-[Spider and Render Worker remediation plan](../../docs/spider-render-remediation-plan-2026-09-01.md)
+[archived Spider and Render Worker remediation plan](../../docs/README.md#archives)
 is an additional activation gate. In particular, durable Spider job recovery,
 exact crawl scope, and the approved JavaScript-shell indexing disposition must
 be complete before public rendering is considered.

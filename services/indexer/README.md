@@ -6,8 +6,8 @@
 > started; the complete, dormant M3 Lua bundle provides no Indexer wiring.
 > Local M3 verification is not protected-PR acceptance. This README does not
 > authorize Crawl Jobs V2 operation. See the
-> [parent remediation plan](../../docs/spider-render-remediation-plan-2026-09-01.md)
-> and [F3 implementation plan](../../docs/crawl-jobs-v2-plan.md) for the published
+> [archived parent remediation plan](../../docs/README.md#archives)
+> and [archived F3 implementation plan](../../docs/README.md#archives) for the published
 > M3 checkpoint and the pending M4 protocol/fixture clarifications and approval.
 
 The Indexer is a core service in the Moogle search engine pipeline. Its job is to process crawled web pages from the Spider, extract and index relevant data, and store it in MongoDB for fast retrieval by other services. The Indexer builds the inverted index, manages metadata, and prepares data for ranking and querying.
@@ -157,7 +157,7 @@ the exact
 `MIFOLYO_INDEXER_IMAGE=ghcr.io/fullerkris/mifolyo/indexer@sha256:<64 lowercase
 hex>` reference from the reviewed release digest artifact. This queue protocol
 does not permit a rolling or mixed-version deployment. The
-[legacy cutover runbook](../../docs/immutable-pipeline-release-cutover.md)
+[archived legacy cutover runbook](../../docs/README.md#archives)
 records the retired V1 procedure for historical interpretation only; do not use
 it as current deployment authorization. Root Compose remains the local
 source-build path.

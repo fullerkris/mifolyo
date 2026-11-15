@@ -5,8 +5,8 @@
 > three-key queue only. F1 and F2 have not started, and no V2 feeder or
 > source/audit runtime is wired. Do not use this README as Crawl Jobs V2
 > migration, feed, or crawl authorization. See the
-> [parent remediation plan](../../docs/spider-render-remediation-plan-2026-09-01.md)
-> and [F3 implementation plan](../../docs/crawl-jobs-v2-plan.md).
+> [archived parent remediation plan](../../docs/README.md#archives)
+> and [archived F3 implementation plan](../../docs/README.md#archives).
 
 > [!CAUTION]
 > Under the current F3 gates, do not run non-dry-run bootstrap, rebuild,

@@ -17,6 +17,18 @@
 # env file
 .env
 
+# Keep prose archives in Obsidian; retain README and startup/build inputs.
+*.md
+*.markdown
+![Rr][Ee][Aa][Dd][Mm][Ee]*
+!/docs/environments.md
+!/docs/search-ui-local-staging.md
+!/docs/environment-scripts.md
+!/docs/production-deployment.md
+!/docs/crawl-jobs-v2.md
+!/services/indexer/nlp/provenance/DATASET-LICENSES.md
+!/services/indexer/nlp/provenance/LICENSE-OVERVIEW.md
+
 # macOS metadata
 .DS_Store
 

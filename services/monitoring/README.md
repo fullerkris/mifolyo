@@ -8,8 +8,8 @@
 > checks in PR #9, including `required-tests`, and merged as `d914a93`. That code
 > acceptance does not cover retained-datastore reconciliation, V2 integration,
 > or unrelated current worktree changes. See the
-> [parent remediation plan](../../docs/spider-render-remediation-plan-2026-09-01.md)
-> and [F3 implementation plan](../../docs/crawl-jobs-v2-plan.md).
+> [archived parent remediation plan](../../docs/README.md#archives)
+> and [archived F3 implementation plan](../../docs/README.md#archives).
 
 The implemented V1 loop reads crawl, indexer, and backlink backlog state, then
 invokes Compose scaling for Spider, Indexer, and Backlinks Processor instances.

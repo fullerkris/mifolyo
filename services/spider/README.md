@@ -8,8 +8,8 @@
 > M3 protected-PR or real-Redis acceptance. M4 still requires reviewed fixture,
 > ACL and bootstrap clarifications plus explicit approval. No V2 runtime wiring,
 > migration, deployment, rendering activation or crawling is authorized. See the
-> [parent remediation plan](../../docs/spider-render-remediation-plan-2026-09-01.md)
-> and [F3 implementation plan](../../docs/crawl-jobs-v2-plan.md).
+> [archived parent remediation plan](../../docs/README.md#archives)
+> and [archived F3 implementation plan](../../docs/README.md#archives).
 
 The Go spider consumes the current V1 Redis crawl queue, fetches
 policy-approved web pages, extracts links and images, and writes crawl data back
@@ -166,9 +166,9 @@ for the remaining rollout gates. No checked-in policy or this implementation
 authorizes a public rendered crawl.
 
 The
-[Spider and Render Worker remediation plan](../../docs/spider-render-remediation-plan-2026-09-01.md)
+[archived Spider and Render Worker remediation plan](../../docs/README.md#archives)
 blocks another crawl until its acceptance gates pass. The
-[F3 implementation plan](../../docs/crawl-jobs-v2-plan.md) owns durable-job
+[archived F3 implementation plan](../../docs/README.md#archives) owns durable-job
 status and sequencing.
 
 ## Configuration
@@ -242,7 +242,7 @@ The service-level Compose file is a current V1 deployment artifact, not a local
 build file. It requires `MIFOLYO_SPIDER_IMAGE` to be the exact approved
 `ghcr.io/fullerkris/mifolyo/spider@sha256:<64 lowercase hex>` reference from the
 reviewed release digest artifact. The
-[legacy cutover runbook](../../docs/immutable-pipeline-release-cutover.md)
+[archived legacy cutover runbook](../../docs/README.md#archives)
 records the retired V1 page/image procedure for historical interpretation only;
 it is not current deployment authorization. Use the root Compose file for local
 source builds.

@@ -6,8 +6,8 @@
 > the F3 implementation path and must receive neither Crawl Jobs Redis
 > credentials nor network access to that Redis instance. The commands below do
 > not authorize V2 operation. See the
-> [parent remediation plan](../../docs/spider-render-remediation-plan-2026-09-01.md)
-> and [F3 implementation plan](../../docs/crawl-jobs-v2-plan.md).
+> [archived parent remediation plan](../../docs/README.md#archives)
+> and [archived F3 implementation plan](../../docs/README.md#archives).
 
 The TF-IDF Processor computes TF-IDF (Term Frequency-Inverse Document
 Frequency) after the Indexer has processed crawled pages. It reads indexed data

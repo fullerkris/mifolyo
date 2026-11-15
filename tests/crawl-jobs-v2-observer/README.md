@@ -1,5 +1,9 @@
 # C0 synthetic observer preparation
 
+Historical plan and review documents are in the
+[Obsidian archive](../../docs/README.md#archives). Their local links below refer
+to the original snapshots; use the recorded revision for full evidence replay.
+
 Implementation-only artifacts for the independently reviewed OBS1 design. This
 directory is separate from the Redis fixture harness and has no runtime imports
 from it. Native code is compiled for static review; the preparation build never

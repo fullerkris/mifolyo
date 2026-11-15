@@ -1,0 +1,198 @@
+name: mifolyo-production
+
+x-app: &app
+  restart: unless-stopped
+  init: true
+  security_opt: [no-new-privileges:true]
+  cap_drop: [ALL]
+  pids_limit: 128
+  healthcheck:
+    test: [CMD, php, -r, "exit(@fsockopen('127.0.0.1', 9000) ? 0 : 1);"]
+    interval: 15s
+    timeout: 5s
+    retries: 5
+    start_period: 30s
+
+services:
+  query-engine:
+    <<: *app
+    image: mifolyo-production-query:${RELEASE_TAG:?set RELEASE_TAG}
+    build:
+      context: ../../services/query-engine
+      dockerfile: ../../scripts/docker/php-production.Dockerfile
+      args:
+        WITH_MONGODB: "true"
+    env_file:
+      - path: ${PRODUCTION_ENV_DIR:?set PRODUCTION_ENV_DIR}/query.env
+        format: raw
+    environment:
+      APP_NAME: MiFolyo
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_URL: ${PRODUCTION_URL:?set PRODUCTION_URL}
+      LOG_CHANNEL: stderr
+      LOG_LEVEL: warning
+      SESSION_DRIVER: redis
+      SESSION_COOKIE: mifolyo_session
+      SESSION_SECURE_COOKIE: "true"
+      SESSION_ENCRYPT: "true"
+      CACHE_STORE: redis
+      CACHE_PREFIX: mifolyo_cache_
+      QUEUE_CONNECTION: sync
+      REDIS_CLIENT: predis
+      REDIS_HOST: redis
+      REDIS_PREFIX: mifolyo_production_
+      FORUM_API_BASE_URL: http://gateway:8080
+      FORUM_API_TIMEOUT_SECONDS: "5"
+      FORUM_DEFAULT_COMMUNITY_SLUG: general
+    networks: [app, retained-index]
+    mem_limit: 768m
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  forum-engine:
+    <<: *app
+    image: mifolyo-production-forum:${RELEASE_TAG:?set RELEASE_TAG}
+    build:
+      context: ../../services/forum-engine
+      dockerfile: ../../scripts/docker/php-production.Dockerfile
+    env_file:
+      - path: ${PRODUCTION_ENV_DIR:?set PRODUCTION_ENV_DIR}/forum.env
+        format: raw
+    environment:
+      APP_NAME: MiFolyo
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_URL: ${PRODUCTION_URL:?set PRODUCTION_URL}
+      SEARCH_UI_URL: ${PRODUCTION_URL:?set PRODUCTION_URL}
+      SEARCH_API_BASE_URL: http://gateway
+      LOG_CHANNEL: stderr
+      LOG_LEVEL: warning
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_DATABASE: mifolyo_forum
+      DB_USERNAME: mifolyo
+      SESSION_DRIVER: database
+      SESSION_COOKIE: mifolyo_forum_session
+      SESSION_SECURE_COOKIE: "true"
+      CACHE_STORE: database
+      QUEUE_CONNECTION: sync
+    networks: [app, database, outbound]
+    mem_limit: 512m
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  query-assets:
+    image: mifolyo-production-query:${RELEASE_TAG:?set RELEASE_TAG}
+    entrypoint: [sh, -ec]
+    command: ["cp -R /var/www/public/. /assets/"]
+    network_mode: none
+    volumes: [query-public:/assets]
+
+  forum-assets:
+    image: mifolyo-production-forum:${RELEASE_TAG:?set RELEASE_TAG}
+    entrypoint: [sh, -ec]
+    command: ["cp -R /var/www/public/. /assets/"]
+    network_mode: none
+    volumes: [forum-public:/assets]
+
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    env_file:
+      - path: ${PRODUCTION_ENV_DIR:?set PRODUCTION_ENV_DIR}/postgres.env
+        format: raw
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./production-postgres-init.sh:/docker-entrypoint-initdb.d/10-mifolyo.sh:ro
+    networks: [database]
+    mem_limit: 512m
+    pids_limit: 128
+    healthcheck:
+      test: [CMD, pg_isready, -U, postgres, -d, postgres]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  postgres-backup:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    env_file:
+      - path: ${PRODUCTION_ENV_DIR:?set PRODUCTION_ENV_DIR}/backup.env
+        format: raw
+    entrypoint: [sh, /backup-postgres.sh]
+    volumes:
+      - ./production-postgres-backup.sh:/backup-postgres.sh:ro
+      - ${PRODUCTION_BACKUP_DIR:?set PRODUCTION_BACKUP_DIR}/postgres:/backups
+    networks: [database]
+    mem_limit: 128m
+    pids_limit: 32
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    env_file:
+      - path: ${PRODUCTION_ENV_DIR:?set PRODUCTION_ENV_DIR}/redis.env
+        format: raw
+    command:
+      - sh
+      - -ec
+      - 'umask 077; printf "requirepass %s\nappendonly yes\nappendfsync everysec\nsave 300 1\ndir /data\n" "$$REDIS_PASSWORD" > /tmp/redis.conf; chown redis:redis /tmp/redis.conf; exec /usr/local/bin/docker-entrypoint.sh redis-server /tmp/redis.conf'
+    volumes: [redis-data:/data]
+    networks: [app]
+    mem_limit: 256m
+    pids_limit: 64
+    healthcheck:
+      test: [CMD-SHELL, 'REDISCLI_AUTH="$$REDIS_PASSWORD" redis-cli ping | grep -qx PONG']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  gateway:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports: ["127.0.0.1:18080:80"]
+    volumes:
+      - ./production.Caddyfile:/etc/caddy/Caddyfile:ro
+      - query-public:/srv/query:ro
+      - forum-public:/srv/forum:ro
+    networks: [app, ingress]
+    mem_limit: 128m
+    pids_limit: 128
+    depends_on:
+      query-engine:
+        condition: service_healthy
+      forum-engine:
+        condition: service_healthy
+      query-assets:
+        condition: service_completed_successfully
+      forum-assets:
+        condition: service_completed_successfully
+    healthcheck:
+      test: [CMD-SHELL, "wget -q -O /dev/null http://127.0.0.1/api/health/ready && wget -q -O /dev/null http://127.0.0.1:8080/api/health/ready"]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+
+networks:
+  app:
+    internal: true
+  database:
+    internal: true
+  ingress:
+  outbound:
+  retained-index:
+    external: true
+    name: ${MONGO_NETWORK:?set existing MONGO_NETWORK}
+
+volumes:
+  postgres-data:
+  redis-data:
+  query-public:
+  forum-public:

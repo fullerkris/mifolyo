@@ -1,0 +1,60 @@
+test_01_dual_pipe_exact_combined_cap_and_nonzero_status (__main__.IndependentControls.test_01_dual_pipe_exact_combined_cap_and_nonzero_status) ... ok
+test_02_natural_signal_exit_status_not_replaced_by_cleanup_kill (__main__.IndependentControls.test_02_natural_signal_exit_status_not_replaced_by_cleanup_kill) ... ok
+test_03_intermittent_read_errors_do_not_drop_output (__main__.IndependentControls.test_03_intermittent_read_errors_do_not_drop_output) ... ok
+test_04_command_spawn_failure_closes_preallocated_selector (__main__.IndependentControls.test_04_command_spawn_failure_closes_preallocated_selector) ... ok
+test_05_second_command_selector_registration_failure (__main__.IndependentControls.test_05_second_command_selector_registration_failure) ... ok
+test_06_final_stream_pipe_setup_failure (__main__.IndependentControls.test_06_final_stream_pipe_setup_failure) ... ok
+test_07_pre_spawn_command_deadline_closes_selector (__main__.IndependentControls.test_07_pre_spawn_command_deadline_closes_selector) ... ok
+test_08_repeated_success_close_never_signals_reaped_pid (__main__.IndependentControls.test_08_repeated_success_close_never_signals_reaped_pid) ... ok
+test_09_group_signal_failure_is_sticky_after_real_reap (__main__.IndependentControls.test_09_group_signal_failure_is_sticky_after_real_reap) ... ok
+test_10_wait_timeout_sticky_value_free_and_fds_closed (__main__.IndependentControls.test_10_wait_timeout_sticky_value_free_and_fds_closed) ... ok
+test_11_raw_external_reap_refuses_stale_numeric_group_signal (__main__.IndependentControls.test_11_raw_external_reap_refuses_stale_numeric_group_signal) ... ok
+test_12_real_orphan_witness_killed_without_changing_leader_status (__main__.IndependentControls.test_12_real_orphan_witness_killed_without_changing_leader_status) ... ok
+test_13_actor_config_is_retained_through_group_cleanup (__main__.IndependentControls.test_13_actor_config_is_retained_through_group_cleanup) ... ok
+test_14_actor_early_constructor_failures_remove_config (__main__.IndependentControls.test_14_actor_early_constructor_failures_remove_config) ... ok
+test_15_actor_config_removed_on_postallocation_deadline (__main__.IndependentControls.test_15_actor_config_removed_on_postallocation_deadline) ... ok
+test_16_simultaneous_actors_do_not_share_config_lifetimes (__main__.IndependentControls.test_16_simultaneous_actors_do_not_share_config_lifetimes) ... ok
+test_17_real_factory_setup_error_normalized_without_private_text (__main__.IndependentControls.test_17_real_factory_setup_error_normalized_without_private_text) ... ok
+test_18_exact_metadata_projection_has_no_cli_dependency (__main__.IndependentControls.test_18_exact_metadata_projection_has_no_cli_dependency) ... ok
+test_19_malformed_metadata_fail_closed_and_are_normalized (__main__.IndependentControls.test_19_malformed_metadata_fail_closed_and_are_normalized) ... ok
+test_20_clustered_help_flags_refused_by_closed_dispatch (__main__.IndependentControls.test_20_clustered_help_flags_refused_by_closed_dispatch) ... FAIL
+test_21_attached_endpoint_short_flags_refused_by_closed_dispatch (__main__.IndependentControls.test_21_attached_endpoint_short_flags_refused_by_closed_dispatch) ... FAIL
+test_22_repeated_mixed_failures_do_not_accumulate_descriptors (__main__.IndependentControls.test_22_repeated_mixed_failures_do_not_accumulate_descriptors) ... ok
+test_23_stream_finish_retains_explicit_no_remote_or_group_proof (__main__.IndependentControls.test_23_stream_finish_retains_explicit_no_remote_or_group_proof) ... ok
+
+======================================================================
+FAIL: test_20_clustered_help_flags_refused_by_closed_dispatch (__main__.IndependentControls.test_20_clustered_help_flags_refused_by_closed_dispatch)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/out/c0-runtime-adapter-2026-10-24/correctness-review/independent_probes.py", line 463, in test_20_clustered_help_flags_refused_by_closed_dispatch
+    self.assertEqual(admitted, [], "clustered short flags can set Docker help=true")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: ['-hh', '-Dh', '-hD'] != []
+
+First list contains 3 additional elements.
+First extra element 0:
+'-hh'
+
+- ['-hh', '-Dh', '-hD']
++ [] : clustered short flags can set Docker help=true
+
+======================================================================
+FAIL: test_21_attached_endpoint_short_flags_refused_by_closed_dispatch (__main__.IndependentControls.test_21_attached_endpoint_short_flags_refused_by_closed_dispatch)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/out/c0-runtime-adapter-2026-10-24/correctness-review/independent_probes.py", line 475, in test_21_attached_endpoint_short_flags_refused_by_closed_dispatch
+    self.assertEqual(admitted, [], "attached short option values bypass the token blacklist")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: ['-Hunix:///review-unused.sock', '-creview-unused'] != []
+
+First list contains 2 additional elements.
+First extra element 0:
+'-Hunix:///review-unused.sock'
+
+- ['-Hunix:///review-unused.sock', '-creview-unused']
++ [] : attached short option values bypass the token blacklist
+
+----------------------------------------------------------------------
+Ran 23 tests in 0.468s
+
+FAILED (failures=2)

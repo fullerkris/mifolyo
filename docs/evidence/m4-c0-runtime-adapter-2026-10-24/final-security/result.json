@@ -1,0 +1,350 @@
+{
+  "actions": {
+    "actual_final_guard_restored_and_verified": true,
+    "child_processes_spawned_by_probes": 0,
+    "docker_execution": false,
+    "git_commands": false,
+    "historical_module_top_levels_executed": false,
+    "native_actors_or_calibration": false,
+    "old_guard_substituted_in_memory_only_for_negative_control": true,
+    "other_agents": false,
+    "product_or_old_evidence_edits": false,
+    "real_daemon_connections": 0,
+    "ssh_or_remote_host_access": false,
+    "temporary_fixtures_confined_and_removed": true,
+    "write_scope": "out/c0-runtime-adapter-2026-10-24/remediation/security-review"
+  },
+  "artifacts": {
+    "audit_inputs.py": {
+      "bytes": 5818,
+      "sha256": "ed610f4527a10e4cb12780288fc8ec2b9fc7edff58ec6e447964afbfef62bb8a"
+    },
+    "compatibility-calls-022.json": {
+      "bytes": 104362,
+      "sha256": "e2b595d93f4f04748936395bf7f087d2729a53d5225139fb343585463c3a6ad3"
+    },
+    "compatibility-calls-077.json": {
+      "bytes": 104362,
+      "sha256": "e2b595d93f4f04748936395bf7f087d2729a53d5225139fb343585463c3a6ad3"
+    },
+    "finalize_review.py": {
+      "bytes": 9180,
+      "sha256": "c6a54877b8ad91b98e79b2226f96affd0342d185866a49b6c6ee7329a9faeb73"
+    },
+    "integrity-after.json": {
+      "bytes": 124121,
+      "sha256": "fe7ff5d9bbd7aaf3cd8aa0594d1bdacc86688b38e702e90106b0a6471cf8ece8"
+    },
+    "integrity-before.json": {
+      "bytes": 123913,
+      "sha256": "f9c5336fd2f5aa5d97d3c26fe41e9a7d1b5fb2e7faca6a3843530c3a7482fb56"
+    },
+    "negative-control-022.log": {
+      "bytes": 1153,
+      "sha256": "962340fea035d326606f00998818963ba7eabfb86776395a004d7aff0915f629"
+    },
+    "negative-control-077.log": {
+      "bytes": 1153,
+      "sha256": "962340fea035d326606f00998818963ba7eabfb86776395a004d7aff0915f629"
+    },
+    "probes-022.json": {
+      "bytes": 5561,
+      "sha256": "d1ca7bb8549c9b302ba449823c5fa458dcf2f22b62607dd47972b2d92dc57c49"
+    },
+    "probes-022.log": {
+      "bytes": 2167,
+      "sha256": "2b5bbfd7db26a988777de72b70c9700652cb55412594b606fcd890c33e641dc5"
+    },
+    "probes-077.json": {
+      "bytes": 5561,
+      "sha256": "ca348e65f3afd143fc46079a447c132017cd5ad625b4ce994a3e0a3df1d60c4e"
+    },
+    "probes-077.log": {
+      "bytes": 2167,
+      "sha256": "3a54c0130b5a6800a06d20866226feac04861011e44c8a2518b6f0ea7031cf79"
+    },
+    "report.md": {
+      "bytes": 8194,
+      "sha256": "4fc16e9b5c5a2c737922674461a629ce148bbf34372a7ccbcdff48f2c5bd2342"
+    },
+    "rereview_probes.py": {
+      "bytes": 18878,
+      "sha256": "f997f771a3a8b0808c384c98f40dbc867582af23dca581b7db8c4c0e82f56548"
+    }
+  },
+  "checks": {
+    "actual_cli_arguments_calls_per_umask": 140,
+    "both_umask_observations_identical": true,
+    "compatibility_calls_per_umask": 398,
+    "full_338_test_suite_rerun": false,
+    "new_product_tests_executed_per_umask": 3,
+    "positive_controls": {
+      "actor_shape_valid": true,
+      "actual_binary_or_child_launched": false,
+      "configs_removed": true,
+      "valid_oracle_images": 3
+    },
+    "proposed_replacement_used": false,
+    "python": "3.14.8 (main, Oct  1 2026, 00:00:00) [GCC 16.2.1 20260819 (Red Hat 16.2.1-2)]",
+    "rejection_counts": {
+      "attached_and_value_positions": 51,
+      "malformed_oracle": 47,
+      "short_cluster_matrix": 8190,
+      "tail_scope": 49,
+      "unchanged_gates": 25
+    },
+    "rejection_invocations_per_umask": 8362,
+    "runs": [
+      {
+        "audit": {
+          "forbidden_connection_attempts": 0,
+          "forbidden_process_attempts": 0,
+          "outside_write_attempts": 0
+        },
+        "errors": 0,
+        "failures": 0,
+        "log": "probes-022.log",
+        "passed": 13,
+        "resource_warning_filter": "error::ResourceWarning",
+        "result": "probes-022.json",
+        "tests_run": 13,
+        "umask": "022"
+      },
+      {
+        "audit": {
+          "forbidden_connection_attempts": 0,
+          "forbidden_process_attempts": 0,
+          "outside_write_attempts": 0
+        },
+        "errors": 0,
+        "failures": 0,
+        "log": "probes-077.log",
+        "passed": 13,
+        "resource_warning_filter": "error::ResourceWarning",
+        "result": "probes-077.json",
+        "tests_run": 13,
+        "umask": "077"
+      }
+    ],
+    "supplied_test_reports_verified": {
+      "022": {
+        "historical_retained": 318,
+        "new_since_historical": 20,
+        "new_since_initial_review": [
+          "test_live_adapter.ConfigurationTests.test_clustered_help_and_attached_short_overrides_refuse_before_side_effects",
+          "test_live_adapter.ConfigurationTests.test_generated_oracle_create_remains_accepted_for_both_architectures",
+          "test_live_adapter.ConfigurationTests.test_short_option_exception_requires_exact_oracle_entrypoint_image_and_tail"
+        ],
+        "prior_retained": 335,
+        "recorded_passes": 338,
+        "report": {
+          "bytes": 114341,
+          "sha256": "609faeab7e54f9b543957aae8922b2442be6fa3234a111d6a6e1113fa72ba4b0"
+        },
+        "source_hashes_matched": 61
+      },
+      "077": {
+        "historical_retained": 318,
+        "new_since_historical": 20,
+        "new_since_initial_review": [
+          "test_live_adapter.ConfigurationTests.test_clustered_help_and_attached_short_overrides_refuse_before_side_effects",
+          "test_live_adapter.ConfigurationTests.test_generated_oracle_create_remains_accepted_for_both_architectures",
+          "test_live_adapter.ConfigurationTests.test_short_option_exception_requires_exact_oracle_entrypoint_image_and_tail"
+        ],
+        "prior_retained": 335,
+        "recorded_passes": 338,
+        "report": {
+          "bytes": 114341,
+          "sha256": "609faeab7e54f9b543957aae8922b2442be6fa3234a111d6a6e1113fa72ba4b0"
+        },
+        "source_hashes_matched": 61
+      }
+    },
+    "synthetic_metadata_calls_per_umask": 258,
+    "unchanged_lifecycle": {
+      "backend_outside_cli_arguments_ast_identical": true,
+      "lifecycle_files_byte_identical": true
+    }
+  },
+  "date": "2026-10-24",
+  "documentation": {
+    "current_context7_used_for_AST_replay": "/python/cpython",
+    "original_pinned_Docker29_notes": {
+      "bytes": 4139,
+      "path": "out/c0-runtime-adapter-2026-10-24/security-review/upstream-notes.md",
+      "sha256": "a75e5733ebf9d3b398dfe340a725033a5f6390af3dd58a7951affcb8614df7b9"
+    }
+  },
+  "findings": [],
+  "integrity": {
+    "authoritative_inventory": "remediation/source-inventory.json",
+    "bound_files_verified": 444,
+    "changed_paths": {
+      "tests/crawl-jobs-v2-observer/docker_backend.py": {
+        "after": "7a3aaaf2de8c3dd79f6b749dfbed00fcf35ed052d62dc20246bd66fe91d19e9c",
+        "before": "8ceef501710ab69609d349d072d377a83fea0cf5f2377f05076114ef7fc0c130"
+      },
+      "tests/crawl-jobs-v2-observer/test_live_adapter.py": {
+        "after": "6607d0879870d36b3b0573273896416aa9080a6523e6daefdd86f539f4c79e93",
+        "before": "cca3e563824e701e4e5b2e8548334c3aeee50c7b2d161f23a2a7fd9ea1690ea1"
+      }
+    },
+    "old_review_file_counts": {
+      "correctness": 27,
+      "security": 13
+    },
+    "original_329_input_bindings_carried_forward": true,
+    "original_packet_sha256": "ef5134712918c3b705b6076f6367ff044a669237a7d47632cc677093c3814ccf",
+    "original_reviews_and_exact_exports_unchanged": true,
+    "packet_after_sha256": "b3e66f6bf5cc95194e04548b7cfb4df4978898d4cec1a48aaaa357a1d4be14e7",
+    "packet_before_sha256": "b3e66f6bf5cc95194e04548b7cfb4df4978898d4cec1a48aaaa357a1d4be14e7",
+    "packet_expected_sha256": "b3e66f6bf5cc95194e04548b7cfb4df4978898d4cec1a48aaaa357a1d4be14e7",
+    "packet_path": "out/c0-runtime-adapter-2026-10-24/remediation/review-inputs.json",
+    "packet_reverified_at_assembly": true,
+    "snapshot_extra_or_missing_files": [],
+    "snapshot_files_verified": 63,
+    "working_source_matches_snapshot_and_unchanged": true
+  },
+  "kind": "c0_runtime_adapter_SEC01_independent_security_rereview",
+  "limits": {
+    "daemon_kernel_namespace_pairing_proven": false,
+    "execution_authorized": false,
+    "fresh_full_preflight": false,
+    "full_runner_certification": false,
+    "host_or_vm_or_collector_changes": false,
+    "host_provider_hypervisor_details_pending": true,
+    "installed_cli_binary_admitted": false,
+    "lifecycle_reexercised": false,
+    "native_calibration_performed": false,
+    "native_x64_or_arm64_accepted": false,
+    "process_group_or_remote_container_absence_proven": false,
+    "scope": "SEC-01 guard remediation only; not repository-wide or full-runner certification"
+  },
+  "preserved_history": {
+    "historical_test_ids_retained": 318,
+    "initial_correctness_each_umask": {
+      "failures": 2,
+      "original_verdict_unchanged": true,
+      "passed": 21,
+      "tests": 23
+    },
+    "initial_fixture_expectation_failure_and_correction_unchanged": true,
+    "initial_security": {
+      "failures": 1,
+      "passed": 14,
+      "tests": 15,
+      "verdict_preserved": "NEEDS_REMEDIATION"
+    },
+    "new_remediation_tests": 3,
+    "old_proposed_guard_398_call_evidence_unchanged": true,
+    "prior_test_ids_retained": 335,
+    "total_new_since_historical": 20
+  },
+  "resolved_findings": [
+    {
+      "actual_final_guard_compatibility": {
+        "actual_cli_arguments_calls": 140,
+        "call_list_sha256": "5d1822da0964bc6059c27b1f45e3daddb3e08e96c19e91a55187292cf86e18fc",
+        "calls": 398,
+        "exact_original_call_sequence": true,
+        "factory_errors": [
+          {
+            "architecture": "x86_64",
+            "canary_leaked": false,
+            "error": "DOCKER_TRANSPORT"
+          },
+          {
+            "architecture": "aarch64",
+            "canary_leaked": false,
+            "error": "DOCKER_TRANSPORT"
+          }
+        ],
+        "function_identity": {
+          "function": "call_shapes",
+          "function_ast_sha256": "1c65666fc72a89d1667944f8bba2c22f0ccd1a903ca77543a5817287c2aca461",
+          "path": "/var/home/kfuller/Documents/Git_Projects/mifolyo/out/c0-runtime-adapter-2026-10-24/security-review/supplementary_probes.py",
+          "sha256": "859ddd680469130369b61d696f50200e043e5b67465dccfe5e0a0b40fcb0b858"
+        },
+        "guard_binding": "original compatibility name corrected_guard is identical to actual db.cli_arguments",
+        "guard_source": "/var/home/kfuller/Documents/Git_Projects/mifolyo/out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/docker_backend.py",
+        "metadata_fixture_calls": 258,
+        "proposed_replacement_guard_used": false,
+        "status": "PASS"
+      },
+      "correctness_verdict_reissued": false,
+      "id": "SEC-01",
+      "location": "remediation/source/tests/crawl-jobs-v2-observer/docker_backend.py:39-63",
+      "old_guard_negative_control": {
+        "errors": 0,
+        "failures": 1,
+        "guard_identity": {
+          "function": "cli_arguments",
+          "function_ast_sha256": "9631f935a08e5345bc25be3ddcaeab024a5eed63761d03ece66da7cf30ddd2a3",
+          "path": "/var/home/kfuller/Documents/Git_Projects/mifolyo/out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/docker_backend.py",
+          "sha256": "8ceef501710ab69609d349d072d377a83fea0cf5f2377f05076114ef7fc0c130"
+        },
+        "observations": [
+          {
+            "flag": "-hh",
+            "reached_transport": true,
+            "rejected": false
+          },
+          {
+            "flag": "-hhh",
+            "reached_transport": true,
+            "rejected": false
+          },
+          {
+            "flag": "-hh=true",
+            "reached_transport": true,
+            "rejected": false
+          },
+          {
+            "flag": "-sh",
+            "reached_transport": true,
+            "rejected": false
+          }
+        ],
+        "source_edited": false,
+        "status": "EXPECTED_FAILURE_DETECTED",
+        "tests": 1
+      },
+      "original_regression": {
+        "identity": {
+          "function": "test_02_regression_clustered_help_must_be_rejected",
+          "function_ast_sha256": "fbf7cba324b020b51117410a72554869a5f8d43e6a758a17e392dc7b495f071d",
+          "path": "/var/home/kfuller/Documents/Git_Projects/mifolyo/out/c0-runtime-adapter-2026-10-24/security-review/security_probes.py",
+          "sha256": "7fd4d84ccb3a16efb1619452e2bae98d175f31dfcf477ab59b7cb21296c253a9"
+        },
+        "observations": [
+          {
+            "flag": "-hh",
+            "reached_transport": false,
+            "rejected": true
+          },
+          {
+            "flag": "-hhh",
+            "reached_transport": false,
+            "rejected": true
+          },
+          {
+            "flag": "-hh=true",
+            "reached_transport": false,
+            "rejected": true
+          },
+          {
+            "flag": "-sh",
+            "reached_transport": false,
+            "rejected": true
+          }
+        ]
+      },
+      "previous_severity": "Low",
+      "remediation": "Reject noncanonical single-dash tokens before side effects, except the final fixed oracle -I/-B tail with exact entrypoint and valid nonzero image digest.",
+      "same_root_cause_as_initial_correctness": "R1",
+      "status": "VERIFIED_REMEDIATED"
+    }
+  ],
+  "verdict": "GO_FOR_CONTINUED_IMPLEMENTATION",
+  "version": 1
+}

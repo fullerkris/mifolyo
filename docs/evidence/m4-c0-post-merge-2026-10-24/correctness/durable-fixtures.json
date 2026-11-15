@@ -1,0 +1,14 @@
+{
+  "files": {
+    "out/c0-hosted-images-2026-10-24/correctness-review/tampered-config.tar": {
+      "bytes": 5457920,
+      "sha256": "6b5b50091e4af2c1383dc0060d53b729c64d5f7aa39e06fe82f3e8138eb8a4c6"
+    },
+    "out/c0-hosted-images-2026-10-24/correctness-review/tampered-layer.tar": {
+      "bytes": 5457920,
+      "sha256": "6db768cf76c7ca86ae9825ebd9ef1ebbfa7369e24a454784947de5a56aacee79"
+    }
+  },
+  "scope": "Original inert corruption fixtures retained in the Git-ignored durable review directory; exact bytes are also bound by review-artifact-sha256.json.",
+  "version": 1
+}

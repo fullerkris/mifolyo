@@ -8,9 +8,9 @@ import json
 import os
 from pathlib import Path
 import selectors
-import signal
 import stat
 import subprocess
+import tempfile
 import time
 
 from contracts import LIMITS, Invalid, canonical, digest, exact, integer, require, runtime_architecture, sha, validate_preparation
@@ -20,62 +20,153 @@ from streams import ProcessStream
 import runtime_admission
 from runtime_context import ContextLease, ContextSource
 from owned_resources import timestamp
+from engine_metadata import read_engine_metadata
+from host_preflight import INFO_FIELDS, VERSION_FIELDS, metadata
+from local_process import kill_and_reap, wait_unreaped
 
 MAX_COMMAND_BYTES = 262144
+DOCKER = "/usr/bin/docker"
+PREFIX = [DOCKER, "--host", "unix:///var/run/docker.sock"]
 
 
-def clean_environment():
-    return {key: value for key, value in os.environ.items() if key not in
-        ("DOCKER_HOST", "DOCKER_CONTEXT", "DOCKER_TLS", "DOCKER_TLS_VERIFY", "DOCKER_CERT_PATH")}
+def clean_environment(directory):
+    # An allowlist also excludes dynamic-loader injection, proxies, API/context
+    # overrides, credentials, telemetry endpoints and future ambient variables.
+    return {"PATH": "/usr/bin:/bin", "LC_ALL": "C", "HOME": directory, "DOCKER_CONFIG": directory,
+        "DOCKER_CLI_HINTS": "false", "DOCKER_CLI_HOOKS": "false", "OTEL_SDK_DISABLED": "true"}
+
+
+def cli_arguments(argv, *, actor=False):
+    require(type(argv) is list and 4 <= len(argv) <= 256 and
+        all(type(item) is str and item and "\x00" not in item and len(item) <= 4096 for item in argv) and
+        sum(map(len, argv)) <= 32768 and argv[:3] == PREFIX, "DOCKER_ARGV")
+    args = argv[3:]
+    forbidden = {"--help", "-h", "help", "__complete", "__completeNoDesc", "--config", "--context", "-c", "--host", "-H"}
+    require(not any(item.split("=", 1)[0] in forbidden for item in args), "DOCKER_ARGV")
+    # Docker's parser accepts clustered/attached short options (-hh, -Dh, -H...).
+    # Our generated CLI options are all long. Only the oracle's fixed positional
+    # interpreter tail uses short options, after its entrypoint and image ID.
+    flag_args = args
+    if (not actor and args[:2] == ["container", "create"] and len(args) >= 8 and
+            args[-6:-4] == ["--entrypoint", "python3"] and args[-3:] == ["-I", "-B", "/oracle/worker.py"]):
+        require(args[-4].startswith("sha256:"), "DOCKER_ARGV")
+        digest(args[-4][7:])
+        flag_args = args[:-3]
+    require(not any(item.startswith("-") and not item.startswith("--") for item in flag_args), "DOCKER_ARGV")
+    if actor:
+        require(len(args) == 5 and args[:4] == ["container", "start", "--attach", "--interactive"], "DOCKER_ARGV")
+        hex_id(args[-1])
+    else:
+        require(len(args) >= 3 and tuple(args[:2]) in {
+            ("container", "inspect"), ("container", "create"), ("container", "ls"),
+            ("container", "kill"), ("container", "wait"), ("container", "rm"),
+            ("volume", "inspect"), ("volume", "create"), ("volume", "rm"), ("image", "inspect")}, "DOCKER_ARGV")
+
+
+def verify_cli():
+    # Fixed native binary in an administrator-controlled directory; never PATH,
+    # a shell wrapper, a symlink, or a writable/special executable.
+    for path in ("/", "/usr", "/usr/bin"):
+        info = os.lstat(path)
+        require(stat.S_ISDIR(info.st_mode) and info.st_uid == 0 and not info.st_mode & 0o022, "DOCKER_BINARY")
+    fd = os.open(DOCKER, os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW | os.O_NONBLOCK)
+    with os.fdopen(fd, "rb") as stream:
+        info = os.fstat(stream.fileno())
+        require(stat.S_ISREG(info.st_mode) and info.st_uid == 0 and not info.st_mode & 0o6022 and
+            info.st_mode & 0o111 and stream.read(4) == b"\x7fELF", "DOCKER_BINARY")
+
+
+class DockerProcessStream(ProcessStream):
+    """Keep the empty private CLI config alive until transport cleanup finishes."""
+    def __init__(self, argv, binding, budget, deadline, **kwargs):
+        deadline.check()
+        cli_arguments(argv, actor=True)
+        verify_cli()
+        # Explicit /tmp ignores TMPDIR/TEMP and gets a fresh mode-0700 directory.
+        self._configuration = tempfile.TemporaryDirectory(prefix="obs1-docker-", dir="/tmp")
+        try:
+            deadline.check()
+            super().__init__([*argv[:3], "--config", self._configuration.name, *argv[3:]],
+                binding, budget, deadline, env=clean_environment(self._configuration.name), cwd="/", **kwargs)
+        except BaseException:
+            self._configuration.cleanup()
+            raise
+
+    def close(self):
+        try:
+            super().close()
+        finally:
+            self._configuration.cleanup()
 
 
 def command(argv, deadline):
-    """Drain both pipes; no shell and no unbounded subprocess.run capture."""
+    """Plugin-free metadata; isolated, closed builtin CLI lifecycle operations."""
+    deadline.check()
+    if argv == [*PREFIX, "info", "--format", "{{.ID}}"]:
+        value = metadata(read_engine_metadata("info", deadline), INFO_FIELDS, engine_response=True)["id"]
+        require(type(value) is str and 0 < len(value) <= 256, "DAEMON_IDENTITY")
+        deadline.check()
+        return 0, value.encode(), b""
+    if argv == [*PREFIX, "version", "--format", "{{json .Server}}"]:
+        value = metadata(read_engine_metadata("version", deadline), VERSION_FIELDS, engine_response=True)
+        deadline.check()
+        return 0, canonical({field: value[key] for key, field in VERSION_FIELDS.items()}), b""
+    cli_arguments(argv)
+    verify_cli()
+    with tempfile.TemporaryDirectory(prefix="obs1-docker-", dir="/tmp") as directory:
+        return bounded_command([*argv[:3], "--config", directory, *argv[3:]], deadline, clean_environment(directory))
+
+
+def bounded_command(argv, deadline, env):
+    """Drain both pipes; kill the owned group on every path before reaping."""
     deadline.check()
     output = {"out": bytearray(), "err": bytearray()}
-    process = subprocess.Popen(argv, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-        env=clean_environment(), start_new_session=True, close_fds=True)
-    reaped = False
+    mux = selectors.DefaultSelector()
+    process = None
     try:
-        with selectors.DefaultSelector() as mux:
-            for stream, key in ((process.stdout, "out"), (process.stderr, "err")):
-                os.set_blocking(stream.fileno(), False)
-                mux.register(stream, selectors.EVENT_READ, key)
-            while mux.get_map():
-                for event, _ in mux.select(min(deadline.remaining(), 0.05)):
+        deadline.check()
+        process = subprocess.Popen(argv, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            env=env, cwd="/", start_new_session=True, close_fds=True)
+        for stream, key in ((process.stdout, "out"), (process.stderr, "err")):
+            os.set_blocking(stream.fileno(), False)
+            mux.register(stream, selectors.EVENT_READ, key)
+        while mux.get_map():
+            for event, _ in mux.select(min(deadline.remaining(), 0.05)):
+                deadline.check()
+                try:
                     chunk = os.read(event.fd, 4096)
-                    if not chunk:
-                        mux.unregister(event.fileobj)
-                        continue
-                    require(sum(map(len, output.values())) + len(chunk) <= MAX_COMMAND_BYTES, "COMMAND_OUTPUT_BOUND")
-                    output[event.data].extend(chunk)
-        code = process.wait(timeout=deadline.remaining())
-        reaped = True
-        return code, bytes(output["out"]), bytes(output["err"])
-    except BaseException:
-        if not reaped:
-            try:
-                os.killpg(process.pid, signal.SIGKILL)
-            except ProcessLookupError:
-                pass
-            process.wait(timeout=5)
-        raise
+                except (BlockingIOError, InterruptedError):
+                    continue
+                if not chunk:
+                    mux.unregister(event.fileobj)
+                    continue
+                require(sum(map(len, output.values())) + len(chunk) <= MAX_COMMAND_BYTES, "COMMAND_OUTPUT_BOUND")
+                output[event.data].extend(chunk)
+        wait_unreaped(process, deadline)
     finally:
-        process.stdout.close()
-        process.stderr.close()
+        try:
+            if process is not None:
+                kill_and_reap(process)
+        finally:
+            mux.close()
+            if process is not None:
+                process.stdout.close()
+                process.stderr.close()
+    deadline.check()
+    return process.returncode, bytes(output["out"]), bytes(output["err"])
 
 
 class DockerBackend:
     evidence_kind = "docker_metadata_only"
 
-    def __init__(self, value, profile_files, *, authorize=None, runner=command, stream_factory=ProcessStream):
+    def __init__(self, value, profile_files, *, authorize=None, runner=command, stream_factory=DockerProcessStream):
         self.scope = validate_scope(value)
         self.scope_sha256 = sha(canonical(self.scope))
         exact(profile_files, ACTORS)
         self.profile_files = {role: Path(path) for role, path in profile_files.items()}
         self.authorize, self.runner, self.stream_factory = authorize, runner, stream_factory
-        self.evidence_kind = "docker_metadata_only" if runner is command and stream_factory is ProcessStream else "simulated"
-        self.prefix = ["docker", "--host", "unix:///var/run/docker.sock"]
+        self.evidence_kind = "docker_metadata_only" if runner is command and stream_factory is DockerProcessStream else "simulated"
+        self.prefix = list(PREFIX)
         self._actor_streams, self._native_admissions = {}, {}
         self._runtime_starts = {}
         self._context_lease, self._oracle_session = None, None
@@ -334,8 +425,11 @@ class DockerBackend:
             deadline.check()
             self._authorize("actor_input")
             dispatch_guard()
-        stream = self.stream_factory([*self.prefix, "container", "start", "--attach", "--interactive", ref["id"]],
-            binding, budget, deadline, env=clean_environment(), before_input=before_input, before_write=dispatch_guard)
+        try:
+            stream = self.stream_factory([*self.prefix, "container", "start", "--attach", "--interactive", ref["id"]],
+                binding, budget, deadline, before_input=before_input, before_write=dispatch_guard)
+        except Exception:
+            raise Invalid("DOCKER_TRANSPORT") from None
         holder.append(stream)
         try:
             if self._context_lease is not None:

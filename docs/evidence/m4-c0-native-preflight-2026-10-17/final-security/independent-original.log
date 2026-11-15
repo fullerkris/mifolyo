@@ -1,0 +1,21 @@
+test_01_both_architectures_all_framings_no_ambient_side_effects (__main__.IndependentTransportTests.test_01_both_architectures_all_framings_no_ambient_side_effects) ... ok
+test_02_projection_discards_unselected_data_without_digest_or_drift (__main__.IndependentTransportTests.test_02_projection_discards_unselected_data_without_digest_or_drift) ... ok
+test_03_strict_request_allowlist_precedes_socket_creation (__main__.IndependentTransportTests.test_03_strict_request_allowlist_precedes_socket_creation) ... ok
+test_04_transport_fault_matrix_is_structured_redacted_and_closed (__main__.IndependentTransportTests.test_04_transport_fault_matrix_is_structured_redacted_and_closed) ... ok
+test_05_late_connect_send_receive_and_eof_never_succeed (__main__.IndependentTransportTests.test_05_late_connect_send_receive_and_eof_never_succeed) ... ok
+test_06_three_observations_share_one_deadline (__main__.IndependentTransportTests.test_06_three_observations_share_one_deadline) ... ok
+test_07_ambiguous_framing_and_control_characters_block (__main__.IndependentTransportTests.test_07_ambiguous_framing_and_control_characters_block) ... ok
+test_08_json_semantic_boundary_rejects_duplicates_numbers_and_encoding (__main__.IndependentTransportTests.test_08_json_semantic_boundary_rejects_duplicates_numbers_and_encoding) ... ok
+test_09_selected_field_shape_matrix_and_missing_fields_block (__main__.IndependentTransportTests.test_09_selected_field_shape_matrix_and_missing_fields_block) ... ok
+test_10_body_chunk_and_total_wire_bounds (__main__.IndependentTransportTests.test_10_body_chunk_and_total_wire_bounds) ... ok
+test_11_header_aggregate_and_field_count_exact_boundaries (__main__.IndependentTransportTests.test_11_header_aggregate_and_field_count_exact_boundaries) ... ok
+test_12_no_new_privileges_is_exact_and_does_not_erase_mapping_checks (__main__.IndependentTransportTests.test_12_no_new_privileges_is_exact_and_does_not_erase_mapping_checks) ... ok
+test_13_selected_daemon_drift_and_foreign_architecture_still_block (__main__.IndependentTransportTests.test_13_selected_daemon_drift_and_foreign_architecture_still_block) ... ok
+test_14_seeded_wire_mutations_have_no_uncaught_errors_or_unclosed_socket (__main__.IndependentTransportTests.test_14_seeded_wire_mutations_have_no_uncaught_errors_or_unclosed_socket) ... ok
+test_15_real_socket_slowloris_eof_and_keepopen_fail_as_json (__main__.IndependentTransportTests.test_15_real_socket_slowloris_eof_and_keepopen_fail_as_json) ... ok
+test_16_real_success_and_failure_repeated_without_fd_leak (__main__.IndependentTransportTests.test_16_real_success_and_failure_repeated_without_fd_leak) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 1.197s
+
+OK

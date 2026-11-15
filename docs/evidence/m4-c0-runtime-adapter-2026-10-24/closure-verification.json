@@ -1,0 +1,188 @@
+{
+  "backup_branch": "backup/c0-native-calibration-before-main-2026-10-24",
+  "complete_source_delta_paths": [
+    "tests/crawl-jobs-v2-observer/docker_backend.py",
+    "tests/crawl-jobs-v2-observer/local_process.py",
+    "tests/crawl-jobs-v2-observer/streams.py",
+    "tests/crawl-jobs-v2-observer/test_live_adapter.py",
+    "tests/crawl-jobs-v2-observer/test_owned_resources.py"
+  ],
+  "current_source_and_frozen_source_paths": 63,
+  "git_diff_check": "PASS",
+  "kind": "c0_adapter_closure_verification",
+  "real_index_empty": true,
+  "retained_stash": "2475fda26223c43485b933089274476e497be3ab",
+  "reviews": {
+    "final-correctness": {
+      "exports": 21,
+      "manifest": {
+        "bytes": 2928,
+        "sha256": "107ed842c7025845b42ed5d04dc47dbfd881548cdf736157e955326fdc6df49b"
+      },
+      "report": {
+        "bytes": 8808,
+        "sha256": "29e3b0d595c732eb138582998457aeee35313c4e2ead0b444b779d6bb023a1ab"
+      },
+      "result": {
+        "bytes": 9763,
+        "sha256": "b99a4ea884dfbaac244f7061de4c003e63ea1f445f88d659243cf0f374445659"
+      },
+      "verdict": "GO_FOR_CONTINUED_IMPLEMENTATION"
+    },
+    "final-security": {
+      "exports": 16,
+      "manifest": {
+        "bytes": 2197,
+        "sha256": "d3f91e908fcaf2f3ecaadfcfa9177a31db9dd95a8f27065ced58f0eec153401e"
+      },
+      "report": {
+        "bytes": 8194,
+        "sha256": "4fc16e9b5c5a2c737922674461a629ce148bbf34372a7ccbcdff48f2c5bd2342"
+      },
+      "result": {
+        "bytes": 13236,
+        "sha256": "a7fe04abb47a656173f650dcb4ded8b76b571fbf9ce3324f7e8b76bfe70569f5"
+      },
+      "verdict": "GO_FOR_CONTINUED_IMPLEMENTATION"
+    },
+    "initial-correctness": {
+      "exports": 27,
+      "manifest": {
+        "bytes": 4012,
+        "sha256": "13346d4428f891fd81db632bd0bdcc54208c3cfd9f8452d8b2de7a957f7d33e3"
+      },
+      "report": {
+        "bytes": 9284,
+        "sha256": "f0fdb199cac0cc03d70a0a7a08146a49148953492bc052e88b8f0f53bf8655e3"
+      },
+      "result": {
+        "bytes": 11061,
+        "sha256": "0f0c3656f1308658c899a2a293c69c51da63b3b91b17eead1436b0147d909128"
+      },
+      "verdict": "NEEDS_REMEDIATION"
+    },
+    "initial-security": {
+      "exports": 13,
+      "manifest": {
+        "bytes": 1764,
+        "sha256": "f3371d9fc1ed6cbd443283e612cf4e16984183459f740eefcc5312b8dd057487"
+      },
+      "report": {
+        "bytes": 12074,
+        "sha256": "354da2ebc5ea696ff83127ea554a82a7e48d9784d44a96e640ddbc70381df19c"
+      },
+      "result": {
+        "bytes": 8461,
+        "sha256": "cb20fca48b551fd2b6be899541ef0af004da71feb02c32f5d4fe47fb2b0bcbcf"
+      },
+      "verdict": "NEEDS_REMEDIATION"
+    }
+  },
+  "status": "PASS",
+  "test_execution_repeated": false,
+  "tests": {
+    "022": {
+      "bytes": 114341,
+      "commit": "local",
+      "path": "out/c0-runtime-adapter-2026-10-24/remediation/tests-022.json",
+      "sha256": "609faeab7e54f9b543957aae8922b2442be6fa3234a111d6a6e1113fa72ba4b0",
+      "status": "PASS",
+      "tests": 338
+    },
+    "077": {
+      "bytes": 114341,
+      "commit": "local",
+      "path": "out/c0-runtime-adapter-2026-10-24/remediation/tests-077.json",
+      "sha256": "609faeab7e54f9b543957aae8922b2442be6fa3234a111d6a6e1113fa72ba4b0",
+      "status": "PASS",
+      "tests": 338
+    }
+  },
+  "verified_manifests": [
+    {
+      "bytes": 73327,
+      "files_verified": 326,
+      "path": "out/c0-runtime-adapter-2026-10-24/review-inputs.json",
+      "sha256": "d98c2c569b6c236e0b2e7c296349c00a1caedfae9acbabc35776d87cbfb31007"
+    },
+    {
+      "bytes": 73971,
+      "files_verified": 329,
+      "path": "out/c0-runtime-adapter-2026-10-24/review-inputs-corrected.json",
+      "sha256": "ef5134712918c3b705b6076f6367ff044a669237a7d47632cc677093c3814ccf"
+    },
+    {
+      "bytes": 97900,
+      "files_verified": 444,
+      "path": "out/c0-runtime-adapter-2026-10-24/remediation/review-inputs.json",
+      "sha256": "b3e66f6bf5cc95194e04548b7cfb4df4978898d4cec1a48aaaa357a1d4be14e7"
+    },
+    {
+      "bytes": 68716,
+      "files_verified": 247,
+      "path": "out/c0-runtime-adapter-2026-10-24/before.json",
+      "sha256": "6606f702549b4f24ef83126d2502f47111b13bddcf834a58f2ad6cb7931bb180"
+    },
+    {
+      "bytes": 4012,
+      "files_verified": 26,
+      "path": "out/c0-runtime-adapter-2026-10-24/correctness-review/review-artifact-sha256.json",
+      "sha256": "13346d4428f891fd81db632bd0bdcc54208c3cfd9f8452d8b2de7a957f7d33e3"
+    },
+    {
+      "bytes": 1764,
+      "files_verified": 12,
+      "path": "out/c0-runtime-adapter-2026-10-24/security-review/review-artifacts.json",
+      "sha256": "f3371d9fc1ed6cbd443283e612cf4e16984183459f740eefcc5312b8dd057487"
+    },
+    {
+      "bytes": 2928,
+      "files_verified": 20,
+      "path": "out/c0-runtime-adapter-2026-10-24/remediation/correctness-review/review-artifact-sha256.json",
+      "sha256": "107ed842c7025845b42ed5d04dc47dbfd881548cdf736157e955326fdc6df49b"
+    },
+    {
+      "bytes": 2197,
+      "files_verified": 15,
+      "path": "out/c0-runtime-adapter-2026-10-24/remediation/security-review/review-artifacts.json",
+      "sha256": "d3f91e908fcaf2f3ecaadfcfa9177a31db9dd95a8f27065ced58f0eec153401e"
+    },
+    {
+      "bytes": 2827,
+      "files_verified": 20,
+      "path": "out/c0-runtime-adapter-2026-10-24/initial-export-map.json",
+      "sha256": "be51087b8dddc59221264302049d1876c0e3e651d8c4154db723508308ba57fa"
+    },
+    {
+      "bytes": 6645,
+      "files_verified": 40,
+      "path": "out/c0-runtime-adapter-2026-10-24/initial-review-exports.json",
+      "sha256": "2ddc9987f8bd657c22bef7fe28d0f02b528fa705aaf2eb6fd81950b95a02a907"
+    },
+    {
+      "bytes": 1388,
+      "files_verified": 10,
+      "path": "out/c0-runtime-adapter-2026-10-24/remediation/export-map.json",
+      "sha256": "2c426e3accd1b73a684e308d3878871b9ca1dae55cec9fe9e4269655f45fca72"
+    },
+    {
+      "bytes": 17257,
+      "files_verified": 111,
+      "path": "docs/evidence/m4-c0-native-preflight-2026-10-17/manifest.json",
+      "sha256": "93b0a078c3e89d7e3af566304a8bc04756b8a18c139aa24444cb38dbb2b11537"
+    },
+    {
+      "bytes": 11599,
+      "files_verified": 77,
+      "path": "docs/evidence/m4-c0-post-merge-2026-10-24/manifest.json",
+      "sha256": "ee5ee3edf6c69865410bf3297447b92ca236263157d272fd773669e43c36fd3b"
+    },
+    {
+      "bytes": 121465,
+      "files_verified": 568,
+      "path": "out/c0-hosted-images-2026-10-24/durable-retention.json",
+      "sha256": "2313c9b6e8447e4e3d56a23e2490e4265259b30a99fc3499a2dc0c42b11ab3e9"
+    }
+  ],
+  "version": 1
+}

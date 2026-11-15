@@ -1,0 +1,53 @@
+{
+  "status": "PASS",
+  "commit": "e8a0a415ac2b370319cd57f4c5262ce616a536fb",
+  "tree": "aaf57fc74e5799d1b5d21f58cce18747623a7676",
+  "backup": "babb2180d05698e64b7d9baf37f9cab14b3c0f7f",
+  "stash": "2475fda26223c43485b933089274476e497be3ab",
+  "snapshot_package_files": 55,
+  "snapshot_auxiliary_files": 3,
+  "closure_evidence_git_bound_files": 48,
+  "old_retention_files_verified": 105,
+  "before_files_verified": 120,
+  "stash_tracked_files": 2,
+  "stash_untracked_files": 118,
+  "before_patch_matches_stash_diff": true,
+  "restored_plan_upstream_added_lines": 6,
+  "current_deltas_from_before": [
+    "docs/crawl-jobs-v2-m4-c0-native-preflight-2026-10-17.md",
+    "docs/crawl-jobs-v2-plan.md"
+  ],
+  "unchanged_reviewed_source_and_scripts": 61,
+  "historical_evidence_exports_verified": 111,
+  "preserved_partial_snapshot_files": 55,
+  "initial_helper_failure": {
+    "status": "FAILED_VERIFICATION_HARNESS",
+    "reason": "Snapshot export referenced nonexistent scripts/prepare-crawl-jobs-v2-observer.py; Git returned 128.",
+    "sync_commands_succeeded": true,
+    "candidate_restoration_checks_passed_before_failure": true,
+    "partial_source_snapshot_preserved": "merged-source",
+    "correction": "Use the three actual auxiliary paths from the reviewed C0-ARCH-04 source inventory and a new snapshot directory."
+  },
+  "tests": {
+    "022": {
+      "individual_log_passes_verified": 318,
+      "source_file_count": 59,
+      "report_sha256": "2113de12e8e359b884e9d1ac7e884866663d1bcced51f1680aa93c63f5dee6bf",
+      "log_sha256": "6e8ca2eeaa38aa2f85e2e98e9d6901ec0920b8b11b37c3e2819be9a1a4d96f37",
+      "commit_field": "local"
+    },
+    "077": {
+      "individual_log_passes_verified": 318,
+      "source_file_count": 59,
+      "report_sha256": "2113de12e8e359b884e9d1ac7e884866663d1bcced51f1680aa93c63f5dee6bf",
+      "log_sha256": "4e1026565614dce2dc6578c60ba6597f794d2c026ec710c46ff3f14520c6ef32",
+      "commit_field": "local"
+    }
+  },
+  "git_state_unchanged": true,
+  "limitations": [
+    "Retained test execution was inspected, not re-run; umasks are run labels, not independently measured here.",
+    "Reports use the runner's local marker; the separate sync packet and source hashes bind the integrated baseline.",
+    "No pull/rebase/stash apply was repeated; present state, stash contents and branch reflog were inspected read-only."
+  ]
+}

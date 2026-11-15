@@ -1,0 +1,167 @@
+--- initial/docs/crawl-jobs-v2-m4-c0-native-preflight-2026-10-17.md
++++ remediation/docs/crawl-jobs-v2-m4-c0-native-preflight-2026-10-17.md
+@@ -24,7 +24,7 @@
+ | Context collector | Anchor and code directory absent | Installation/admission pending |
+ | ARM64 | Host not selected | Native ARM64 admission pending |
+ 
+-The [kernel Yama documentation](https://docs.kernel.org/admin-guide/LSM/Yama.html)
++The [Linux 6.8 Yama documentation](https://github.com/torvalds/linux/blob/v6.8/Documentation/admin-guide/LSM/Yama.rst)
+ explains the descendant/declared-tracer restriction in mode 1. C0's independently
+ launched sibling observer has no capabilities, parentage change or `PR_SET_PTRACER`
+ exception. This is a **preflight incompatibility**, not a failed native attach
+@@ -52,7 +52,49 @@
+ collector keys, Docker proxy configuration or arbitrary diagnostics are collected.
+ No preflight observation populates a trusted context anchor or filter count.
+ 
++## Verification and retained evidence
++
++The first frozen 57-file package passes **302/302 offline tests**, including all
++288 earlier test IDs and 14 new preflight controls. The frozen review inventory
++also binds two scripts and this report's initial version (60 files total):
++`aa84e8b932141d6032a70e0f85a3fbc638dabec72992c6cb46a14c3cacc67414`.
++The initial correctness review returned **NEEDS_REMEDIATION**; its original
++report, two failing regression tests (four architecture subtests), 15 passing
++independent controls and initial harness failure are retained unchanged.
++
++An actual local CLI invocation returned `BLOCKED`, exit 1 and empty stderr, with
++`LOCAL_DOCKER_ENDPOINT_MISSING` and `COLLECTOR_NOT_PROVISIONED`. Its native x64
++kernel reports Yama scope 0, distinct from `moogle-main`'s scope 1. The remote
++observations are SSH discovery commands; the new CLI has not been installed or
++run on that remote host.
++
++The [evidence directory](evidence/m4-c0-native-preflight-2026-10-17/README.md)
++retains the original missing-path/SSH-tool classification errors, successful
++read-only observations, source patch, tests and exact-head PR status captures.
++Initial export manifest:
++`764d031b544ea4f80b22c6e6145da06b866593af6240c4644299b3f6b5d88149`.
++The initial snapshot/evidence also live in Git-ignored
++`out/c0-native-preflight-2026-10-17/initial-aa84e8b93214/`.
++
++### Correctness remediation
++
++- **COR-01:** normalize `subprocess.TimeoutExpired` at the new preflight transport
++  boundary after the existing command runner's kill/reap cleanup. Real benign
++  children with open and closed output pipes now preserve the CLI's structured
++  `BLOCKED` JSON and nonzero exit on both architecture fixtures.
++- **COR-02:** recognize Docker's documented exact `name=no-new-privileges` token.
++  Duplicate names, arbitrary hyphenated names and rootless/userns incompatibility
++  still reject. This metadata default matches C0's existing NNP requirement.
++
++The focused remediation suite passes **16/16 tests**. Initial review result:
++`bdbf3995200eb89eec734ce4de40c668b9193259c4c9fd55785101b73d2e9273`.
++Full revised-suite verification and final independent verdicts are pending.
++
+ ## Remaining C0-ARCH-05 work
++
++Following the blocked `moogle-main` discovery, the owner selected **Provide
++eligible Docker hosts**. The replacement native x64 and ARM64 SSH profiles or
++addresses have not yet been supplied.
+ 
+ 1. Select eligible native x64 and ARM64 hosts within the existing C0 contract.
+ 2. Independently establish daemon/kernel/namespace pairing; provision and admit
+--- initial/tests/crawl-jobs-v2-observer/host_preflight.py
++++ remediation/tests/crawl-jobs-v2-observer/host_preflight.py
+@@ -9,6 +9,7 @@
+ import os
+ import re
+ import stat
++import subprocess
+ 
+ from contracts import Invalid, canonical, digest, exact, integer, platform, platform_digest, require, sha
+ from docker_backend import command
+@@ -85,7 +86,12 @@
+     def docker(self, operation, deadline):
+         require(operation in ("info", "version"), "PREFLIGHT_OPERATION")
+         fields = INFO_FIELDS if operation == "info" else VERSION_FIELDS
+-        code, out, err = command([*PREFIX, operation, "--format", template(fields)], deadline)
++        try:
++            code, out, err = command([*PREFIX, operation, "--format", template(fields)], deadline)
++        except subprocess.TimeoutExpired:
++            # The shared runner already kills/reaps its owned child. A wait
++            # timeout after pipe EOF must retain this CLI's value-free report.
++            raise Invalid("PREFLIGHT_DOCKER_TIMEOUT") from None
+         require(type(code) is int and code == 0 and err == b"", "PREFLIGHT_DOCKER_TRANSPORT")
+         deadline.check()
+         return metadata(out, fields)
+@@ -133,7 +139,7 @@
+     require(all(type(value) is bool for value in limits.values()), "PREFLIGHT_DOCKER_LIMITS")
+     options = info["security_options"]
+     require(type(options) is list and len(options) <= 16 and all(type(item) is str and
+-        re.fullmatch(r"name=[a-z]+(?:,profile=[A-Za-z0-9_.-]+)?", item) is not None for item in options), "PREFLIGHT_DOCKER_SECURITY")
++        re.fullmatch(r"name=(?:[a-z]+(?:,profile=[A-Za-z0-9_.-]+)?|no-new-privileges)", item) is not None for item in options), "PREFLIGHT_DOCKER_SECURITY")
+     names = [option.split(",", 1)[0] for option in options]
+     require(len(names) == len(set(names)), "PREFLIGHT_DOCKER_SECURITY")
+     return {"daemon_sha256": sha(info["id"].encode()), "os": "linux", "architecture": selected["image_architecture"],
+--- initial/tests/crawl-jobs-v2-observer/test_host_preflight.py
++++ remediation/tests/crawl-jobs-v2-observer/test_host_preflight.py
+@@ -2,10 +2,14 @@
+ import copy
+ import io
+ import json
++import signal
++import subprocess
++import sys
+ import unittest
+ from unittest.mock import patch
+ 
+ from contracts import Invalid, canonical, platform, sha
++from docker_backend import command
+ from host_preflight import HostProbe, INFO_FIELDS, PREFIX, VERSION_FIELDS, inspect_host, main, metadata, template
+ from runtime_admission import CONTEXT_HASHES, NAMESPACES
+ from streams import Deadline
+@@ -227,6 +231,55 @@
+         with self.assertRaises(Invalid):
+             inspect_host("amd64", probe=probe)
+ 
++    def test_wait_timeouts_keep_json_refusal_and_reap_benign_children(self):
++        real_popen = subprocess.Popen
++        for arch in ("x86_64", "aarch64"):
++            for closed_pipes in (False, True):
++                with self.subTest(architecture=arch, closed_pipes=closed_pipes):
++                    probe = FixtureProbe(arch)
++                    probe.docker = HostProbe(arch).docker
++                    children = []
++                    def spawn(*args, **kwargs):
++                        process = real_popen(*args, **kwargs)
++                        children.append(process)
++                        return process
++                    def benign(argv, deadline):
++                        source = "import os,time; " + ("os.close(1); os.close(2); " if closed_pipes else "") + "time.sleep(20)"
++                        return command([sys.executable, "-I", "-B", "-c", source], deadline)
++                    def inspected(architecture):
++                        return inspect_host(architecture, probe=probe, deadline=Deadline(0.5))
++                    output = io.StringIO()
++                    try:
++                        with patch("docker_backend.subprocess.Popen", side_effect=spawn), \
++                                patch("host_preflight.command", side_effect=benign), \
++                                patch("host_preflight.inspect_host", side_effect=inspected), patch("sys.stdout", output):
++                            self.assertEqual(main(["--architecture", arch]), 1)
++                        result = json.loads(output.getvalue())
++                        self.assertEqual(result["status"], "BLOCKED")
++                        self.assertIn("DOCKER_UNAVAILABLE", result["blockers"])
++                        self.assertNotIn("TimeoutExpired", output.getvalue())
++                        self.assertEqual(len(children), 1)
++                        self.assertEqual(children[0].returncode, -signal.SIGKILL)
++                        self.assertTrue(children[0].stdout.closed and children[0].stderr.closed)
++                    finally:
++                        for child in children:
++                            if child.poll() is None:
++                                child.kill()
++                                child.wait(timeout=5)
++
++    def test_documented_no_new_privileges_metadata_preserves_other_checks(self):
++        for arch in ("x86_64", "aarch64"):
++            with self.subTest(architecture=arch):
++                probe = FixtureProbe(arch)
++                probe.info["security_options"].append("name=no-new-privileges")
++                self.assertEqual(inspect_host(arch, probe=probe)["status"], "HOST_CANDIDATE")
++                for option in ("name=rootless", "name=userns", "name=no-new-privileges", "name=unknown-hyphenated"):
++                    probe.info["security_options"].append(option)
++                    result = inspect_host(arch, probe=probe)
++                    expected = "DOCKER_NAMESPACE_MAPPING_UNSUPPORTED" if option in ("name=rootless", "name=userns") else "DOCKER_UNAVAILABLE"
++                    self.assertIn(expected, result["blockers"])
++                    probe.info["security_options"].pop()
++
+ 
+ if __name__ == "__main__":
+     unittest.main()

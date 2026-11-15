@@ -1,0 +1,29 @@
+test_01_long_and_actor_rejections_precede_all_side_effects (__main__.SecurityChecks.test_01_long_and_actor_rejections_precede_all_side_effects) ... ok
+test_02_regression_clustered_help_must_be_rejected (__main__.SecurityChecks.test_02_regression_clustered_help_must_be_rejected) ... FAIL
+test_03_proposed_guard_retains_oracle_tail_and_closed_commands (__main__.SecurityChecks.test_03_proposed_guard_retains_oracle_tail_and_closed_commands) ... ok
+test_04_metadata_full_wire_projection_and_platform_negative (__main__.SecurityChecks.test_04_metadata_full_wire_projection_and_platform_negative) ... ok
+test_05_metadata_malformed_and_private_errors_are_redacted (__main__.SecurityChecks.test_05_metadata_malformed_and_private_errors_are_redacted) ... ok
+test_06_backend_selector_and_authorizer_prevent_argv_injection (__main__.SecurityChecks.test_06_backend_selector_and_authorizer_prevent_argv_injection) ... ok
+test_07_concurrent_private_config_environment_and_spawn_failure (__main__.SecurityChecks.test_07_concurrent_private_config_environment_and_spawn_failure) ... ok
+test_08_binary_admission_matrix_without_opening_executables (__main__.SecurityChecks.test_08_binary_admission_matrix_without_opening_executables) ... ok
+test_09_wnowait_and_signal_before_reap_order (__main__.SecurityChecks.test_09_wnowait_and_signal_before_reap_order) ... ok
+test_10_descendant_cleanup_and_signal_disabled_negative_control (__main__.SecurityChecks.test_10_descendant_cleanup_and_signal_disabled_negative_control) ... ok
+test_11_group_escape_is_not_misreported_as_absence (__main__.SecurityChecks.test_11_group_escape_is_not_misreported_as_absence) ... ok
+test_12_cleanup_permission_failure_is_sticky_and_closes_fds (__main__.SecurityChecks.test_12_cleanup_permission_failure_is_sticky_and_closes_fds) ... ok
+test_13_reap_timeout_and_lost_ownership_are_redacted (__main__.SecurityChecks.test_13_reap_timeout_and_lost_ownership_are_redacted) ... ok
+test_14_byte_limit_exactness_and_descriptor_stability (__main__.SecurityChecks.test_14_byte_limit_exactness_and_descriptor_stability) ... ok
+test_15_selector_interrupt_kills_and_reaps_before_redacted_return (__main__.SecurityChecks.test_15_selector_interrupt_kills_and_reaps_before_redacted_return) ... ok
+
+======================================================================
+FAIL: test_02_regression_clustered_help_must_be_rejected (__main__.SecurityChecks.test_02_regression_clustered_help_must_be_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/out/c0-runtime-adapter-2026-10-24/security-review/security_probes.py", line 191, in test_02_regression_clustered_help_must_be_rejected
+    self.assertTrue(all(v["rejected"] for v in observations), "clustered help reaches transport; Docker v29 help discovers plugins")
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : clustered help reaches transport; Docker v29 help discovers plugins
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.590s
+
+FAILED (failures=1)

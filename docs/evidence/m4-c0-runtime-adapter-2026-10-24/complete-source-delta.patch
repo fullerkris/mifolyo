@@ -1,0 +1,676 @@
+--- before/tests/crawl-jobs-v2-observer/docker_backend.py
++++ after/tests/crawl-jobs-v2-observer/docker_backend.py
+@@ -8,9 +8,9 @@
+ import os
+ from pathlib import Path
+ import selectors
+-import signal
+ import stat
+ import subprocess
++import tempfile
+ import time
+ 
+ from contracts import LIMITS, Invalid, canonical, digest, exact, integer, require, runtime_architecture, sha, validate_preparation
+@@ -20,62 +20,153 @@
+ import runtime_admission
+ from runtime_context import ContextLease, ContextSource
+ from owned_resources import timestamp
++from engine_metadata import read_engine_metadata
++from host_preflight import INFO_FIELDS, VERSION_FIELDS, metadata
++from local_process import kill_and_reap, wait_unreaped
+ 
+ MAX_COMMAND_BYTES = 262144
+-
+-
+-def clean_environment():
+-    return {key: value for key, value in os.environ.items() if key not in
+-        ("DOCKER_HOST", "DOCKER_CONTEXT", "DOCKER_TLS", "DOCKER_TLS_VERIFY", "DOCKER_CERT_PATH")}
++DOCKER = "/usr/bin/docker"
++PREFIX = [DOCKER, "--host", "unix:///var/run/docker.sock"]
++
++
++def clean_environment(directory):
++    # An allowlist also excludes dynamic-loader injection, proxies, API/context
++    # overrides, credentials, telemetry endpoints and future ambient variables.
++    return {"PATH": "/usr/bin:/bin", "LC_ALL": "C", "HOME": directory, "DOCKER_CONFIG": directory,
++        "DOCKER_CLI_HINTS": "false", "DOCKER_CLI_HOOKS": "false", "OTEL_SDK_DISABLED": "true"}
++
++
++def cli_arguments(argv, *, actor=False):
++    require(type(argv) is list and 4 <= len(argv) <= 256 and
++        all(type(item) is str and item and "\x00" not in item and len(item) <= 4096 for item in argv) and
++        sum(map(len, argv)) <= 32768 and argv[:3] == PREFIX, "DOCKER_ARGV")
++    args = argv[3:]
++    forbidden = {"--help", "-h", "help", "__complete", "__completeNoDesc", "--config", "--context", "-c", "--host", "-H"}
++    require(not any(item.split("=", 1)[0] in forbidden for item in args), "DOCKER_ARGV")
++    # Docker's parser accepts clustered/attached short options (-hh, -Dh, -H...).
++    # Our generated CLI options are all long. Only the oracle's fixed positional
++    # interpreter tail uses short options, after its entrypoint and image ID.
++    flag_args = args
++    if (not actor and args[:2] == ["container", "create"] and len(args) >= 8 and
++            args[-6:-4] == ["--entrypoint", "python3"] and args[-3:] == ["-I", "-B", "/oracle/worker.py"]):
++        require(args[-4].startswith("sha256:"), "DOCKER_ARGV")
++        digest(args[-4][7:])
++        flag_args = args[:-3]
++    require(not any(item.startswith("-") and not item.startswith("--") for item in flag_args), "DOCKER_ARGV")
++    if actor:
++        require(len(args) == 5 and args[:4] == ["container", "start", "--attach", "--interactive"], "DOCKER_ARGV")
++        hex_id(args[-1])
++    else:
++        require(len(args) >= 3 and tuple(args[:2]) in {
++            ("container", "inspect"), ("container", "create"), ("container", "ls"),
++            ("container", "kill"), ("container", "wait"), ("container", "rm"),
++            ("volume", "inspect"), ("volume", "create"), ("volume", "rm"), ("image", "inspect")}, "DOCKER_ARGV")
++
++
++def verify_cli():
++    # Fixed native binary in an administrator-controlled directory; never PATH,
++    # a shell wrapper, a symlink, or a writable/special executable.
++    for path in ("/", "/usr", "/usr/bin"):
++        info = os.lstat(path)
++        require(stat.S_ISDIR(info.st_mode) and info.st_uid == 0 and not info.st_mode & 0o022, "DOCKER_BINARY")
++    fd = os.open(DOCKER, os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW | os.O_NONBLOCK)
++    with os.fdopen(fd, "rb") as stream:
++        info = os.fstat(stream.fileno())
++        require(stat.S_ISREG(info.st_mode) and info.st_uid == 0 and not info.st_mode & 0o6022 and
++            info.st_mode & 0o111 and stream.read(4) == b"\x7fELF", "DOCKER_BINARY")
++
++
++class DockerProcessStream(ProcessStream):
++    """Keep the empty private CLI config alive until transport cleanup finishes."""
++    def __init__(self, argv, binding, budget, deadline, **kwargs):
++        deadline.check()
++        cli_arguments(argv, actor=True)
++        verify_cli()
++        # Explicit /tmp ignores TMPDIR/TEMP and gets a fresh mode-0700 directory.
++        self._configuration = tempfile.TemporaryDirectory(prefix="obs1-docker-", dir="/tmp")
++        try:
++            deadline.check()
++            super().__init__([*argv[:3], "--config", self._configuration.name, *argv[3:]],
++                binding, budget, deadline, env=clean_environment(self._configuration.name), cwd="/", **kwargs)
++        except BaseException:
++            self._configuration.cleanup()
++            raise
++
++    def close(self):
++        try:
++            super().close()
++        finally:
++            self._configuration.cleanup()
+ 
+ 
+ def command(argv, deadline):
+-    """Drain both pipes; no shell and no unbounded subprocess.run capture."""
++    """Plugin-free metadata; isolated, closed builtin CLI lifecycle operations."""
++    deadline.check()
++    if argv == [*PREFIX, "info", "--format", "{{.ID}}"]:
++        value = metadata(read_engine_metadata("info", deadline), INFO_FIELDS, engine_response=True)["id"]
++        require(type(value) is str and 0 < len(value) <= 256, "DAEMON_IDENTITY")
++        deadline.check()
++        return 0, value.encode(), b""
++    if argv == [*PREFIX, "version", "--format", "{{json .Server}}"]:
++        value = metadata(read_engine_metadata("version", deadline), VERSION_FIELDS, engine_response=True)
++        deadline.check()
++        return 0, canonical({field: value[key] for key, field in VERSION_FIELDS.items()}), b""
++    cli_arguments(argv)
++    verify_cli()
++    with tempfile.TemporaryDirectory(prefix="obs1-docker-", dir="/tmp") as directory:
++        return bounded_command([*argv[:3], "--config", directory, *argv[3:]], deadline, clean_environment(directory))
++
++
++def bounded_command(argv, deadline, env):
++    """Drain both pipes; kill the owned group on every path before reaping."""
+     deadline.check()
+     output = {"out": bytearray(), "err": bytearray()}
+-    process = subprocess.Popen(argv, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+-        env=clean_environment(), start_new_session=True, close_fds=True)
+-    reaped = False
++    mux = selectors.DefaultSelector()
++    process = None
+     try:
+-        with selectors.DefaultSelector() as mux:
+-            for stream, key in ((process.stdout, "out"), (process.stderr, "err")):
+-                os.set_blocking(stream.fileno(), False)
+-                mux.register(stream, selectors.EVENT_READ, key)
+-            while mux.get_map():
+-                for event, _ in mux.select(min(deadline.remaining(), 0.05)):
++        deadline.check()
++        process = subprocess.Popen(argv, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
++            env=env, cwd="/", start_new_session=True, close_fds=True)
++        for stream, key in ((process.stdout, "out"), (process.stderr, "err")):
++            os.set_blocking(stream.fileno(), False)
++            mux.register(stream, selectors.EVENT_READ, key)
++        while mux.get_map():
++            for event, _ in mux.select(min(deadline.remaining(), 0.05)):
++                deadline.check()
++                try:
+                     chunk = os.read(event.fd, 4096)
+-                    if not chunk:
+-                        mux.unregister(event.fileobj)
+-                        continue
+-                    require(sum(map(len, output.values())) + len(chunk) <= MAX_COMMAND_BYTES, "COMMAND_OUTPUT_BOUND")
+-                    output[event.data].extend(chunk)
+-        code = process.wait(timeout=deadline.remaining())
+-        reaped = True
+-        return code, bytes(output["out"]), bytes(output["err"])
+-    except BaseException:
+-        if not reaped:
+-            try:
+-                os.killpg(process.pid, signal.SIGKILL)
+-            except ProcessLookupError:
+-                pass
+-            process.wait(timeout=5)
+-        raise
++                except (BlockingIOError, InterruptedError):
++                    continue
++                if not chunk:
++                    mux.unregister(event.fileobj)
++                    continue
++                require(sum(map(len, output.values())) + len(chunk) <= MAX_COMMAND_BYTES, "COMMAND_OUTPUT_BOUND")
++                output[event.data].extend(chunk)
++        wait_unreaped(process, deadline)
+     finally:
+-        process.stdout.close()
+-        process.stderr.close()
++        try:
++            if process is not None:
++                kill_and_reap(process)
++        finally:
++            mux.close()
++            if process is not None:
++                process.stdout.close()
++                process.stderr.close()
++    deadline.check()
++    return process.returncode, bytes(output["out"]), bytes(output["err"])
+ 
+ 
+ class DockerBackend:
+     evidence_kind = "docker_metadata_only"
+ 
+-    def __init__(self, value, profile_files, *, authorize=None, runner=command, stream_factory=ProcessStream):
++    def __init__(self, value, profile_files, *, authorize=None, runner=command, stream_factory=DockerProcessStream):
+         self.scope = validate_scope(value)
+         self.scope_sha256 = sha(canonical(self.scope))
+         exact(profile_files, ACTORS)
+         self.profile_files = {role: Path(path) for role, path in profile_files.items()}
+         self.authorize, self.runner, self.stream_factory = authorize, runner, stream_factory
+-        self.evidence_kind = "docker_metadata_only" if runner is command and stream_factory is ProcessStream else "simulated"
+-        self.prefix = ["docker", "--host", "unix:///var/run/docker.sock"]
++        self.evidence_kind = "docker_metadata_only" if runner is command and stream_factory is DockerProcessStream else "simulated"
++        self.prefix = list(PREFIX)
+         self._actor_streams, self._native_admissions = {}, {}
+         self._runtime_starts = {}
+         self._context_lease, self._oracle_session = None, None
+@@ -334,8 +425,11 @@
+             deadline.check()
+             self._authorize("actor_input")
+             dispatch_guard()
+-        stream = self.stream_factory([*self.prefix, "container", "start", "--attach", "--interactive", ref["id"]],
+-            binding, budget, deadline, env=clean_environment(), before_input=before_input, before_write=dispatch_guard)
++        try:
++            stream = self.stream_factory([*self.prefix, "container", "start", "--attach", "--interactive", ref["id"]],
++                binding, budget, deadline, before_input=before_input, before_write=dispatch_guard)
++        except Exception:
++            raise Invalid("DOCKER_TRANSPORT") from None
+         holder.append(stream)
+         try:
+             if self._context_lease is not None:
+--- before/tests/crawl-jobs-v2-observer/local_process.py
++++ after/tests/crawl-jobs-v2-observer/local_process.py
+@@ -0,0 +1,51 @@
++"""Linux child ownership: signal the reserved process group before reaping.
++
++Callers exclusively own a Popen child created with start_new_session=True. They
++must not poll/wait/reap elsewhere. Group signalling is not descendant-absence or
++remote-container proof: a process that creates another session is outside it.
++"""
++import os
++import signal
++import subprocess
++import time
++
++from contracts import Invalid, require
++
++CLEANUP_SECONDS = 5
++
++
++def observe_exit(process):
++    require(process.returncode is None, "LOCAL_PROCESS_OWNERSHIP")
++    try:
++        return os.waitid(os.P_PID, process.pid, os.WEXITED | os.WNOHANG | os.WNOWAIT)
++    except (OSError, ChildProcessError):
++        raise Invalid("LOCAL_PROCESS_OWNERSHIP") from None
++
++
++def wait_unreaped(process, deadline):
++    """Bounded exit observation which keeps the leader's PID reserved."""
++    while True:
++        deadline.check()
++        exited = observe_exit(process)
++        deadline.check()
++        if exited is not None:
++            return
++        time.sleep(min(deadline.remaining(), 0.01))
++
++
++def kill_and_reap(process):
++    # Even an exited leader with closed stdout/stderr can have live children.
++    # WNOWAIT checks ownership without releasing the PID used by killpg.
++    observe_exit(process)
++    failed = False
++    try:
++        os.killpg(process.pid, signal.SIGKILL)
++    except ProcessLookupError:
++        pass
++    except OSError:
++        failed = True
++    try:
++        process.wait(timeout=CLEANUP_SECONDS)
++    except (OSError, subprocess.TimeoutExpired):
++        failed = True
++    require(not failed, "LOCAL_PROCESS_CLEANUP")
+--- before/tests/crawl-jobs-v2-observer/streams.py
++++ after/tests/crawl-jobs-v2-observer/streams.py
+@@ -1,13 +1,13 @@
+ """Bounded owned-process streams. No Docker or native actor starts at import."""
+ import os
+ import selectors
+-import signal
+ import subprocess
+ import time
+ 
+ from contracts import LIMITS, TRIALS, Invalid, clock_ns, decode, digest, exact, integer, require, runtime_architecture, sha
+ from controller import native_message
+ from runtime_admission import PHASES
++from local_process import kill_and_reap
+ 
+ NATIVE_ERRORS = frozenset(("admission", "transport", "case", "deadline", "validator_control", "identity", "bounds",
+     "ptrace_denied", "regset", "debug_state", "instruction", "stop_reason", "controller_kill_required", "helper", "witness", "oracle"))
+@@ -73,7 +73,7 @@
+     adapter supplies its fixed argv only after the outer authorization callback.
+     Killing this CLI group never counts as stopping a remote container.
+     """
+-    def __init__(self, argv, binding, budget, deadline, *, env=None, before_input=None, before_write=None):
++    def __init__(self, argv, binding, budget, deadline, *, env=None, before_input=None, before_write=None, cwd=None):
+         exact(binding, ("architecture", "case_id", "invocation_sha256", "container_id", "image", "role"))
+         runtime_architecture(binding["architecture"])
+         require(type(binding["case_id"]) is str and binding["case_id"] in TRIALS, "CASE")
+@@ -91,6 +91,7 @@
+         self.budget, self.deadline = budget, deadline
+         self.decoder, self.frames = FrameBuffer(budget), []
+         self.sent, self.phase, self.closed, self.stdout_eof = False, None, False, False
++        self._cleanup_failed = False
+         self.admission_frames = []
+         self.last_message_sha256 = None
+         self.last_message = None
+@@ -99,7 +100,7 @@
+         self._process = None
+         try:
+             self._process = subprocess.Popen(argv, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+-                env=env, start_new_session=True, close_fds=True)
++                env=env, cwd=cwd, start_new_session=True, close_fds=True)
+             for stream, key in ((self._process.stdout, "stdout"), (self._process.stderr, "stderr")):
+                 os.set_blocking(stream.fileno(), False)
+                 self.selector.register(stream, selectors.EVENT_READ, key)
+@@ -254,35 +255,21 @@
+ 
+     def close(self):
+         if self.closed:
++            require(not self._cleanup_failed, "LOCAL_PROCESS_CLEANUP")
+             return
+         self.closed = True
+         if self._process is None:
+             self.selector.close()
+             return
+-        # Normal EOF permits reaping the leader; it is not group-absence proof.
+-        # With any pipe still open, never reap first: a departed leader can have
+-        # left a child holding that pipe, and its reserved PID prevents reuse.
+-        reaped = False
+-        if not self.selector.get_map():
+-            try:
+-                self._process.wait(timeout=0)
+-                reaped = True
+-            except subprocess.TimeoutExpired:
+-                pass
+-        try:
+-            if not reaped:
+-                os.killpg(self._process.pid, signal.SIGKILL)
+-        except ProcessLookupError:
+-            pass
+-        except PermissionError:
+-            raise Invalid("LOCAL_PROCESS_CLEANUP") from None
++        try:
++            kill_and_reap(self._process)
++        except BaseException:
++            self._cleanup_failed = True
++            raise
+         finally:
+-            try:
+-                self._process.wait(timeout=5)
+-            finally:
+-                self.selector.close()
+-                for stream in (self._process.stdin, self._process.stdout, self._process.stderr):
+-                    stream.close()
++            self.selector.close()
++            for stream in (self._process.stdin, self._process.stdout, self._process.stderr):
++                stream.close()
+ 
+     def __enter__(self):
+         return self
+--- before/tests/crawl-jobs-v2-observer/test_live_adapter.py
++++ after/tests/crawl-jobs-v2-observer/test_live_adapter.py
+@@ -0,0 +1,303 @@
++"""Live transport boundary controls using inert Python children, never Docker."""
++from contextlib import contextmanager
++import errno
++import json
++import os
++from pathlib import Path
++import select
++import signal
++import subprocess
++import sys
++import tempfile
++import time
++from types import SimpleNamespace
++import unittest
++from unittest.mock import patch
++
++import contracts as c
++import docker_backend as db
++import local_process
++from streams import Deadline, ProcessStream, WireBudget
++from test_host_preflight import FixtureProbe
++from test_streams import binding
++from test_owned_resources import DAEMON, fixture_scope
++from owned_resources import ACTORS, container_spec
++from profiles import profile
++
++PYTHON = [sys.executable, "-I", "-B", "-c"]
++
++
++@contextmanager
++def children(script=None, *, inherited=()):
++    owned, calls = [], []
++    spawn = subprocess.Popen
++    def start(argv, **kwargs):
++        calls.append((list(argv), dict(kwargs)))
++        if inherited:
++            kwargs["pass_fds"] = inherited
++        child = spawn(PYTHON + [script] if script is not None else argv, **kwargs)
++        owned.append(child)
++        return child
++    try:
++        with patch.object(db.subprocess, "Popen", side_effect=start):
++            yield owned, calls
++    finally:
++        for child in owned:
++            # Tests also clean up the intentionally broken implementation when
++            # run as regression controls. Never signal after releasing its PID.
++            if child.returncode is None:
++                try:
++                    os.killpg(child.pid, signal.SIGKILL)
++                except ProcessLookupError:
++                    pass
++                child.wait(timeout=3)
++            for pipe in (child.stdin, child.stdout, child.stderr):
++                if pipe is not None:
++                    pipe.close()
++
++
++class ConfigurationTests(unittest.TestCase):
++    def test_metadata_never_spawns_cli_or_reads_ambient_configuration(self):
++        fixture = FixtureProbe()
++        values = {"info": {field: fixture.info[key] for key, field in db.INFO_FIELDS.items()},
++                  "version": {field: fixture.server[key] for key, field in db.VERSION_FIELDS.items()}}
++        # The private proxy body must not survive selected-field projection.
++        values["info"]["HTTPProxy"] = "private-proxy-credential"
++        with patch.dict(os.environ, {"DOCKER_CONFIG": "/hostile", "HOME": "/hostile", "DOCKER_HOST": "ssh://hostile"}), \
++                patch.object(db, "read_engine_metadata", side_effect=lambda op, _: c.canonical(values[op])) as reader, \
++                patch.object(db.subprocess, "Popen", side_effect=AssertionError("plugin spawned")), \
++                patch.object(db, "verify_cli", side_effect=AssertionError("CLI touched")):
++            self.assertEqual(db.command([*db.PREFIX, "info", "--format", "{{.ID}}"], Deadline(1)), (0, fixture.info["id"].encode(), b""))
++            code, raw, err = db.command([*db.PREFIX, "version", "--format", "{{json .Server}}"], Deadline(1))
++            self.assertEqual((code, err), (0, b""))
++            self.assertEqual(json.loads(raw)["Arch"], fixture.server["architecture"])
++            self.assertNotIn(b"private", raw)
++            self.assertEqual([call.args[0] for call in reader.call_args_list], ["info", "version"])
++
++    def test_private_config_fixed_binary_cwd_and_environment_reach_real_child(self):
++        script = 'import json,os; print(json.dumps({"env":dict(os.environ),"cwd":os.getcwd(),"config":os.listdir(os.environ["DOCKER_CONFIG"]),"mode":os.stat(os.environ["DOCKER_CONFIG"]).st_mode & 511}))'
++        hostile = {key: "private-canary" for key in ("DOCKER_HOST", "DOCKER_CONTEXT", "DOCKER_TLS", "DOCKER_TLS_VERIFY",
++            "DOCKER_CONFIG", "DOCKER_CERT_PATH", "DOCKER_API_VERSION", "DOCKER_CUSTOM_HEADERS", "DOCKER_CLI_PLUGIN_EXTRA_DIRS",
++            "DOCKER_CLI_PLUGIN_ORIGINAL_CLI_COMMAND", "HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "SSL_CERT_FILE",
++            "LD_PRELOAD", "LD_LIBRARY_PATH", "PYTHONPATH", "GODEBUG", "OTEL_EXPORTER_OTLP_ENDPOINT", "SSH_AUTH_SOCK", "HOME", "TMPDIR", "PATH")}
++        with patch.dict(os.environ, hostile), patch.object(db, "verify_cli"), children(script) as (owned, calls):
++            code, raw, err = db.command([*db.PREFIX, "container", "inspect", "a" * 64], Deadline(3))
++            self.assertEqual((code, err), (0, b""))
++            value = json.loads(raw)
++            self.assertEqual((value["cwd"], value["config"], value["mode"]), ("/", [], 0o700))
++            config = value["env"]["DOCKER_CONFIG"]
++            self.assertEqual(value["env"], db.clean_environment(config))
++            self.assertNotIn("private-canary", raw.decode())
++            self.assertFalse(Path(config).exists())
++            argv, options = calls[0]
++            self.assertEqual(argv, [*db.PREFIX, "--config", config, "container", "inspect", "a" * 64])
++            self.assertTrue(options["start_new_session"] and options["close_fds"])
++            self.assertEqual(owned[0].returncode, 0)
++
++    def test_actor_owns_configuration_until_close_and_uses_same_isolation(self):
++        with patch.dict(os.environ, {"DOCKER_CONFIG": "/hostile", "HOME": "/hostile"}), \
++                patch.object(db, "verify_cli"), children('import sys; sys.stdin.read()') as (owned, calls):
++            stream = db.DockerProcessStream([*db.PREFIX, "container", "start", "--attach", "--interactive", "a" * 64],
++                binding(), WireBudget(), Deadline(2))
++            try:
++                config = calls[0][1]["env"]["DOCKER_CONFIG"]
++                self.assertTrue(Path(config).is_dir())
++                self.assertEqual(list(Path(config).iterdir()), [])
++                self.assertEqual(calls[0][1]["env"], db.clean_environment(config))
++                self.assertEqual(calls[0][1]["cwd"], "/")
++                self.assertIn("--config", calls[0][0])
++            finally:
++                stream.close()
++            self.assertFalse(Path(config).exists())
++            self.assertIsNotNone(owned[0].returncode)
++            stream.close()
++
++    def test_plugin_help_completion_and_endpoint_overrides_refuse_before_spawn(self):
++        for args in (["info"], ["version"], ["buildx", "version"], ["container"],
++                     ["container", "inspect", "--help"], ["container", "inspect", "__complete"],
++                     ["container", "inspect", "__completeNoDesc"], ["container", "inspect", "--config=/hostile"],
++                     ["container", "inspect", "--host=ssh://hostile"], ["container", "inspect", "--context=hostile"]):
++            with self.subTest(args=args), patch.object(db.subprocess, "Popen") as spawn, \
++                    self.assertRaisesRegex(c.Invalid, "DOCKER_ARGV"):
++                db.command([*db.PREFIX, *args], Deadline(1))
++            spawn.assert_not_called()
++        with patch.object(db.subprocess, "Popen") as spawn, self.assertRaisesRegex(c.Invalid, "DOCKER_ARGV"):
++            db.command(["docker", *db.PREFIX[1:], "container", "inspect", "a" * 64], Deadline(1))
++        spawn.assert_not_called()
++
++    def test_actor_setup_failure_removes_configuration_and_reaps_child(self):
++        with patch.object(db, "verify_cli"), children('import time; time.sleep(20)') as (owned, calls), \
++                patch("streams.os.set_blocking", side_effect=OSError(errno.EIO, "private-canary")), self.assertRaises(OSError):
++            db.DockerProcessStream([*db.PREFIX, "container", "start", "--attach", "--interactive", "a" * 64],
++                binding(), WireBudget(), Deadline(2))
++        self.assertFalse(Path(calls[0][1]["env"]["DOCKER_CONFIG"]).exists())
++        self.assertIsNotNone(owned[0].returncode)
++
++    def test_clustered_help_and_attached_short_overrides_refuse_before_side_effects(self):
++        for token in ("-hh", "-hhh", "-hh=true", "-Dh", "-hD", "-sh", "-Hunix:///unused.sock", "-cunused"):
++            with self.subTest(token=token), patch.object(db, "verify_cli", side_effect=AssertionError("binary touched")), \
++                    patch.object(db.tempfile, "TemporaryDirectory", side_effect=AssertionError("config allocated")), \
++                    patch.object(db.subprocess, "Popen", side_effect=AssertionError("child spawned")), \
++                    self.assertRaisesRegex(c.Invalid, "DOCKER_ARGV"):
++                db.command([*db.PREFIX, "container", "inspect", "a" * 64, token], Deadline(1))
++
++    def test_short_option_exception_requires_exact_oracle_entrypoint_image_and_tail(self):
++        tail = ["--entrypoint", "python3", "sha256:" + "a" * 64, "-I", "-B", "/oracle/worker.py"]
++        bad = [tail[:-1], tail + ["-hh"], [*tail[:3], "-IB", tail[-1]],
++               [tail[0], "/other", *tail[2:]], [*tail[:2], "image:latest", *tail[3:]],
++               [*tail[:2], "sha256:" + "0" * 64, *tail[3:]], ["-hh", *tail],
++               [*tail[:3], "-I", "-h", tail[-1]], [*tail[:3], "-I", "-B", "/other"]]
++        for suffix in bad:
++            with self.subTest(suffix=suffix), self.assertRaises(c.Invalid):
++                db.cli_arguments([*db.PREFIX, "container", "create", *suffix])
++        with self.assertRaises(c.Invalid):
++            db.cli_arguments([*db.PREFIX, "container", "inspect", *tail])
++
++    def test_generated_oracle_create_remains_accepted_for_both_architectures(self):
++        for architecture in ("aarch64", "x86_64"):
++            with self.subTest(architecture=architecture), tempfile.TemporaryDirectory() as folder:
++                value = fixture_scope(architecture=architecture)
++                arch = c.runtime_architecture(architecture)["image_architecture"]
++                calls = []
++                def runner(argv, _):
++                    calls.append(argv)
++                    if argv[3] == "info":
++                        return 0, DAEMON, b""
++                    if argv[3] == "version":
++                        return 0, c.canonical({"Os": "linux", "Arch": arch}), b""
++                    db.cli_arguments(argv)
++                    if argv[3:5] == ["image", "inspect"]:
++                        return 0, c.canonical([{"Id": value["images"]["oracle"], "Os": "linux", "Architecture": arch,
++                            "Config": {"Env": [], "OnBuild": None, "Volumes": None}}]), b""
++                    return 0, b"a" * 64, b""
++                paths = {role: Path(folder) / (role + ".json") for role in ACTORS}
++                for role, path in paths.items():
++                    path.write_bytes(c.canonical(profile(role, architecture)))
++                backend = db.DockerBackend(value, paths, runner=runner, authorize=lambda *_: True)
++                self.assertEqual(backend.create_container(container_spec(value, "oracle"), Deadline(2)), "a" * 64)
++                self.assertEqual(calls[-1][-6:], ["--entrypoint", "python3", value["images"]["oracle"], "-I", "-B", "/oracle/worker.py"])
++
++    def test_binary_requires_root_owned_native_nonwritable_regular_file(self):
++        with tempfile.TemporaryDirectory() as folder:
++            binary = Path(folder) / "docker"
++            binary.write_bytes(b"#!/bin/sh\n")
++            binary.chmod(0o755)
++            with patch.object(db, "DOCKER", str(binary)), self.assertRaisesRegex(c.Invalid, "DOCKER_BINARY"):
++                db.verify_cli()
++            link = Path(folder) / "link"
++            link.symlink_to(binary)
++            with patch.object(db, "DOCKER", str(link)), self.assertRaises(OSError):
++                db.verify_cli()
++
++
++class LifecycleTests(unittest.TestCase):
++    def test_normal_nonzero_exit_status_and_both_pipes_are_preserved(self):
++        with children() as (owned, _):
++            result = db.bounded_command(PYTHON + ['import os; os.write(1,b"out"); os.write(2,b"err"); os._exit(42)'], Deadline(2), {})
++        self.assertEqual(result, (42, b"out", b"err"))
++        self.assertTrue(owned[0].stdout.closed and owned[0].stderr.closed)
++
++    def descendant_control(self, stream_mode, hold_output):
++        reader, writer = os.pipe()
++        script = f'''import os,time
++child = os.fork()
++if child == 0:
++    if not {hold_output!r}:
++        os.close(1); os.close(2)
++    os.write({writer}, b"R")
++    time.sleep(20)
++    os._exit(0)
++os._exit(0)
++'''
++        signals, owned = [], []
++        real_killpg = os.killpg
++        def killpg(pid, sig):
++            self.assertIsNone(owned[0].returncode, "leader reaped before group signal")
++            signals.append((pid, sig))
++            return real_killpg(pid, sig)
++        try:
++            with children(script, inherited=(writer,)) as (owned, _), patch.object(local_process.os, "killpg", side_effect=killpg):
++                if stream_mode:
++                    stream = ProcessStream(PYTHON + [script], binding(), WireBudget(), Deadline(0.5))
++                    stream.phase = "FINISHED"
++                    if hold_output:
++                        with self.assertRaisesRegex(c.Invalid, "DEADLINE"):
++                            stream.finish_transport()
++                    else:
++                        result = stream.finish_transport()
++                        self.assertFalse(result["remote_exit_proven"] or result["local_process_group_absence_proven"])
++                elif hold_output:
++                    with self.assertRaisesRegex(c.Invalid, "DEADLINE"):
++                        db.bounded_command(PYTHON + [script], Deadline(0.5), {})
++                else:
++                    self.assertEqual(db.bounded_command(PYTHON + [script], Deadline(2), {}), (0, b"", b""))
++                os.close(writer)
++                writer = None
++                self.assertEqual(signals, [(owned[0].pid, signal.SIGKILL)])
++                self.assertTrue(select.select([reader], [], [], 1)[0])
++                self.assertEqual(os.read(reader, 1), b"R")
++                self.assertTrue(select.select([reader], [], [], 1)[0], "descendant survived cleanup")
++                self.assertEqual(os.read(reader, 1), b"")
++        finally:
++            if writer is not None:
++                os.close(writer)
++            os.close(reader)
++
++    def test_command_success_kills_closed_pipe_descendant_before_reaping(self):
++        self.descendant_control(False, False)
++
++    def test_command_timeout_kills_pipe_holding_descendant_before_reaping(self):
++        self.descendant_control(False, True)
++
++    def test_stream_normal_eof_kills_closed_pipe_descendant_before_reaping(self):
++        self.descendant_control(True, False)
++
++    def test_stream_timeout_kills_pipe_holding_descendant_before_reaping(self):
++        self.descendant_control(True, True)
++
++    def test_closed_pipes_with_live_leader_obey_deadline_without_timeout_leak(self):
++        start = time.monotonic()
++        with children() as (owned, _), self.assertRaisesRegex(c.Invalid, "^DEADLINE$"):
++            db.bounded_command(PYTHON + ['import os,time; os.close(1); os.close(2); time.sleep(20)'], Deadline(0.15), {})
++        self.assertLess(time.monotonic() - start, 2)
++        self.assertEqual(owned[0].returncode, -signal.SIGKILL)
++
++    def test_floods_are_bounded_and_cleanup_closes_descriptors(self):
++        for fd in (1, 2):
++            with self.subTest(fd=fd), children() as (owned, _), self.assertRaisesRegex(c.Invalid, "COMMAND_OUTPUT_BOUND"):
++                db.bounded_command(PYTHON + [f'import os;\nwhile True: os.write({fd}, b"x"*8192)'], Deadline(2), {})
++            self.assertIsNotNone(owned[0].returncode)
++            self.assertTrue(owned[0].stdout.closed and owned[0].stderr.closed)
++
++    def test_selector_failure_occurs_before_command_spawn(self):
++        with patch.object(db.selectors, "DefaultSelector", side_effect=OSError(errno.ENFILE, "selector")), \
++                patch.object(db.subprocess, "Popen") as spawn, self.assertRaises(OSError):
++            db.bounded_command(PYTHON + ["pass"], Deadline(1), {})
++        spawn.assert_not_called()
++
++    def test_pipe_setup_failure_kills_group_and_closes_selector(self):
++        mux = db.selectors.DefaultSelector()
++        with patch.object(db.selectors, "DefaultSelector", return_value=mux), \
++                children('import time; time.sleep(20)') as (owned, _), \
++                patch.object(db.os, "set_blocking", side_effect=OSError(errno.EIO, "setup")), self.assertRaises(OSError):
++            db.bounded_command(PYTHON + ["pass"], Deadline(1), {})
++        self.assertIsNone(mux.get_map())
++        self.assertIsNotNone(owned[0].returncode)
++        self.assertTrue(owned[0].stdout.closed and owned[0].stderr.closed)
++
++    def test_reaped_leader_can_never_trigger_numeric_group_signal(self):
++        process = SimpleNamespace(pid=12345, returncode=0)
++        with patch.object(local_process.os, "killpg") as signal_group, self.assertRaisesRegex(c.Invalid, "LOCAL_PROCESS_OWNERSHIP"):
++            local_process.kill_and_reap(process)
++        signal_group.assert_not_called()
++
++    def test_cleanup_timeout_is_value_free(self):
++        process = SimpleNamespace(pid=12345, returncode=None)
++        process.wait = lambda **kwargs: (_ for _ in ()).throw(subprocess.TimeoutExpired(["private-canary"], 5))
++        with patch.object(local_process, "observe_exit"), patch.object(local_process.os, "killpg"), \
++                self.assertRaisesRegex(c.Invalid, "^LOCAL_PROCESS_CLEANUP$"):
++            local_process.kill_and_reap(process)
++
++
++if __name__ == "__main__":
++    unittest.main()
+--- before/tests/crawl-jobs-v2-observer/test_owned_resources.py
++++ after/tests/crawl-jobs-v2-observer/test_owned_resources.py
+@@ -403,7 +403,7 @@
+             backend = db.DockerBackend(value, paths, authorize=lambda *_: True, runner=runner)
+             self.assertEqual(backend.create_container(owned.container_spec(value, "target"), Deadline(2)), "a" * 64)
+             argv = calls[-1]
+-            self.assertEqual(argv[:3], ["docker", "--host", "unix:///var/run/docker.sock"])
++            self.assertEqual(argv[:3], ["/usr/bin/docker", "--host", "unix:///var/run/docker.sock"])
+             self.assertIn("--read-only", argv)
+             self.assertIn("core=0:0", argv)
+             self.assertIn("--no-healthcheck", argv)

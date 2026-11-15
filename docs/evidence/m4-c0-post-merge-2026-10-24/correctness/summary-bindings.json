@@ -1,0 +1,11 @@
+{
+  "execution_authorized": false,
+  "hosted_aggregate_matches_independent_checks": true,
+  "hosted_verification_sha256": "309ac683b4180bd3aa89b937f2216c13a62e2c79c6619697c9c5e6812751e698",
+  "preflight_final_gate_sha256": "2e91337ea1d30d2d319c9b86019f36c7af75677e01a082d88660d37ad22fd7e8",
+  "preflight_final_review_bindings_verified": true,
+  "runtime_acceptance": false,
+  "status": "PASS",
+  "sync_aggregate_matches_preserved_state": true,
+  "sync_verification_sha256": "2db1c726cc04fa2280fa22fb4ef0792f15457854e02511ca506bfc0e17844cae"
+}

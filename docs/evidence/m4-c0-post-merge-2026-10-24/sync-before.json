@@ -1,0 +1,612 @@
+{
+  "branch": "feature/crawl-jobs-v2-c0-native-calibration",
+  "candidate_paths": 120,
+  "evidence_exports_verified": 111,
+  "files": {
+    "docs/crawl-jobs-v2-m4-c0-native-preflight-2026-10-17.md": {
+      "bytes": 10494,
+      "mode": 420,
+      "sha256": "71e7e5cda0e1dbc8f872b71f0e61c10ebe36b501d39d9f3c70f214bd1897a87b"
+    },
+    "docs/crawl-jobs-v2-plan.md": {
+      "bytes": 306843,
+      "mode": 420,
+      "sha256": "4e7b556b3ec26b7c43cb3a5fdb7e75fc17859d2880808f5b234feb8e2e012a0d"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/.gitignore": {
+      "bytes": 7,
+      "mode": 420,
+      "sha256": "e027cf8ebf80d6dcdacced8a4dbd1c440e2436fb1868ec851db4061cb67bb787"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/README.md": {
+      "bytes": 5862,
+      "mode": 420,
+      "sha256": "5d5a80932f31ee306cfaaa8b7ea8f9ebe5de3830d5995a5cc46634ba0aef6ab8"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/correctness-remediation-manifest.json": {
+      "bytes": 2450,
+      "mode": 420,
+      "sha256": "b21ea130c166748db8a4518be17c26165701df480386dda4c4a236dc159492aa"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/correctness-remediation/audit-after.json": {
+      "bytes": 2705,
+      "mode": 420,
+      "sha256": "7be20512c4c03441881c4dcc19b68041e45f94fd7f968080bf080de74e9d3138"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/correctness-remediation/audit-after.log": {
+      "bytes": 1449,
+      "mode": 420,
+      "sha256": "3726803d8b29292b276e9f3713219cfb2cbe9e79917fa14b72a21ba8ff3fd75f"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/correctness-remediation/audit-before-final.log": {
+      "bytes": 1450,
+      "mode": 420,
+      "sha256": "df911b08e60155be7e36670c10ad0c7e8a86f924a8a1c3f02360a017f6870220"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/correctness-remediation/audit-before.json": {
+      "bytes": 2706,
+      "mode": 420,
+      "sha256": "64874bc1ee6de8a630bfe2713d9048f936172ae32f91f01ba3f5715d9b78e7c3"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/correctness-remediation/audit-before.log": {
+      "bytes": 413,
+      "mode": 420,
+      "sha256": "88239ad131a65285cf717b02cb59889079c7f954a1b699198f2cf19b3a972674"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/correctness-remediation/audit_snapshot.py": {
+      "bytes": 6493,
+      "mode": 420,
+      "sha256": "a9d614638f0548fb7514d172ba9509a08a0349bb9de483c8bf448659765938e6"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/correctness-remediation/fix-boundaries.log": {
+      "bytes": 700,
+      "mode": 420,
+      "sha256": "c3bd22b488be2dc2e69ba0e01c4aa562ed490a54c23a80ee372af422f041e57c"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/correctness-remediation/fix-boundary-evidence.json": {
+      "bytes": 8263,
+      "mode": 420,
+      "sha256": "e7ef94b53ce1b5ef60266ad7439a08301a33eae505dc1439de87f80f2b63a10a"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/correctness-remediation/focused-tests.log": {
+      "bytes": 2603,
+      "mode": 420,
+      "sha256": "d1809451400fcdc280fa90d9acb30cbe26bd08622aabe43166259c9b1bb67153"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/correctness-remediation/report.md": {
+      "bytes": 8566,
+      "mode": 420,
+      "sha256": "a6bf1b333929809dbb56a4a6427842aed3247e2a87475e082bf5260bb4acd004"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/correctness-remediation/rerun_initial_probes.py": {
+      "bytes": 2639,
+      "mode": 420,
+      "sha256": "c19b72c8cf4cdbd4168959b499c53602f4f8cb8299ba2b4699ae8dc1abdd6806"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/correctness-remediation/result.json": {
+      "bytes": 2507,
+      "mode": 420,
+      "sha256": "8dfb7de4fffbb60d4ed73c7572f5097c9c91ad3643466828e1e6e1564c7f6cb5"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/correctness-remediation/retained-probe-evidence.json": {
+      "bytes": 3433,
+      "mode": 420,
+      "sha256": "66cb4a2489fff3182fddfa8bc38e3174dbed0111d592e2558bfe14234a67eb12"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/correctness-remediation/retained-probes.log": {
+      "bytes": 2236,
+      "mode": 420,
+      "sha256": "281edfe79e043a9841776cac74b6c3c9aef56135c79f861aef999311befc0da9"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/correctness-remediation/review-artifact-sha256.json": {
+      "bytes": 1482,
+      "mode": 420,
+      "sha256": "56c01071f091ced97fd8e9b2399d167399e3583698caa0c1c549aef80423027f"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/correctness-remediation/snapshot-diff.patch": {
+      "bytes": 9443,
+      "mode": 420,
+      "sha256": "b7e9269a6693736b8a55e55142bf286e9a6378ba429ab9003cf6b4cb632c90ac"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/correctness-remediation/test_fix_boundaries.py": {
+      "bytes": 8765,
+      "mode": 420,
+      "sha256": "1e8ae01d0eea40f8af84ff3cda1643ae093703a9e925f3de0f667534d15b54d0"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/final-correctness-manifest.json": {
+      "bytes": 2035,
+      "mode": 420,
+      "sha256": "45b83f8000a991c0909a1f330b456d0ac4e707e1a0bc45524b7fac9cd7e3ed75"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/final-correctness/api-schema-notes.md": {
+      "bytes": 1596,
+      "mode": 420,
+      "sha256": "001128888121d0ea4751f65178d00a8d31a5d5cd1f529049530bc64cfce75462"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/final-correctness/audit-after.json": {
+      "bytes": 5598,
+      "mode": 420,
+      "sha256": "e1edd93f02108d548a9b048b7a53908d31d55d1cc0ee99668a86e1b4b3aa5164"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/final-correctness/audit-after.log": {
+      "bytes": 2615,
+      "mode": 420,
+      "sha256": "862f90368d3001a772870c0ad1e221844e29108ec708c969a06f0a75e6dc3417"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/final-correctness/audit-before.json": {
+      "bytes": 5599,
+      "mode": 420,
+      "sha256": "e15960039f44509ea7a3aaf89cd3eaddbdc14b62b1f1adc79006c87d5d8ab7c6"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/final-correctness/audit-before.log": {
+      "bytes": 2616,
+      "mode": 420,
+      "sha256": "eb6d14d373f2f72bd17af2ca5b1f98d5e6e7340c93d47abc960a7e754adbc78b"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/final-correctness/audit.py": {
+      "bytes": 6128,
+      "mode": 420,
+      "sha256": "3514bfeaf3215b71e333c27e522ca6ac02a2b1525cb49e68da03b994af1cc22e"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/final-correctness/focused-tests.log": {
+      "bytes": 4695,
+      "mode": 420,
+      "sha256": "a021a0668ec78e9ce1bfd59fe16c180e94242481145648dc45d4c4d4998e765f"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/final-correctness/independent-evidence.json": {
+      "bytes": 3511,
+      "mode": 420,
+      "sha256": "6714c305bb8cb49de8ed4b4e3667c7ffaa53b93410adeac6775f96766a11daf2"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/final-correctness/independent-tests.log": {
+      "bytes": 2191,
+      "mode": 420,
+      "sha256": "158d5527dae339259fcad6bd27419fa403e19b72c4b76cec39a3c2325211c822"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/final-correctness/independent_controls.py": {
+      "bytes": 21206,
+      "mode": 420,
+      "sha256": "f84ae44b881eaf44d593da1929fe8dee07ca673b989b52c91257ea2993b737a9"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/final-correctness/report.md": {
+      "bytes": 9962,
+      "mode": 420,
+      "sha256": "026b93f044e7bff8cc6d3c859d0a43aa2b5dba03c59c06a384d72b90a60fe4ef"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/final-correctness/result.json": {
+      "bytes": 2269,
+      "mode": 420,
+      "sha256": "71aec3c6668e7c80d5a169f191af769ed0ccb93f63c57f60c16dee0eb731afac"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/final-correctness/review-artifact-sha256.json": {
+      "bytes": 1182,
+      "mode": 420,
+      "sha256": "3862c8897004c7c8b9a0260821d4fbed2bd136d921d92f5da1ec55daaf3deadd"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/final-correctness/transport-diff.patch": {
+      "bytes": 39071,
+      "mode": 420,
+      "sha256": "b3a651c4d699e83dab34a0d9d2ce2d0f222c400a4482cbc03f9a874a40bb5dfb"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/final-gate.json": {
+      "bytes": 2238,
+      "mode": 420,
+      "sha256": "2e91337ea1d30d2d319c9b86019f36c7af75677e01a082d88660d37ad22fd7e8"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/final-security-manifest.json": {
+      "bytes": 2381,
+      "mode": 420,
+      "sha256": "ea3405afad97cbda736a920ca65caf9cca996443fb4d55103a504be120915585"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/final-security/SECURITY-REVIEW.md": {
+      "bytes": 17366,
+      "mode": 420,
+      "sha256": "741ef45475dfd4d0faaebcb93c2cff7ba5901452aae3f383ba1da0a98cc3d7bc"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/final-security/baseline-original.exit": {
+      "bytes": 12,
+      "mode": 420,
+      "sha256": "bde294368bfed77c2cddf8cec271d398aee9cdbab3b26e1059281bd33adb0120"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/final-security/baseline-original.log": {
+      "bytes": 4695,
+      "mode": 420,
+      "sha256": "fb36693f9ab1d2f5690a354dfc7f44e8f50c38533375a16e49d18dcc18443574"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/final-security/deep-json-original.exit": {
+      "bytes": 12,
+      "mode": 420,
+      "sha256": "bde294368bfed77c2cddf8cec271d398aee9cdbab3b26e1059281bd33adb0120"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/final-security/deep-json-original.json": {
+      "bytes": 1465,
+      "mode": 420,
+      "sha256": "f9cad393b56569e7700f549243ad637af51fe70b6563ad15decf6b57ae028f9a"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/final-security/deep-json-original.log": {
+      "bytes": 1015,
+      "mode": 420,
+      "sha256": "9cd142db26b0a570016d261a6d84f6baac4b210b35641fecf597cca145f9a001"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/final-security/deep_json_probe.py": {
+      "bytes": 2274,
+      "mode": 420,
+      "sha256": "508515b2e3e31e698f326a168f84ec09a47f504bfe4e6cbaf16d34b6fea3438c"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/final-security/documentation-lookups.md": {
+      "bytes": 1837,
+      "mode": 420,
+      "sha256": "973e4b8781813309737458f5da76003b1f412a622eb34023f8f6b3a3c597db6d"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/final-security/evidence-inventory.json": {
+      "bytes": 1659,
+      "mode": 420,
+      "sha256": "05efeb8ce3e571e2b304c5fce0abfa0c7ffb60f93a487eaaecfeedb0c6c13e6a"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/final-security/independent-original.exit": {
+      "bytes": 12,
+      "mode": 420,
+      "sha256": "bde294368bfed77c2cddf8cec271d398aee9cdbab3b26e1059281bd33adb0120"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/final-security/independent-original.json": {
+      "bytes": 4316,
+      "mode": 420,
+      "sha256": "436d7adbbabfe7dafe9448d504cbfee9fdb78c93bf216ecb56f7179b43e89171"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/final-security/independent-original.log": {
+      "bytes": 2743,
+      "mode": 420,
+      "sha256": "f9cb90831085573af21547143b978930e94ae656b44440657f7c89d87b969471"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/final-security/integrity-after.json": {
+      "bytes": 18997,
+      "mode": 420,
+      "sha256": "c73e04f5f6fd3bd90ce8c77d93310dc45face2f8833f036fc5540e11f29e9d68"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/final-security/integrity-before.json": {
+      "bytes": 19519,
+      "mode": 420,
+      "sha256": "4c5a7e4edfcbae780be6a1120dcdc9fcaf0c67f1d0aeab8ae7bca572b3aa89c0"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/final-security/review-summary.json": {
+      "bytes": 3685,
+      "mode": 420,
+      "sha256": "cbd9ff8b61da256bf13ba03c530e13573ce65d821f20247cb464db718da2afc4"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/final-security/transport_security_tests.py": {
+      "bytes": 29945,
+      "mode": 420,
+      "sha256": "698bd866da0b6aef849bef6b1f6e6b4c76185bcd4ba7015d10b0fb021e18bc59"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/final-source-inventory.json": {
+      "bytes": 7963,
+      "mode": 420,
+      "sha256": "ca38c05c22ad440a606a786806f3bd4ccbda7917d11e83633774505969e678ab"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/final-source.patch": {
+      "bytes": 68961,
+      "mode": 420,
+      "sha256": "4353ed3cd692f8e46422c61c97220f30f0a4a738e0757be1db4e914477a75f77"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/initial-correctness-manifest.json": {
+      "bytes": 1898,
+      "mode": 420,
+      "sha256": "7c0514df0a78d81a6828d76437ba23b9fd55199cd91a9c61a59874ba84560d01"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/initial-correctness/controls-final.log": {
+      "bytes": 1914,
+      "mode": 420,
+      "sha256": "5edd98b99d2418d2a686e63b2469dd8e32e4616cad7dab87f19f487958e92eb5"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/initial-correctness/controls.log": {
+      "bytes": 2532,
+      "mode": 420,
+      "sha256": "115b0c211f13f9ac12f8da6ea68d84e3553d2f8e7cc06fc58d75dd66e0a6b6d0"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/initial-correctness/controls.py": {
+      "bytes": 12860,
+      "mode": 420,
+      "sha256": "cebc32f967dc452cde97740ac89bab2f28ae23164f9d27d2e32c4c299b640775"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/initial-correctness/focused-tests.log": {
+      "bytes": 2251,
+      "mode": 420,
+      "sha256": "5f6472cd9722a104f4cf7efc691bf4afdef6d6e097eac509e8203e4519706552"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/initial-correctness/inventory-after.json": {
+      "bytes": 426,
+      "mode": 420,
+      "sha256": "c2b3e3f401ec50921a2b30c90d8ccf64c840d251c1094512f34e4ecc6345aa26"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/initial-correctness/inventory-before.json": {
+      "bytes": 13739,
+      "mode": 420,
+      "sha256": "4a1a3142565be6d9f02bd581537ba39c97ce73f2e8f3f1390aa1e6f49f3b9730"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/initial-correctness/regression-evidence.json": {
+      "bytes": 1380,
+      "mode": 420,
+      "sha256": "15198b778b6564db2f35592e3e436da988f2167733474d9faaf928c2a33931b3"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/initial-correctness/regressions.log": {
+      "bytes": 4259,
+      "mode": 420,
+      "sha256": "87c998689eb45aa9d033aab81a496280a7e3f353ec99e4bb881620e7db802063"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/initial-correctness/regressions.py": {
+      "bytes": 3706,
+      "mode": 420,
+      "sha256": "2591de20149ebf4fe5078796e57e86c766d98a0f12e74042f42fa8a144811ecc"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/initial-correctness/report.md": {
+      "bytes": 9738,
+      "mode": 420,
+      "sha256": "a60fcf36b52b382bc5b896884c2e370370a989c3add04796682a7762e60ed8d2"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/initial-correctness/result.json": {
+      "bytes": 1805,
+      "mode": 420,
+      "sha256": "bdbf3995200eb89eec734ce4de40c668b9193259c4c9fd55785101b73d2e9273"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/initial-correctness/review-artifact-sha256.json": {
+      "bytes": 1091,
+      "mode": 420,
+      "sha256": "43c014819aa97cc78d352106db652bcb349fc02fd69bffaf4d49a3f0861aaf9b"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/initial-correctness/upstream-security-options.md": {
+      "bytes": 1855,
+      "mode": 420,
+      "sha256": "03c356da005c371fa252780d66edf9f8b5acdf23e0509fc0331274aad6905d3a"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/initial-manifest.json": {
+      "bytes": 1907,
+      "mode": 420,
+      "sha256": "764d031b544ea4f80b22c6e6145da06b866593af6240c4644299b3f6b5d88149"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/initial-security-manifest.json": {
+      "bytes": 2352,
+      "mode": 420,
+      "sha256": "7fbbef11410854b89f0a73cd6b60dac96539bc6a35f57977307fd6e36c89b096"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/initial-security/SECURITY-REVIEW.md": {
+      "bytes": 18471,
+      "mode": 420,
+      "sha256": "ebb837d373e4ebc72e7c788fda56e82cb74f117258d514d12c7eb04873efa645"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/initial-security/adversarial-original.exit": {
+      "bytes": 12,
+      "mode": 420,
+      "sha256": "85acfd2e79dd47df07d214334642196301332f72d792b52068cdfd8898755409"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/initial-security/adversarial-original.json": {
+      "bytes": 2393,
+      "mode": 420,
+      "sha256": "67f300f5a843c54eda97a0206a3203c73353a3381a0dbec55bbcd2a86516a353"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/initial-security/adversarial-original.log": {
+      "bytes": 7576,
+      "mode": 420,
+      "sha256": "3d0e50719ca4df84390b77cf59d02d1fb41acc81921f32f05e334eef9226c1f5"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/initial-security/baseline-original.exit": {
+      "bytes": 12,
+      "mode": 420,
+      "sha256": "bde294368bfed77c2cddf8cec271d398aee9cdbab3b26e1059281bd33adb0120"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/initial-security/baseline-original.log": {
+      "bytes": 2251,
+      "mode": 420,
+      "sha256": "5f6472cd9722a104f4cf7efc691bf4afdef6d6e097eac509e8203e4519706552"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/initial-security/evidence-inventory.json": {
+      "bytes": 1636,
+      "mode": 420,
+      "sha256": "01d349d9be23ac0f4ee0324ab6180a6f0aaf20bf96b8f75a7268c1bde1e14841"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/initial-security/followup-original.exit": {
+      "bytes": 12,
+      "mode": 420,
+      "sha256": "bde294368bfed77c2cddf8cec271d398aee9cdbab3b26e1059281bd33adb0120"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/initial-security/followup-original.json": {
+      "bytes": 605,
+      "mode": 420,
+      "sha256": "4bdb8f1908eaea2e5e9f36aa399d054e4517eb20eba5bc27dbbeb29cb03cbb0c"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/initial-security/followup-original.log": {
+      "bytes": 378,
+      "mode": 420,
+      "sha256": "b387b415e5a2e47c7ad142bc3d175f4f1f8cc42bb3537ce5182661ce9ab77d5b"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/initial-security/followup_tests.py": {
+      "bytes": 4069,
+      "mode": 420,
+      "sha256": "8da79e1820731cf55b1037d0268752ac0b3c6de7d63d5349de733fb90bda6d91"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/initial-security/integrity-after.json": {
+      "bytes": 17717,
+      "mode": 420,
+      "sha256": "a01024f8d2c9e492fe2643ddf0683dae89d96beaa9010a8f947c83343d2269ed"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/initial-security/integrity-before.json": {
+      "bytes": 17810,
+      "mode": 420,
+      "sha256": "c84deb02eff39de03f09045805dd3567d5a7629cbfcd5ef59a25f7ce7679ff32"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/initial-security/public-source-evidence.md": {
+      "bytes": 4227,
+      "mode": 420,
+      "sha256": "79254b0c151b413dbf2435b929080abac14ad14ffe387b3581ce78a10246410a"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/initial-security/review-summary.json": {
+      "bytes": 2992,
+      "mode": 420,
+      "sha256": "25765ff1c4fc3e8665bc2e55b4644c543e76e989812fbf9608fb6a97b7165903"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/initial-security/security_adversarial_tests.py": {
+      "bytes": 13656,
+      "mode": 420,
+      "sha256": "9a9812737c13ad092016cf0e58d96201536c8729ab51ced8c5fd1feba1049773"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/initial-source.patch": {
+      "bytes": 38762,
+      "mode": 420,
+      "sha256": "00bd9b74a053d95719c6465d40d36a2fe062e9d1182b5b5cd32d2d134a38efb2"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/initial-ssh-discovery.json": {
+      "bytes": 4628,
+      "mode": 420,
+      "sha256": "509e0dc456ba12268bc8ee4448825d8f77de93a9e471e1d98b1041884c82a531"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/local-preflight.json": {
+      "bytes": 2579,
+      "mode": 420,
+      "sha256": "639d5682c10166d102fb89df9f9814d2a3e7f06e01e10bede7680d604f5dd4ed"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/local-preflight.stderr": {
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/manifest.json": {
+      "bytes": 17257,
+      "mode": 420,
+      "sha256": "93b0a078c3e89d7e3af566304a8bc04756b8a18c139aa24444cb38dbb2b11537"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/pr32-capture.json": {
+      "bytes": 589,
+      "mode": 420,
+      "sha256": "6057d91e98eb9e3bbe01bf674eaa8f0c8411e0958c7a21d8e80d7e3b3f0780c0"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/pr32-checks-capture.json": {
+      "bytes": 4751,
+      "mode": 420,
+      "sha256": "c9bb8b92a7be3ce8a1ef116809f5e0bcbcf833f7f953d5c63a838696a0ba981f"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/pr32-checks.json": {
+      "bytes": 4848,
+      "mode": 420,
+      "sha256": "622c82ad89093e11c427786d237d9fbebe892da687f9986cf189df42cec5c39d"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/pr32-images-run-capture.json": {
+      "bytes": 5657,
+      "mode": 420,
+      "sha256": "14eec4641299f27e48e9d419880a8484c1f1bb902012fa0706b9bac00f9f4e2d"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/pr32-images-run.json": {
+      "bytes": 6972,
+      "mode": 420,
+      "sha256": "96d57a0c4f53812c1198c7f3578c23cae982db490cb7f0df49b42cc7bef3c067"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/pr32.json": {
+      "bytes": 292,
+      "mode": 420,
+      "sha256": "ca78972be68f850581c4cd5571fc32fb61d9c464d6727eaa12e8a45cefa92fee"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/remediation-source-inventory.json": {
+      "bytes": 7508,
+      "mode": 420,
+      "sha256": "4046bd7f3604bdf51ddd50e159a41c394ec9c55e4715cbbfef69e54d2e743ba6"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/remediation-targeted.log": {
+      "bytes": 2603,
+      "mode": 420,
+      "sha256": "87c5020893a487f1092fd34aed517a4ee093406d40960fe73f9fc9438ace8bb7"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/remediation-tests-022.json": {
+      "bytes": 103437,
+      "mode": 420,
+      "sha256": "2843f2928627665fa059fb67be53536008435ed6a6b6259029a47274ba774683"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/remediation-tests-022.log": {
+      "bytes": 50724,
+      "mode": 420,
+      "sha256": "da20037bc56b4602fa7e7af73cc3835a24c0aa18b00509831ae1d5d4410b4e26"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/security-remediation-targeted.log": {
+      "bytes": 4695,
+      "mode": 420,
+      "sha256": "f682c9662b34f872d9fc9447742216b960b1eb4e81c5d95b74dda05237bbb229"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/source-inventory.json": {
+      "bytes": 7496,
+      "mode": 420,
+      "sha256": "aa84e8b932141d6032a70e0f85a3fbc638dabec72992c6cb46a14c3cacc67414"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/tests-022.json": {
+      "bytes": 102777,
+      "mode": 420,
+      "sha256": "dd21eb4d313a14d8532aded58b15b0de4ac148b25de0d5baf3fb7bf2f1575a69"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/tests-022.log": {
+      "bytes": 50372,
+      "mode": 420,
+      "sha256": "9c48b68a445f9917f04b8a96cd148af5cd65339edc0d0478286d85fd32b66f65"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/transport-continuity.json": {
+      "bytes": 563,
+      "mode": 420,
+      "sha256": "5921c47877d41cfc7317595742ad2b079593895ad8110ba8f0899f464c28f63f"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/transport-local-preflight.json": {
+      "bytes": 2556,
+      "mode": 420,
+      "sha256": "9ed3f5b278a3c1a29ddb116bea254e81b963ce17f0df71171a81aeca0f3d3907"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/transport-local-preflight.stderr": {
+      "bytes": 0,
+      "mode": 420,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/transport-source-inventory.json": {
+      "bytes": 7757,
+      "mode": 420,
+      "sha256": "faf8d794802f7a3b7603bea199689014cef21d415764571725ff9e3b66414baf"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/transport-tests-022.json": {
+      "bytes": 107792,
+      "mode": 420,
+      "sha256": "2113de12e8e359b884e9d1ac7e884866663d1bcced51f1680aa93c63f5dee6bf"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/transport-tests-022.log": {
+      "bytes": 52816,
+      "mode": 420,
+      "sha256": "7bd62e246d4a7c1fdb793e11ecf9af761fc0632eafd441d8715c2cdfc450fe65"
+    },
+    "scripts/preflight-crawl-jobs-v2-native-host.py": {
+      "bytes": 324,
+      "mode": 420,
+      "sha256": "5e7e1dff097bd816593197a446f5f7f846243c21c73034ffc536229250a1307b"
+    },
+    "tests/crawl-jobs-v2-observer/README.md": {
+      "bytes": 42572,
+      "mode": 420,
+      "sha256": "42d82b6e9c2caccec173bae40a513c3dc46b43397aa813220c32d1d121f700c6"
+    },
+    "tests/crawl-jobs-v2-observer/engine_metadata.py": {
+      "bytes": 5515,
+      "mode": 420,
+      "sha256": "fe9d948893742d2a326372db709e8406760689371c6c7753e68c7b7f86d76977"
+    },
+    "tests/crawl-jobs-v2-observer/host_preflight.py": {
+      "bytes": 12244,
+      "mode": 420,
+      "sha256": "90cdcdfafc2d220c3fcb19ad0ba0f5de26cf9f1e7739994747874359d0dee4b8"
+    },
+    "tests/crawl-jobs-v2-observer/test_engine_metadata.py": {
+      "bytes": 13394,
+      "mode": 420,
+      "sha256": "6d6eb911f62348d702c63c42cd2bcc5e24586eadefb8f14cc796bcfa3538efef"
+    },
+    "tests/crawl-jobs-v2-observer/test_host_preflight.py": {
+      "bytes": 14609,
+      "mode": 420,
+      "sha256": "9a82b01fe91c26164e5dceb53a8e73847f1ea5526405080e6a1f01c2d2776d5a"
+    }
+  },
+  "head": "babb2180d05698e64b7d9baf37f9cab14b3c0f7f",
+  "index_empty": true,
+  "kind": "c0_preflight_before_main_sync",
+  "reviewed_source_paths_verified": 63,
+  "version": 1
+}

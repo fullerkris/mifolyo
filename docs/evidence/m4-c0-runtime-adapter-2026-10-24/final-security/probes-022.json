@@ -1,0 +1,175 @@
+{
+  "audit": {
+    "forbidden_connection_attempts": 0,
+    "forbidden_process_attempts": 0,
+    "outside_write_attempts": 0
+  },
+  "details": {
+    "attached_and_value_positions": {
+      "positions": 3,
+      "rejected_calls": 51,
+      "tokens": [
+        "-",
+        "-hh=true",
+        "-hh=false",
+        "-hfalse",
+        "-Dh=true",
+        "-Hunix:///unused.sock",
+        "-Htcp://127.0.0.1:1",
+        "-H=unix:///unused.sock",
+        "-cunused",
+        "-c=unused",
+        "-Ih",
+        "-Bh",
+        "-IB",
+        "-I=1",
+        "-\th",
+        "-\nh",
+        "- h"
+      ]
+    },
+    "compatibility": {
+      "actual_cli_arguments_calls": 140,
+      "call_list_sha256": "5d1822da0964bc6059c27b1f45e3daddb3e08e96c19e91a55187292cf86e18fc",
+      "calls": 398,
+      "exact_original_call_sequence": true,
+      "factory_errors": [
+        {
+          "architecture": "x86_64",
+          "canary_leaked": false,
+          "error": "DOCKER_TRANSPORT"
+        },
+        {
+          "architecture": "aarch64",
+          "canary_leaked": false,
+          "error": "DOCKER_TRANSPORT"
+        }
+      ],
+      "function_identity": {
+        "function": "call_shapes",
+        "function_ast_sha256": "1c65666fc72a89d1667944f8bba2c22f0ccd1a903ca77543a5817287c2aca461",
+        "path": "/var/home/kfuller/Documents/Git_Projects/mifolyo/out/c0-runtime-adapter-2026-10-24/security-review/supplementary_probes.py",
+        "sha256": "859ddd680469130369b61d696f50200e043e5b67465dccfe5e0a0b40fcb0b858"
+      },
+      "guard_binding": "original compatibility name corrected_guard is identical to actual db.cli_arguments",
+      "guard_source": "/var/home/kfuller/Documents/Git_Projects/mifolyo/out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer/docker_backend.py",
+      "metadata_fixture_calls": 258,
+      "proposed_replacement_guard_used": false,
+      "status": "PASS"
+    },
+    "malformed_oracle": {
+      "case_list_sha256": "c8963cc249a7340eeae4a758fd874bc3680dbfbd30792f5b4db9a09a50458e1f",
+      "rejected_calls": 47
+    },
+    "negative_control": {
+      "errors": 0,
+      "failures": 1,
+      "guard_identity": {
+        "function": "cli_arguments",
+        "function_ast_sha256": "9631f935a08e5345bc25be3ddcaeab024a5eed63761d03ece66da7cf30ddd2a3",
+        "path": "/var/home/kfuller/Documents/Git_Projects/mifolyo/out/c0-runtime-adapter-2026-10-24/source/tests/crawl-jobs-v2-observer/docker_backend.py",
+        "sha256": "8ceef501710ab69609d349d072d377a83fea0cf5f2377f05076114ef7fc0c130"
+      },
+      "observations": [
+        {
+          "flag": "-hh",
+          "reached_transport": true,
+          "rejected": false
+        },
+        {
+          "flag": "-hhh",
+          "reached_transport": true,
+          "rejected": false
+        },
+        {
+          "flag": "-hh=true",
+          "reached_transport": true,
+          "rejected": false
+        },
+        {
+          "flag": "-sh",
+          "reached_transport": true,
+          "rejected": false
+        }
+      ],
+      "source_edited": false,
+      "status": "EXPECTED_FAILURE_DETECTED",
+      "tests": 1
+    },
+    "positive_transport_controls": {
+      "actor_shape_valid": true,
+      "actual_binary_or_child_launched": false,
+      "configs_removed": true,
+      "valid_oracle_images": 3
+    },
+    "short_cluster_matrix": {
+      "alphabet": "hHDcslIBv",
+      "lengths": [
+        1,
+        2,
+        3
+      ],
+      "operations": 10,
+      "rejected_calls": 8190,
+      "token_list_sha256": "97ca2e353f8ae909229a50ba441061156d550140bf497f172fef6c65cd4622d2",
+      "tokens": 819
+    },
+    "tail_scope": {
+      "actor_exception": false,
+      "earlier_short_tokens_scanned": true,
+      "rejected_calls": 49
+    },
+    "unchanged_gates": {
+      "rejected_calls": 25
+    },
+    "unchanged_implementation": {
+      "backend_outside_cli_arguments_ast_identical": true,
+      "lifecycle_files_byte_identical": true
+    }
+  },
+  "docker_or_ssh_or_native_or_any_child_execution": false,
+  "effective_umask": "0o22",
+  "errors": [],
+  "failures": [],
+  "full_338_tests_rerun": false,
+  "guard_sha256": "7a3aaaf2de8c3dd79f6b749dfbed00fcf35ed052d62dc20246bd66fe91d19e9c",
+  "historical_module_top_level_executed": false,
+  "kind": "SEC-01-independent-security-rereview-probes",
+  "mode": "022",
+  "original_regression": {
+    "identity": {
+      "function": "test_02_regression_clustered_help_must_be_rejected",
+      "function_ast_sha256": "fbf7cba324b020b51117410a72554869a5f8d43e6a758a17e392dc7b495f071d",
+      "path": "/var/home/kfuller/Documents/Git_Projects/mifolyo/out/c0-runtime-adapter-2026-10-24/security-review/security_probes.py",
+      "sha256": "7fd4d84ccb3a16efb1619452e2bae98d175f31dfcf477ab59b7cb21296c253a9"
+    },
+    "observations": [
+      {
+        "flag": "-hh",
+        "reached_transport": false,
+        "rejected": true
+      },
+      {
+        "flag": "-hhh",
+        "reached_transport": false,
+        "rejected": true
+      },
+      {
+        "flag": "-hh=true",
+        "reached_transport": false,
+        "rejected": true
+      },
+      {
+        "flag": "-sh",
+        "reached_transport": false,
+        "rejected": true
+      }
+    ]
+  },
+  "passed": 13,
+  "python": "3.14.8 (main, Oct  1 2026, 00:00:00) [GCC 16.2.1 20260819 (Red Hat 16.2.1-2)]",
+  "resource_warning_filter": "error::ResourceWarning",
+  "scratch_empty": true,
+  "snapshot_source": "/var/home/kfuller/Documents/Git_Projects/mifolyo/out/c0-runtime-adapter-2026-10-24/remediation/source/tests/crawl-jobs-v2-observer",
+  "tests_run": 13
+}

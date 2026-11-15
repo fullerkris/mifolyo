@@ -1,0 +1,42 @@
+{
+  "kind": "c0_native_preflight_independent_correctness_review",
+  "version": 1,
+  "scope": "C0-ARCH-05 first increment: read-only native-host discovery/preflight",
+  "disposition": "NEEDS_REMEDIATION",
+  "base": "babb2180d05698e64b7d9baf37f9cab14b3c0f7f",
+  "source_inventory_sha256": "aa84e8b932141d6032a70e0f85a3fbc638dabec72992c6cb46a14c3cacc67414",
+  "source_files_verified": 60,
+  "context_files_base_byte_identical": 55,
+  "focused_tests": {"run": 14, "passed": 14},
+  "independent_controls": {"run": 15, "passed": 15},
+  "desired_behavior_regressions": {"run": 2, "failing_subtests": 4},
+  "findings": [
+    {
+      "id": "COR-01",
+      "priority": "P2",
+      "title": "Subprocess wait timeout escapes structured refusal",
+      "file": "tests/crawl-jobs-v2-observer/host_preflight.py",
+      "lines": "85-91,153-164",
+      "architectures_reproduced_as_fixtures": ["x86_64", "aarch64"],
+      "remediation": "Normalize subprocess.TimeoutExpired at the preflight transport boundary without changing the context runner."
+    },
+    {
+      "id": "COR-02",
+      "priority": "P2",
+      "title": "Supported no-new-privileges security metadata is rejected",
+      "file": "tests/crawl-jobs-v2-observer/host_preflight.py",
+      "lines": "134-136",
+      "architectures_reproduced_as_fixtures": ["x86_64", "aarch64"],
+      "remediation": "Recognize name=no-new-privileges while retaining strict bounds, duplicate checks, and unsupported namespace mapping blockers."
+    }
+  ],
+  "runtime_acceptance_requested": false,
+  "full_source_bound_suite_rerun": false,
+  "docker_operations_run": 0,
+  "ssh_operations_run": 0,
+  "ptrace_operations_run": 0,
+  "native_trials_run": 0,
+  "repository_or_snapshot_mutations": false,
+  "report": "report.md",
+  "regression_evidence": "regression-evidence.json"
+}

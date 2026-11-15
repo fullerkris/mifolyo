@@ -1,0 +1,54 @@
+{
+  "kind": "c0_native_preflight_independent_security_review",
+  "version": 1,
+  "date": "2026-10-17",
+  "decision": "NEEDS_REMEDIATION",
+  "scope": "host_discovery_and_preflight_only",
+  "source_inventory_sha256": "aa84e8b932141d6032a70e0f85a3fbc638dabec72992c6cb46a14c3cacc67414",
+  "inventory_declared_base": "babb2180d05698e64b7d9baf37f9cab14b3c0f7f",
+  "snapshot": "/tmp/opencode/c0-native-preflight-2026-10-17/snapshot",
+  "report": "SECURITY-REVIEW.md",
+  "findings": [
+    {
+      "id": "S1",
+      "severity": "Medium",
+      "title": "Docker CLI configuration and implicit plugin execution invalidate read-only/credential-free guarantee",
+      "locations": ["tests/crawl-jobs-v2-observer/host_preflight.py:85-91", "tests/crawl-jobs-v2-observer/docker_backend.py:27-37"],
+      "proof": ["adversarial-original.log:test_01", "adversarial-original.json:ambient_environment", "public-source-evidence.md"],
+      "evidence_limits": "Synthetic Popen capture and upstream Docker CLI v29.0.0 source trace; no live Docker/plugin execution, credential access, or claim about installed client version"
+    },
+    {
+      "id": "S2",
+      "severity": "Medium",
+      "title": "Closed-pipe process timeout escapes structured blocker handling",
+      "locations": ["tests/crawl-jobs-v2-observer/host_preflight.py:88,153-164,233-239", "tests/crawl-jobs-v2-observer/docker_backend.py:52-62"],
+      "proof": ["adversarial-original.log:test_02", "adversarial-original.json:closed_pipe_timeout", "followup-original.json:main_closed_pipe_timeout"],
+      "evidence_limits": "Real benign Python process; timeout leader killed/reaped; no credential disclosure or admission bypass demonstrated"
+    },
+    {
+      "id": "S3",
+      "severity": "Medium",
+      "title": "Normal command return leaves a same-group descendant running",
+      "locations": ["tests/crawl-jobs-v2-observer/docker_backend.py:44-65", "tests/crawl-jobs-v2-observer/host_preflight.py:88"],
+      "proof": ["adversarial-original.log:test_03", "adversarial-original.json:successful_command_descendant", "adversarial-original.json:reviewer_descendant_cleanup"],
+      "evidence_limits": "Real benign Python sleeper; reviewer terminated only that child by pidfd and confirmed termination"
+    }
+  ],
+  "test_runs": {
+    "baseline": {"run": 14, "passed": 14, "failures": 0, "errors": 0},
+    "adversarial_original": {"run": 12, "passed": 8, "failures": 3, "errors": 1, "skipped": 0},
+    "followup": {"run": 2, "passed": 2},
+    "overstrict_test_disposition": "Original test_09 deep JSON parser-only expectation was overstrict; end-to-end preflight correctly blocks. Original failure retained; not a product finding."
+  },
+  "source_modified": false,
+  "remediation_applied": false,
+  "live_docker_calls": 0,
+  "ssh_calls": 0,
+  "ptrace_calls": 0,
+  "native_actors_run": 0,
+  "credential_files_read_by_reviewer": 0,
+  "host_policy_changes": 0,
+  "host_admitted": false,
+  "runtime_evidence": false,
+  "execution_authorized": false
+}

@@ -1,13 +1,13 @@
 """Bounded owned-process streams. No Docker or native actor starts at import."""
 import os
 import selectors
-import signal
 import subprocess
 import time
 
 from contracts import LIMITS, TRIALS, Invalid, clock_ns, decode, digest, exact, integer, require, runtime_architecture, sha
 from controller import native_message
 from runtime_admission import PHASES
+from local_process import kill_and_reap
 
 NATIVE_ERRORS = frozenset(("admission", "transport", "case", "deadline", "validator_control", "identity", "bounds",
     "ptrace_denied", "regset", "debug_state", "instruction", "stop_reason", "controller_kill_required", "helper", "witness", "oracle"))
@@ -73,7 +73,7 @@ class ProcessStream:
     adapter supplies its fixed argv only after the outer authorization callback.
     Killing this CLI group never counts as stopping a remote container.
     """
-    def __init__(self, argv, binding, budget, deadline, *, env=None, before_input=None, before_write=None):
+    def __init__(self, argv, binding, budget, deadline, *, env=None, before_input=None, before_write=None, cwd=None):
         exact(binding, ("architecture", "case_id", "invocation_sha256", "container_id", "image", "role"))
         runtime_architecture(binding["architecture"])
         require(type(binding["case_id"]) is str and binding["case_id"] in TRIALS, "CASE")
@@ -91,6 +91,7 @@ class ProcessStream:
         self.budget, self.deadline = budget, deadline
         self.decoder, self.frames = FrameBuffer(budget), []
         self.sent, self.phase, self.closed, self.stdout_eof = False, None, False, False
+        self._cleanup_failed = False
         self.admission_frames = []
         self.last_message_sha256 = None
         self.last_message = None
@@ -99,7 +100,7 @@ class ProcessStream:
         self._process = None
         try:
             self._process = subprocess.Popen(argv, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                env=env, start_new_session=True, close_fds=True)
+                env=env, cwd=cwd, start_new_session=True, close_fds=True)
             for stream, key in ((self._process.stdout, "stdout"), (self._process.stderr, "stderr")):
                 os.set_blocking(stream.fileno(), False)
                 self.selector.register(stream, selectors.EVENT_READ, key)
@@ -254,35 +255,21 @@ class ProcessStream:
 
     def close(self):
         if self.closed:
+            require(not self._cleanup_failed, "LOCAL_PROCESS_CLEANUP")
             return
         self.closed = True
         if self._process is None:
             self.selector.close()
             return
-        # Normal EOF permits reaping the leader; it is not group-absence proof.
-        # With any pipe still open, never reap first: a departed leader can have
-        # left a child holding that pipe, and its reserved PID prevents reuse.
-        reaped = False
-        if not self.selector.get_map():
-            try:
-                self._process.wait(timeout=0)
-                reaped = True
-            except subprocess.TimeoutExpired:
-                pass
         try:
-            if not reaped:
-                os.killpg(self._process.pid, signal.SIGKILL)
-        except ProcessLookupError:
-            pass
-        except PermissionError:
-            raise Invalid("LOCAL_PROCESS_CLEANUP") from None
+            kill_and_reap(self._process)
+        except BaseException:
+            self._cleanup_failed = True
+            raise
         finally:
-            try:
-                self._process.wait(timeout=5)
-            finally:
-                self.selector.close()
-                for stream in (self._process.stdin, self._process.stdout, self._process.stderr):
-                    stream.close()
+            self.selector.close()
+            for stream in (self._process.stdin, self._process.stdout, self._process.stderr):
+                stream.close()
 
     def __enter__(self):
         return self

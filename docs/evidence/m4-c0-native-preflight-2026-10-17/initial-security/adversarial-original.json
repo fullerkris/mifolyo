@@ -1,0 +1,104 @@
+{
+  "errors": [
+    "__main__.SecurityAdversarialTests.test_02_closed_pipe_timeout_returns_structured_blocker"
+  ],
+  "events": [
+    {
+      "event": "ambient_environment",
+      "forwarded_keys": [
+        "AWS_SECRET_ACCESS_KEY",
+        "DOCKER_CLI_HOOKS",
+        "DOCKER_CONFIG",
+        "DOCKER_CUSTOM_HEADERS",
+        "HOME",
+        "LD_PRELOAD",
+        "OTEL_EXPORTER_OTLP_ENDPOINT",
+        "PATH"
+      ],
+      "real_process_started": false,
+      "removed_endpoint_keys": [
+        "DOCKER_CERT_PATH",
+        "DOCKER_CONTEXT",
+        "DOCKER_HOST",
+        "DOCKER_TLS",
+        "DOCKER_TLS_VERIFY"
+      ]
+    },
+    {
+      "elapsed_seconds": 0.3018,
+      "event": "closed_pipe_timeout",
+      "leaders": [
+        {
+          "pid": 194711,
+          "returncode": -9
+        }
+      ]
+    },
+    {
+      "elapsed_seconds": 0.0166,
+      "event": "benign_command",
+      "leaders": [
+        {
+          "pid": 194715,
+          "returncode": 0
+        }
+      ]
+    },
+    {
+      "command_returncode": 0,
+      "descendant_pid": 194716,
+      "event": "successful_command_descendant",
+      "running_after_command_return": true
+    },
+    {
+      "descendant_pid": 194716,
+      "event": "reviewer_descendant_cleanup",
+      "termination_confirmed_by_pidfd": true
+    },
+    {
+      "elapsed_seconds": 0.202,
+      "event": "benign_command",
+      "leaders": [
+        {
+          "pid": 194717,
+          "returncode": -9
+        }
+      ]
+    },
+    {
+      "elapsed_seconds": 0.009,
+      "event": "benign_command",
+      "leaders": [
+        {
+          "pid": 194718,
+          "returncode": -9
+        }
+      ]
+    },
+    {
+      "elapsed_seconds": 0.0093,
+      "event": "benign_command",
+      "leaders": [
+        {
+          "pid": 194719,
+          "returncode": -9
+        }
+      ]
+    },
+    {
+      "blocked": 138,
+      "cases": 143,
+      "event": "malformed_docker_matrix"
+    }
+  ],
+  "failures": [
+    "__main__.SecurityAdversarialTests.test_01_ambient_config_and_secret_environment_are_not_forwarded",
+    "__main__.SecurityAdversarialTests.test_03_success_does_not_leave_a_running_descendant",
+    "__main__.SecurityAdversarialTests.test_09_json_bound_and_recursive_data_are_rejected (length=3008)"
+  ],
+  "live_docker_ssh_ptrace_or_native_actors_run": false,
+  "skipped": [],
+  "source_unmodified": true,
+  "status": "FAIL",
+  "tests_run": 12
+}

@@ -1,0 +1,8 @@
+{
+  "status": "FAILED_VERIFICATION_HARNESS",
+  "reason": "Snapshot export referenced nonexistent scripts/prepare-crawl-jobs-v2-observer.py; Git returned 128.",
+  "sync_commands_succeeded": true,
+  "candidate_restoration_checks_passed_before_failure": true,
+  "partial_source_snapshot_preserved": "merged-source",
+  "correction": "Use the three actual auxiliary paths from the reviewed C0-ARCH-04 source inventory and a new snapshot directory."
+}

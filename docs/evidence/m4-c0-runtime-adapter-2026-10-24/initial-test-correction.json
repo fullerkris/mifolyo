@@ -1,0 +1,10 @@
+{
+  "kind": "test_fixture_expectation_correction",
+  "initial_log": "targeted-01.log",
+  "initial_source": "test-live-adapter-initial.py",
+  "initial_tests": 17,
+  "initial_failures": 1,
+  "reason": "New metadata test expected arm64, but FixtureProbe defaults to x86_64 / amd64.",
+  "correction": "Assert the fixture's selected server architecture instead of an unrelated hardcoded arm64 value.",
+  "production_code_changed_for_correction": false
+}

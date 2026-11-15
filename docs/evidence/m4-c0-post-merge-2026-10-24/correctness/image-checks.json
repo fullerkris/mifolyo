@@ -1,0 +1,924 @@
+{
+  "architectures": {
+    "aarch64": {
+      "commands": {
+        "cleanup_records": [
+          {
+            "id": "sha256:a773f6ee925a84251a32975782412d0d7abb28aa5decb807043305cdda9a5d1e",
+            "image": "sha256:49df906c107877ceb9099e17dd37f622bdbce22f07a0b6996afd318ed232905b",
+            "name": "obs1-image-inspect-48c1dea3a0d34291865b2eced42d1c1f",
+            "pid": 0,
+            "removed": true,
+            "running": false,
+            "status": "created"
+          },
+          {
+            "id": "sha256:7a88421159d4e6777becc349a1c20503108878f4194efb6018ebceabe0c3a40d",
+            "image": "sha256:bb278b706a48eb022bf7d4a1f580cd14a84f8edc05e1fe584ba64cdc9b1821dc",
+            "name": "obs1-image-inspect-dabd998d271f462a9580d6f0d7411477",
+            "pid": 0,
+            "removed": true,
+            "running": false,
+            "status": "created"
+          },
+          {
+            "id": "sha256:b7de5ea33cf58bd39c20fa50c68f25a1fa8f5e8cbe0fa801a8508e85b70f9b61",
+            "image": "sha256:d23f6c5623b569b558e66697f8d7d33843f1e378c78fcc5ef088649726687b14",
+            "name": "obs1-image-inspect-f642b1a617394e3b87b0f4b3ed318034",
+            "pid": 0,
+            "removed": true,
+            "running": false,
+            "status": "created"
+          },
+          {
+            "id": "sha256:097f7829e1a1316d0811e46b0faa7ced42c3f24e316a17a30899c7f96541f871",
+            "image": "sha256:5cc930fed0d6e394b7574585c8a4490b6dab50230cd7993da0020712399eba9c",
+            "name": "obs1-image-inspect-924d09a4e90c47edbd5d7b1990823308",
+            "pid": 0,
+            "removed": true,
+            "running": false,
+            "status": "created"
+          },
+          {
+            "id": "sha256:2148278495be28bb947537567ac1a1349f9cc973bb8a016efbd54fca7c84f049",
+            "image": "sha256:8a956755a77e350ab56b9644ab8366786b0e7e97814fcec20b4bf0973ae784f2",
+            "name": "obs1-image-inspect-1ee0abd7af0041ac886d71459c9b33a0",
+            "pid": 0,
+            "removed": true,
+            "running": false,
+            "status": "created"
+          }
+        ],
+        "counts": {
+          "build": 5,
+          "container": 15,
+          "cp": 2,
+          "create": 5,
+          "export": 3,
+          "image": 8,
+          "info": 1,
+          "ps": 5,
+          "pull": 2,
+          "rm": 5,
+          "save": 3,
+          "unshare": 6,
+          "version": 1
+        },
+        "exact_argv_and_lifecycle_checked": true,
+        "logs_hashed": 61,
+        "roots": {
+          "observer": {
+            "container_id": "097f7829e1a1316d0811e46b0faa7ced42c3f24e316a17a30899c7f96541f871",
+            "observations": [
+              {
+                "command_index": 39,
+                "root": {
+                  "gid": 0,
+                  "mode": 365,
+                  "uid": 0
+                }
+              },
+              {
+                "command_index": 42,
+                "root": {
+                  "gid": 0,
+                  "mode": 365,
+                  "uid": 0
+                }
+              }
+            ]
+          },
+          "oracle": {
+            "container_id": "2148278495be28bb947537567ac1a1349f9cc973bb8a016efbd54fca7c84f049",
+            "observations": [
+              {
+                "command_index": 52,
+                "root": {
+                  "gid": 0,
+                  "mode": 365,
+                  "uid": 0
+                }
+              },
+              {
+                "command_index": 55,
+                "root": {
+                  "gid": 0,
+                  "mode": 365,
+                  "uid": 0
+                }
+              }
+            ]
+          },
+          "target": {
+            "container_id": "b7de5ea33cf58bd39c20fa50c68f25a1fa8f5e8cbe0fa801a8508e85b70f9b61",
+            "observations": [
+              {
+                "command_index": 26,
+                "root": {
+                  "gid": 0,
+                  "mode": 365,
+                  "uid": 0
+                }
+              },
+              {
+                "command_index": 29,
+                "root": {
+                  "gid": 0,
+                  "mode": 365,
+                  "uid": 0
+                }
+              }
+            ]
+          }
+        }
+      },
+      "provenance": {
+        "artifact_id": 12461066588,
+        "exact_zip_and_extracted_file_count": 84,
+        "hosted_sources_verified": 55,
+        "hosted_test_ids_verified": 288,
+        "job_id": 120102235289,
+        "zip_bytes": 54045146,
+        "zip_crc_checked_by_complete_reads": true,
+        "zip_sha256": "7cac65afbed201004f1417def2a5c2ea28f1e0e8766ef8c8e1cf4e6d158e22f8"
+      },
+      "roles": {
+        "observer": {
+          "elfs": 1,
+          "full_content_record_sha256": "d93a59cbc80ba05045cffd7fb14d1594ac956da1d0531700b88552435af50b7c",
+          "historical_content_changed_keys": [],
+          "historical_root": {
+            "gid": 0,
+            "mode": 365,
+            "uid": 0
+          },
+          "hosted_root": {
+            "gid": 0,
+            "mode": 365,
+            "uid": 0
+          },
+          "image_id": "sha256:5cc930fed0d6e394b7574585c8a4490b6dab50230cd7993da0020712399eba9c",
+          "independently_compared_members": 1,
+          "layers": [
+            {
+              "entries": 1,
+              "name": "cefa9463d8d3e27158bb31aa912742b25b4856c833760ba7cdd582b207f5e430.tar",
+              "pax_keys": [],
+              "replaced_paths": [],
+              "root_headers": [],
+              "whiteouts": 0
+            }
+          ],
+          "member_map_sha256": "3c49aed859ac06d58674c77c56889b0fa6aa4ab268a12aff12aa49fb35b3a72a",
+          "nonrequired_elfs_with_unresolved_dependencies": 0,
+          "payload_matches_historical": true,
+          "payload_sha256": "948e94e91f84930729e7c2ad73c51a6cf105ee84e7333c261bf654f8526f2c63",
+          "portable_archive": {
+            "architecture": "aarch64",
+            "bytes": 5460992,
+            "config_id": "sha256:5cc930fed0d6e394b7574585c8a4490b6dab50230cd7993da0020712399eba9c",
+            "format": "docker-archive",
+            "layers": [
+              "sha256:cefa9463d8d3e27158bb31aa912742b25b4856c833760ba7cdd582b207f5e430"
+            ],
+            "sha256": "3f839eb9350b3174c01cd957edefae7ea72fce86adbbb758762dffdf17d6f563"
+          },
+          "reconstructed_tar_sha256": "330a32d85093a32b5248159a9106fefca61a9465849853cd41128f76e9b8c37b",
+          "required_dependency_closure_elfs": 1
+        },
+        "oracle": {
+          "elfs": 790,
+          "full_content_record_sha256": "8cca53eede43a3cc192e106b832590dd2c4535067f03b1df3625177a7a6d1a6a",
+          "historical_content_changed_keys": [
+            "root_directory"
+          ],
+          "historical_root": {
+            "gid": 0,
+            "mode": 493,
+            "uid": 0
+          },
+          "hosted_root": {
+            "gid": 0,
+            "mode": 365,
+            "uid": 0
+          },
+          "image_id": "sha256:8a956755a77e350ab56b9644ab8366786b0e7e97814fcec20b4bf0973ae784f2",
+          "independently_compared_members": 6581,
+          "layers": [
+            {
+              "entries": 4220,
+              "name": "055ab12bd547e17a0630037f06a186cf405e3f61bb03a614562ca8f5ab52a8be.tar",
+              "pax_keys": [],
+              "replaced_paths": [],
+              "root_headers": [
+                {
+                  "gid": 0,
+                  "mode": 493,
+                  "uid": 0
+                }
+              ],
+              "whiteouts": 0
+            },
+            {
+              "entries": 565,
+              "name": "095145779909c26a66c70376d4b6cde5c2958236c609348586252e0064186c9d.tar",
+              "pax_keys": [
+                "linkpath",
+                "path"
+              ],
+              "replaced_paths": [
+                "etc",
+                "etc/ld.so.cache",
+                "usr",
+                "usr/bin",
+                "usr/lib",
+                "usr/lib/aarch64-linux-gnu",
+                "usr/local",
+                "usr/local/share",
+                "usr/sbin",
+                "usr/share",
+                "usr/share/doc",
+                "var",
+                "var/cache",
+                "var/cache/apt",
+                "var/cache/debconf",
+                "var/cache/debconf/config.dat",
+                "var/cache/debconf/config.dat-old",
+                "var/cache/debconf/templates.dat",
+                "var/cache/debconf/templates.dat-old",
+                "var/cache/ldconfig",
+                "var/lib",
+                "var/lib/apt",
+                "var/lib/apt/extended_states",
+                "var/lib/dpkg",
+                "var/lib/dpkg/info",
+                "var/lib/dpkg/lock",
+                "var/lib/dpkg/status",
+                "var/lib/dpkg/status-old",
+                "var/lib/dpkg/triggers",
+                "var/lib/dpkg/triggers/Lock",
+                "var/lib/dpkg/triggers/Unincorp",
+                "var/log",
+                "var/log/apt",
+                "var/log/apt/eipp.log.xz"
+              ],
+              "root_headers": [],
+              "whiteouts": 0
+            },
+            {
+              "entries": 1856,
+              "name": "3ca71efe23192eaff23483924b9ec0bd7f396e2aaef46640128c3477379fcaa9.tar",
+              "pax_keys": [],
+              "replaced_paths": [
+                "etc",
+                "etc/ld.so.cache",
+                "root",
+                "usr",
+                "usr/lib",
+                "usr/lib/aarch64-linux-gnu",
+                "usr/local",
+                "usr/local/bin",
+                "usr/local/include",
+                "usr/local/lib",
+                "usr/local/share",
+                "usr/local/share/man",
+                "usr/share",
+                "usr/share/doc",
+                "var",
+                "var/cache",
+                "var/cache/debconf",
+                "var/cache/debconf/config.dat",
+                "var/cache/debconf/config.dat-old",
+                "var/cache/debconf/templates.dat",
+                "var/cache/debconf/templates.dat-old",
+                "var/cache/ldconfig",
+                "var/cache/ldconfig/aux-cache",
+                "var/lib",
+                "var/lib/apt",
+                "var/lib/apt/extended_states",
+                "var/lib/dpkg",
+                "var/lib/dpkg/info",
+                "var/lib/dpkg/info/perl-base.list",
+                "var/lib/dpkg/lock",
+                "var/lib/dpkg/status",
+                "var/lib/dpkg/status-old",
+                "var/lib/dpkg/triggers",
+                "var/lib/dpkg/triggers/Lock",
+                "var/log",
+                "var/log/apt",
+                "var/log/apt/eipp.log.xz",
+                "var/log/apt/history.log",
+                "var/log/apt/term.log",
+                "var/log/dpkg.log"
+              ],
+              "root_headers": [],
+              "whiteouts": 0
+            },
+            {
+              "entries": 8,
+              "name": "ff6b919c53481cfc2497fad042e7c6cf042d45097f19fd908d13fcb73b85adcf.tar",
+              "pax_keys": [],
+              "replaced_paths": [
+                "usr",
+                "usr/local",
+                "usr/local/bin"
+              ],
+              "root_headers": [],
+              "whiteouts": 0
+            },
+            {
+              "entries": 9,
+              "name": "116e8ea128d8cca67f4ca890c3c1841199003b1b9e647cc66670ca53c25f1ded.tar",
+              "pax_keys": [],
+              "replaced_paths": [],
+              "root_headers": [],
+              "whiteouts": 0
+            }
+          ],
+          "member_map_sha256": "561739c7829d64dd586e0680c19de5688da589157824217b72c1945b5d99807e",
+          "nonrequired_elfs_with_unresolved_dependencies": 1,
+          "payload_matches_historical": true,
+          "payload_sha256": "64d004592dc8299702d448f04436b6b7bd393d79963196e5c4ebcdce254e9354",
+          "portable_archive": {
+            "architecture": "aarch64",
+            "bytes": 151378944,
+            "config_id": "sha256:8a956755a77e350ab56b9644ab8366786b0e7e97814fcec20b4bf0973ae784f2",
+            "format": "docker-archive",
+            "layers": [
+              "sha256:055ab12bd547e17a0630037f06a186cf405e3f61bb03a614562ca8f5ab52a8be",
+              "sha256:095145779909c26a66c70376d4b6cde5c2958236c609348586252e0064186c9d",
+              "sha256:3ca71efe23192eaff23483924b9ec0bd7f396e2aaef46640128c3477379fcaa9",
+              "sha256:ff6b919c53481cfc2497fad042e7c6cf042d45097f19fd908d13fcb73b85adcf",
+              "sha256:116e8ea128d8cca67f4ca890c3c1841199003b1b9e647cc66670ca53c25f1ded"
+            ],
+            "sha256": "a555707d698da4e995b84d1520e78ba18446cbf5c9d6f8738c101943c29b3183"
+          },
+          "reconstructed_tar_sha256": "756ddcbd45a30ff2861a84e7428f2fb7a8bedcd5bb0f30bea02cc9fb15e99632",
+          "required_dependency_closure_elfs": 18
+        },
+        "target": {
+          "elfs": 1,
+          "full_content_record_sha256": "ab5fe73bbade66f04f7ed4aa6ff7311c967023fa702b5c2184d0631005ad873e",
+          "historical_content_changed_keys": [],
+          "historical_root": {
+            "gid": 0,
+            "mode": 365,
+            "uid": 0
+          },
+          "hosted_root": {
+            "gid": 0,
+            "mode": 365,
+            "uid": 0
+          },
+          "image_id": "sha256:d23f6c5623b569b558e66697f8d7d33843f1e378c78fcc5ef088649726687b14",
+          "independently_compared_members": 1,
+          "layers": [
+            {
+              "entries": 1,
+              "name": "cfd4225e126e00db6cd333c44f9a4523ff23b7d078f52c5143062dedf4aba02f.tar",
+              "pax_keys": [],
+              "replaced_paths": [],
+              "root_headers": [],
+              "whiteouts": 0
+            }
+          ],
+          "member_map_sha256": "99e0a2264a511c0d527c4e2664564bc1cd13893fb6d6744214b3f8ad271b7fa5",
+          "nonrequired_elfs_with_unresolved_dependencies": 0,
+          "payload_matches_historical": true,
+          "payload_sha256": "7f9346b3a01d65dde54026b91b7e7cc7333442ea5d500fa9404bebfc7e2366e7",
+          "portable_archive": {
+            "architecture": "aarch64",
+            "bytes": 5457920,
+            "config_id": "sha256:d23f6c5623b569b558e66697f8d7d33843f1e378c78fcc5ef088649726687b14",
+            "format": "docker-archive",
+            "layers": [
+              "sha256:cfd4225e126e00db6cd333c44f9a4523ff23b7d078f52c5143062dedf4aba02f"
+            ],
+            "sha256": "f1e8a358534a3e7aa657b33d588b3c96096de30ff66be047915dc612e9b10ab7"
+          },
+          "reconstructed_tar_sha256": "8baac0275b87d707869a90fa801471f9fb0c285b3f4940654ef00f164148c583",
+          "required_dependency_closure_elfs": 1
+        }
+      },
+      "stable_artifacts_verified": 12
+    },
+    "x86_64": {
+      "commands": {
+        "cleanup_records": [
+          {
+            "id": "sha256:29b3d81f1991f64540ca20e965691c364790f4a8008a0e4d7aef6784bd147ec5",
+            "image": "sha256:4afcf28ec51b91d8fab417d3e12aa96e756d8a05e6e307e7ed54ce765d1e6c26",
+            "name": "obs1-image-inspect-b45f2d7496fc424ea1fe9b55e5fdc8f6",
+            "pid": 0,
+            "removed": true,
+            "running": false,
+            "status": "created"
+          },
+          {
+            "id": "sha256:fcdd186d824b52cb747f75185d0933d44182e49dedb8b0d1fa26a037d0ccf00b",
+            "image": "sha256:4eef25347c64b64b3fb6b9ea00e95f5bc9feb3899b75771709973c4bcbdbbf32",
+            "name": "obs1-image-inspect-855c69e4aed845f6942547ddb62e2123",
+            "pid": 0,
+            "removed": true,
+            "running": false,
+            "status": "created"
+          },
+          {
+            "id": "sha256:cbe751a185d48c1aecc6ceddfaa9f8ed28bac4865dbe367d95f3ebc1c7e20b0d",
+            "image": "sha256:9e71f92fc46e0344826113014a6e2f427fec7462376a258ac57e60336eb2d69b",
+            "name": "obs1-image-inspect-4be0489f709741e5a771f4675783041c",
+            "pid": 0,
+            "removed": true,
+            "running": false,
+            "status": "created"
+          },
+          {
+            "id": "sha256:1693ca56ccd6d3ae2e232273ba17a558c5ea066ec56332b47b329ee8e21e0661",
+            "image": "sha256:cfc1379264636507c4e2e969e2d10d9d577ca16173af43063a9dfaf635e0c3a2",
+            "name": "obs1-image-inspect-1a98993280a74515b2d86351016d2582",
+            "pid": 0,
+            "removed": true,
+            "running": false,
+            "status": "created"
+          },
+          {
+            "id": "sha256:5cce0c18ac59208d74eee9249bb328b9c39504900fa019462cc604047b961027",
+            "image": "sha256:6746d2ebdec450c27c57414cc09f1dba0ed408260e7c3d61789f2e2c46796a61",
+            "name": "obs1-image-inspect-6cd64b2f4cc5445cbee2b790059babf5",
+            "pid": 0,
+            "removed": true,
+            "running": false,
+            "status": "created"
+          }
+        ],
+        "counts": {
+          "build": 5,
+          "container": 15,
+          "cp": 2,
+          "create": 5,
+          "export": 3,
+          "image": 8,
+          "info": 1,
+          "ps": 5,
+          "pull": 2,
+          "rm": 5,
+          "save": 3,
+          "unshare": 6,
+          "version": 1
+        },
+        "exact_argv_and_lifecycle_checked": true,
+        "logs_hashed": 61,
+        "roots": {
+          "observer": {
+            "container_id": "1693ca56ccd6d3ae2e232273ba17a558c5ea066ec56332b47b329ee8e21e0661",
+            "observations": [
+              {
+                "command_index": 39,
+                "root": {
+                  "gid": 0,
+                  "mode": 365,
+                  "uid": 0
+                }
+              },
+              {
+                "command_index": 42,
+                "root": {
+                  "gid": 0,
+                  "mode": 365,
+                  "uid": 0
+                }
+              }
+            ]
+          },
+          "oracle": {
+            "container_id": "5cce0c18ac59208d74eee9249bb328b9c39504900fa019462cc604047b961027",
+            "observations": [
+              {
+                "command_index": 52,
+                "root": {
+                  "gid": 0,
+                  "mode": 365,
+                  "uid": 0
+                }
+              },
+              {
+                "command_index": 55,
+                "root": {
+                  "gid": 0,
+                  "mode": 365,
+                  "uid": 0
+                }
+              }
+            ]
+          },
+          "target": {
+            "container_id": "cbe751a185d48c1aecc6ceddfaa9f8ed28bac4865dbe367d95f3ebc1c7e20b0d",
+            "observations": [
+              {
+                "command_index": 26,
+                "root": {
+                  "gid": 0,
+                  "mode": 365,
+                  "uid": 0
+                }
+              },
+              {
+                "command_index": 29,
+                "root": {
+                  "gid": 0,
+                  "mode": 365,
+                  "uid": 0
+                }
+              }
+            ]
+          }
+        }
+      },
+      "provenance": {
+        "artifact_id": 12459699018,
+        "exact_zip_and_extracted_file_count": 85,
+        "hosted_sources_verified": 55,
+        "hosted_test_ids_verified": 288,
+        "job_id": 120102235301,
+        "zip_bytes": 55015916,
+        "zip_crc_checked_by_complete_reads": true,
+        "zip_sha256": "6b30fdb8d9661fd08d9acd6eaecf0ecf81e45eff603a3e84c61778d8a28ee8e9"
+      },
+      "roles": {
+        "observer": {
+          "elfs": 1,
+          "full_content_record_sha256": "8e680fab8a46406c6e4cff7dd9a7214444db2abf00a14eb76bf7030fb76e8e46",
+          "historical_content_changed_keys": [],
+          "historical_root": {
+            "gid": 0,
+            "mode": 365,
+            "uid": 0
+          },
+          "hosted_root": {
+            "gid": 0,
+            "mode": 365,
+            "uid": 0
+          },
+          "image_id": "sha256:cfc1379264636507c4e2e969e2d10d9d577ca16173af43063a9dfaf635e0c3a2",
+          "independently_compared_members": 1,
+          "layers": [
+            {
+              "entries": 1,
+              "name": "55e885bfabfb45a0e1bd22e7622a3e1759e2b4aa53151be80cca28c88ff7a0d3.tar",
+              "pax_keys": [],
+              "replaced_paths": [],
+              "root_headers": [],
+              "whiteouts": 0
+            }
+          ],
+          "member_map_sha256": "13c386e1f35a5f3908f6b09eda54c241385ca102bf7d619924af08714154908d",
+          "nonrequired_elfs_with_unresolved_dependencies": 0,
+          "payload_matches_historical": true,
+          "payload_sha256": "117ca4c7220f2646ea6e3934581c52affd7b091d9513255b540295083db70901",
+          "portable_archive": {
+            "architecture": "x86_64",
+            "bytes": 5888512,
+            "config_id": "sha256:cfc1379264636507c4e2e969e2d10d9d577ca16173af43063a9dfaf635e0c3a2",
+            "format": "docker-archive",
+            "layers": [
+              "sha256:55e885bfabfb45a0e1bd22e7622a3e1759e2b4aa53151be80cca28c88ff7a0d3"
+            ],
+            "sha256": "38e7c76fc8d0bc7479ae9395e003ec0b072b65d618ee87212f9fba9d913ab9e8"
+          },
+          "reconstructed_tar_sha256": "5c710317ee47621336d063dc7c34d0287144a021afe5674800f19090dbb03310",
+          "required_dependency_closure_elfs": 1
+        },
+        "oracle": {
+          "elfs": 791,
+          "full_content_record_sha256": "9755e98a7995e1352ffbb77d8c3220bb9362b14b1bdb6aefd71ff2fe3afa6836",
+          "historical_content_changed_keys": [
+            "root_directory"
+          ],
+          "historical_root": {
+            "gid": 0,
+            "mode": 493,
+            "uid": 0
+          },
+          "hosted_root": {
+            "gid": 0,
+            "mode": 365,
+            "uid": 0
+          },
+          "image_id": "sha256:6746d2ebdec450c27c57414cc09f1dba0ed408260e7c3d61789f2e2c46796a61",
+          "independently_compared_members": 6586,
+          "layers": [
+            {
+              "entries": 4225,
+              "name": "34467cc93912af891dfee8a3902adf9b4f355a9bca4eaa46f658d1181a21de0d.tar",
+              "pax_keys": [],
+              "replaced_paths": [],
+              "root_headers": [
+                {
+                  "gid": 0,
+                  "mode": 493,
+                  "uid": 0
+                }
+              ],
+              "whiteouts": 0
+            },
+            {
+              "entries": 565,
+              "name": "0229d3e3d668de7c1d42c1e23d30f4bc5c5e93d68c8fe897e94a6fe9b0262491.tar",
+              "pax_keys": [
+                "linkpath",
+                "path"
+              ],
+              "replaced_paths": [
+                "etc",
+                "etc/ld.so.cache",
+                "usr",
+                "usr/bin",
+                "usr/lib",
+                "usr/lib/x86_64-linux-gnu",
+                "usr/local",
+                "usr/local/share",
+                "usr/sbin",
+                "usr/share",
+                "usr/share/doc",
+                "var",
+                "var/cache",
+                "var/cache/apt",
+                "var/cache/debconf",
+                "var/cache/debconf/config.dat",
+                "var/cache/debconf/config.dat-old",
+                "var/cache/debconf/templates.dat",
+                "var/cache/debconf/templates.dat-old",
+                "var/cache/ldconfig",
+                "var/lib",
+                "var/lib/apt",
+                "var/lib/apt/extended_states",
+                "var/lib/dpkg",
+                "var/lib/dpkg/info",
+                "var/lib/dpkg/lock",
+                "var/lib/dpkg/status",
+                "var/lib/dpkg/status-old",
+                "var/lib/dpkg/triggers",
+                "var/lib/dpkg/triggers/Lock",
+                "var/lib/dpkg/triggers/Unincorp",
+                "var/log",
+                "var/log/apt",
+                "var/log/apt/eipp.log.xz"
+              ],
+              "root_headers": [],
+              "whiteouts": 0
+            },
+            {
+              "entries": 1856,
+              "name": "d119e31e71d7a4e8b81f78a0e11901e1a2b3252619eac69266aa157d943b4763.tar",
+              "pax_keys": [],
+              "replaced_paths": [
+                "etc",
+                "etc/ld.so.cache",
+                "root",
+                "usr",
+                "usr/lib",
+                "usr/lib/x86_64-linux-gnu",
+                "usr/local",
+                "usr/local/bin",
+                "usr/local/include",
+                "usr/local/lib",
+                "usr/local/share",
+                "usr/local/share/man",
+                "usr/share",
+                "usr/share/doc",
+                "var",
+                "var/cache",
+                "var/cache/debconf",
+                "var/cache/debconf/config.dat",
+                "var/cache/debconf/config.dat-old",
+                "var/cache/debconf/templates.dat",
+                "var/cache/debconf/templates.dat-old",
+                "var/cache/ldconfig",
+                "var/cache/ldconfig/aux-cache",
+                "var/lib",
+                "var/lib/apt",
+                "var/lib/apt/extended_states",
+                "var/lib/dpkg",
+                "var/lib/dpkg/info",
+                "var/lib/dpkg/info/perl-base.list",
+                "var/lib/dpkg/lock",
+                "var/lib/dpkg/status",
+                "var/lib/dpkg/status-old",
+                "var/lib/dpkg/triggers",
+                "var/lib/dpkg/triggers/Lock",
+                "var/log",
+                "var/log/apt",
+                "var/log/apt/eipp.log.xz",
+                "var/log/apt/history.log",
+                "var/log/apt/term.log",
+                "var/log/dpkg.log"
+              ],
+              "root_headers": [],
+              "whiteouts": 0
+            },
+            {
+              "entries": 8,
+              "name": "1095031acd1c984ad93c83dadab1d79a3b2fd93d5086537b16593c47a3e3ee06.tar",
+              "pax_keys": [],
+              "replaced_paths": [
+                "usr",
+                "usr/local",
+                "usr/local/bin"
+              ],
+              "root_headers": [],
+              "whiteouts": 0
+            },
+            {
+              "entries": 9,
+              "name": "3f64fe90e2a6f34ba27ffba52f74d7876538956d569325705f53c61b7ce69e15.tar",
+              "pax_keys": [],
+              "replaced_paths": [],
+              "root_headers": [],
+              "whiteouts": 0
+            }
+          ],
+          "member_map_sha256": "0cac1391cb444f252ec7cd57512d6e6873c67b74bf6bc706fc1e93d601fd6ce5",
+          "nonrequired_elfs_with_unresolved_dependencies": 1,
+          "payload_matches_historical": true,
+          "payload_sha256": "f6a268986ce2e718f48c85a4dcd65d4ec01b6aff47af7aa57abf7aca7c8f07a4",
+          "portable_archive": {
+            "architecture": "x86_64",
+            "bytes": 125835264,
+            "config_id": "sha256:6746d2ebdec450c27c57414cc09f1dba0ed408260e7c3d61789f2e2c46796a61",
+            "format": "docker-archive",
+            "layers": [
+              "sha256:34467cc93912af891dfee8a3902adf9b4f355a9bca4eaa46f658d1181a21de0d",
+              "sha256:0229d3e3d668de7c1d42c1e23d30f4bc5c5e93d68c8fe897e94a6fe9b0262491",
+              "sha256:d119e31e71d7a4e8b81f78a0e11901e1a2b3252619eac69266aa157d943b4763",
+              "sha256:1095031acd1c984ad93c83dadab1d79a3b2fd93d5086537b16593c47a3e3ee06",
+              "sha256:3f64fe90e2a6f34ba27ffba52f74d7876538956d569325705f53c61b7ce69e15"
+            ],
+            "sha256": "73bc9b769c4e55dfc0d53aec98fc7a04fc324203ce0717be4a96673e11d4aba7"
+          },
+          "reconstructed_tar_sha256": "bc8f7503d13d4f9ac7ddef77b44f9623df5cf307223e41cc873541d7399737a9",
+          "required_dependency_closure_elfs": 18
+        },
+        "target": {
+          "elfs": 1,
+          "full_content_record_sha256": "0b591e3700cc349573d30c0c9d6025371d5da919a21863d7a077368801322b95",
+          "historical_content_changed_keys": [],
+          "historical_root": {
+            "gid": 0,
+            "mode": 365,
+            "uid": 0
+          },
+          "hosted_root": {
+            "gid": 0,
+            "mode": 365,
+            "uid": 0
+          },
+          "image_id": "sha256:9e71f92fc46e0344826113014a6e2f427fec7462376a258ac57e60336eb2d69b",
+          "independently_compared_members": 1,
+          "layers": [
+            {
+              "entries": 1,
+              "name": "e6e5e637bd325e2589b7a8bdf29ab395948afa86b4b29f0412957ebea9fda53b.tar",
+              "pax_keys": [],
+              "replaced_paths": [],
+              "root_headers": [],
+              "whiteouts": 0
+            }
+          ],
+          "member_map_sha256": "b10af830a2a938bdd8bde8d53f3dc7559d8891af25f9417f6d3cb8f64cc05054",
+          "nonrequired_elfs_with_unresolved_dependencies": 0,
+          "payload_matches_historical": true,
+          "payload_sha256": "c9f5f201adfaa4d419f2154c2baeef5f64011a130b9443d3cf70c46e2a28eb52",
+          "portable_archive": {
+            "architecture": "x86_64",
+            "bytes": 5890048,
+            "config_id": "sha256:9e71f92fc46e0344826113014a6e2f427fec7462376a258ac57e60336eb2d69b",
+            "format": "docker-archive",
+            "layers": [
+              "sha256:e6e5e637bd325e2589b7a8bdf29ab395948afa86b4b29f0412957ebea9fda53b"
+            ],
+            "sha256": "4c78affed3f11a90e3f68b558be01dafd519a60c5286163965f39da91d9b5219"
+          },
+          "reconstructed_tar_sha256": "3122d52b795c119a1416ad300654f3225c902a94bfef4eff198346efc5035af1",
+          "required_dependency_closure_elfs": 1
+        }
+      },
+      "stable_artifacts_verified": 12
+    }
+  },
+  "commit": "e8a0a415ac2b370319cd57f4c5262ce616a536fb",
+  "engine_commands_executed": 0,
+  "execution_authorized": false,
+  "negative_controls": [
+    {
+      "probe": "aarch64/observer/wrong-config-id",
+      "refusal": "IMAGE_SAVE_CONFIG"
+    },
+    {
+      "probe": "aarch64/observer/wrong-architecture",
+      "refusal": "IMAGE_SAVE_PLATFORM"
+    },
+    {
+      "probe": "aarch64/observer/writable-root",
+      "refusal": "IMAGE_DIRECTORY_ACCESS"
+    },
+    {
+      "probe": "aarch64/observer/wrong-native-bytes",
+      "refusal": "IMAGE_NATIVE_CONTENT"
+    },
+    {
+      "probe": "aarch64/oracle/wrong-config-id",
+      "refusal": "IMAGE_SAVE_CONFIG"
+    },
+    {
+      "probe": "aarch64/oracle/wrong-architecture",
+      "refusal": "IMAGE_SAVE_PLATFORM"
+    },
+    {
+      "probe": "aarch64/oracle/writable-root",
+      "refusal": "IMAGE_DIRECTORY_ACCESS"
+    },
+    {
+      "probe": "aarch64/oracle/wrong-source",
+      "refusal": "IMAGE_ORACLE_SOURCE"
+    },
+    {
+      "probe": "aarch64/target/wrong-config-id",
+      "refusal": "IMAGE_SAVE_CONFIG"
+    },
+    {
+      "probe": "aarch64/target/wrong-architecture",
+      "refusal": "IMAGE_SAVE_PLATFORM"
+    },
+    {
+      "probe": "aarch64/target/writable-root",
+      "refusal": "IMAGE_DIRECTORY_ACCESS"
+    },
+    {
+      "probe": "aarch64/target/wrong-native-bytes",
+      "refusal": "IMAGE_NATIVE_CONTENT"
+    },
+    {
+      "probe": "x86_64/observer/wrong-config-id",
+      "refusal": "IMAGE_SAVE_CONFIG"
+    },
+    {
+      "probe": "x86_64/observer/wrong-architecture",
+      "refusal": "IMAGE_SAVE_PLATFORM"
+    },
+    {
+      "probe": "x86_64/observer/writable-root",
+      "refusal": "IMAGE_DIRECTORY_ACCESS"
+    },
+    {
+      "probe": "x86_64/observer/wrong-native-bytes",
+      "refusal": "IMAGE_NATIVE_CONTENT"
+    },
+    {
+      "probe": "x86_64/oracle/wrong-config-id",
+      "refusal": "IMAGE_SAVE_CONFIG"
+    },
+    {
+      "probe": "x86_64/oracle/wrong-architecture",
+      "refusal": "IMAGE_SAVE_PLATFORM"
+    },
+    {
+      "probe": "x86_64/oracle/writable-root",
+      "refusal": "IMAGE_DIRECTORY_ACCESS"
+    },
+    {
+      "probe": "x86_64/oracle/wrong-source",
+      "refusal": "IMAGE_ORACLE_SOURCE"
+    },
+    {
+      "probe": "x86_64/target/wrong-config-id",
+      "refusal": "IMAGE_SAVE_CONFIG"
+    },
+    {
+      "probe": "x86_64/target/wrong-architecture",
+      "refusal": "IMAGE_SAVE_PLATFORM"
+    },
+    {
+      "probe": "x86_64/target/writable-root",
+      "refusal": "IMAGE_DIRECTORY_ACCESS"
+    },
+    {
+      "probe": "x86_64/target/wrong-native-bytes",
+      "refusal": "IMAGE_NATIVE_CONTENT"
+    },
+    {
+      "probe": "tampered-layer.tar",
+      "refusal": "IMAGE_SAVE_LAYER_DIGEST"
+    },
+    {
+      "probe": "tampered-config.tar",
+      "refusal": "IMAGE_SAVE_CONFIG"
+    }
+  ],
+  "negative_controls_passed": 26,
+  "network_requests": 0,
+  "root_evidence_boundary_controls": 2,
+  "run_attempt": 1,
+  "run_id": 39858333396,
+  "runtime_acceptance": false,
+  "status": "PASS"
+}

@@ -1,0 +1,396 @@
+[
+  {
+    "case": "exact_nnp_wire",
+    "architecture": "x86_64",
+    "option": "name=no-new-privileges",
+    "status": "HOST_CANDIDATE",
+    "blockers": []
+  },
+  {
+    "case": "exact_nnp_wire",
+    "architecture": "x86_64",
+    "option": "name=no-new-privileges,profile=builtin",
+    "status": "BLOCKED",
+    "blockers": [
+      "DOCKER_UNAVAILABLE"
+    ]
+  },
+  {
+    "case": "exact_nnp_wire",
+    "architecture": "x86_64",
+    "option": "name=no-new-privileges=true",
+    "status": "BLOCKED",
+    "blockers": [
+      "DOCKER_UNAVAILABLE"
+    ]
+  },
+  {
+    "case": "exact_nnp_wire",
+    "architecture": "x86_64",
+    "option": "name=no-new-privileges-extra",
+    "status": "BLOCKED",
+    "blockers": [
+      "DOCKER_UNAVAILABLE"
+    ]
+  },
+  {
+    "case": "exact_nnp_wire",
+    "architecture": "x86_64",
+    "option": "name=No-new-privileges",
+    "status": "BLOCKED",
+    "blockers": [
+      "DOCKER_UNAVAILABLE"
+    ]
+  },
+  {
+    "case": "exact_nnp_wire",
+    "architecture": "x86_64",
+    "option": "name=no_new_privileges",
+    "status": "BLOCKED",
+    "blockers": [
+      "DOCKER_UNAVAILABLE"
+    ]
+  },
+  {
+    "case": "exact_nnp_wire",
+    "architecture": "x86_64",
+    "option": "name=unknown-hyphenated",
+    "status": "BLOCKED",
+    "blockers": [
+      "DOCKER_UNAVAILABLE"
+    ]
+  },
+  {
+    "case": "exact_nnp_wire",
+    "architecture": "x86_64",
+    "option": "name=no-new-privileges\n",
+    "status": "BLOCKED",
+    "blockers": [
+      "DOCKER_UNAVAILABLE"
+    ]
+  },
+  {
+    "case": "exact_nnp_wire",
+    "architecture": "x86_64",
+    "option": "name=no-new-privileges\u0000",
+    "status": "BLOCKED",
+    "blockers": [
+      "DOCKER_UNAVAILABLE"
+    ]
+  },
+  {
+    "case": "exact_nnp_wire",
+    "architecture": "aarch64",
+    "option": "name=no-new-privileges",
+    "status": "HOST_CANDIDATE",
+    "blockers": []
+  },
+  {
+    "case": "exact_nnp_wire",
+    "architecture": "aarch64",
+    "option": "name=no-new-privileges,profile=builtin",
+    "status": "BLOCKED",
+    "blockers": [
+      "DOCKER_UNAVAILABLE"
+    ]
+  },
+  {
+    "case": "exact_nnp_wire",
+    "architecture": "aarch64",
+    "option": "name=no-new-privileges=true",
+    "status": "BLOCKED",
+    "blockers": [
+      "DOCKER_UNAVAILABLE"
+    ]
+  },
+  {
+    "case": "exact_nnp_wire",
+    "architecture": "aarch64",
+    "option": "name=no-new-privileges-extra",
+    "status": "BLOCKED",
+    "blockers": [
+      "DOCKER_UNAVAILABLE"
+    ]
+  },
+  {
+    "case": "exact_nnp_wire",
+    "architecture": "aarch64",
+    "option": "name=No-new-privileges",
+    "status": "BLOCKED",
+    "blockers": [
+      "DOCKER_UNAVAILABLE"
+    ]
+  },
+  {
+    "case": "exact_nnp_wire",
+    "architecture": "aarch64",
+    "option": "name=no_new_privileges",
+    "status": "BLOCKED",
+    "blockers": [
+      "DOCKER_UNAVAILABLE"
+    ]
+  },
+  {
+    "case": "exact_nnp_wire",
+    "architecture": "aarch64",
+    "option": "name=unknown-hyphenated",
+    "status": "BLOCKED",
+    "blockers": [
+      "DOCKER_UNAVAILABLE"
+    ]
+  },
+  {
+    "case": "exact_nnp_wire",
+    "architecture": "aarch64",
+    "option": "name=no-new-privileges\n",
+    "status": "BLOCKED",
+    "blockers": [
+      "DOCKER_UNAVAILABLE"
+    ]
+  },
+  {
+    "case": "exact_nnp_wire",
+    "architecture": "aarch64",
+    "option": "name=no-new-privileges\u0000",
+    "status": "BLOCKED",
+    "blockers": [
+      "DOCKER_UNAVAILABLE"
+    ]
+  },
+  {
+    "case": "nnp_preserves_other_checks",
+    "architecture": "x86_64",
+    "variant": "duplicate",
+    "status": "BLOCKED",
+    "blockers": [
+      "DOCKER_UNAVAILABLE"
+    ]
+  },
+  {
+    "case": "nnp_preserves_other_checks",
+    "architecture": "x86_64",
+    "variant": "rootless",
+    "status": "BLOCKED",
+    "blockers": [
+      "DOCKER_NAMESPACE_MAPPING_UNSUPPORTED"
+    ]
+  },
+  {
+    "case": "nnp_preserves_other_checks",
+    "architecture": "x86_64",
+    "variant": "userns",
+    "status": "BLOCKED",
+    "blockers": [
+      "DOCKER_NAMESPACE_MAPPING_UNSUPPORTED"
+    ]
+  },
+  {
+    "case": "nnp_preserves_other_checks",
+    "architecture": "x86_64",
+    "variant": "no_seccomp",
+    "status": "BLOCKED",
+    "blockers": [
+      "DOCKER_CONFINEMENT_UNSUPPORTED"
+    ]
+  },
+  {
+    "case": "nnp_preserves_other_checks",
+    "architecture": "x86_64",
+    "variant": "no_cgroupns",
+    "status": "BLOCKED",
+    "blockers": [
+      "DOCKER_CONFINEMENT_UNSUPPORTED"
+    ]
+  },
+  {
+    "case": "nnp_preserves_other_checks",
+    "architecture": "x86_64",
+    "variant": "no_memory",
+    "status": "BLOCKED",
+    "blockers": [
+      "DOCKER_RESOURCE_LIMITS_UNSUPPORTED"
+    ]
+  },
+  {
+    "case": "nnp_preserves_other_checks",
+    "architecture": "x86_64",
+    "variant": "16_options",
+    "status": "HOST_CANDIDATE",
+    "blockers": []
+  },
+  {
+    "case": "nnp_preserves_other_checks",
+    "architecture": "x86_64",
+    "variant": "17_options",
+    "status": "BLOCKED",
+    "blockers": [
+      "DOCKER_UNAVAILABLE"
+    ]
+  },
+  {
+    "case": "nnp_preserves_other_checks",
+    "architecture": "aarch64",
+    "variant": "duplicate",
+    "status": "BLOCKED",
+    "blockers": [
+      "DOCKER_UNAVAILABLE"
+    ]
+  },
+  {
+    "case": "nnp_preserves_other_checks",
+    "architecture": "aarch64",
+    "variant": "rootless",
+    "status": "BLOCKED",
+    "blockers": [
+      "DOCKER_NAMESPACE_MAPPING_UNSUPPORTED"
+    ]
+  },
+  {
+    "case": "nnp_preserves_other_checks",
+    "architecture": "aarch64",
+    "variant": "userns",
+    "status": "BLOCKED",
+    "blockers": [
+      "DOCKER_NAMESPACE_MAPPING_UNSUPPORTED"
+    ]
+  },
+  {
+    "case": "nnp_preserves_other_checks",
+    "architecture": "aarch64",
+    "variant": "no_seccomp",
+    "status": "BLOCKED",
+    "blockers": [
+      "DOCKER_CONFINEMENT_UNSUPPORTED"
+    ]
+  },
+  {
+    "case": "nnp_preserves_other_checks",
+    "architecture": "aarch64",
+    "variant": "no_cgroupns",
+    "status": "BLOCKED",
+    "blockers": [
+      "DOCKER_CONFINEMENT_UNSUPPORTED"
+    ]
+  },
+  {
+    "case": "nnp_preserves_other_checks",
+    "architecture": "aarch64",
+    "variant": "no_memory",
+    "status": "BLOCKED",
+    "blockers": [
+      "DOCKER_RESOURCE_LIMITS_UNSUPPORTED"
+    ]
+  },
+  {
+    "case": "nnp_preserves_other_checks",
+    "architecture": "aarch64",
+    "variant": "16_options",
+    "status": "HOST_CANDIDATE",
+    "blockers": []
+  },
+  {
+    "case": "nnp_preserves_other_checks",
+    "architecture": "aarch64",
+    "variant": "17_options",
+    "status": "BLOCKED",
+    "blockers": [
+      "DOCKER_UNAVAILABLE"
+    ]
+  },
+  {
+    "case": "timeout_at_metadata_read",
+    "architecture": "x86_64",
+    "read": 1,
+    "calls": [
+      "info"
+    ],
+    "exit_status": 1,
+    "stderr_empty": true,
+    "status": "BLOCKED",
+    "blockers": [
+      "DOCKER_UNAVAILABLE"
+    ],
+    "private_canary_absent": true
+  },
+  {
+    "case": "timeout_at_metadata_read",
+    "architecture": "x86_64",
+    "read": 2,
+    "calls": [
+      "info",
+      "version"
+    ],
+    "exit_status": 1,
+    "stderr_empty": true,
+    "status": "BLOCKED",
+    "blockers": [
+      "DOCKER_UNAVAILABLE"
+    ],
+    "private_canary_absent": true
+  },
+  {
+    "case": "timeout_at_metadata_read",
+    "architecture": "x86_64",
+    "read": 3,
+    "calls": [
+      "info",
+      "version",
+      "info"
+    ],
+    "exit_status": 1,
+    "stderr_empty": true,
+    "status": "BLOCKED",
+    "blockers": [
+      "DOCKER_UNAVAILABLE"
+    ],
+    "private_canary_absent": true
+  },
+  {
+    "case": "timeout_at_metadata_read",
+    "architecture": "aarch64",
+    "read": 1,
+    "calls": [
+      "info"
+    ],
+    "exit_status": 1,
+    "stderr_empty": true,
+    "status": "BLOCKED",
+    "blockers": [
+      "DOCKER_UNAVAILABLE"
+    ],
+    "private_canary_absent": true
+  },
+  {
+    "case": "timeout_at_metadata_read",
+    "architecture": "aarch64",
+    "read": 2,
+    "calls": [
+      "info",
+      "version"
+    ],
+    "exit_status": 1,
+    "stderr_empty": true,
+    "status": "BLOCKED",
+    "blockers": [
+      "DOCKER_UNAVAILABLE"
+    ],
+    "private_canary_absent": true
+  },
+  {
+    "case": "timeout_at_metadata_read",
+    "architecture": "aarch64",
+    "read": 3,
+    "calls": [
+      "info",
+      "version",
+      "info"
+    ],
+    "exit_status": 1,
+    "stderr_empty": true,
+    "status": "BLOCKED",
+    "blockers": [
+      "DOCKER_UNAVAILABLE"
+    ],
+    "private_canary_absent": true
+  }
+]

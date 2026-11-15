@@ -1,6 +1,23 @@
 # C0 ARM64 and x64 runtime image sets — 2026-10-17
 
-**Status: local source/static-image preparation and independent review complete;
+**Current status — 2026-10-24:** PR #32 is owner-merged as
+`e8a0a415ac2b370319cd57f4c5262ce616a536fb`, preserving final PR head `1e65944`'s
+tree. Actual main CI passed **25/25 jobs on attempt 1**. Both downloaded image
+artifacts match GitHub's ZIP digests; both source-bound 288-test reports and all
+six portable image/config/layer/content records pass independent verification.
+Both post-merge reviewers return **GO_FOR_CONTINUED_IMPLEMENTATION**, with no
+findings; gate `80a18b43…`. Native runtime admission and
+calibration remain C0-ARCH-05 work, currently x64-first with ARM64 deferred.
+The subsequent [local adapter gate](evidence/m4-c0-runtime-adapter-2026-10-24/README.md)
+is complete: **338 tests under both umasks**, both final reviewers GO and
+R1/SEC-01 closed. A dedicated sibling x64 VM awaits actual provider/project or
+hypervisor SSH details; installed-CLI/collector/image admission and native
+calibration remain open.
+
+See the [post-merge verification checkpoint](evidence/m4-c0-post-merge-2026-10-24/README.md).
+The preparation/review chronology below retains its original recording-time scope.
+
+**Historical preparation status — 2026-10-17: local source/static-image preparation and independent review complete;
 both reviewers return GO_FOR_CONTINUED_IMPLEMENTATION.** Work is local on `feature/crawl-jobs-v2-c0-runtime-images`, based on
 published PR #30 head `7ef2041`. The [PR publication and exact CI](evidence/m4-c0-x64-publication-2026-10-17/README.md)
 pass all 14 required contexts / 23 jobs.

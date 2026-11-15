@@ -1,0 +1,155 @@
+{
+  "tests_run": 15,
+  "passed": true,
+  "failures": [],
+  "errors": [],
+  "skips": [],
+  "observations": [
+    {
+      "control": "api_integration",
+      "architecture": "aarch64",
+      "framing": "length",
+      "status": "HOST_CANDIDATE",
+      "requests": 3,
+      "sockets_closed": true
+    },
+    {
+      "control": "api_integration",
+      "architecture": "aarch64",
+      "framing": "chunked",
+      "status": "HOST_CANDIDATE",
+      "requests": 3,
+      "sockets_closed": true
+    },
+    {
+      "control": "api_integration",
+      "architecture": "aarch64",
+      "framing": "close",
+      "status": "HOST_CANDIDATE",
+      "requests": 3,
+      "sockets_closed": true
+    },
+    {
+      "control": "api_integration",
+      "architecture": "x86_64",
+      "framing": "length",
+      "status": "HOST_CANDIDATE",
+      "requests": 3,
+      "sockets_closed": true
+    },
+    {
+      "control": "api_integration",
+      "architecture": "x86_64",
+      "framing": "chunked",
+      "status": "HOST_CANDIDATE",
+      "requests": 3,
+      "sockets_closed": true
+    },
+    {
+      "control": "api_integration",
+      "architecture": "x86_64",
+      "framing": "close",
+      "status": "HOST_CANDIDATE",
+      "requests": 3,
+      "sockets_closed": true
+    },
+    {
+      "control": "real_socketpairs_cli",
+      "architecture": "aarch64",
+      "mode": "success",
+      "status": "HOST_CANDIDATE",
+      "exit_status": 0,
+      "elapsed_seconds": 0.002793,
+      "requests": 3,
+      "owned_sockets_closed": true,
+      "stderr_empty": true
+    },
+    {
+      "control": "real_socketpairs_cli",
+      "architecture": "aarch64",
+      "mode": "truncated",
+      "status": "BLOCKED",
+      "exit_status": 1,
+      "elapsed_seconds": 0.001284,
+      "requests": 1,
+      "owned_sockets_closed": true,
+      "stderr_empty": true
+    },
+    {
+      "control": "real_socketpairs_cli",
+      "architecture": "aarch64",
+      "mode": "keep-open",
+      "status": "BLOCKED",
+      "exit_status": 1,
+      "elapsed_seconds": 0.20126,
+      "requests": 1,
+      "owned_sockets_closed": true,
+      "stderr_empty": true
+    },
+    {
+      "control": "real_socketpairs_cli",
+      "architecture": "x86_64",
+      "mode": "success",
+      "status": "HOST_CANDIDATE",
+      "exit_status": 0,
+      "elapsed_seconds": 0.003613,
+      "requests": 3,
+      "owned_sockets_closed": true,
+      "stderr_empty": true
+    },
+    {
+      "control": "real_socketpairs_cli",
+      "architecture": "x86_64",
+      "mode": "truncated",
+      "status": "BLOCKED",
+      "exit_status": 1,
+      "elapsed_seconds": 0.001373,
+      "requests": 1,
+      "owned_sockets_closed": true,
+      "stderr_empty": true
+    },
+    {
+      "control": "real_socketpairs_cli",
+      "architecture": "x86_64",
+      "mode": "keep-open",
+      "status": "BLOCKED",
+      "exit_status": 1,
+      "elapsed_seconds": 0.202585,
+      "requests": 1,
+      "owned_sockets_closed": true,
+      "stderr_empty": true
+    },
+    {
+      "control": "shared_deadline",
+      "architecture": "aarch64",
+      "requests": 2,
+      "remaining_timeouts": [
+        1,
+        1,
+        1,
+        0.75,
+        0.5,
+        0.5,
+        0.5,
+        0.25
+      ],
+      "status": "BLOCKED"
+    },
+    {
+      "control": "shared_deadline",
+      "architecture": "x86_64",
+      "requests": 2,
+      "remaining_timeouts": [
+        1,
+        1,
+        1,
+        0.75,
+        0.5,
+        0.5,
+        0.5,
+        0.25
+      ],
+      "status": "BLOCKED"
+    }
+  ]
+}

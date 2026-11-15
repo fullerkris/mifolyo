@@ -1,0 +1,4958 @@
+{
+  "calls": [
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "version",
+        "--format",
+        "{{json .Server}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "inspect",
+        "obs1-11111111111111111111111111111111-control"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "create",
+        "--driver",
+        "local",
+        "--opt",
+        "device=tmpfs",
+        "--opt",
+        "o=uid=999,gid=999,mode=0700,size=1048576,nodev,nosuid,noexec",
+        "--opt",
+        "type=tmpfs",
+        "--label",
+        "io.mifolyo.obs1.case=P1.pre.1.1",
+        "--label",
+        "io.mifolyo.obs1.invocation=11111111111111111111111111111111",
+        "--label",
+        "io.mifolyo.obs1.role=control",
+        "--label",
+        "io.mifolyo.obs1.scope=51d81fd20ac88204012acbfd0476bde24b98d27b357d427dc6200ccd436334b9",
+        "obs1-11111111111111111111111111111111-control"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "inspect",
+        "obs1-11111111111111111111111111111111-control"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "inspect",
+        "obs1-11111111111111111111111111111111-control"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "ls",
+        "--all",
+        "--no-trunc",
+        "--filter",
+        "volume=obs1-11111111111111111111111111111111-control",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "inspect",
+        "obs1-11111111111111111111111111111111-witness"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "create",
+        "--driver",
+        "local",
+        "--opt",
+        "device=tmpfs",
+        "--opt",
+        "o=uid=999,gid=999,mode=0700,size=1048576,nodev,nosuid,noexec",
+        "--opt",
+        "type=tmpfs",
+        "--label",
+        "io.mifolyo.obs1.case=P1.pre.1.1",
+        "--label",
+        "io.mifolyo.obs1.invocation=11111111111111111111111111111111",
+        "--label",
+        "io.mifolyo.obs1.role=witness",
+        "--label",
+        "io.mifolyo.obs1.scope=51d81fd20ac88204012acbfd0476bde24b98d27b357d427dc6200ccd436334b9",
+        "obs1-11111111111111111111111111111111-witness"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "inspect",
+        "obs1-11111111111111111111111111111111-witness"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "inspect",
+        "obs1-11111111111111111111111111111111-control"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "ls",
+        "--all",
+        "--no-trunc",
+        "--filter",
+        "volume=obs1-11111111111111111111111111111111-control",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "inspect",
+        "obs1-11111111111111111111111111111111-witness"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "ls",
+        "--all",
+        "--no-trunc",
+        "--filter",
+        "volume=obs1-11111111111111111111111111111111-witness",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "inspect",
+        "obs1-11111111111111111111111111111111-target"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "version",
+        "--format",
+        "{{json .Server}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "image",
+        "inspect",
+        "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "create",
+        "--name",
+        "obs1-11111111111111111111111111111111-target",
+        "--pull",
+        "never",
+        "--network",
+        "none",
+        "--read-only",
+        "--user",
+        "999:999",
+        "--cap-drop",
+        "ALL",
+        "--security-opt",
+        "no-new-privileges:true",
+        "--security-opt",
+        "seccomp=/synthetic/approved-profile.json",
+        "--memory",
+        "67108864",
+        "--memory-swap",
+        "67108864",
+        "--cpus",
+        "1",
+        "--pids-limit",
+        "16",
+        "--ulimit",
+        "core=0:0",
+        "--restart",
+        "no",
+        "--init=false",
+        "--ipc",
+        "private",
+        "--cgroupns",
+        "private",
+        "--log-driver",
+        "none",
+        "--no-healthcheck",
+        "--workdir",
+        "/",
+        "--interactive",
+        "--attach",
+        "stdin",
+        "--attach",
+        "stdout",
+        "--attach",
+        "stderr",
+        "--label",
+        "io.mifolyo.obs1.case=P1.pre.1.1",
+        "--label",
+        "io.mifolyo.obs1.invocation=11111111111111111111111111111111",
+        "--label",
+        "io.mifolyo.obs1.role=target",
+        "--label",
+        "io.mifolyo.obs1.scope=51d81fd20ac88204012acbfd0476bde24b98d27b357d427dc6200ccd436334b9",
+        "--mount",
+        "type=volume,source=obs1-11111111111111111111111111111111-control,target=/control,volume-nocopy",
+        "--mount",
+        "type=volume,source=obs1-11111111111111111111111111111111-witness,target=/witness,volume-nocopy",
+        "--entrypoint",
+        "/target",
+        "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "inspect",
+        "87d5bc2f5613f34b882edf7d664ecc925cb033b58093bad7e7d9912ee67ecfa8"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "inspect",
+        "obs1-11111111111111111111111111111111-control"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "ls",
+        "--all",
+        "--no-trunc",
+        "--filter",
+        "volume=obs1-11111111111111111111111111111111-control",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "inspect",
+        "obs1-11111111111111111111111111111111-witness"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "ls",
+        "--all",
+        "--no-trunc",
+        "--filter",
+        "volume=obs1-11111111111111111111111111111111-witness",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "inspect",
+        "obs1-11111111111111111111111111111111-oracle"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "version",
+        "--format",
+        "{{json .Server}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "image",
+        "inspect",
+        "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "create",
+        "--name",
+        "obs1-11111111111111111111111111111111-oracle",
+        "--pull",
+        "never",
+        "--network",
+        "none",
+        "--read-only",
+        "--user",
+        "999:999",
+        "--cap-drop",
+        "ALL",
+        "--security-opt",
+        "no-new-privileges:true",
+        "--security-opt",
+        "seccomp=/synthetic/approved-profile.json",
+        "--memory",
+        "33554432",
+        "--memory-swap",
+        "33554432",
+        "--cpus",
+        "1",
+        "--pids-limit",
+        "8",
+        "--ulimit",
+        "core=0:0",
+        "--restart",
+        "no",
+        "--init=false",
+        "--ipc",
+        "private",
+        "--cgroupns",
+        "private",
+        "--log-driver",
+        "none",
+        "--no-healthcheck",
+        "--workdir",
+        "/",
+        "--interactive",
+        "--attach",
+        "stdin",
+        "--attach",
+        "stdout",
+        "--attach",
+        "stderr",
+        "--label",
+        "io.mifolyo.obs1.case=P1.pre.1.1",
+        "--label",
+        "io.mifolyo.obs1.invocation=11111111111111111111111111111111",
+        "--label",
+        "io.mifolyo.obs1.role=oracle",
+        "--label",
+        "io.mifolyo.obs1.scope=51d81fd20ac88204012acbfd0476bde24b98d27b357d427dc6200ccd436334b9",
+        "--mount",
+        "type=volume,source=obs1-11111111111111111111111111111111-control,target=/control,volume-nocopy,readonly",
+        "--mount",
+        "type=volume,source=obs1-11111111111111111111111111111111-witness,target=/witness,volume-nocopy,readonly",
+        "--entrypoint",
+        "python3",
+        "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "-I",
+        "-B",
+        "/oracle/worker.py"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "inspect",
+        "6e3bcab445155b407437702dc7165f274dfe5bdcbf1b61e7e21e2d95a9350f30"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "inspect",
+        "obs1-11111111111111111111111111111111-control"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "ls",
+        "--all",
+        "--no-trunc",
+        "--filter",
+        "volume=obs1-11111111111111111111111111111111-control",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "inspect",
+        "obs1-11111111111111111111111111111111-witness"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "ls",
+        "--all",
+        "--no-trunc",
+        "--filter",
+        "volume=obs1-11111111111111111111111111111111-witness",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "inspect",
+        "obs1-11111111111111111111111111111111-observer"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "version",
+        "--format",
+        "{{json .Server}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "inspect",
+        "87d5bc2f5613f34b882edf7d664ecc925cb033b58093bad7e7d9912ee67ecfa8"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "image",
+        "inspect",
+        "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "create",
+        "--name",
+        "obs1-11111111111111111111111111111111-observer",
+        "--pull",
+        "never",
+        "--network",
+        "none",
+        "--read-only",
+        "--user",
+        "999:999",
+        "--cap-drop",
+        "ALL",
+        "--security-opt",
+        "no-new-privileges:true",
+        "--security-opt",
+        "seccomp=/synthetic/approved-profile.json",
+        "--memory",
+        "67108864",
+        "--memory-swap",
+        "67108864",
+        "--cpus",
+        "1",
+        "--pids-limit",
+        "16",
+        "--ulimit",
+        "core=0:0",
+        "--restart",
+        "no",
+        "--init=false",
+        "--ipc",
+        "private",
+        "--cgroupns",
+        "private",
+        "--log-driver",
+        "none",
+        "--no-healthcheck",
+        "--workdir",
+        "/",
+        "--interactive",
+        "--attach",
+        "stdin",
+        "--attach",
+        "stdout",
+        "--attach",
+        "stderr",
+        "--pid",
+        "container:87d5bc2f5613f34b882edf7d664ecc925cb033b58093bad7e7d9912ee67ecfa8",
+        "--label",
+        "io.mifolyo.obs1.case=P1.pre.1.1",
+        "--label",
+        "io.mifolyo.obs1.invocation=11111111111111111111111111111111",
+        "--label",
+        "io.mifolyo.obs1.role=observer",
+        "--label",
+        "io.mifolyo.obs1.scope=51d81fd20ac88204012acbfd0476bde24b98d27b357d427dc6200ccd436334b9",
+        "--entrypoint",
+        "/observer",
+        "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "inspect",
+        "18c3b958bb9a4ebf34f7fd51da213d29fe3f5653bdf68d77673489688698297a"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "inspect",
+        "obs1-11111111111111111111111111111111-control"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "ls",
+        "--all",
+        "--no-trunc",
+        "--filter",
+        "volume=obs1-11111111111111111111111111111111-control",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "inspect",
+        "obs1-11111111111111111111111111111111-witness"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "ls",
+        "--all",
+        "--no-trunc",
+        "--filter",
+        "volume=obs1-11111111111111111111111111111111-witness",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "version",
+        "--format",
+        "{{json .Server}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "inspect",
+        "obs1-11111111111111111111111111111111-control"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "ls",
+        "--all",
+        "--no-trunc",
+        "--filter",
+        "volume=obs1-11111111111111111111111111111111-control",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "inspect",
+        "obs1-11111111111111111111111111111111-witness"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "ls",
+        "--all",
+        "--no-trunc",
+        "--filter",
+        "volume=obs1-11111111111111111111111111111111-witness",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "inspect",
+        "obs1-11111111111111111111111111111111-control"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "inspect",
+        "obs1-11111111111111111111111111111111-witness"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "inspect",
+        "87d5bc2f5613f34b882edf7d664ecc925cb033b58093bad7e7d9912ee67ecfa8"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "image",
+        "inspect",
+        "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "start",
+        "--attach",
+        "--interactive",
+        "87d5bc2f5613f34b882edf7d664ecc925cb033b58093bad7e7d9912ee67ecfa8"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "inspect",
+        "87d5bc2f5613f34b882edf7d664ecc925cb033b58093bad7e7d9912ee67ecfa8"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "kill",
+        "--signal",
+        "KILL",
+        "87d5bc2f5613f34b882edf7d664ecc925cb033b58093bad7e7d9912ee67ecfa8"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "inspect",
+        "87d5bc2f5613f34b882edf7d664ecc925cb033b58093bad7e7d9912ee67ecfa8"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "wait",
+        "87d5bc2f5613f34b882edf7d664ecc925cb033b58093bad7e7d9912ee67ecfa8"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "inspect",
+        "87d5bc2f5613f34b882edf7d664ecc925cb033b58093bad7e7d9912ee67ecfa8"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "rm",
+        "87d5bc2f5613f34b882edf7d664ecc925cb033b58093bad7e7d9912ee67ecfa8"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "inspect",
+        "6e3bcab445155b407437702dc7165f274dfe5bdcbf1b61e7e21e2d95a9350f30"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "kill",
+        "--signal",
+        "KILL",
+        "6e3bcab445155b407437702dc7165f274dfe5bdcbf1b61e7e21e2d95a9350f30"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "inspect",
+        "6e3bcab445155b407437702dc7165f274dfe5bdcbf1b61e7e21e2d95a9350f30"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "wait",
+        "6e3bcab445155b407437702dc7165f274dfe5bdcbf1b61e7e21e2d95a9350f30"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "inspect",
+        "6e3bcab445155b407437702dc7165f274dfe5bdcbf1b61e7e21e2d95a9350f30"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "rm",
+        "6e3bcab445155b407437702dc7165f274dfe5bdcbf1b61e7e21e2d95a9350f30"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "inspect",
+        "18c3b958bb9a4ebf34f7fd51da213d29fe3f5653bdf68d77673489688698297a"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "kill",
+        "--signal",
+        "KILL",
+        "18c3b958bb9a4ebf34f7fd51da213d29fe3f5653bdf68d77673489688698297a"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "inspect",
+        "18c3b958bb9a4ebf34f7fd51da213d29fe3f5653bdf68d77673489688698297a"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "wait",
+        "18c3b958bb9a4ebf34f7fd51da213d29fe3f5653bdf68d77673489688698297a"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "inspect",
+        "18c3b958bb9a4ebf34f7fd51da213d29fe3f5653bdf68d77673489688698297a"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "rm",
+        "18c3b958bb9a4ebf34f7fd51da213d29fe3f5653bdf68d77673489688698297a"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "inspect",
+        "obs1-11111111111111111111111111111111-control"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "ls",
+        "--all",
+        "--no-trunc",
+        "--filter",
+        "volume=obs1-11111111111111111111111111111111-control",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "rm",
+        "obs1-11111111111111111111111111111111-control"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "inspect",
+        "obs1-11111111111111111111111111111111-witness"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "ls",
+        "--all",
+        "--no-trunc",
+        "--filter",
+        "volume=obs1-11111111111111111111111111111111-witness",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "rm",
+        "obs1-11111111111111111111111111111111-witness"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "version",
+        "--format",
+        "{{json .Server}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "inspect",
+        "obs1-11111111111111111111111111111111-control"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "create",
+        "--driver",
+        "local",
+        "--opt",
+        "device=tmpfs",
+        "--opt",
+        "o=uid=999,gid=999,mode=0700,size=1048576,nodev,nosuid,noexec",
+        "--opt",
+        "type=tmpfs",
+        "--label",
+        "io.mifolyo.obs1.case=P1.pre.1.1",
+        "--label",
+        "io.mifolyo.obs1.invocation=11111111111111111111111111111111",
+        "--label",
+        "io.mifolyo.obs1.role=control",
+        "--label",
+        "io.mifolyo.obs1.scope=e4ec47cef6ef7996f7abda4720dfdf52d557084a434d31c0b5696744abd05a37",
+        "obs1-11111111111111111111111111111111-control"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "inspect",
+        "obs1-11111111111111111111111111111111-control"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "inspect",
+        "obs1-11111111111111111111111111111111-control"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "ls",
+        "--all",
+        "--no-trunc",
+        "--filter",
+        "volume=obs1-11111111111111111111111111111111-control",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "inspect",
+        "obs1-11111111111111111111111111111111-witness"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "create",
+        "--driver",
+        "local",
+        "--opt",
+        "device=tmpfs",
+        "--opt",
+        "o=uid=999,gid=999,mode=0700,size=1048576,nodev,nosuid,noexec",
+        "--opt",
+        "type=tmpfs",
+        "--label",
+        "io.mifolyo.obs1.case=P1.pre.1.1",
+        "--label",
+        "io.mifolyo.obs1.invocation=11111111111111111111111111111111",
+        "--label",
+        "io.mifolyo.obs1.role=witness",
+        "--label",
+        "io.mifolyo.obs1.scope=e4ec47cef6ef7996f7abda4720dfdf52d557084a434d31c0b5696744abd05a37",
+        "obs1-11111111111111111111111111111111-witness"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "inspect",
+        "obs1-11111111111111111111111111111111-witness"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "inspect",
+        "obs1-11111111111111111111111111111111-control"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "ls",
+        "--all",
+        "--no-trunc",
+        "--filter",
+        "volume=obs1-11111111111111111111111111111111-control",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "inspect",
+        "obs1-11111111111111111111111111111111-witness"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "ls",
+        "--all",
+        "--no-trunc",
+        "--filter",
+        "volume=obs1-11111111111111111111111111111111-witness",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "inspect",
+        "obs1-11111111111111111111111111111111-target"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "version",
+        "--format",
+        "{{json .Server}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "image",
+        "inspect",
+        "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "create",
+        "--name",
+        "obs1-11111111111111111111111111111111-target",
+        "--pull",
+        "never",
+        "--network",
+        "none",
+        "--read-only",
+        "--user",
+        "999:999",
+        "--cap-drop",
+        "ALL",
+        "--security-opt",
+        "no-new-privileges:true",
+        "--security-opt",
+        "seccomp=/synthetic/approved-profile.json",
+        "--memory",
+        "67108864",
+        "--memory-swap",
+        "67108864",
+        "--cpus",
+        "1",
+        "--pids-limit",
+        "16",
+        "--ulimit",
+        "core=0:0",
+        "--restart",
+        "no",
+        "--init=false",
+        "--ipc",
+        "private",
+        "--cgroupns",
+        "private",
+        "--log-driver",
+        "none",
+        "--no-healthcheck",
+        "--workdir",
+        "/",
+        "--interactive",
+        "--attach",
+        "stdin",
+        "--attach",
+        "stdout",
+        "--attach",
+        "stderr",
+        "--label",
+        "io.mifolyo.obs1.case=P1.pre.1.1",
+        "--label",
+        "io.mifolyo.obs1.invocation=11111111111111111111111111111111",
+        "--label",
+        "io.mifolyo.obs1.role=target",
+        "--label",
+        "io.mifolyo.obs1.scope=e4ec47cef6ef7996f7abda4720dfdf52d557084a434d31c0b5696744abd05a37",
+        "--mount",
+        "type=volume,source=obs1-11111111111111111111111111111111-control,target=/control,volume-nocopy",
+        "--mount",
+        "type=volume,source=obs1-11111111111111111111111111111111-witness,target=/witness,volume-nocopy",
+        "--entrypoint",
+        "/target",
+        "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "inspect",
+        "87d5bc2f5613f34b882edf7d664ecc925cb033b58093bad7e7d9912ee67ecfa8"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "inspect",
+        "obs1-11111111111111111111111111111111-control"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "ls",
+        "--all",
+        "--no-trunc",
+        "--filter",
+        "volume=obs1-11111111111111111111111111111111-control",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "inspect",
+        "obs1-11111111111111111111111111111111-witness"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "ls",
+        "--all",
+        "--no-trunc",
+        "--filter",
+        "volume=obs1-11111111111111111111111111111111-witness",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "inspect",
+        "obs1-11111111111111111111111111111111-oracle"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "version",
+        "--format",
+        "{{json .Server}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "image",
+        "inspect",
+        "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "create",
+        "--name",
+        "obs1-11111111111111111111111111111111-oracle",
+        "--pull",
+        "never",
+        "--network",
+        "none",
+        "--read-only",
+        "--user",
+        "999:999",
+        "--cap-drop",
+        "ALL",
+        "--security-opt",
+        "no-new-privileges:true",
+        "--security-opt",
+        "seccomp=/synthetic/approved-profile.json",
+        "--memory",
+        "33554432",
+        "--memory-swap",
+        "33554432",
+        "--cpus",
+        "1",
+        "--pids-limit",
+        "8",
+        "--ulimit",
+        "core=0:0",
+        "--restart",
+        "no",
+        "--init=false",
+        "--ipc",
+        "private",
+        "--cgroupns",
+        "private",
+        "--log-driver",
+        "none",
+        "--no-healthcheck",
+        "--workdir",
+        "/",
+        "--interactive",
+        "--attach",
+        "stdin",
+        "--attach",
+        "stdout",
+        "--attach",
+        "stderr",
+        "--label",
+        "io.mifolyo.obs1.case=P1.pre.1.1",
+        "--label",
+        "io.mifolyo.obs1.invocation=11111111111111111111111111111111",
+        "--label",
+        "io.mifolyo.obs1.role=oracle",
+        "--label",
+        "io.mifolyo.obs1.scope=e4ec47cef6ef7996f7abda4720dfdf52d557084a434d31c0b5696744abd05a37",
+        "--mount",
+        "type=volume,source=obs1-11111111111111111111111111111111-control,target=/control,volume-nocopy,readonly",
+        "--mount",
+        "type=volume,source=obs1-11111111111111111111111111111111-witness,target=/witness,volume-nocopy,readonly",
+        "--entrypoint",
+        "python3",
+        "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "-I",
+        "-B",
+        "/oracle/worker.py"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "inspect",
+        "6e3bcab445155b407437702dc7165f274dfe5bdcbf1b61e7e21e2d95a9350f30"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "inspect",
+        "obs1-11111111111111111111111111111111-control"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "ls",
+        "--all",
+        "--no-trunc",
+        "--filter",
+        "volume=obs1-11111111111111111111111111111111-control",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "inspect",
+        "obs1-11111111111111111111111111111111-witness"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "ls",
+        "--all",
+        "--no-trunc",
+        "--filter",
+        "volume=obs1-11111111111111111111111111111111-witness",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "inspect",
+        "obs1-11111111111111111111111111111111-observer"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "version",
+        "--format",
+        "{{json .Server}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "inspect",
+        "87d5bc2f5613f34b882edf7d664ecc925cb033b58093bad7e7d9912ee67ecfa8"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "image",
+        "inspect",
+        "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "create",
+        "--name",
+        "obs1-11111111111111111111111111111111-observer",
+        "--pull",
+        "never",
+        "--network",
+        "none",
+        "--read-only",
+        "--user",
+        "999:999",
+        "--cap-drop",
+        "ALL",
+        "--security-opt",
+        "no-new-privileges:true",
+        "--security-opt",
+        "seccomp=/synthetic/approved-profile.json",
+        "--memory",
+        "67108864",
+        "--memory-swap",
+        "67108864",
+        "--cpus",
+        "1",
+        "--pids-limit",
+        "16",
+        "--ulimit",
+        "core=0:0",
+        "--restart",
+        "no",
+        "--init=false",
+        "--ipc",
+        "private",
+        "--cgroupns",
+        "private",
+        "--log-driver",
+        "none",
+        "--no-healthcheck",
+        "--workdir",
+        "/",
+        "--interactive",
+        "--attach",
+        "stdin",
+        "--attach",
+        "stdout",
+        "--attach",
+        "stderr",
+        "--pid",
+        "container:87d5bc2f5613f34b882edf7d664ecc925cb033b58093bad7e7d9912ee67ecfa8",
+        "--label",
+        "io.mifolyo.obs1.case=P1.pre.1.1",
+        "--label",
+        "io.mifolyo.obs1.invocation=11111111111111111111111111111111",
+        "--label",
+        "io.mifolyo.obs1.role=observer",
+        "--label",
+        "io.mifolyo.obs1.scope=e4ec47cef6ef7996f7abda4720dfdf52d557084a434d31c0b5696744abd05a37",
+        "--entrypoint",
+        "/observer",
+        "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "inspect",
+        "18c3b958bb9a4ebf34f7fd51da213d29fe3f5653bdf68d77673489688698297a"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "inspect",
+        "obs1-11111111111111111111111111111111-control"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "ls",
+        "--all",
+        "--no-trunc",
+        "--filter",
+        "volume=obs1-11111111111111111111111111111111-control",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "inspect",
+        "obs1-11111111111111111111111111111111-witness"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "ls",
+        "--all",
+        "--no-trunc",
+        "--filter",
+        "volume=obs1-11111111111111111111111111111111-witness",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "version",
+        "--format",
+        "{{json .Server}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "inspect",
+        "obs1-11111111111111111111111111111111-control"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "ls",
+        "--all",
+        "--no-trunc",
+        "--filter",
+        "volume=obs1-11111111111111111111111111111111-control",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "inspect",
+        "obs1-11111111111111111111111111111111-witness"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "ls",
+        "--all",
+        "--no-trunc",
+        "--filter",
+        "volume=obs1-11111111111111111111111111111111-witness",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "inspect",
+        "obs1-11111111111111111111111111111111-control"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "inspect",
+        "obs1-11111111111111111111111111111111-witness"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "inspect",
+        "87d5bc2f5613f34b882edf7d664ecc925cb033b58093bad7e7d9912ee67ecfa8"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "image",
+        "inspect",
+        "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "start",
+        "--attach",
+        "--interactive",
+        "87d5bc2f5613f34b882edf7d664ecc925cb033b58093bad7e7d9912ee67ecfa8"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "inspect",
+        "87d5bc2f5613f34b882edf7d664ecc925cb033b58093bad7e7d9912ee67ecfa8"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "kill",
+        "--signal",
+        "KILL",
+        "87d5bc2f5613f34b882edf7d664ecc925cb033b58093bad7e7d9912ee67ecfa8"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "inspect",
+        "87d5bc2f5613f34b882edf7d664ecc925cb033b58093bad7e7d9912ee67ecfa8"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "wait",
+        "87d5bc2f5613f34b882edf7d664ecc925cb033b58093bad7e7d9912ee67ecfa8"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "inspect",
+        "87d5bc2f5613f34b882edf7d664ecc925cb033b58093bad7e7d9912ee67ecfa8"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "rm",
+        "87d5bc2f5613f34b882edf7d664ecc925cb033b58093bad7e7d9912ee67ecfa8"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "inspect",
+        "6e3bcab445155b407437702dc7165f274dfe5bdcbf1b61e7e21e2d95a9350f30"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "kill",
+        "--signal",
+        "KILL",
+        "6e3bcab445155b407437702dc7165f274dfe5bdcbf1b61e7e21e2d95a9350f30"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "inspect",
+        "6e3bcab445155b407437702dc7165f274dfe5bdcbf1b61e7e21e2d95a9350f30"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "wait",
+        "6e3bcab445155b407437702dc7165f274dfe5bdcbf1b61e7e21e2d95a9350f30"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "inspect",
+        "6e3bcab445155b407437702dc7165f274dfe5bdcbf1b61e7e21e2d95a9350f30"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "rm",
+        "6e3bcab445155b407437702dc7165f274dfe5bdcbf1b61e7e21e2d95a9350f30"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "inspect",
+        "18c3b958bb9a4ebf34f7fd51da213d29fe3f5653bdf68d77673489688698297a"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "kill",
+        "--signal",
+        "KILL",
+        "18c3b958bb9a4ebf34f7fd51da213d29fe3f5653bdf68d77673489688698297a"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "inspect",
+        "18c3b958bb9a4ebf34f7fd51da213d29fe3f5653bdf68d77673489688698297a"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "wait",
+        "18c3b958bb9a4ebf34f7fd51da213d29fe3f5653bdf68d77673489688698297a"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "inspect",
+        "18c3b958bb9a4ebf34f7fd51da213d29fe3f5653bdf68d77673489688698297a"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "rm",
+        "18c3b958bb9a4ebf34f7fd51da213d29fe3f5653bdf68d77673489688698297a"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "inspect",
+        "obs1-11111111111111111111111111111111-control"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "ls",
+        "--all",
+        "--no-trunc",
+        "--filter",
+        "volume=obs1-11111111111111111111111111111111-control",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "rm",
+        "obs1-11111111111111111111111111111111-control"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "inspect",
+        "obs1-11111111111111111111111111111111-witness"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "container",
+        "ls",
+        "--all",
+        "--no-trunc",
+        "--filter",
+        "volume=obs1-11111111111111111111111111111111-witness",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "info",
+        "--format",
+        "{{.ID}}"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "argv": [
+        "/usr/bin/docker",
+        "--host",
+        "unix:///var/run/docker.sock",
+        "volume",
+        "rm",
+        "obs1-11111111111111111111111111111111-witness"
+      ]
+    }
+  ],
+  "docker_execution": false,
+  "factory_error_redaction": [
+    {
+      "architecture": "x86_64",
+      "canary_leaked": false,
+      "error": "DOCKER_TRANSPORT"
+    },
+    {
+      "architecture": "aarch64",
+      "canary_leaked": false,
+      "error": "DOCKER_TRANSPORT"
+    }
+  ],
+  "method": "pure FakeDocker metadata; simulated authorization, no resource mutation",
+  "native_execution": false,
+  "status": "PASS"
+}

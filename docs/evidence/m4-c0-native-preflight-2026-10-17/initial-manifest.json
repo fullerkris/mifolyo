@@ -1,0 +1,58 @@
+{
+  "files": {
+    "initial-source.patch": {
+      "bytes": 38762,
+      "sha256": "00bd9b74a053d95719c6465d40d36a2fe062e9d1182b5b5cd32d2d134a38efb2"
+    },
+    "initial-ssh-discovery.json": {
+      "bytes": 4628,
+      "sha256": "509e0dc456ba12268bc8ee4448825d8f77de93a9e471e1d98b1041884c82a531"
+    },
+    "local-preflight.json": {
+      "bytes": 2579,
+      "sha256": "639d5682c10166d102fb89df9f9814d2a3e7f06e01e10bede7680d604f5dd4ed"
+    },
+    "local-preflight.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "pr32-capture.json": {
+      "bytes": 589,
+      "sha256": "6057d91e98eb9e3bbe01bf674eaa8f0c8411e0958c7a21d8e80d7e3b3f0780c0"
+    },
+    "pr32-checks-capture.json": {
+      "bytes": 4751,
+      "sha256": "c9bb8b92a7be3ce8a1ef116809f5e0bcbcf833f7f953d5c63a838696a0ba981f"
+    },
+    "pr32-checks.json": {
+      "bytes": 4848,
+      "sha256": "622c82ad89093e11c427786d237d9fbebe892da687f9986cf189df42cec5c39d"
+    },
+    "pr32-images-run-capture.json": {
+      "bytes": 5657,
+      "sha256": "14eec4641299f27e48e9d419880a8484c1f1bb902012fa0706b9bac00f9f4e2d"
+    },
+    "pr32-images-run.json": {
+      "bytes": 6972,
+      "sha256": "96d57a0c4f53812c1198c7f3578c23cae982db490cb7f0df49b42cc7bef3c067"
+    },
+    "pr32.json": {
+      "bytes": 292,
+      "sha256": "ca78972be68f850581c4cd5571fc32fb61d9c464d6727eaa12e8a45cefa92fee"
+    },
+    "source-inventory.json": {
+      "bytes": 7496,
+      "sha256": "aa84e8b932141d6032a70e0f85a3fbc638dabec72992c6cb46a14c3cacc67414"
+    },
+    "tests-022.json": {
+      "bytes": 102777,
+      "sha256": "dd21eb4d313a14d8532aded58b15b0de4ac148b25de0d5baf3fb7bf2f1575a69"
+    },
+    "tests-022.log": {
+      "bytes": 50372,
+      "sha256": "9c48b68a445f9917f04b8a96cd148af5cd65339edc0d0478286d85fd32b66f65"
+    }
+  },
+  "kind": "c0_native_preflight_initial_exports",
+  "version": 1
+}

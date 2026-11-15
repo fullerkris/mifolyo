@@ -1,0 +1,106 @@
+{
+  "host_preflight_path": "/tmp/opencode/c0-native-preflight-2026-10-17/remediation-snapshot/tests/crawl-jobs-v2-observer/host_preflight.py",
+  "host_preflight_sha256": "330dd22cb769d25e67b60ee0f55fddd5cd8275ce20bda20aa71bd80cc5da2131",
+  "retained_controls_source_sha256": "cebc32f967dc452cde97740ac89bab2f28ae23164f9d27d2e32c4c299b640775",
+  "retained_regressions_source_sha256": "2591de20149ebf4fe5078796e57e86c766d98a0f12e74042f42fa8a144811ecc",
+  "source_selection_only_changed_in_memory": true,
+  "tests_run": 17,
+  "success": true,
+  "failures": [],
+  "errors": [],
+  "skips": [],
+  "regression_observations": [
+    {
+      "control": "closed_pipes_then_late_exit",
+      "architecture": "x86_64",
+      "status": "BLOCKED",
+      "blockers": [
+        "COLLECTOR_UNAVAILABLE",
+        "DOCKER_UNAVAILABLE",
+        "HOST_OBSERVATION_CHANGED",
+        "KERNEL_AFTER_UNAVAILABLE"
+      ],
+      "elapsed_seconds": 0.501644,
+      "returncodes": [
+        -9
+      ],
+      "local_children_reaped": true,
+      "fallback_cleanup_used": false,
+      "pipes_closed": true
+    },
+    {
+      "control": "closed_pipes_then_late_exit",
+      "architecture": "aarch64",
+      "status": "BLOCKED",
+      "blockers": [
+        "COLLECTOR_UNAVAILABLE",
+        "DOCKER_UNAVAILABLE",
+        "HOST_OBSERVATION_CHANGED",
+        "KERNEL_AFTER_UNAVAILABLE"
+      ],
+      "elapsed_seconds": 0.501993,
+      "returncodes": [
+        -9
+      ],
+      "local_children_reaped": true,
+      "fallback_cleanup_used": false,
+      "pipes_closed": true
+    },
+    {
+      "control": "valid_no_new_privileges",
+      "architecture": "x86_64",
+      "baseline_status": "HOST_CANDIDATE",
+      "status": "HOST_CANDIDATE",
+      "blockers": [],
+      "docker_observation": {
+        "architecture": "amd64",
+        "cgroup_driver": "systemd",
+        "cgroup_version": "2",
+        "cgroupns": true,
+        "daemon_sha256": "4190f950a7dca754d49a30a9b83d5e827aa4fd74ad4fc8fd16577c9af5e18d33",
+        "kernel_release_sha256": "78a09b62369d8f90da7263d85b450f92878cc9dae91f22eb7c9c7e638eb6e70c",
+        "limits": {
+          "cpu_period": true,
+          "cpu_quota": true,
+          "memory": true,
+          "pids": true,
+          "swap": true
+        },
+        "os": "linux",
+        "rootless": false,
+        "seccomp": true,
+        "security_options_sha256": "d22ed72cdd243f2108795cb92ffdb557ffa7edcf4acbea731570b77c757dd191",
+        "userns": false,
+        "version": "29.9.1"
+      }
+    },
+    {
+      "control": "valid_no_new_privileges",
+      "architecture": "aarch64",
+      "baseline_status": "HOST_CANDIDATE",
+      "status": "HOST_CANDIDATE",
+      "blockers": [],
+      "docker_observation": {
+        "architecture": "arm64",
+        "cgroup_driver": "systemd",
+        "cgroup_version": "2",
+        "cgroupns": true,
+        "daemon_sha256": "4190f950a7dca754d49a30a9b83d5e827aa4fd74ad4fc8fd16577c9af5e18d33",
+        "kernel_release_sha256": "78a09b62369d8f90da7263d85b450f92878cc9dae91f22eb7c9c7e638eb6e70c",
+        "limits": {
+          "cpu_period": true,
+          "cpu_quota": true,
+          "memory": true,
+          "pids": true,
+          "swap": true
+        },
+        "os": "linux",
+        "rootless": false,
+        "seccomp": true,
+        "security_options_sha256": "d22ed72cdd243f2108795cb92ffdb557ffa7edcf4acbea731570b77c757dd191",
+        "userns": false,
+        "version": "29.9.1"
+      }
+    }
+  ]
+}

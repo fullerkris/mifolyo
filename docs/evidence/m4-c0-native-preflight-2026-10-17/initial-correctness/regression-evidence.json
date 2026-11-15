@@ -1,0 +1,48 @@
+[
+  {
+    "control": "closed_pipes_then_late_exit",
+    "architecture": "x86_64",
+    "exception_type": "TimeoutExpired",
+    "exception": "Command '['/usr/bin/python3', '-B', '-c', 'import os, time; os.close(1); os.close(2); time.sleep(20)']' timed out after 0.4900996069991379 seconds",
+    "elapsed_seconds": 0.501761,
+    "returncodes": [
+      -9
+    ],
+    "local_children_reaped": true,
+    "fallback_cleanup_used": false,
+    "pipes_closed": true
+  },
+  {
+    "control": "closed_pipes_then_late_exit",
+    "architecture": "aarch64",
+    "exception_type": "TimeoutExpired",
+    "exception": "Command '['/usr/bin/python3', '-B', '-c', 'import os, time; os.close(1); os.close(2); time.sleep(20)']' timed out after 0.489402217004681 seconds",
+    "elapsed_seconds": 0.501807,
+    "returncodes": [
+      -9
+    ],
+    "local_children_reaped": true,
+    "fallback_cleanup_used": false,
+    "pipes_closed": true
+  },
+  {
+    "control": "valid_no_new_privileges",
+    "architecture": "x86_64",
+    "baseline_status": "HOST_CANDIDATE",
+    "status": "BLOCKED",
+    "blockers": [
+      "DOCKER_UNAVAILABLE"
+    ],
+    "docker_observation": null
+  },
+  {
+    "control": "valid_no_new_privileges",
+    "architecture": "aarch64",
+    "baseline_status": "HOST_CANDIDATE",
+    "status": "BLOCKED",
+    "blockers": [
+      "DOCKER_UNAVAILABLE"
+    ],
+    "docker_observation": null
+  }
+]

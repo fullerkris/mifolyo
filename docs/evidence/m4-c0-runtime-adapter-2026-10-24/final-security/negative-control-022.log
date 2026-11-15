@@ -1,0 +1,15 @@
+test_02_regression_clustered_help_must_be_rejected (__main__.OriginalGuardNegativeControl.test_02_regression_clustered_help_must_be_rejected) ... FAIL
+
+======================================================================
+FAIL: test_02_regression_clustered_help_must_be_rejected (__main__.OriginalGuardNegativeControl.test_02_regression_clustered_help_must_be_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/home/kfuller/Documents/Git_Projects/mifolyo/out/c0-runtime-adapter-2026-10-24/security-review/security_probes.py", line 191, in test_02_regression_clustered_help_must_be_rejected
+    self.assertTrue(all(v["rejected"] for v in observations), "clustered help reaches transport; Docker v29 help discovers plugins")
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : clustered help reaches transport; Docker v29 help discovers plugins
+
+----------------------------------------------------------------------
+Ran 1 test in 0.003s
+
+FAILED (failures=1)

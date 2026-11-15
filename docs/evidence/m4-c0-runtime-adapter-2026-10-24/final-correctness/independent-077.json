@@ -1,0 +1,96 @@
+{
+  "elapsed_seconds": 0.466998,
+  "errors": [],
+  "failures": [],
+  "kind": "independent_read_only_correctness_probes",
+  "limits": [
+    "No Docker, SSH, native actors, calibration or real daemon sockets invoked",
+    "Temporary config requests verified as /tmp but allocation redirected inside review directory",
+    "No proof of absent escaped descendants, all process groups, remote containers or native readiness"
+  ],
+  "observations": {
+    "config_allocation": {
+      "actual_dir_redirected_for_review": true,
+      "mode": "0700",
+      "present_until_reap": true,
+      "removed_after_close": true,
+      "requested_dir": "/tmp"
+    },
+    "dual_pipe_exact_cap": {
+      "code": 73,
+      "stderr_bytes": 131072,
+      "stdout_bytes": 131072
+    },
+    "orphan_witness": {
+      "all_descendants_absence_proven": false,
+      "leader_returncode": -15,
+      "witness_pipe_eof": true,
+      "witness_signal": 9
+    },
+    "signal_exit_returncode": -15,
+    "sticky_signal_failure": true,
+    "unexpected_endpoint_flag_spellings_admitted": [],
+    "unexpected_help_flags_admitted": []
+  },
+  "passed": [
+    "original_independent_controls_replayed.IndependentControls.test_01_dual_pipe_exact_combined_cap_and_nonzero_status",
+    "original_independent_controls_replayed.IndependentControls.test_02_natural_signal_exit_status_not_replaced_by_cleanup_kill",
+    "original_independent_controls_replayed.IndependentControls.test_03_intermittent_read_errors_do_not_drop_output",
+    "original_independent_controls_replayed.IndependentControls.test_04_command_spawn_failure_closes_preallocated_selector",
+    "original_independent_controls_replayed.IndependentControls.test_05_second_command_selector_registration_failure",
+    "original_independent_controls_replayed.IndependentControls.test_06_final_stream_pipe_setup_failure",
+    "original_independent_controls_replayed.IndependentControls.test_07_pre_spawn_command_deadline_closes_selector",
+    "original_independent_controls_replayed.IndependentControls.test_08_repeated_success_close_never_signals_reaped_pid",
+    "original_independent_controls_replayed.IndependentControls.test_09_group_signal_failure_is_sticky_after_real_reap",
+    "original_independent_controls_replayed.IndependentControls.test_10_wait_timeout_sticky_value_free_and_fds_closed",
+    "original_independent_controls_replayed.IndependentControls.test_11_raw_external_reap_refuses_stale_numeric_group_signal",
+    "original_independent_controls_replayed.IndependentControls.test_12_real_orphan_witness_killed_without_changing_leader_status",
+    "original_independent_controls_replayed.IndependentControls.test_13_actor_config_is_retained_through_group_cleanup",
+    "original_independent_controls_replayed.IndependentControls.test_14_actor_early_constructor_failures_remove_config",
+    "original_independent_controls_replayed.IndependentControls.test_15_actor_config_removed_on_postallocation_deadline",
+    "original_independent_controls_replayed.IndependentControls.test_16_simultaneous_actors_do_not_share_config_lifetimes",
+    "original_independent_controls_replayed.IndependentControls.test_17_real_factory_setup_error_normalized_without_private_text",
+    "original_independent_controls_replayed.IndependentControls.test_18_exact_metadata_projection_has_no_cli_dependency",
+    "original_independent_controls_replayed.IndependentControls.test_19_malformed_metadata_fail_closed_and_are_normalized",
+    "original_independent_controls_replayed.IndependentControls.test_20_clustered_help_flags_refused_by_closed_dispatch",
+    "original_independent_controls_replayed.IndependentControls.test_21_attached_endpoint_short_flags_refused_by_closed_dispatch",
+    "original_independent_controls_replayed.IndependentControls.test_22_repeated_mixed_failures_do_not_accumulate_descriptors",
+    "original_independent_controls_replayed.IndependentControls.test_23_stream_finish_retains_explicit_no_remote_or_group_proof"
+  ],
+  "probe_sha256": "f043f39f6a57a216405c5193dd8ff2ed6a864e8e3e86c7662e40e211591a571c",
+  "python": "3.14.8 (main, Oct  1 2026, 00:00:00) [GCC 16.2.1 20260819 (Red Hat 16.2.1-2)]",
+  "skipped": [],
+  "source_files": {
+    "docker_backend.py": "7a3aaaf2de8c3dd79f6b749dfbed00fcf35ed052d62dc20246bd66fe91d19e9c",
+    "local_process.py": "ad40d3fe4775bc2e01768b4a3c0d16b24776a74717d70e9e4e991ad29cb0700e",
+    "streams.py": "5892e07eaf0fba21c99c873489527a32f687c44dbcc4838a8adfb6f36d9b693d"
+  },
+  "started": [
+    "original_independent_controls_replayed.IndependentControls.test_01_dual_pipe_exact_combined_cap_and_nonzero_status",
+    "original_independent_controls_replayed.IndependentControls.test_02_natural_signal_exit_status_not_replaced_by_cleanup_kill",
+    "original_independent_controls_replayed.IndependentControls.test_03_intermittent_read_errors_do_not_drop_output",
+    "original_independent_controls_replayed.IndependentControls.test_04_command_spawn_failure_closes_preallocated_selector",
+    "original_independent_controls_replayed.IndependentControls.test_05_second_command_selector_registration_failure",
+    "original_independent_controls_replayed.IndependentControls.test_06_final_stream_pipe_setup_failure",
+    "original_independent_controls_replayed.IndependentControls.test_07_pre_spawn_command_deadline_closes_selector",
+    "original_independent_controls_replayed.IndependentControls.test_08_repeated_success_close_never_signals_reaped_pid",
+    "original_independent_controls_replayed.IndependentControls.test_09_group_signal_failure_is_sticky_after_real_reap",
+    "original_independent_controls_replayed.IndependentControls.test_10_wait_timeout_sticky_value_free_and_fds_closed",
+    "original_independent_controls_replayed.IndependentControls.test_11_raw_external_reap_refuses_stale_numeric_group_signal",
+    "original_independent_controls_replayed.IndependentControls.test_12_real_orphan_witness_killed_without_changing_leader_status",
+    "original_independent_controls_replayed.IndependentControls.test_13_actor_config_is_retained_through_group_cleanup",
+    "original_independent_controls_replayed.IndependentControls.test_14_actor_early_constructor_failures_remove_config",
+    "original_independent_controls_replayed.IndependentControls.test_15_actor_config_removed_on_postallocation_deadline",
+    "original_independent_controls_replayed.IndependentControls.test_16_simultaneous_actors_do_not_share_config_lifetimes",
+    "original_independent_controls_replayed.IndependentControls.test_17_real_factory_setup_error_normalized_without_private_text",
+    "original_independent_controls_replayed.IndependentControls.test_18_exact_metadata_projection_has_no_cli_dependency",
+    "original_independent_controls_replayed.IndependentControls.test_19_malformed_metadata_fail_closed_and_are_normalized",
+    "original_independent_controls_replayed.IndependentControls.test_20_clustered_help_flags_refused_by_closed_dispatch",
+    "original_independent_controls_replayed.IndependentControls.test_21_attached_endpoint_short_flags_refused_by_closed_dispatch",
+    "original_independent_controls_replayed.IndependentControls.test_22_repeated_mixed_failures_do_not_accumulate_descriptors",
+    "original_independent_controls_replayed.IndependentControls.test_23_stream_finish_retains_explicit_no_remote_or_group_proof"
+  ],
+  "status": "PASS",
+  "tests_run": 23,
+  "umask": "077"
+}

@@ -1,0 +1,195 @@
+{
+  "artifacts": {
+    "build_result.py": {
+      "bytes": 8423,
+      "sha256": "f4c3c1430698daa8651bb75549f3bca8f6c569ab7a7dcda1a753e485e98548f0"
+    },
+    "check_integrity.py": {
+      "bytes": 2642,
+      "sha256": "068a4fc859e86c1295353fbca93fdac94cbedebbf6cb555c45cc7a973df1eec1"
+    },
+    "integrity-after.json": {
+      "bytes": 86092,
+      "sha256": "5d9d89f2d5acc491ae80be9078af3ba75e4fd878bd90d8793bed84d4172d2f39"
+    },
+    "integrity-before.json": {
+      "bytes": 85996,
+      "sha256": "e7587b65425531816083db59d8740e2ff1cb5137e06e80db4e4833a6b45c9ecb"
+    },
+    "report.md": {
+      "bytes": 12074,
+      "sha256": "354da2ebc5ea696ff83127ea554a82a7e48d9784d44a96e640ddbc70381df19c"
+    },
+    "security-probes.json": {
+      "bytes": 3802,
+      "sha256": "59c5039a680395278878b7ad01a282d2233758bab3bf82468f1be9fe935fcbf1"
+    },
+    "security-probes.log": {
+      "bytes": 3231,
+      "sha256": "84936778de44a07cfc33340ea6be7847b329c90dd55e516deb67a559b8daa9a4"
+    },
+    "security_probes.py": {
+      "bytes": 27429,
+      "sha256": "7fd4d84ccb3a16efb1619452e2bae98d175f31dfcf477ab59b7cb21296c253a9"
+    },
+    "supplementary-probes.json": {
+      "bytes": 159122,
+      "sha256": "f64a446425fa6f39b09f7440b2ba2e7e25e11fde2014b2193f20ff9064062e2e"
+    },
+    "supplementary_probes.py": {
+      "bytes": 8038,
+      "sha256": "859ddd680469130369b61d696f50200e043e5b67465dccfe5e0a0b40fcb0b858"
+    },
+    "upstream-notes.md": {
+      "bytes": 4139,
+      "sha256": "a75e5733ebf9d3b398dfe340a725033a5f6390af3dd58a7951affcb8614df7b9"
+    }
+  },
+  "date": "2026-10-24",
+  "findings": [
+    {
+      "cvss": null,
+      "cvss_reason": "No deployed external attack path established; scoped hardening-contract defect rather than a scored production exploit.",
+      "cwe": "CWE-184",
+      "id": "SEC-01",
+      "impact": "A raw-argv caller can trigger installed plugin metadata execution rather than only an admitted builtin. Plugin compromise and caller reachability are additional prerequisites; no current RCE or authorization bypass is claimed.",
+      "location": "source/tests/crawl-jobs-v2-observer/docker_backend.py:39-53,104-107",
+      "product_fix_applied": false,
+      "proof": {
+        "also_accepted": [
+          "-hhh",
+          "-hh=true",
+          "-sh"
+        ],
+        "argv_tail": [
+          "container",
+          "inspect",
+          "-hh"
+        ],
+        "docker_or_plugin_execution_demonstrated": false,
+        "frozen_guard_reached_transport": true,
+        "no_untrusted_injection_path_found_through_current_typed_backend": true,
+        "regression": "SecurityChecks.test_02_regression_clustered_help_must_be_rejected",
+        "upstream_path": "Docker CLI v29.0.0 pflag -hh -> persistent help -> Cobra HelpFunc -> AddPluginCommandStubs -> ListPlugins -> candidate.Metadata exec"
+      },
+      "proposed_guard_focused_negative_forms": 8,
+      "proposed_guard_focused_safe_forms": 5,
+      "proposed_guard_simulated_backend_calls": 398,
+      "remediation": "Reject non-emitted single-dash tokens, allowing only the fixed oracle positional -I/-B tail after its image digest; retain current prefix/operation/long-flag gates. Exact copy-paste code in report.md; equivalent review-only control in security_probes.py corrected_guard.",
+      "severity": "Low",
+      "title": "Clustered shorthand help bypasses the closed-operation argument guard"
+    }
+  ],
+  "host": {
+    "assessment_path": "host-assessment.json",
+    "assessment_revalidated_over_ssh": false,
+    "assessment_sha256": "c7bf91276ff829c74f2e1978841267b2ce60120c5bcd8133f0eabf5548fb52bd",
+    "daemon_kernel_namespace_pairing_established": false,
+    "fresh_full_preflight": false,
+    "management_details_pending": true,
+    "native_arm64_deferred": true,
+    "replacement_vm_created": false,
+    "selected_x64_admitted": false
+  },
+  "independent_checks": {
+    "errors": 0,
+    "failed": 1,
+    "failure_is_retained_defect_regression": true,
+    "full_335_test_suite_rerun": false,
+    "group_escape_control_confirmed_scope_without_absence_claim": true,
+    "interpreter": "3.14.8 (main, Oct  1 2026, 00:00:00) [GCC 16.2.1 20260819 (Red Hat 16.2.1-2)]",
+    "passed": 14,
+    "probe_tests": 15,
+    "resource_warning_filter": "error::ResourceWarning",
+    "signal_disabled_mutation_control_detected_survivor": true,
+    "supplementary_call_shapes": "PASS",
+    "supplementary_factory_redaction": "PASS",
+    "supplementary_preservation": "PASS"
+  },
+  "kind": "c0_runtime_adapter_independent_read_only_security_review",
+  "preservation": {
+    "before_snapshot_copies_verified": 247,
+    "current_historical_evidence_files_matched": 190,
+    "head_independently_rechecked_with_git": false,
+    "initial_targeted_failure_retained": {
+      "cause": "fixture expected arm64 but default x64 reports amd64",
+      "corrected_targeted_passes": 17,
+      "failures": 1,
+      "tests": 17
+    },
+    "new_test_ids": 17,
+    "preexisting_candidate_paths_recorded": 199,
+    "prior_test_ids_retained": 318,
+    "seven_false_native_additions_not_treated_as_changes": true,
+    "seven_native_hashes_match_prior_test_and_corrected_inventory": true,
+    "supplemental_prior_report": {
+      "bytes": 107792,
+      "sha256": "2113de12e8e359b884e9d1ac7e884866663d1bcced51f1680aa93c63f5dee6bf"
+    },
+    "supplied_test_report_passes": {
+      "022": 335,
+      "077": 335
+    }
+  },
+  "reason": "SEC-01: clustered short help flags bypass the newly claimed closed CLI argument guard; small remediation required, no broader redesign requested.",
+  "remaining_obligations": [
+    "SEC-01 regression and guard fix, offline gates and new immutable packet",
+    "Future host/provider selection and independently approved host preflight",
+    "Installed CLI binary/version admission and native runtime proof",
+    "Daemon/collector namespace pairing and independent remote cleanup proof",
+    "Native calibration and full-runner certification are not supplied"
+  ],
+  "reviewed_packet": {
+    "after_sha256": "ef5134712918c3b705b6076f6367ff044a669237a7d47632cc677093c3814ccf",
+    "authoritative_inventory": "source-inventory-corrected.json",
+    "before_sha256": "ef5134712918c3b705b6076f6367ff044a669237a7d47632cc677093c3814ccf",
+    "bound_files_unchanged": true,
+    "bound_files_verified_before_and_after": 329,
+    "changed_paths": {
+      "tests/crawl-jobs-v2-observer/docker_backend.py": {
+        "after": "8ceef501710ab69609d349d072d377a83fea0cf5f2377f05076114ef7fc0c130",
+        "before": "51cf4ad679a961d5b7631af1769216dc0300e740228ce8d7cf2423ed7373ebcf"
+      },
+      "tests/crawl-jobs-v2-observer/local_process.py": {
+        "after": "ad40d3fe4775bc2e01768b4a3c0d16b24776a74717d70e9e4e991ad29cb0700e",
+        "before": null
+      },
+      "tests/crawl-jobs-v2-observer/streams.py": {
+        "after": "5892e07eaf0fba21c99c873489527a32f687c44dbcc4838a8adfb6f36d9b693d",
+        "before": "85f8d1b16a84462f1defe641cb2c75879fe356928c7497b06628f86d2f599cbd"
+      },
+      "tests/crawl-jobs-v2-observer/test_live_adapter.py": {
+        "after": "cca3e563824e701e4e5b2e8548334c3aeee50c7b2d161f23a2a7fd9ea1690ea1",
+        "before": null
+      },
+      "tests/crawl-jobs-v2-observer/test_owned_resources.py": {
+        "after": "9c956de3a0499a881efc007ab56fbe00870bfb215c137a3272514bda9c03a31a",
+        "before": "e8b7d53c1c6081a095a116beca16680c85b35dca66249ef830f0146304cc41ab"
+      }
+    },
+    "current_source_matches_snapshot_and_unchanged": true,
+    "expected_sha256": "ef5134712918c3b705b6076f6367ff044a669237a7d47632cc677093c3814ccf",
+    "path": "out/c0-runtime-adapter-2026-10-24/review-inputs-corrected.json",
+    "source_files_verified_before_and_after": 63
+  },
+  "scope": {
+    "calibration_performed": false,
+    "docker_executed": false,
+    "execution_authorized": false,
+    "frozen_inputs_changed": false,
+    "git_commands_executed": false,
+    "local_docker_binary_present": false,
+    "native_actors_executed": false,
+    "native_or_full_runner_certification": false,
+    "other_agents_invoked": false,
+    "probe_scratch_directory_empty": true,
+    "process_local_subreaper_used_only_for_inert_probe_cleanup": true,
+    "product_source_changed": false,
+    "public_documentation_https_used": true,
+    "remote_host_access": false,
+    "temporary_config_requests_redirected_to_review": true,
+    "write_boundary": "out/c0-runtime-adapter-2026-10-24/security-review/"
+  },
+  "verdict": "NEEDS_REMEDIATION",
+  "version": 1
+}

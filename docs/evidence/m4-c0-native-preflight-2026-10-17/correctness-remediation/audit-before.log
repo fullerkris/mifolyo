@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/tmp/opencode/c0-native-preflight-2026-10-17/correctness-final/audit_snapshot.py", line 128, in <module>
+    main()
+    ~~~~^^
+  File "/tmp/opencode/c0-native-preflight-2026-10-17/correctness-final/audit_snapshot.py", line 92, in main
+    assert sorted(log_passed) == sorted(tests['inventory'])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

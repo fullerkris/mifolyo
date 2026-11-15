@@ -160,6 +160,54 @@ name collisions. The dependency model uses RUNPATH precedence, resolves director
 links and refuses active legacy RPATH or ambiguous library candidates; dynamic
 loader execution and broader loader search behavior remain native acceptance work.
 
+### Native host preflight (C0-ARCH-05)
+
+Run on each proposed **native** Linux host, with the same local Docker endpoint
+used by the runtime adapter:
+
+```sh
+python3 -B scripts/preflight-crawl-jobs-v2-native-host.py --architecture x86_64
+python3 -B scripts/preflight-crawl-jobs-v2-native-host.py --architecture aarch64
+```
+
+Choose the matching architecture; emulated construction cannot supply native
+acceptance. The preflight reads fixed Linux observations and public collector-path
+metadata. Its plugin-free `engine_metadata.py` transport permits only HTTP
+`GET /info` and `GET /version` through `/var/run/docker.sock`. It does not launch
+the Docker CLI, read client config/credential files, inherit proxy/header settings,
+resolve DNS or start subprocesses. Kernel and selected daemon observations are
+sampled twice.
+
+HTTP headers are capped at 8 KiB / 64 fields, the private response body at 256 KiB,
+and total wire data/chunk count are bounded under a shared deadline. Content-length,
+simple chunked and close-delimited JSON responses are supported. Ambiguous framing,
+redirects, compression, trailers, extra data and incomplete/late closure reject.
+Unselected API fields (including possible proxy configuration) are discarded in
+memory; only checked selected metadata is exported. No raw response/error body is
+logged. Socket closure covers successful and failed reads; no child/plugin process
+tree is created.
+
+The bounded JSON report retains unavailable observations and known blockers:
+non-native ABI, changed kernel/daemon identity, nonzero Yama scope, missing cgroup
+controllers/limits, unsupported confinement or namespace mapping, missing local
+Docker socket and absent collector paths. A Docker CLI installation is unnecessary
+for this metadata probe. It never falls back to Podman or another
+endpoint. Collector-path presence is only `PRESENT_UNVERIFIED`; it does not prove
+installation, permissions, source integrity, service identity or authentication.
+
+Exit 1 means `BLOCKED`. Exit 0 means only `HOST_CANDIDATE`, with explicit pending
+obligations and `host_admitted=false`, `execution_authorized=false`,
+`runtime_evidence=false`. Matching architecture/kernel-release metadata does not
+prove daemon/collector kernel and namespace placement. Live image/actor admission,
+whole-trial confinement, hardware breakpoints, timing, failure cases and independent
+cleanup remain required. Injected probes are labelled simulated.
+
+The first owner-selected `moogle-main` discovery found native x64, Docker 29.9.1
+and cgroup v2, but Yama `ptrace_scope=1` and absent collector paths block the
+unchanged C0 profile. The existing design forbids changing policy or establishing
+`PR_SET_PTRACER`/parentage exceptions to manufacture C0 equivalence. See the
+[host checkpoint](../../docs/crawl-jobs-v2-m4-c0-native-preflight-2026-10-17.md).
+
 ## Implemented artifact components
 
 - `contracts.py`: fixed 276-trial C0 registry, immutable preparation identities,

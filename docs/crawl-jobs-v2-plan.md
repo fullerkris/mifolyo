@@ -2,11 +2,11 @@
 
 **Finding:** F3 - durable crawl-job leases and recovery
 
-**Last updated:** 2026-10-17 (C0-ARCH-03 PR #30 merged as `82cd307` with exact main CI verified; C0-ARCH-04 local source/static-image preparation complete: 288 tests, six verified images, two independent GO verdicts and all findings closed; publication/native hosted image CI next)
+**Last updated:** 2026-10-24 (live-adapter hardening complete: 338 tests under both umasks, both final reviewers GO, R1/SEC-01 closed; PR #32 merged/main images independently verified; dedicated sibling x64 VM awaits provider/hypervisor details; native ARM64 calibration deferred)
 
-**Code baseline:** owner-merged PR #30 at `82cd307` preserves the published `7ef2041` tree and all 51 reviewed source files. Exact PR and actual main CI pass 14 contexts / 23 jobs and 256 C0 tests; main gate `fa674a60…`. The working C0-ARCH-04 branch retains the equivalent reviewed PR base
+**Code baseline:** owner-merged PR #32 at `e8a0a415ac2b370319cd57f4c5262ce616a536fb`, tree `aaf57fc74e5799d1b5d21f58cce18747623a7676`, matching final PR head `1e65944`. Actual main CI passes all 25 jobs on attempt 1. Its 55 C0 image-package files and three auxiliary files match the final reviewed image inventory. Original C0-ARCH-04 publication `babb218` and PR #30 merge `82cd307` retain their historical evidence.
 
-**Working branch:** `feature/crawl-jobs-v2-c0-runtime-images`, based at `7ef2041`; C0-ARCH-04 image tooling and successor evidence are local/uncommitted
+**Working branch:** `feature/crawl-jobs-v2-c0-native-calibration`, synchronized to `e8a0a41`; C0-ARCH-05 host-preflight/adapter changes and updated evidence remain local/uncommitted. The original reviewed preflight checkpoint remains bound to `babb218`.
 
 **Initial checkpoint:** `e4372a66201b8767bcca4d7476c30c5b7999922c`
 
@@ -17,8 +17,38 @@ All 43 canonical operations and the sealed, zero-argument
 bounded real-Redis `ledger-smoke-v1` and `ledger-claim-release-v1` cases pass;
 full M4 acceptance is open.
 
-**Current next gate:** source publication and native hosted image CI for the reviewed
-[C0-ARCH-04 runtime image sets](crawl-jobs-v2-m4-c0-runtime-images-2026-10-17.md).
+**Current next gate:** obtain actual provider/project or hypervisor SSH
+details for a dedicated sibling x64 VM, then complete C0-ARCH-05 execution assembly.
+Post-merge artifact verification and independent
+correctness/security review are complete, with both reviewers GO and no findings. The
+[plugin-free host preflight](crawl-jobs-v2-m4-c0-native-preflight-2026-10-17.md)
+passed **318 tests under umasks 022/077 after synchronization**, preserving that
+reviewed source snapshot and both GO verdicts; COR-01/02 and S1/S2/S3 are
+closed for this increment. Final gate `2e91337e…`, reviewed inventory `faf8d794…`.
+Owner-selected read-only `moogle-main` discovery found native x64 / Docker 29.9.1 /
+cgroup v2, but Yama scope 1 blocks unchanged C0 sibling tracing and the collector
+is absent. Fresh 2026-10-24 SSH discovery confirms Yama 1 and missing collector,
+with kernel now `6.8.0-147-generic`. The selected server is a KVM guest without
+`/dev/kvm`, vmx/svm flags or VM tooling. The owner chose a dedicated x64 VM and
+providing upstream management details; the actual provider/project or hypervisor
+profile remains awaited. Effective account remains `moogleMain`.
+**Native ARM64 host selection/calibration is deferred by owner on 2026-10-22**;
+x64 preparation proceeds first. [Live-adapter isolation/lifecycle hardening](evidence/m4-c0-runtime-adapter-2026-10-24/README.md)
+is implemented: plugin-free metadata, private CLI configuration/environment and
+kill-before-reap cleanup; **338 tests pass under both umasks** after fixing the
+short-option gap found by both reviewers. Both final reviewers return **GO**, with
+**R1/SEC-01 closed** and no new findings; correctness passes 62 independent test
+executions, security 13 checks per umask. The scoped adapter gate is `1dc21c01…`.
+Collector/image admission, full dispatch/confinement/timing/cleanup
+and calibration remain open.
+The [C0-ARCH-04 runtime image sets](crawl-jobs-v2-m4-c0-runtime-images-2026-10-17.md)
+are merged through PR #32 as `e8a0a41`. Exact merged-main CI passed 25/25 jobs;
+both downloaded artifact ZIPs match GitHub digests, both hosted 288-test reports
+match the exact source, and all six image contents replay successfully. Their
+stable build artifacts and payloads match the reviewed local images; 122 command
+logs and ten stopped-container cleanup records verify. Both independent reviewers
+return GO on this [post-merge verification](evidence/m4-c0-post-merge-2026-10-24/README.md),
+gate `80a18b438747e0f51b687e5f3da1ccefb73a05e952cc7584e8aee7337536123b`.
 All six retained role images pass final-code static inspection and portable-archive
 checks with byte-identical content records; 55 package + 3 auxiliary files pass
 288 tests under both umasks. Both independent reviewers return GO, with all
@@ -150,8 +180,8 @@ while binding architecture-specific code, profiles, images and evidence.
 | C0-ARCH-01 | Reconstruct and review the existing ARM64 artifacts using rootless Podman/QEMU on the x64 workstation | Complete: 11/11 native outputs and oracle manifest/interpreter match; both reviewers verify actual joins. Transport-source follow-ups are independently closed on the corrected 202-test snapshot |
 | C0-ARCH-02 | Define explicit architecture selection and artifact/admission identities | Complete: owner-merged PR #26 at `d801646`; exact reviewed tree and 47-file / 238-test source inventory preserved. Exact PR and actual main CI: 14 contexts / 23 jobs on attempt 1; main gate `e11f449a…` |
 | C0-ARCH-03 | Implement the x64 native runtime and context/oracle support | Complete: PR #30 owner-merged as `82cd307`, published tree preserved, 51 reviewed files / 256 tests, exact 14-context / 23-job PR and merged-main CI verified; main gate `fa674a60…` |
-| C0-ARCH-04 | Build target/observer/oracle runtime images for both architectures | Local source/static-image preparation complete: 55 package + 3 auxiliary files / 288 tests under both umasks, six verified portable images, two independent GO verdicts and all findings closed. Ten stopped inspections cleaned; final artifacts/tooling durably retained. Gate `8be6ba0d…`; source publication and native hosted matrix verification pending |
-| C0-ARCH-05 | Perform native runtime admission and calibration for each architecture | Planned: admitted ARM64 and x64 Linux environments with verified context-source placement, engine/backend compatibility, tracing/breakpoint, confinement, timing and cleanup evidence for each variant |
+| C0-ARCH-04 | Build target/observer/oracle runtime images for both architectures | Complete for source/static images and hosted evidence: PR #32 merged as `e8a0a41`; 25/25 actual main jobs passed. Original 55+3-file / 288-test source and gate `8be6ba0d…` preserved. Both downloaded ZIPs, source-bound reports and all six image/config/layer/content records independently verified; two post-merge GO verdicts, no findings, gate `80a18b43…` |
+| C0-ARCH-05 | Perform native runtime admission and calibration for each architecture | Local adapter gate `1dc21c01…` complete: 338 tests under both umasks, both final reviewers GO, R1/SEC-01 closed; all historical evidence preserved. Fresh x64 assessment: Yama 1, collector absent, current KVM guest lacks nested virtualization. Owner-selected dedicated sibling VM awaits actual provider/project or hypervisor SSH details. Installed CLI/collector/image admission, execution assembly and native calibration remain open; native ARM64 deferred |
 | C0-ARCH-06 | Publish the accepted dual-architecture runtime set | Planned: retain separate immutable platform digests and acceptance records; publish a multi-architecture image index only after both referenced variants pass their required gates |
 
 QEMU-assisted builds establish artifact construction, not native ARM64 kernel,
@@ -170,8 +200,8 @@ version bindings; the old cancellation inventory is not a new security-fix revie
 The [October 22 certificate-validation follow-up](go-x509-security-2026-10-22.md)
 advances the current Go toolchain and exact oracle pins to **1.26.10** for
 GO-2026-6809. Offline regeneration preserves the sealed Unicode oracle/data
-hashes; all six URL/Unicode race-test roots pass. Fresh exact-head hosted CI
-verification remains pending.
+hashes; all six URL/Unicode race-test roots pass. Actual merged-main CI is now
+verified at `e8a0a41`: all 25 jobs passed on attempt 1, as recorded above.
 
 PR #18 result publication `c8c5ee2`, squash merge `d3b241e` and exact merged-main CI
 are **complete**. The merge has the same tree as the reviewed PR head. See the

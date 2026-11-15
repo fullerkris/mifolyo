@@ -1,0 +1,82 @@
+--- initial/tests/crawl-jobs-v2-observer/docker_backend.py
++++ remediated/tests/crawl-jobs-v2-observer/docker_backend.py
+@@ -43,6 +43,16 @@
+     args = argv[3:]
+     forbidden = {"--help", "-h", "help", "__complete", "__completeNoDesc", "--config", "--context", "-c", "--host", "-H"}
+     require(not any(item.split("=", 1)[0] in forbidden for item in args), "DOCKER_ARGV")
++    # Docker's parser accepts clustered/attached short options (-hh, -Dh, -H...).
++    # Our generated CLI options are all long. Only the oracle's fixed positional
++    # interpreter tail uses short options, after its entrypoint and image ID.
++    flag_args = args
++    if (not actor and args[:2] == ["container", "create"] and len(args) >= 8 and
++            args[-6:-4] == ["--entrypoint", "python3"] and args[-3:] == ["-I", "-B", "/oracle/worker.py"]):
++        require(args[-4].startswith("sha256:"), "DOCKER_ARGV")
++        digest(args[-4][7:])
++        flag_args = args[:-3]
++    require(not any(item.startswith("-") and not item.startswith("--") for item in flag_args), "DOCKER_ARGV")
+     if actor:
+         require(len(args) == 5 and args[:4] == ["container", "start", "--attach", "--interactive"], "DOCKER_ARGV")
+         hex_id(args[-1])
+--- initial/tests/crawl-jobs-v2-observer/test_live_adapter.py
++++ remediated/tests/crawl-jobs-v2-observer/test_live_adapter.py
+@@ -20,6 +20,9 @@
+ from streams import Deadline, ProcessStream, WireBudget
+ from test_host_preflight import FixtureProbe
+ from test_streams import binding
++from test_owned_resources import DAEMON, fixture_scope
++from owned_resources import ACTORS, container_spec
++from profiles import profile
+ 
+ PYTHON = [sys.executable, "-I", "-B", "-c"]
+ 
+@@ -129,6 +132,50 @@
+                 binding(), WireBudget(), Deadline(2))
+         self.assertFalse(Path(calls[0][1]["env"]["DOCKER_CONFIG"]).exists())
+         self.assertIsNotNone(owned[0].returncode)
++
++    def test_clustered_help_and_attached_short_overrides_refuse_before_side_effects(self):
++        for token in ("-hh", "-hhh", "-hh=true", "-Dh", "-hD", "-sh", "-Hunix:///unused.sock", "-cunused"):
++            with self.subTest(token=token), patch.object(db, "verify_cli", side_effect=AssertionError("binary touched")), \
++                    patch.object(db.tempfile, "TemporaryDirectory", side_effect=AssertionError("config allocated")), \
++                    patch.object(db.subprocess, "Popen", side_effect=AssertionError("child spawned")), \
++                    self.assertRaisesRegex(c.Invalid, "DOCKER_ARGV"):
++                db.command([*db.PREFIX, "container", "inspect", "a" * 64, token], Deadline(1))
++
++    def test_short_option_exception_requires_exact_oracle_entrypoint_image_and_tail(self):
++        tail = ["--entrypoint", "python3", "sha256:" + "a" * 64, "-I", "-B", "/oracle/worker.py"]
++        bad = [tail[:-1], tail + ["-hh"], [*tail[:3], "-IB", tail[-1]],
++               [tail[0], "/other", *tail[2:]], [*tail[:2], "image:latest", *tail[3:]],
++               [*tail[:2], "sha256:" + "0" * 64, *tail[3:]], ["-hh", *tail],
++               [*tail[:3], "-I", "-h", tail[-1]], [*tail[:3], "-I", "-B", "/other"]]
++        for suffix in bad:
++            with self.subTest(suffix=suffix), self.assertRaises(c.Invalid):
++                db.cli_arguments([*db.PREFIX, "container", "create", *suffix])
++        with self.assertRaises(c.Invalid):
++            db.cli_arguments([*db.PREFIX, "container", "inspect", *tail])
++
++    def test_generated_oracle_create_remains_accepted_for_both_architectures(self):
++        for architecture in ("aarch64", "x86_64"):
++            with self.subTest(architecture=architecture), tempfile.TemporaryDirectory() as folder:
++                value = fixture_scope(architecture=architecture)
++                arch = c.runtime_architecture(architecture)["image_architecture"]
++                calls = []
++                def runner(argv, _):
++                    calls.append(argv)
++                    if argv[3] == "info":
++                        return 0, DAEMON, b""
++                    if argv[3] == "version":
++                        return 0, c.canonical({"Os": "linux", "Arch": arch}), b""
++                    db.cli_arguments(argv)
++                    if argv[3:5] == ["image", "inspect"]:
++                        return 0, c.canonical([{"Id": value["images"]["oracle"], "Os": "linux", "Architecture": arch,
++                            "Config": {"Env": [], "OnBuild": None, "Volumes": None}}]), b""
++                    return 0, b"a" * 64, b""
++                paths = {role: Path(folder) / (role + ".json") for role in ACTORS}
++                for role, path in paths.items():
++                    path.write_bytes(c.canonical(profile(role, architecture)))
++                backend = db.DockerBackend(value, paths, runner=runner, authorize=lambda *_: True)
++                self.assertEqual(backend.create_container(container_spec(value, "oracle"), Deadline(2)), "a" * 64)
++                self.assertEqual(calls[-1][-6:], ["--entrypoint", "python3", value["images"]["oracle"], "-I", "-B", "/oracle/worker.py"])
+ 
+     def test_binary_requires_root_owned_native_nonwritable_regular_file(self):
+         with tempfile.TemporaryDirectory() as folder:

@@ -1,0 +1,46 @@
+{
+  "broad_suite_reexecuted": false,
+  "discovered_tests": 338,
+  "docker_backend_changed_ast_nodes": [
+    "cli_arguments"
+  ],
+  "historical_report": {
+    "binding": "Supplemental read-only baseline; new packet already binds the original review's prior cross-check",
+    "bytes": 107792,
+    "path": "out/c0-main-sync-2026-10-24/tests-022.json",
+    "sha256": "2113de12e8e359b884e9d1ac7e884866663d1bcced51f1680aa93c63f5dee6bf"
+  },
+  "historical_tests_retained": 318,
+  "initial_tests_retained": 335,
+  "lifecycle_source_unchanged": {
+    "local_process.py": true,
+    "streams.py": true
+  },
+  "new_tests_since_initial_review": [
+    "test_live_adapter.ConfigurationTests.test_clustered_help_and_attached_short_overrides_refuse_before_side_effects",
+    "test_live_adapter.ConfigurationTests.test_generated_oracle_create_remains_accepted_for_both_architectures",
+    "test_live_adapter.ConfigurationTests.test_short_option_exception_requires_exact_oracle_entrypoint_image_and_tail"
+  ],
+  "original_live_adapter_test_methods_preserved_verbatim_ast": 17,
+  "pass": true,
+  "reports": {
+    "tests-022.json": {
+      "all_package_and_runner_hashes_match": true,
+      "bytes": 114341,
+      "inventory_matches_fresh_discovery": true,
+      "sha256": "609faeab7e54f9b543957aae8922b2442be6fa3234a111d6a6e1113fa72ba4b0",
+      "status": "PASS",
+      "tests_run": 338
+    },
+    "tests-077.json": {
+      "all_package_and_runner_hashes_match": true,
+      "bytes": 114341,
+      "inventory_matches_fresh_discovery": true,
+      "sha256": "609faeab7e54f9b543957aae8922b2442be6fa3234a111d6a6e1113fa72ba4b0",
+      "status": "PASS",
+      "tests_run": 338
+    }
+  },
+  "source_package_files": 61,
+  "total_new_since_historical": 20
+}

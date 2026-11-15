@@ -1,0 +1,21 @@
+test_both_architectures_are_candidates_never_admission (test_host_preflight.HostPreflightTests.test_both_architectures_are_candidates_never_admission) ... ok
+test_changed_host_and_daemon_cannot_be_candidates (test_host_preflight.HostPreflightTests.test_changed_host_and_daemon_cannot_be_candidates) ... ok
+test_cli_refusal_is_structured_and_nonzero (test_host_preflight.HostPreflightTests.test_cli_refusal_is_structured_and_nonzero) ... ok
+test_documented_no_new_privileges_metadata_preserves_other_checks (test_host_preflight.HostPreflightTests.test_documented_no_new_privileges_metadata_preserves_other_checks) ... ok
+test_fixed_docker_reads_exclude_unselected_metadata (test_host_preflight.HostPreflightTests.test_fixed_docker_reads_exclude_unselected_metadata) ... ok
+test_foreign_daemon_architecture_or_kernel_rejects (test_host_preflight.HostPreflightTests.test_foreign_daemon_architecture_or_kernel_rejects) ... ok
+test_limits_confinement_and_namespace_mapping_blockers (test_host_preflight.HostPreflightTests.test_limits_confinement_and_namespace_mapping_blockers) ... ok
+test_metadata_bound_duplicates_numbers_and_trailing_data (test_host_preflight.HostPreflightTests.test_metadata_bound_duplicates_numbers_and_trailing_data) ... ok
+test_missing_collector_does_not_issue_an_anchor (test_host_preflight.HostPreflightTests.test_missing_collector_does_not_issue_an_anchor) ... ok
+test_missing_docker_endpoint_is_not_a_podman_fallback (test_host_preflight.HostPreflightTests.test_missing_docker_endpoint_is_not_a_podman_fallback) ... ok
+test_transport_errors_stderr_and_deadline_fail_closed (test_host_preflight.HostPreflightTests.test_transport_errors_stderr_and_deadline_fail_closed) ... ok
+test_typed_metadata_no_coercion_or_unknown_fields (test_host_preflight.HostPreflightTests.test_typed_metadata_no_coercion_or_unknown_fields) ... ok
+test_unavailable_observations_are_value_free_and_not_skipped (test_host_preflight.HostPreflightTests.test_unavailable_observations_are_value_free_and_not_skipped) ... ok
+test_wait_timeouts_keep_json_refusal_and_reap_benign_children (test_host_preflight.HostPreflightTests.test_wait_timeouts_keep_json_refusal_and_reap_benign_children) ... ok
+test_wrong_native_platform_prevents_docker_queries (test_host_preflight.HostPreflightTests.test_wrong_native_platform_prevents_docker_queries) ... ok
+test_yama_restrictions_are_blockers_for_both_architectures (test_host_preflight.HostPreflightTests.test_yama_restrictions_are_blockers_for_both_architectures) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 2.019s
+
+OK

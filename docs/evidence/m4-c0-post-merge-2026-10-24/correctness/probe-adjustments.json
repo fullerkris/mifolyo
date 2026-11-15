@@ -1,0 +1,10 @@
+{
+  "kind": "review_probe_harness_correction",
+  "initial_probe_sha256": "98eeac1113b8f2c42cfa34d0bd537ed8c3bffb271f1af6839fcee9b592fba7aa",
+  "initial_log": "image-checks.log",
+  "initial_log_sha256": "2fabb75b7337d8ad77eef556229e6a35393bff6696b025aa1c5d567a61908ba8",
+  "reason": "The initial wrong-config-ID negative control supplied an all-zero digest. The reviewed verifier correctly rejected that earlier with DIGEST rather than the control's expected IMAGE_SAVE_CONFIG.",
+  "correction": "Changed only that negative fixture's expected image ID from 64 zeroes to 64 f characters, a syntactically valid but incorrect digest, to reach the intended config-identity check.",
+  "product_or_retained_input_changes": false,
+  "initial_failure_retained": true
+}

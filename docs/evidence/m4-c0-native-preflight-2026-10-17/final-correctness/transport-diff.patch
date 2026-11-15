@@ -1,0 +1,731 @@
+--- intermediate/docs/crawl-jobs-v2-m4-c0-native-preflight-2026-10-17.md
++++ transport/docs/crawl-jobs-v2-m4-c0-native-preflight-2026-10-17.md
+@@ -41,16 +41,23 @@
+ - `tests/crawl-jobs-v2-observer/host_preflight.py`: bounded, read-only observations
+   for either explicit native architecture, selected local Docker metadata,
+   before/after stability checks and value-free blockers.
++- `tests/crawl-jobs-v2-observer/engine_metadata.py`: fixed Unix-socket HTTP GET
++  reader, with bounded headers/body/chunks/time and deterministic socket closure;
++  no Docker CLI/config/plugin/subprocess path.
+ - `scripts/preflight-crawl-jobs-v2-native-host.py`: JSON/exit-status CLI.
+ - `tests/crawl-jobs-v2-observer/test_host_preflight.py`: both-platform controls,
+   Yama/resource/namespace/collector failures, drift, bounds, typed parsing,
+   command allowlisting, deadlines and diagnostic leakage checks.
++- `tests/crawl-jobs-v2-observer/test_engine_metadata.py`: protocol framing/bounds,
++  real owned socket timeout/EOF controls and ambient config/plugin canaries.
+ 
+ The result is `BLOCKED` or `HOST_CANDIDATE`; neither is execution approval or
+ runtime admission. A candidate retains explicit pending obligations. Public
+-collector-path presence is not source/config/permission/SSH validation. No
+-collector keys, Docker proxy configuration or arbitrary diagnostics are collected.
+-No preflight observation populates a trusted context anchor or filter count.
++collector-path presence is not source/config/permission/SSH validation. Collector
++keys and client credential/config files are never opened. The bounded Engine API
++body is parsed privately and unselected fields, including possible proxy settings,
++are discarded without export. No preflight observation populates a trusted context
++anchor or filter count.
+ 
+ ## Verification and retained evidence
+ 
+@@ -86,9 +93,37 @@
+   Duplicate names, arbitrary hyphenated names and rootless/userns incompatibility
+   still reject. This metadata default matches C0's existing NNP requirement.
+ 
+-The focused remediation suite passes **16/16 tests**. Initial review result:
++The first correctness-remediation suite passed **16/16 focused and 304/304 full
++tests**. Its independent re-review closed COR-01/02 with a scoped GO on inventory
++`4046bd7f3604bdf51ddd50e159a41c394ec9c55e4715cbbfef69e54d2e743ba6`.
++This intermediate GO does not certify the later replacement transport. Initial review result:
+ `bdbf3995200eb89eec734ce4de40c668b9193259c4c9fd55785101b73d2e9273`.
+-Full revised-suite verification and final independent verdicts are pending.
++
++### Security remediation — plugin-free transport
++
++The initial security review returned **NEEDS_REMEDIATION** with three findings:
++
++- **S1:** Docker CLI startup can read ambient config/credentials and execute
++  plugins even for projected `info` output.
++- **S2:** the same closed-pipe timeout gap as COR-01.
++- **S3:** the shared CLI runner can leave a same-group descendant running after
++  normal return. The review reproduced this using an owned benign sleeper, then
++  independently terminated it; no Docker plugin was executed by the reviewer.
++
++The preflight now uses a fixed AF_UNIX HTTP reader. Only GET info/version are
++possible; no CLI/plugin/config discovery, environment overrides, DNS or subprocess
++exists on this path. Every socket operation uses the remaining shared deadline;
++HTTP framing, headers (8 KiB / 64), body (256 KiB), wire bytes and chunks are bounded.
++All transport failures are value-free and all owned sockets close. This removes
++the subprocess timeout/descendant path from preflight; the existing runtime
++adapter is unchanged and its CLI environment/lifecycle boundary remains a future
++execution-assembly review concern.
++
++The original failed security controls and corrected overstrict reviewer JSON
++control are retained unchanged. Initial SSH CLI discovery remains historical;
++its implicit client/plugin behavior was not attested. No new remote CLI discovery
++is performed after this finding. The revised focused suite passes **30/30**;
++full final-source verification and both independent final reviews are pending.
+ 
+ ## Remaining C0-ARCH-05 work
+ 
+--- intermediate/tests/crawl-jobs-v2-observer/README.md
++++ transport/tests/crawl-jobs-v2-observer/README.md
+@@ -172,15 +172,26 @@
+ 
+ Choose the matching architecture; emulated construction cannot supply native
+ acceptance. The preflight reads fixed Linux observations and public collector-path
+-metadata, and queries only `/usr/bin/docker --host unix:///var/run/docker.sock`
+-`info`/`version`. Docker output is projected to selected fields before collection;
+-full info (which may include proxy credentials), credentials and raw error text
+-are not exported. Kernel and selected daemon observations are sampled twice.
++metadata. Its plugin-free `engine_metadata.py` transport permits only HTTP
++`GET /info` and `GET /version` through `/var/run/docker.sock`. It does not launch
++the Docker CLI, read client config/credential files, inherit proxy/header settings,
++resolve DNS or start subprocesses. Kernel and selected daemon observations are
++sampled twice.
++
++HTTP headers are capped at 8 KiB / 64 fields, the private response body at 256 KiB,
++and total wire data/chunk count are bounded under a shared deadline. Content-length,
++simple chunked and close-delimited JSON responses are supported. Ambiguous framing,
++redirects, compression, trailers, extra data and incomplete/late closure reject.
++Unselected API fields (including possible proxy configuration) are discarded in
++memory; only checked selected metadata is exported. No raw response/error body is
++logged. Socket closure covers successful and failed reads; no child/plugin process
++tree is created.
+ 
+ The bounded JSON report retains unavailable observations and known blockers:
+ non-native ABI, changed kernel/daemon identity, nonzero Yama scope, missing cgroup
+ controllers/limits, unsupported confinement or namespace mapping, missing local
+-Docker and absent collector paths. It never falls back to Podman or another
++Docker socket and absent collector paths. A Docker CLI installation is unnecessary
++for this metadata probe. It never falls back to Podman or another
+ endpoint. Collector-path presence is only `PRESENT_UNVERIFIED`; it does not prove
+ installation, permissions, source integrity, service identity or authentication.
+ 
+--- intermediate/tests/crawl-jobs-v2-observer/engine_metadata.py
++++ transport/tests/crawl-jobs-v2-observer/engine_metadata.py
+@@ -0,0 +1,127 @@
++"""Plugin-free, read-only Docker metadata at one fixed local Unix socket.
++
++No CLI, client configuration, environment proxy, authentication or subprocess.
++The response body stays private; callers export only checked selected fields.
++"""
++import re
++import socket
++
++from contracts import Invalid, require
++
++ENGINE_SOCKET = "/var/run/docker.sock"
++MAX_HEADERS = 8192
++MAX_BODY = 262144
++MAX_WIRE = MAX_HEADERS + MAX_BODY + 65536
++MAX_CHUNKS = 4096
++
++
++class Response:
++    def __init__(self, connection, deadline):
++        self.connection, self.deadline = connection, deadline
++        self.pending = bytearray()
++        self.wire = 0
++
++    def receive(self):
++        self.connection.settimeout(self.deadline.remaining())
++        raw = self.connection.recv(4096)
++        self.deadline.check()
++        self.wire += len(raw)
++        require(self.wire <= MAX_WIRE, "ENGINE_WIRE_BOUND")
++        self.pending.extend(raw)
++        return bool(raw)
++
++    def line(self, limit):
++        while True:
++            end = self.pending.find(b"\r\n")
++            if end >= 0:
++                require(end <= limit, "ENGINE_LINE_BOUND")
++                value = bytes(self.pending[:end])
++                del self.pending[:end + 2]
++                return value
++            require(len(self.pending) <= limit + 1, "ENGINE_LINE_BOUND")
++            require(self.receive(), "ENGINE_TRUNCATED")
++
++    def take(self, count):
++        require(0 <= count <= MAX_BODY, "ENGINE_BODY_BOUND")
++        while len(self.pending) < count:
++            require(self.receive(), "ENGINE_TRUNCATED")
++        raw = bytes(self.pending[:count])
++        del self.pending[:count]
++        return raw
++
++    def eof(self):
++        require(not self.pending and not self.receive(), "ENGINE_EXTRA_DATA")
++
++    def body(self):
++        status = self.line(1024)
++        require(re.fullmatch(rb"HTTP/1\.[01] 200(?: [\x20-\x7e]*)?", status) is not None, "ENGINE_STATUS")
++        used, headers = len(status) + 2, {}
++        while True:
++            line = self.line(MAX_HEADERS)
++            used += len(line) + 2
++            require(used <= MAX_HEADERS, "ENGINE_HEADER_BOUND")
++            if not line:
++                break
++            key, separator, value = line.partition(b":")
++            require(separator and re.fullmatch(rb"[!#$%&'*+.^_`|~0-9A-Za-z-]+", key) is not None, "ENGINE_HEADER")
++            require(all(char == 9 or 32 <= char <= 126 for char in value), "ENGINE_HEADER")
++            key, value = key.lower(), value.strip(b" \t")
++            require(key not in headers and len(headers) < 64, "ENGINE_HEADER")
++            headers[key] = value
++        require(headers.get(b"content-type", b"").split(b";", 1)[0].lower() == b"application/json", "ENGINE_CONTENT_TYPE")
++        require(headers.get(b"content-encoding", b"identity").lower() == b"identity", "ENGINE_ENCODING")
++        length, transfer = headers.get(b"content-length"), headers.get(b"transfer-encoding")
++        require(length is None or transfer is None, "ENGINE_FRAMING")
++        if length is not None:
++            require(re.fullmatch(rb"[0-9]{1,9}", length) is not None and int(length) <= MAX_BODY, "ENGINE_BODY_BOUND")
++            body = self.take(int(length))
++            self.eof()
++        elif transfer is not None:
++            require(transfer.lower() == b"chunked", "ENGINE_FRAMING")
++            parts, size = [], 0
++            for _ in range(MAX_CHUNKS):
++                line = self.line(16)
++                require(re.fullmatch(rb"[0-9a-fA-F]{1,8}", line) is not None, "ENGINE_CHUNK")
++                count = int(line, 16)
++                require(size + count <= MAX_BODY, "ENGINE_BODY_BOUND")
++                if count == 0:
++                    # Docker metadata has no trailers. Do not accept an ambiguous
++                    # second set of headers, extensions, upgrades or redirects.
++                    require(self.line(MAX_HEADERS) == b"", "ENGINE_TRAILERS")
++                    self.eof()
++                    break
++                parts.append(self.take(count))
++                size += count
++                require(self.take(2) == b"\r\n", "ENGINE_CHUNK")
++            else:
++                raise Invalid("ENGINE_CHUNK_BOUND")
++            body = b"".join(parts)
++        else:
++            body = bytearray(self.pending)
++            self.pending.clear()
++            while self.receive():
++                require(len(body) + len(self.pending) <= MAX_BODY, "ENGINE_BODY_BOUND")
++                body.extend(self.pending)
++                self.pending.clear()
++            body = bytes(body)
++        require(0 < len(body) <= MAX_BODY, "ENGINE_BODY_BOUND")
++        self.deadline.check()
++        return body
++
++
++def read_engine_metadata(operation, deadline):
++    require(type(operation) is str and operation in ("info", "version"), "ENGINE_OPERATION")
++    deadline.check()
++    try:
++        with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as connection:
++            connection.settimeout(deadline.remaining())
++            connection.connect(ENGINE_SOCKET)
++            connection.settimeout(deadline.remaining())
++            connection.sendall(("GET /" + operation + " HTTP/1.1\r\nHost: localhost\r\n"
++                "Accept: application/json\r\nConnection: close\r\n\r\n").encode("ascii"))
++            deadline.check()
++            return Response(connection, deadline).body()
++    except OSError:
++        # Includes socket timeout/reset/permission failures; never echo received
++        # bytes, environment values, socket errors or raw daemon diagnostics.
++        raise Invalid("ENGINE_TRANSPORT") from None
+--- intermediate/tests/crawl-jobs-v2-observer/host_preflight.py
++++ transport/tests/crawl-jobs-v2-observer/host_preflight.py
+@@ -1,6 +1,6 @@
+ """Read-only native-host discovery. A candidate is never runtime admission.
+ 
+-Only the fixed local Docker endpoint is queried, with info/version commands.
++Only GET /info and GET /version at the fixed local Docker socket are allowed.
+ Collector metadata is inspected without reading credentials or issuing anchors.
+ """
+ import argparse
+@@ -9,20 +9,18 @@
+ import os
+ import re
+ import stat
+-import subprocess
+ 
+ from contracts import Invalid, canonical, digest, exact, integer, platform, platform_digest, require, sha
+-from docker_backend import command
++from engine_metadata import ENGINE_SOCKET, MAX_BODY, read_engine_metadata
+ from linux_observation import LinuxReader
+ from runtime_admission import CONTEXT_HASHES, NAMESPACES
+ from streams import Deadline
+ 
+-PREFIX = ("/usr/bin/docker", "--host", "unix:///var/run/docker.sock")
+ INFO_FIELDS = {"id": "ID", "os": "OSType", "architecture": "Architecture", "version": "ServerVersion",
+     "kernel": "KernelVersion", "cgroup_version": "CgroupVersion", "cgroup_driver": "CgroupDriver",
+     "security_options": "SecurityOptions", "memory": "MemoryLimit", "swap": "SwapLimit",
+-    "pids": "PidsLimit", "cpu_period": "CPUCfsPeriod", "cpu_quota": "CPUCfsQuota"}
+-VERSION_FIELDS = {"os": "Server.Os", "architecture": "Server.Arch", "version": "Server.Version", "kernel": "Server.KernelVersion"}
++    "pids": "PidsLimit", "cpu_period": "CpuCfsPeriod", "cpu_quota": "CpuCfsQuota"}
++VERSION_FIELDS = {"os": "Os", "architecture": "Arch", "version": "Version", "kernel": "KernelVersion"}
+ PENDING = ("daemon_kernel_namespace_pairing", "collector_installation_and_pinned_ssh_admission",
+     "runtime_image_and_actor_admission", "trial_dispatch_and_whole_trial_confinement",
+     "native_breakpoint_timing_and_failure_calibration", "independent_cleanup_and_evidence_review")
+@@ -30,13 +28,8 @@
+     "code": ("/opt/obs1/context-source", "directory")}
+ 
+ 
+-def template(fields):
+-    # Do not collect all of `docker info`: it may contain proxy credentials.
+-    return "{" + ",".join('"' + key + '":{{json .' + value + "}}" for key, value in fields.items()) + "}"
+-
+-
+-def metadata(raw, fields):
+-    require(type(raw) is bytes and 0 < len(raw) <= 16384, "PREFLIGHT_METADATA_BOUND")
++def metadata(raw, fields, *, engine_response=False):
++    require(type(raw) is bytes and 0 < len(raw) <= (MAX_BODY if engine_response else 16384), "PREFLIGHT_METADATA_BOUND")
+     def pairs(rows):
+         result = {}
+         for key, value in rows:
+@@ -46,9 +39,15 @@
+     def forbidden(_):
+         raise Invalid("PREFLIGHT_NUMBER")
+     try:
+-        value = json.loads(raw, object_pairs_hook=pairs, parse_float=forbidden, parse_constant=forbidden)
++        value = json.loads(raw.decode("utf-8"), object_pairs_hook=pairs, parse_float=forbidden, parse_constant=forbidden)
+     except (ValueError, UnicodeError, RecursionError):
+         raise Invalid("PREFLIGHT_JSON") from None
++    if engine_response:
++        require(type(value) is dict and all(source in value for source in fields.values()), "PREFLIGHT_ENGINE_FIELDS")
++        # The bounded API body may include proxy configuration; discard every
++        # unselected field without logging, hashing or exporting that body.
++        value = {key: value[source] for key, source in fields.items()}
++        require(len(canonical(value)) <= 16384, "PREFLIGHT_METADATA_BOUND")
+     exact(value, fields)
+     return value
+ 
+@@ -74,27 +73,17 @@
+ 
+     def endpoint(self):
+         try:
+-            socket = stat.S_ISSOCK(os.stat("/var/run/docker.sock").st_mode)
++            socket = stat.S_ISSOCK(os.stat(ENGINE_SOCKET).st_mode)
+         except FileNotFoundError:
+             socket = False
+-        try:
+-            client = stat.S_ISREG(os.stat(PREFIX[0]).st_mode) and os.access(PREFIX[0], os.X_OK)
+-        except FileNotFoundError:
+-            client = False
+-        return {"socket_present": socket, "client_present": client}
++        return {"socket_present": socket}
+ 
+     def docker(self, operation, deadline):
+         require(operation in ("info", "version"), "PREFLIGHT_OPERATION")
+         fields = INFO_FIELDS if operation == "info" else VERSION_FIELDS
+-        try:
+-            code, out, err = command([*PREFIX, operation, "--format", template(fields)], deadline)
+-        except subprocess.TimeoutExpired:
+-            # The shared runner already kills/reaps its owned child. A wait
+-            # timeout after pipe EOF must retain this CLI's value-free report.
+-            raise Invalid("PREFLIGHT_DOCKER_TIMEOUT") from None
+-        require(type(code) is int and code == 0 and err == b"", "PREFLIGHT_DOCKER_TRANSPORT")
++        raw = read_engine_metadata(operation, deadline)
+         deadline.check()
+-        return metadata(out, fields)
++        return metadata(raw, fields, engine_response=True)
+ 
+     def collector(self):
+         observed = {}
+@@ -188,7 +177,7 @@
+         blockers.append("CGROUP_CONTROLLERS_MISSING")
+     def endpoint():
+         value = probe.endpoint()
+-        exact(value, ("socket_present", "client_present"))
++        exact(value, ("socket_present",))
+         require(all(type(item) is bool for item in value.values()), "PREFLIGHT_ENDPOINT")
+         return value
+     local = collect("docker_endpoint", endpoint)
+--- intermediate/tests/crawl-jobs-v2-observer/test_engine_metadata.py
++++ transport/tests/crawl-jobs-v2-observer/test_engine_metadata.py
+@@ -0,0 +1,253 @@
++"""Plugin/config canaries and bounded fake-engine Unix/HTTP controls."""
++import os
++import socket
++import threading
++import unittest
++from unittest.mock import patch
++
++from contracts import Invalid, canonical
++from engine_metadata import ENGINE_SOCKET, MAX_BODY, MAX_CHUNKS, MAX_HEADERS, read_engine_metadata
++from host_preflight import HostProbe, INFO_FIELDS, VERSION_FIELDS, inspect_host
++from streams import Deadline
++from test_host_preflight import FixtureProbe
++
++
++def response(body=b"{}", *, framing="length", extra=b"", status=b"200 OK"):
++    headers = b"HTTP/1.1 " + status + b"\r\nContent-Type: application/json\r\n" + extra
++    if framing == "length":
++        return headers + b"Content-Length: " + str(len(body)).encode() + b"\r\n\r\n" + body
++    if framing == "chunked":
++        return headers + b"Transfer-Encoding: chunked\r\n\r\n" + format(len(body), "x").encode() + b"\r\n" + body + b"\r\n0\r\n\r\n"
++    return headers + b"\r\n" + body
++
++
++class FakeSocket:
++    def __init__(self, raw, fragment=4096):
++        self.raw, self.fragment, self.offset = raw, fragment, 0
++        self.closed, self.address, self.request = False, None, None
++        self.timeouts = []
++
++    def __enter__(self):
++        return self
++
++    def __exit__(self, *args):
++        self.closed = True
++
++    def settimeout(self, value):
++        self.timeouts.append(value)
++
++    def connect(self, address):
++        self.address = address
++
++    def sendall(self, raw):
++        self.request = raw
++
++    def recv(self, count):
++        result = self.raw[self.offset:self.offset + min(count, self.fragment)]
++        self.offset += len(result)
++        return result
++
++
++class EngineMetadataTests(unittest.TestCase):
++    def read(self, raw, operation="info", fragment=4096):
++        connection = FakeSocket(raw, fragment)
++        try:
++            with patch("engine_metadata.socket.socket", return_value=connection) as factory:
++                result = read_engine_metadata(operation, Deadline(2))
++            factory.assert_called_once_with(socket.AF_UNIX, socket.SOCK_STREAM)
++            self.assertEqual(connection.address, ENGINE_SOCKET)
++            self.assertEqual(connection.request, ("GET /" + operation + " HTTP/1.1\r\nHost: localhost\r\n"
++                "Accept: application/json\r\nConnection: close\r\n\r\n").encode())
++            self.assertTrue(all(0 < timeout <= 2 for timeout in connection.timeouts))
++            return result
++        finally:
++            self.assertTrue(connection.closed)
++
++    def test_only_fixed_read_only_operations_and_endpoint(self):
++        for operation in ("info", "version"):
++            self.assertEqual(self.read(response(), operation), b"{}")
++        for operation in ("POST /containers/create", "info?x=1", "../info", "info\r\nX: y", "run", None):
++            with patch("engine_metadata.socket.socket") as factory, self.assertRaises(Invalid):
++                read_engine_metadata(operation, Deadline(1))
++            factory.assert_not_called()
++
++    def test_fragmented_content_length_chunked_and_close_delimited(self):
++        for framing in ("length", "chunked", "close"):
++            for fragment in (1, 3, 4096):
++                self.assertEqual(self.read(response(b'{"a":true}', framing=framing), fragment=fragment), b'{"a":true}')
++
++    def test_no_configuration_plugins_processes_or_proxy_environment(self):
++        for arch in ("x86_64", "aarch64"):
++            fixture = FixtureProbe(arch)
++            fixture.docker = HostProbe(arch).docker
++            info = {source: fixture.info[key] for key, source in INFO_FIELDS.items()}
++            version = {source: fixture.server[key] for key, source in VERSION_FIELDS.items()}
++            info.update(HttpProxy="PRIVATE_CANARY", RegistryConfig={"auth": "PRIVATE_CANARY"})
++            connections = [FakeSocket(response(canonical(value))) for value in (info, version, info)]
++            environment = {name: "PRIVATE_CANARY" for name in ("HOME", "DOCKER_CONFIG", "DOCKER_HOST", "DOCKER_CLI_HOOKS",
++                "DOCKER_CUSTOM_HEADERS", "HTTP_PROXY", "HTTPS_PROXY", "LD_PRELOAD", "OTEL_EXPORTER_OTLP_ENDPOINT")}
++            with patch.dict(os.environ, environment, clear=True), \
++                    patch("engine_metadata.socket.socket", side_effect=connections), \
++                    patch("socket.getaddrinfo", side_effect=AssertionError("DNS forbidden")), \
++                    patch("builtins.open", side_effect=AssertionError("config read forbidden")), \
++                    patch("os.open", side_effect=AssertionError("credential read forbidden")), \
++                    patch("subprocess.Popen", side_effect=AssertionError("plugin/child forbidden")) as popen:
++                result = inspect_host(arch, probe=fixture)
++            self.assertEqual(result["status"], "HOST_CANDIDATE")
++            self.assertNotIn(b"PRIVATE_CANARY", canonical(result))
++            self.assertTrue(all(connection.closed and b"PRIVATE_CANARY" not in connection.request for connection in connections))
++            popen.assert_not_called()
++
++    def test_actual_api_cpu_field_names(self):
++        # API wire names differ from the former CLI Go-template field names.
++        document = {"ID": "fixture-daemon", "OSType": "linux", "Architecture": "x86_64", "ServerVersion": "29.9.1",
++            "KernelVersion": "6.8.0-fixture", "CgroupVersion": "2", "CgroupDriver": "systemd",
++            "SecurityOptions": ["name=seccomp,profile=builtin", "name=cgroupns"],
++            "MemoryLimit": True, "SwapLimit": True, "PidsLimit": True, "CpuCfsPeriod": False, "CpuCfsQuota": True}
++        connection = FakeSocket(response(canonical(document)))
++        with patch("engine_metadata.socket.socket", return_value=connection):
++            value = HostProbe("x86_64").docker("info", Deadline(1))
++        self.assertIs(value["cpu_period"], False)
++        self.assertIs(value["cpu_quota"], True)
++        self.assertTrue(connection.closed)
++
++    def test_non_success_redirect_upgrade_and_raw_error_bodies_reject(self):
++        for status in (b"500 PRIVATE_CANARY", b"302 Found", b"101 Switching Protocols", b"100 Continue", b"204 No Content"):
++            with self.assertRaises(Invalid) as caught:
++                self.read(response(b"PRIVATE_CANARY", status=status))
++            self.assertNotIn("PRIVATE_CANARY", str(caught.exception))
++
++    def test_conflicting_duplicate_or_invalid_headers_reject(self):
++        extras = (b"Content-Length: 2\r\n", b"content-length: 2\r\n", b"Transfer-Encoding: chunked\r\n",
++            b"Content-Encoding: gzip\r\n", b"Content-Type: text/html\r\n", b" Folded: bad\r\n", b"MissingColon\r\n",
++            b"X-Test: bad\x00value\r\n", b"X-Test: ok\r\nx-test: again\r\n")
++        for extra in extras:
++            with self.subTest(extra=extra), self.assertRaises(Invalid):
++                self.read(response(extra=extra))
++        for length in (b"-1", b"+2", b"2, 2", b"1.0", b"99999999999"):
++            with self.assertRaises(Invalid):
++                self.read(b"HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: " + length + b"\r\n\r\n{}")
++
++    def test_missing_content_type_or_unsupported_transfer_rejects(self):
++        for raw in (b"HTTP/1.1 200 OK\r\nContent-Length: 2\r\n\r\n{}",
++                response(framing="chunked").replace(b"chunked", b"gzip, chunked"),
++                response().replace(b"application/json", b"text/html")):
++            with self.assertRaises(Invalid):
++                self.read(raw)
++
++    def test_header_byte_count_and_line_bounds(self):
++        base = response(extra=b"X-Padding: \r\n")
++        count = base.index(b"\r\n\r\n") + 4
++        exact = base.replace(b"X-Padding: \r\n", b"X-Padding: " + b"x" * (MAX_HEADERS - count) + b"\r\n")
++        self.assertEqual(self.read(exact), b"{}")
++        for raw in (exact.replace(b"X-Padding: ", b"X-Padding: x"), b"x" * (MAX_HEADERS + 2),
++                response(extra=b"".join(b"X-" + str(index).encode() + b": v\r\n" for index in range(65)))):
++            with self.assertRaises(Invalid):
++                self.read(raw)
++
++    def test_body_bound_in_each_framing(self):
++        for framing in ("length", "chunked", "close"):
++            with self.subTest(framing=framing):
++                self.assertEqual(len(self.read(response(b"x" * MAX_BODY, framing=framing))), MAX_BODY)
++                with self.assertRaises(Invalid):
++                    self.read(response(b"x" * (MAX_BODY + 1), framing=framing))
++
++    def test_truncated_or_extra_data_never_passes(self):
++        complete = response()
++        for raw in (complete[:-1], complete + b"PRIVATE_CANARY", response(framing="chunked")[:-2],
++                b"HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: 0\r\n\r\n"):
++            with self.assertRaises(Invalid):
++                self.read(raw)
++
++    def test_chunk_syntax_extensions_trailers_and_count_are_bounded(self):
++        header = b"HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nTransfer-Encoding: chunked\r\n\r\n"
++        for chunks in (b"-1\r\n", b"2;ext=x\r\n{}\r\n0\r\n\r\n", b"2\r\n{}xx0\r\n\r\n",
++                b"2\r\n{}\r\n0\r\nX-Trailer: x\r\n\r\n", b"fffffffff\r\n", b"z\r\n"):
++            with self.assertRaises(Invalid):
++                self.read(header + chunks)
++        self.assertEqual(len(self.read(header + b"1\r\nx\r\n" * (MAX_CHUNKS - 1) + b"0\r\n\r\n")), MAX_CHUNKS - 1)
++        with self.assertRaises(Invalid):
++            self.read(header + b"1\r\nx\r\n" * MAX_CHUNKS + b"0\r\n\r\n")
++
++    def test_socket_errors_are_value_free_and_always_close(self):
++        for method in ("connect", "sendall", "recv"):
++            for error in (TimeoutError("PRIVATE_CANARY"), ConnectionResetError("PRIVATE_CANARY"), PermissionError("PRIVATE_CANARY")):
++                connection = FakeSocket(response())
++                with patch.object(connection, method, side_effect=error), \
++                        patch("engine_metadata.socket.socket", return_value=connection), self.assertRaisesRegex(Invalid, "^ENGINE_TRANSPORT$"):
++                    read_engine_metadata("info", Deadline(1))
++                self.assertTrue(connection.closed)
++
++    def test_shared_deadline_is_rechecked_after_receive(self):
++        now = [0]
++        deadline = Deadline(1, clock=lambda: now[0])
++        connection = FakeSocket(response())
++        original = connection.recv
++        def expired(count):
++            raw = original(count)
++            now[0] = 2
++            return raw
++        with patch.object(connection, "recv", side_effect=expired), \
++                patch("engine_metadata.socket.socket", return_value=connection), self.assertRaises(Invalid):
++            read_engine_metadata("info", deadline)
++        self.assertTrue(connection.closed)
++
++    def test_real_owned_socket_eof_and_stall_are_bounded(self):
++        for mode in ("success", "truncated", "stall", "keep-open"):
++            with self.subTest(mode=mode):
++                client, peer = socket.socketpair()
++                stop = threading.Event()
++                received, errors = [], []
++                class Connected:
++                    def __enter__(self):
++                        return self
++                    def __exit__(self, *args):
++                        client.close()
++                    def connect(self, address):
++                        received.append(address)
++                    def settimeout(self, timeout):
++                        client.settimeout(timeout)
++                    def sendall(self, raw):
++                        client.sendall(raw)
++                    def recv(self, count):
++                        return client.recv(count)
++                def serve():
++                    try:
++                        with peer:
++                            peer.settimeout(2)
++                            request = b""
++                            while not request.endswith(b"\r\n\r\n"):
++                                part = peer.recv(1024)
++                                if not part:
++                                    return
++                                request += part
++                            received.append(request)
++                            if mode != "stall":
++                                peer.sendall(response()[:-1] if mode == "truncated" else response())
++                            if mode in ("stall", "keep-open"):
++                                stop.wait(2)
++                    except OSError as error:
++                        errors.append(type(error).__name__)
++                thread = threading.Thread(target=serve)
++                thread.start()
++                try:
++                    with patch("engine_metadata.socket.socket", return_value=Connected()):
++                        if mode == "success":
++                            self.assertEqual(read_engine_metadata("info", Deadline(0.5)), b"{}")
++                        else:
++                            with self.assertRaises(Invalid):
++                                read_engine_metadata("info", Deadline(0.5))
++                    self.assertEqual(client.fileno(), -1)
++                finally:
++                    stop.set()
++                    client.close()
++                    thread.join(3)
++                    peer.close()
++                self.assertFalse(thread.is_alive())
++                self.assertEqual(errors, [])
++                self.assertEqual(received[0], ENGINE_SOCKET)
++                self.assertTrue(received[1].startswith(b"GET /info HTTP/1.1\r\n"))
++
++
++if __name__ == "__main__":
++    unittest.main()
+--- intermediate/tests/crawl-jobs-v2-observer/test_host_preflight.py
++++ transport/tests/crawl-jobs-v2-observer/test_host_preflight.py
+@@ -2,15 +2,11 @@
+ import copy
+ import io
+ import json
+-import signal
+-import subprocess
+-import sys
+ import unittest
+ from unittest.mock import patch
+ 
+ from contracts import Invalid, canonical, platform, sha
+-from docker_backend import command
+-from host_preflight import HostProbe, INFO_FIELDS, PREFIX, VERSION_FIELDS, inspect_host, main, metadata, template
++from host_preflight import HostProbe, INFO_FIELDS, VERSION_FIELDS, inspect_host, main, metadata
+ from runtime_admission import CONTEXT_HASHES, NAMESPACES
+ from streams import Deadline
+ 
+@@ -45,7 +41,7 @@
+         return {name: True for name in ("cpu", "memory", "pids")}
+ 
+     def endpoint(self):
+-        return {"client_present": True, "socket_present": True}
++        return {"socket_present": True}
+ 
+     def docker(self, operation, deadline):
+         self.calls.append(operation)
+@@ -93,11 +89,10 @@
+ 
+     def test_missing_docker_endpoint_is_not_a_podman_fallback(self):
+         probe = FixtureProbe()
+-        for client, socket in ((False, False), (True, False), (False, True)):
+-            probe.endpoint = lambda: {"client_present": client, "socket_present": socket}
+-            result = inspect_host("x86_64", probe=probe)
+-            self.assertIn("LOCAL_DOCKER_ENDPOINT_MISSING", result["blockers"])
+-            self.assertEqual(probe.calls, [])
++        probe.endpoint = lambda: {"socket_present": False}
++        result = inspect_host("x86_64", probe=probe)
++        self.assertIn("LOCAL_DOCKER_ENDPOINT_MISSING", result["blockers"])
++        self.assertEqual(probe.calls, [])
+ 
+     def test_changed_host_and_daemon_cannot_be_candidates(self):
+         for what in ("kernel", "daemon", "in_place_kernel", "in_place_daemon"):
+@@ -192,21 +187,25 @@
+         probe = HostProbe("x86_64")
+         fixture = FixtureProbe()
+         for operation, fields, value in (("info", INFO_FIELDS, fixture.info), ("version", VERSION_FIELDS, fixture.server)):
+-            with patch("host_preflight.command", return_value=(0, canonical(value), b"")) as runner:
+-                self.assertEqual(probe.docker(operation, Deadline(1)), value)
+-                argv = runner.call_args.args[0]
+-                self.assertEqual(argv, [*PREFIX, operation, "--format", template(fields)])
+-                self.assertNotIn("Proxy", argv[-1])
+-                self.assertNotIn("json .}}", argv[-1])
+-        with patch("host_preflight.command") as runner, self.assertRaises(Invalid):
++            document = {source: value[key] for key, source in fields.items()}
++            document["HttpProxy"] = "PRIVATE_CANARY"
++            with patch("host_preflight.read_engine_metadata", return_value=canonical(document)) as reader:
++                deadline = Deadline(1)
++                result = probe.docker(operation, deadline)
++                self.assertEqual(result, value)
++                reader.assert_called_once_with(operation, deadline)
++                self.assertNotIn(b"PRIVATE_CANARY", canonical(result))
++        with patch("host_preflight.read_engine_metadata") as reader, self.assertRaises(Invalid):
+             probe.docker("run", Deadline(1))
+-        runner.assert_not_called()
++        reader.assert_not_called()
+ 
+     def test_transport_errors_stderr_and_deadline_fail_closed(self):
+         fixture = FixtureProbe()
+         probe = HostProbe("x86_64")
+-        for response in ((1, b"", b"PRIVATE_CANARY"), (0, canonical(fixture.info), b"warning")):
+-            with patch("host_preflight.command", return_value=response), self.assertRaises(Invalid):
++        # Historical transport-regression ID: arbitrary server diagnostics now
++        # arrive as bounded HTTP/JSON bytes, never as a subprocess stderr pipe.
++        for response in (b"PRIVATE_CANARY", b'{"error":"warning"}'):
++            with patch("host_preflight.read_engine_metadata", return_value=response), self.assertRaises(Invalid):
+                 probe.docker("info", Deadline(1))
+         now = [0]
+         deadline = Deadline(1, clock=lambda: now[0])
+@@ -232,40 +231,25 @@
+             inspect_host("amd64", probe=probe)
+ 
+     def test_wait_timeouts_keep_json_refusal_and_reap_benign_children(self):
+-        real_popen = subprocess.Popen
++        # Preserve COR-01's regression ID. The replacement transport must start
++        # zero children: its timeout path now owns only a socket, not a CLI tree.
+         for arch in ("x86_64", "aarch64"):
+-            for closed_pipes in (False, True):
+-                with self.subTest(architecture=arch, closed_pipes=closed_pipes):
++            for error in (TimeoutError("PRIVATE_CANARY"), ConnectionResetError("PRIVATE_CANARY")):
++                with self.subTest(architecture=arch, error=type(error).__name__):
+                     probe = FixtureProbe(arch)
+                     probe.docker = HostProbe(arch).docker
+-                    children = []
+-                    def spawn(*args, **kwargs):
+-                        process = real_popen(*args, **kwargs)
+-                        children.append(process)
+-                        return process
+-                    def benign(argv, deadline):
+-                        source = "import os,time; " + ("os.close(1); os.close(2); " if closed_pipes else "") + "time.sleep(20)"
+-                        return command([sys.executable, "-I", "-B", "-c", source], deadline)
+                     def inspected(architecture):
+                         return inspect_host(architecture, probe=probe, deadline=Deadline(0.5))
+                     output = io.StringIO()
+-                    try:
+-                        with patch("docker_backend.subprocess.Popen", side_effect=spawn), \
+-                                patch("host_preflight.command", side_effect=benign), \
+-                                patch("host_preflight.inspect_host", side_effect=inspected), patch("sys.stdout", output):
+-                            self.assertEqual(main(["--architecture", arch]), 1)
+-                        result = json.loads(output.getvalue())
+-                        self.assertEqual(result["status"], "BLOCKED")
+-                        self.assertIn("DOCKER_UNAVAILABLE", result["blockers"])
+-                        self.assertNotIn("TimeoutExpired", output.getvalue())
+-                        self.assertEqual(len(children), 1)
+-                        self.assertEqual(children[0].returncode, -signal.SIGKILL)
+-                        self.assertTrue(children[0].stdout.closed and children[0].stderr.closed)
+-                    finally:
+-                        for child in children:
+-                            if child.poll() is None:
+-                                child.kill()
+-                                child.wait(timeout=5)
++                    with patch("subprocess.Popen", side_effect=AssertionError("subprocess forbidden")) as popen, \
++                            patch("engine_metadata.socket.socket", side_effect=error), \
++                            patch("host_preflight.inspect_host", side_effect=inspected), patch("sys.stdout", output):
++                        self.assertEqual(main(["--architecture", arch]), 1)
++                    popen.assert_not_called()
++                    result = json.loads(output.getvalue())
++                    self.assertEqual(result["status"], "BLOCKED")
++                    self.assertIn("DOCKER_UNAVAILABLE", result["blockers"])
++                    self.assertNotIn("PRIVATE_CANARY", output.getvalue())
+ 
+     def test_documented_no_new_privileges_metadata_preserves_other_checks(self):
+         for arch in ("x86_64", "aarch64"):

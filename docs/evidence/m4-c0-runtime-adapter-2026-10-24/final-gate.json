@@ -1,0 +1,158 @@
+{
+  "arm64_deferred_on": "2026-10-22",
+  "arm64_native_calibration_deferred": true,
+  "arm64_resume_date": null,
+  "auxiliary_scripts": 2,
+  "base_commit": "e8a0a415ac2b370319cd57f4c5262ce616a536fb",
+  "branch": "feature/crawl-jobs-v2-c0-native-calibration",
+  "closed_findings": [
+    "R1",
+    "SEC-01"
+  ],
+  "closure_verification_sha256": "e538e6e155cc6fb7c3bbaef2c4a2b6a0b51357f41357e270414a470b0775bfb0",
+  "collector_provisioned": false,
+  "collector_ssh_admitted": false,
+  "correctness_independent_test_executions": 62,
+  "daemon_kernel_namespace_pairing_established": false,
+  "execution_authorized": false,
+  "findings": [],
+  "full_runner_accepted": false,
+  "historical_post_merge_exports_verified": 77,
+  "historical_preflight_exports_verified": 111,
+  "historical_test_ids_retained": 318,
+  "host_admitted": false,
+  "host_assessment_sha256": "c7bf91276ff829c74f2e1978841267b2ce60120c5bcd8133f0eabf5548fb52bd",
+  "host_selection": "dedicated-sibling-x64-vm",
+  "implementation_committed": false,
+  "implementation_delta_paths": [
+    "tests/crawl-jobs-v2-observer/docker_backend.py",
+    "tests/crawl-jobs-v2-observer/local_process.py",
+    "tests/crawl-jobs-v2-observer/streams.py",
+    "tests/crawl-jobs-v2-observer/test_live_adapter.py",
+    "tests/crawl-jobs-v2-observer/test_owned_resources.py"
+  ],
+  "implementation_pushed": false,
+  "initial_failed_reviews_preserved": true,
+  "initial_fixture_failure_and_freeze_comparison_correction_preserved": true,
+  "initial_increment_test_ids_retained": 335,
+  "installed_cli_binary_version_admitted": false,
+  "kind": "c0_runtime_adapter_hardening_gate",
+  "native_calibration_performed": false,
+  "native_trials_run": 0,
+  "new_tests": 20,
+  "package_files": 61,
+  "pending": [
+    "Obtain provider/project or hypervisor SSH profile and assess a dedicated sibling x64 VM",
+    "Establish fresh native host, installed Docker binary/version and daemon/kernel/namespace admission",
+    "Provision and admit pinned-SSH collector/context and exact x64 images",
+    "Complete trial dispatch, actual-end timing, confinement/resource evidence and failure/cleanup assembly",
+    "Review the full execution packet and perform native x64 calibration",
+    "Resume native ARM64 acceptance before accepted dual-architecture publication"
+  ],
+  "pre_adapter_candidate_paths_preserved": 199,
+  "pre_adapter_snapshot_files": 247,
+  "predecessor_durable_files_verified": 568,
+  "provider_or_hypervisor_details_pending": true,
+  "real_index_empty": true,
+  "recorded_on": "2026-10-24",
+  "registry_publication": false,
+  "review_packet_files": 444,
+  "review_packet_sha256": "b3e66f6bf5cc95194e04548b7cfb4df4978898d4cec1a48aaaa357a1d4be14e7",
+  "reviews": {
+    "final-correctness": {
+      "exports": 21,
+      "manifest": {
+        "bytes": 2928,
+        "sha256": "107ed842c7025845b42ed5d04dc47dbfd881548cdf736157e955326fdc6df49b"
+      },
+      "report": {
+        "bytes": 8808,
+        "sha256": "29e3b0d595c732eb138582998457aeee35313c4e2ead0b444b779d6bb023a1ab"
+      },
+      "result": {
+        "bytes": 9763,
+        "sha256": "b99a4ea884dfbaac244f7061de4c003e63ea1f445f88d659243cf0f374445659"
+      },
+      "verdict": "GO_FOR_CONTINUED_IMPLEMENTATION"
+    },
+    "final-security": {
+      "exports": 16,
+      "manifest": {
+        "bytes": 2197,
+        "sha256": "d3f91e908fcaf2f3ecaadfcfa9177a31db9dd95a8f27065ced58f0eec153401e"
+      },
+      "report": {
+        "bytes": 8194,
+        "sha256": "4fc16e9b5c5a2c737922674461a629ce148bbf34372a7ccbcdff48f2c5bd2342"
+      },
+      "result": {
+        "bytes": 13236,
+        "sha256": "a7fe04abb47a656173f650dcb4ded8b76b571fbf9ce3324f7e8b76bfe70569f5"
+      },
+      "verdict": "GO_FOR_CONTINUED_IMPLEMENTATION"
+    },
+    "initial-correctness": {
+      "exports": 27,
+      "manifest": {
+        "bytes": 4012,
+        "sha256": "13346d4428f891fd81db632bd0bdcc54208c3cfd9f8452d8b2de7a957f7d33e3"
+      },
+      "report": {
+        "bytes": 9284,
+        "sha256": "f0fdb199cac0cc03d70a0a7a08146a49148953492bc052e88b8f0f53bf8655e3"
+      },
+      "result": {
+        "bytes": 11061,
+        "sha256": "0f0c3656f1308658c899a2a293c69c51da63b3b91b17eead1436b0147d909128"
+      },
+      "verdict": "NEEDS_REMEDIATION"
+    },
+    "initial-security": {
+      "exports": 13,
+      "manifest": {
+        "bytes": 1764,
+        "sha256": "f3371d9fc1ed6cbd443283e612cf4e16984183459f740eefcc5312b8dd057487"
+      },
+      "report": {
+        "bytes": 12074,
+        "sha256": "354da2ebc5ea696ff83127ea554a82a7e48d9784d44a96e640ddbc70381df19c"
+      },
+      "result": {
+        "bytes": 8461,
+        "sha256": "cb20fca48b551fd2b6be899541ef0af004da71feb02c32f5d4fe47fb2b0bcbcf"
+      },
+      "verdict": "NEEDS_REMEDIATION"
+    }
+  },
+  "runtime_acceptance": false,
+  "scope": "Reviewed local adapter metadata/configuration/dispatch and owned subprocess-lifecycle hardening, including R1/SEC-01 remediation.",
+  "security_checks_per_umask": 13,
+  "security_simulated_calls_per_umask": {
+    "actual_cli_actor_guard_validations": 140,
+    "synthetic_metadata_calls": 258,
+    "total": 398
+  },
+  "source_delta_sha256": "10685616f6dfd12fc568f30735fa875fb8fe5e9c4e4d35f14480cdb2d1001e31",
+  "source_inventory_sha256": "5a3bbce905d4e49d6b4a89e4492222e5aa8bf2b2d0fa1ad92333f189c585b7db",
+  "status": "GO_FOR_CONTINUED_IMPLEMENTATION",
+  "test_reports": {
+    "022": {
+      "bytes": 114341,
+      "commit": "local",
+      "path": "out/c0-runtime-adapter-2026-10-24/remediation/tests-022.json",
+      "sha256": "609faeab7e54f9b543957aae8922b2442be6fa3234a111d6a6e1113fa72ba4b0",
+      "status": "PASS",
+      "tests": 338
+    },
+    "077": {
+      "bytes": 114341,
+      "commit": "local",
+      "path": "out/c0-runtime-adapter-2026-10-24/remediation/tests-077.json",
+      "sha256": "609faeab7e54f9b543957aae8922b2442be6fa3234a111d6a6e1113fa72ba4b0",
+      "status": "PASS",
+      "tests": 338
+    }
+  },
+  "total_tests_per_umask": 338,
+  "version": 1
+}

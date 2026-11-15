@@ -1,0 +1,225 @@
+{
+  "approved_tree": "aaf57fc74e5799d1b5d21f58cce18747623a7676",
+  "backup_commit": "babb2180d05698e64b7d9baf37f9cab14b3c0f7f",
+  "blocking_findings": 0,
+  "checks_performed": {
+    "additional_files_before_after": 329,
+    "aggregate_records_cross_checked": true,
+    "before_patch_equals_stash_diff": true,
+    "before_snapshot_files_and_stash_blobs_verified": 120,
+    "command_log_hashes_and_arguments_checked": 122,
+    "committed_closure_evidence_files_bound": 48,
+    "event": "push",
+    "frozen_files_before_after": 428,
+    "frozen_input_bytes": 729668911,
+    "frozen_restored_plan_upstream_inserted_lines": 6,
+    "full_canonical_content_records_replayed_exactly": 6,
+    "git_refs_head_branch_index_unchanged": true,
+    "head_branch": "main",
+    "historical_preflight_exports_verified": 111,
+    "host_root_observations": 12,
+    "hosted_jobs": 2,
+    "hosted_source_hashes_each_architecture": 55,
+    "hosted_test_ids_each_architecture": 288,
+    "independent_layer_to_reconstructed_member_comparisons": 13171,
+    "integrated_retained_test_ids_each_report_and_log": 318,
+    "integrated_test_source_hashes_verified": 59,
+    "layer_digests_verified": 14,
+    "merged_source_auxiliary_files": 3,
+    "merged_source_package_files": 55,
+    "negative_controls_passed": 26,
+    "old_durable_retention_files_verified": 105,
+    "payloads_equal_historical": 6,
+    "portable_archives_and_config_ids_verified": 6,
+    "preserved_failed_harness_partial_source_files": 55,
+    "recorded_never_started_inspections": 30,
+    "required_oracle_elf_closure_per_architecture": 18,
+    "reviewed_current_package_and_script_hashes_unchanged": 61,
+    "root_metadata_boundary_controls_passed": 2,
+    "run_attempt": 1,
+    "run_id": 39858333396,
+    "stable_native_oracle_artifact_files_per_architecture": 12,
+    "stash_tracked_paths": 2,
+    "stash_untracked_paths": 118,
+    "stopped_cleanup_records": 10,
+    "zip_crc_and_exact_extracted_files_verified": 169,
+    "zip_sha256_and_size_verified": 2
+  },
+  "commit": "e8a0a415ac2b370319cd57f4c5262ce616a536fb",
+  "committed": false,
+  "engine_commands_executed_by_review": 0,
+  "evidence": {
+    "audit-after.json": "out/c0-hosted-images-2026-10-24/correctness-review/audit-after.json",
+    "audit-before.json": "out/c0-hosted-images-2026-10-24/correctness-review/audit-before.json",
+    "image-checks.json": "out/c0-hosted-images-2026-10-24/correctness-review/image-checks.json",
+    "probe-adjustments.json": "out/c0-hosted-images-2026-10-24/correctness-review/probe-adjustments.json",
+    "report.md": "out/c0-hosted-images-2026-10-24/correctness-review/report.md",
+    "source-sync-checks.json": "out/c0-hosted-images-2026-10-24/correctness-review/source-sync-checks.json",
+    "summary-bindings.json": "out/c0-hosted-images-2026-10-24/correctness-review/summary-bindings.json"
+  },
+  "execution_authorized": false,
+  "findings": [],
+  "kind": "c0_merged_main_hosted_images_and_preflight_sync_correctness_review",
+  "limitations": [
+    "Retained GitHub metadata and logs were checked locally; no fresh remote attestation or observation of the hosted execution was obtained.",
+    "No native actors, engines, containers, remote hosts, calibration, network/API requests, additional agents, commit or push were invoked.",
+    "No broad test suite was rerun. Retained 022/077 execution logs, reports and source hashes were checked; process umasks were not independently measured.",
+    "Integrated reports intentionally retain commit=local; source/Git/sync bindings establish the baseline separately.",
+    "Concurrent authorized chronology edits are outside the frozen runtime/evidence packet; whole-worktree byte identity is not claimed.",
+    "The exact whiteout-free portable layers were replayed; no general OCI layer/runtime equivalence or cross-build timestamp identity is claimed.",
+    "Original hosted container export tars were not retained by the upload workflow; portable archives, reconstructed maps and full hosted content records were checked instead.",
+    "Required Python/oracle ELF dependency closure is verified; the nonrequired _tkinter extension retains unresolved libtk8.6.so/libtcl8.6.so in both architectures, unchanged from the reviewed baseline.",
+    "This review does not authorize execution, admit native hosts, certify runtime adapters, or establish native runtime acceptance."
+  ],
+  "native_calibration_performed": false,
+  "network_requests_by_review": 0,
+  "next_step": "Continue C0-ARCH-05 implementation; eligible native-host/runtime admission, calibration and independent acceptance remain separately gated.",
+  "packet_sha256": "d63b6e8d9b9bab7d0a883d2cbdaa59eb7a8de8050e56dae28b447a2e638a315d",
+  "preserved_harness_failures": [
+    {
+      "assessment": "Nonexistent auxiliary filename; corrected 58-file snapshot independently verified. Not a product or restoration failure.",
+      "path": "out/c0-main-sync-2026-10-24/initial-check-failure.json",
+      "scope": "supplied sync helper"
+    },
+    {
+      "assessment": "All-zero identity correctly failed earlier at DIGEST; valid-but-wrong nonzero fixture reached IMAGE_SAVE_CONFIG. Corrected complete run passed; initial log retained.",
+      "path": "out/c0-hosted-images-2026-10-24/correctness-review/probe-adjustments.json",
+      "scope": "review negative fixture"
+    }
+  ],
+  "product_or_retained_input_changes_by_review": false,
+  "pushed": false,
+  "relevant_hashes": {
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/final-gate.json": {
+      "bytes": 2238,
+      "sha256": "2e91337ea1d30d2d319c9b86019f36c7af75677e01a082d88660d37ad22fd7e8"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/final-source-inventory.json": {
+      "bytes": 7963,
+      "sha256": "ca38c05c22ad440a606a786806f3bd4ccbda7917d11e83633774505969e678ab"
+    },
+    "docs/evidence/m4-c0-native-preflight-2026-10-17/manifest.json": {
+      "bytes": 17257,
+      "sha256": "93b0a078c3e89d7e3af566304a8bc04756b8a18c139aa24444cb38dbb2b11537"
+    },
+    "out/c0-hosted-images-2026-10-24/artifacts.json": {
+      "bytes": 1414,
+      "sha256": "7fd235b5df20034fd535548e29feb3db90c064ddcf3101719791254d164ed5fb"
+    },
+    "out/c0-hosted-images-2026-10-24/c0-runtime-images-aarch64.zip": {
+      "bytes": 54045146,
+      "sha256": "7cac65afbed201004f1417def2a5c2ea28f1e0e8766ef8c8e1cf4e6d158e22f8"
+    },
+    "out/c0-hosted-images-2026-10-24/c0-runtime-images-x86_64.zip": {
+      "bytes": 55015916,
+      "sha256": "6b30fdb8d9661fd08d9acd6eaecf0ecf81e45eff603a3e84c61778d8a28ee8e9"
+    },
+    "out/c0-hosted-images-2026-10-24/correctness-review/audit-after.json": {
+      "bytes": 163201,
+      "sha256": "26ddc6395a28b45fe1f1ef59be12db6a8a93ac38d61e0b571778872fe70ec768"
+    },
+    "out/c0-hosted-images-2026-10-24/correctness-review/audit-before.json": {
+      "bytes": 163111,
+      "sha256": "da0284d075befc56bc0c7f803c62d2b1b06faf9c98a67fe0bfde98e93f890074"
+    },
+    "out/c0-hosted-images-2026-10-24/correctness-review/image-checks.json": {
+      "bytes": 32447,
+      "sha256": "20d80e3e062220d56385c9c7489b0f46b55ebe1a6dd01f067efed8ade8d9184b"
+    },
+    "out/c0-hosted-images-2026-10-24/correctness-review/report.md": {
+      "bytes": 11026,
+      "sha256": "7427494278b29b87ddaa68a3bf1b050126b149f0745c1ad9f9fd393fd96d5f7f"
+    },
+    "out/c0-hosted-images-2026-10-24/correctness-review/source-sync-checks.json": {
+      "bytes": 2364,
+      "sha256": "5d79c8cd1618db2eb7e364374734f7a30e980f536de74be0fdf1bb97b6864f57"
+    },
+    "out/c0-hosted-images-2026-10-24/correctness-review/summary-bindings.json": {
+      "bytes": 543,
+      "sha256": "472c086b1955ace548ba022274a95792a8d326ef5e160db26f461ef181908d31"
+    },
+    "out/c0-hosted-images-2026-10-24/download-integrity.json": {
+      "bytes": 28415,
+      "sha256": "fb21b32412681689f4da0999a88d17a0d56a971f7156e3a9d7b89409e9f0241f"
+    },
+    "out/c0-hosted-images-2026-10-24/download.py": {
+      "bytes": 4716,
+      "sha256": "61ad001df8ef365069cc4b25689d224a41b37fe07bc7a7c6dbeb36a8475da651"
+    },
+    "out/c0-hosted-images-2026-10-24/jobs.json": {
+      "bytes": 5881,
+      "sha256": "a98d9c2e0b7c2ec9bd180a21307ed38e0e0c74c163ec639b88d69f5f10e3eab0"
+    },
+    "out/c0-hosted-images-2026-10-24/review-inputs.json": {
+      "bytes": 85317,
+      "sha256": "d63b6e8d9b9bab7d0a883d2cbdaa59eb7a8de8050e56dae28b447a2e638a315d"
+    },
+    "out/c0-hosted-images-2026-10-24/run.json": {
+      "bytes": 12651,
+      "sha256": "543a2c4d263b47cd650414700ebf4139e20c387795bd2b16159ff65f4b5f6ad7"
+    },
+    "out/c0-hosted-images-2026-10-24/verification.json": {
+      "bytes": 27126,
+      "sha256": "309ac683b4180bd3aa89b937f2216c13a62e2c79c6619697c9c5e6812751e698"
+    },
+    "out/c0-hosted-images-2026-10-24/verify.py": {
+      "bytes": 17047,
+      "sha256": "e0a6a6ebe1b449c53baf55042c942a4f713c140712912d71b2438096153d7f07"
+    },
+    "out/c0-main-sync-2026-10-24/before.json": {
+      "bytes": 26617,
+      "sha256": "28f2b3d1386d479708d7a47bb5dad9f9e2216bc05f0aaefdfeb81e423e456763"
+    },
+    "out/c0-main-sync-2026-10-24/before.patch": {
+      "bytes": 9820,
+      "sha256": "1d5ca5daa52747307946e3243db5e63cfec0543d33954f0707333a9ca07ca1f0"
+    },
+    "out/c0-main-sync-2026-10-24/initial-check-failure.json": {
+      "bytes": 446,
+      "sha256": "ed3b47c611da622d6bc0f37ffd7dcb2e57363fcc321cb3ae23e1bb0955974e17"
+    },
+    "out/c0-main-sync-2026-10-24/restored-plan.md": {
+      "bytes": 307184,
+      "sha256": "685988b808c4dd5e015d80fdae1e8906d26d33aa656c2c46bb08f5914b50b239"
+    },
+    "out/c0-main-sync-2026-10-24/sync-verification.json": {
+      "bytes": 8089,
+      "sha256": "2db1c726cc04fa2280fa22fb4ef0792f15457854e02511ca506bfc0e17844cae"
+    },
+    "out/c0-main-sync-2026-10-24/test-continuity.json": {
+      "bytes": 888,
+      "sha256": "cbe7db52ada235b1a72e3b3906abd9ec7b90058015f39e1ac1067cb526a20146"
+    },
+    "out/c0-main-sync-2026-10-24/tests-022.json": {
+      "bytes": 107792,
+      "sha256": "2113de12e8e359b884e9d1ac7e884866663d1bcced51f1680aa93c63f5dee6bf"
+    },
+    "out/c0-main-sync-2026-10-24/tests-077.json": {
+      "bytes": 107792,
+      "sha256": "2113de12e8e359b884e9d1ac7e884866663d1bcced51f1680aa93c63f5dee6bf"
+    },
+    "out/c0-main-sync-2026-10-24/verified-merged-source/tests/crawl-jobs-v2-observer/image_artifacts.py": {
+      "bytes": 24111,
+      "sha256": "d6104f24562ed1f605043314b2f505c9f3609ca599f040fc6a9feb8d863252e5"
+    },
+    "out/c0-main-sync-2026-10-24/verified-merged-source/tests/crawl-jobs-v2-observer/image_build.py": {
+      "bytes": 16606,
+      "sha256": "6926bdb5bf01c25b3c29ac5607e4602bf831772fe34e06c85bee7700baee0d85"
+    }
+  },
+  "retained_stash": "2475fda26223c43485b933089274476e497be3ab",
+  "root_evidence": {
+    "historical_local_oracle_root_mode": "0755",
+    "hosted_stopped_container_root_mode_all_roles": "0555",
+    "oracle_historical_full_content_delta": [
+      "root_directory"
+    ],
+    "oracle_layer_root_header_mode": "0755",
+    "payload_equivalence_is_not_root_equivalence": true,
+    "sources_kept_distinct": true
+  },
+  "runtime_acceptance": false,
+  "scope": "Exact merged-main hosted image download/static verification and preservation of the already-reviewed C0-ARCH-05 preflight candidate during main synchronization.",
+  "verdict": "GO_FOR_CONTINUED_IMPLEMENTATION",
+  "version": 1
+}
